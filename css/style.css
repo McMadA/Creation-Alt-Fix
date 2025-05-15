@@ -128,10 +128,61 @@ a:hover {
     -webkit-backdrop-filter: blur(10px);
 }
 
+/* Aan het einde van je #navbar styles, of in een nieuwe sectie */
 #navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* .nav-links is de ul waar de tekstlinks in staan */
+#navbar .nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0; /* Reset margin voor ul */
+    padding: 0; /* Reset padding voor ul */
+}
+
+#navbar .nav-links li {
+    margin-left: 25px;
+}
+
+#navbar .nav-social-icons {
+    margin-left: 30px; /* Ruimte tussen de tekstlinks en social icons */
+    display: flex; /* Zorgt dat iconen naast elkaar komen als je er meer toevoegt */
+    align-items: center;
+}
+
+#navbar .nav-social-icons a {
+    color: #f0f0f0; /* Matcht met je andere navbar links */
+    font-size: 1.5rem; /* Maak het icoon iets groter */
+    transition: color 0.3s ease;
+    padding: 5px; /* Geeft wat klikruimte */
+}
+
+#navbar .nav-social-icons a:hover {
+    color: #007AFF; /* Je accentkleur */
+    /* Of een specifieke Instagram kleur: color: #E1306C; */
+}
+
+/* Responsive aanpassing voor navbar als de social icons apart moeten staan */
+@media (max-width: 768px) {
+    #navbar .container {
+        flex-direction: column; /* Huidige gedrag */
+    }
+    #navbar .nav-links {
+        margin-top: 0.5rem; /* Huidige gedrag */
+        padding-left: 0;
+        order: 2; /* Plaats links na social icons op mobiel als je wilt */
+    }
+    #navbar .nav-links li {
+        margin: 0 10px;
+    }
+    #navbar .nav-social-icons {
+        margin-left: 0; /* Geen linker marge op mobiel */
+        margin-top: 10px; /* Ruimte boven social icons */
+        order: 1; /* Plaats social icons boven de links als je wilt */
+    }
 }
 
 #navbar .logo {
@@ -164,19 +215,19 @@ a:hover {
 }
 
 /* Hero Section */
-#hero {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/hero-background.jpg') no-repeat center center/cover; /* Vervang hero-background.jpg */
-    min-height: 100vh; /* Volledige schermhoogte */
+/* #hero {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/hero-background.jpg') no-repeat center center/cover; 
+    min-height: 100vh; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: #fff;
-    padding-top: 80px; /* Compensate for sticky navbar */
-}
+    padding-top: 80px; 
+} */
 /* Als je geen afbeelding hebt, gebruik een gradient: */
-/* #hero {
+#hero {
     background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
     min-height: 100vh;
     display: flex;
@@ -186,7 +237,7 @@ a:hover {
     text-align: center;
     color: #fff;
     padding-top: 80px;
-} */
+}
 
 
 /* Diensten Sectie */
@@ -415,6 +466,45 @@ footer p {
     font-size: 0.8rem;
     color: #888;
     margin-top: 5px;
+}
+
+footer .footer-social-and-links {
+    display: flex;
+    flex-direction: column; /* Stack social en links op mobiel */
+    align-items: center;
+    margin-bottom: 10px; /* Ruimte voor de meta info */
+}
+
+footer .footer-social-icons {
+    margin-bottom: 10px; /* Ruimte tussen iconen en tekstlinks */
+    display: flex; /* Als je meerdere iconen hebt */
+    gap: 15px; /* Ruimte tussen iconen */
+}
+
+footer .footer-social-icons a {
+    color: #bbb; /* Matcht met je footer link kleur */
+    font-size: 1.6rem; /* Iets groter voor de footer */
+    transition: color 0.3s ease;
+}
+
+footer .footer-social-icons a:hover {
+    color: #007AFF; /* Je accentkleur */
+    /* Of een specifieke Instagram kleur: color: #E1306C; */
+}
+
+footer .footer-links {
+    margin-bottom: 0; /* Verwijder bottom margin als die er was */
+}
+
+@media (min-width: 576px) { /* Voor iets grotere schermen */
+    footer .footer-social-and-links {
+        flex-direction: row; /* Social icons en links naast elkaar */
+        justify-content: center;
+        gap: 20px; /* Ruimte tussen social blok en links blok */
+    }
+     footer .footer-social-icons {
+        margin-bottom: 0; /* Geen bottom margin als ze naast elkaar staan */
+    }
 }
 
 /* Fade-in Animation (voor JS) */
