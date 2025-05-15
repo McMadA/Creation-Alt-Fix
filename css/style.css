@@ -680,91 +680,155 @@ footer .footer-links {
 
 /* NIEUWE CSS VOOR LIVE SHOWCASE SECTIE */
     /* Verplaats dit later naar css/style.css */
-    #live-showcase {
-        background-color: #ffffff; /* Witte achtergrond, past goed bij de grijze body */
-        /* padding-top en padding-bottom worden al door .section class geregeld */
-    }
+#live-showcase {
+    background-color: #ffffff; /* Witte achtergrond, past goed bij de grijze body */
+    /* padding-top en padding-bottom worden al door .section class geregeld */
+}
 
-    .subtitle-showcase {
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 2.5rem auto;
-        font-size: 1.1rem;
-        color: #555; /* Matcht met je bestaande paragraafkleur */
-    }
+.subtitle-showcase {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 2.5rem auto;
+    font-size: 1.1rem;
+    color: #555; /* Matcht met je bestaande paragraafkleur */
+}
 
-    .showcase-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Iets breder voor screenshots */
-        gap: 20px; /* Consistent met je .services-grid */
-        margin-top: 30px;
-    }
+.showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Iets breder voor screenshots */
+    gap: 20px; /* Consistent met je .services-grid */
+    margin-top: 30px;
+}
 
-    .showcase-item {
-        background-color: #fff; /* Kan ook #f9f9f9 zijn als je iets meer contrast wilt */
-        border-radius: 12px; /* Consistent met .service-card */
-        box-shadow: 0 8px 16px rgba(0,0,0,0.05); /* Consistent met .service-card */
-        overflow: hidden;
+.showcase-item {
+    background-color: #fff; /* Kan ook #f9f9f9 zijn als je iets meer contrast wilt */
+    border-radius: 12px; /* Consistent met .service-card */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05); /* Consistent met .service-card */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Consistent */
+}
+
+.showcase-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1); /* Consistent */
+}
+
+.showcase-image-link img {
+    width: 100%;
+    height: 220px; /* Vaste hoogte voor consistentie, pas aan indien nodig */
+    object-fit: cover; /* Zorgt dat de afbeelding het blok vult, kan bijsnijden */
+    display: block;
+    /* border-bottom: 1px solid #eee; Optioneel: subtiele scheiding */
+}
+
+.showcase-content {
+    padding: 25px; /* Iets meer padding */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.showcase-content h3 {
+    font-size: 1.5rem; /* Consistent met .service-card h3 */
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1a1a1a; /* Consistent */
+}
+.showcase-content h3 a {
+    color: inherit; /* Erft kleur van h3 */
+    text-decoration: none;
+}
+.showcase-content h3 a:hover {
+    color: #007AFF; /* Accentkleur bij hover */
+}
+
+.showcase-content p {
+    font-size: 0.95rem; /* Consistent met .service-card p */
+    color: #555; /* Consistent */
+    margin-bottom: 20px; /* Iets meer ruimte voor de knop */
+    flex-grow: 1;
+}
+
+/* Stijl voor een secundaire knop, als aanvulling op je .btn-primary */
+.btn-secondary {
+    background-color: transparent;
+    color: #007AFF;
+    border: 2px solid #007AFF;
+    padding: 10px 25px; /* Iets aangepaste padding t.o.v. .btn-primary */
+}
+.btn-secondary:hover {
+    background-color: #007AFF;
+    color: #fff;
+    /* transform en box-shadow worden overgenomen van .btn class, maar je kunt ze hier overschrijven */
+}
+
+.showcase-content .btn { /* Zorgt dat de knop onderaan komt */
+    margin-top: auto;
+    align-self: flex-start; /* Knop niet over volledige breedte */
+}
+
+
+/* Language Switcher Styles (can be moved to style.css) */
+    #language-switcher {
         display: flex;
-        flex-direction: column;
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Consistent */
+        align-items: center;
+        margin-left: 15px; /* Space from social icons */
     }
 
-    .showcase-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.1); /* Consistent */
+    .lang-btn {
+        background: none;
+        border: 1px solid #f0f0f0;
+        color: #f0f0f0;
+        padding: 5px 8px;
+        margin-left: 5px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
-    .showcase-image-link img {
-        width: 100%;
-        height: 220px; /* Vaste hoogte voor consistentie, pas aan indien nodig */
-        object-fit: cover; /* Zorgt dat de afbeelding het blok vult, kan bijsnijden */
-        display: block;
-        /* border-bottom: 1px solid #eee; Optioneel: subtiele scheiding */
+    .lang-btn:first-child {
+        margin-left: 0;
     }
 
-    .showcase-content {
-        padding: 25px; /* Iets meer padding */
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .showcase-content h3 {
-        font-size: 1.5rem; /* Consistent met .service-card h3 */
-        margin-top: 0;
-        margin-bottom: 10px;
-        color: #1a1a1a; /* Consistent */
-    }
-    .showcase-content h3 a {
-        color: inherit; /* Erft kleur van h3 */
-        text-decoration: none;
-    }
-    .showcase-content h3 a:hover {
-        color: #007AFF; /* Accentkleur bij hover */
-    }
-
-    .showcase-content p {
-        font-size: 0.95rem; /* Consistent met .service-card p */
-        color: #555; /* Consistent */
-        margin-bottom: 20px; /* Iets meer ruimte voor de knop */
-        flex-grow: 1;
-    }
-
-    /* Stijl voor een secundaire knop, als aanvulling op je .btn-primary */
-    .btn-secondary {
-        background-color: transparent;
-        color: #007AFF;
-        border: 2px solid #007AFF;
-        padding: 10px 25px; /* Iets aangepaste padding t.o.v. .btn-primary */
-    }
-    .btn-secondary:hover {
+    .lang-btn.active,
+    .lang-btn:hover {
         background-color: #007AFF;
         color: #fff;
-        /* transform en box-shadow worden overgenomen van .btn class, maar je kunt ze hier overschrijven */
+        border-color: #007AFF;
     }
 
-    .showcase-content .btn { /* Zorgt dat de knop onderaan komt */
-        margin-top: auto;
-        align-self: flex-start; /* Knop niet over volledige breedte */
+    /* Wrapper for social icons and lang switcher for better responsive layout */
+    #navbar .nav-right-cluster {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Adjustments for responsive navbar (existing @media (max-width: 768px) can be augmented) */
+    @media (max-width: 768px) {
+        #navbar .nav-links {
+            order: 2; 
+            margin-top: 10px;
+        }
+        #navbar .nav-right-cluster {
+            order: 1; /* Puts social icons & lang switcher above nav links on mobile */
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center; 
+        }
+        #language-switcher {
+            margin-left: 20px; 
+        }
+    }
+    @media (max-width: 420px) { /* Adjusted breakpoint for stacking */
+            #navbar .nav-right-cluster {
+            flex-direction: column;
+            gap: 10px;
+        }
+        #language-switcher {
+            margin-left: 0;
+        }
     }

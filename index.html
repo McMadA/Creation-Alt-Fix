@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl"> <!-- lang attribute will be updated by JS -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creation+Alt+Fix - Van simpele IT-hulp tot slimme AI-oplossingen</title>
+    <!-- Page title will be set by JS -->
+    <title data-translate-key="pageTitle">Creation+Alt+Fix - Van simpele IT-hulp tot slimme AI-oplossingen</title>
 
     <!-- FAVICON SECTIE START -->
     <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
@@ -22,41 +23,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome (voor iconen) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
- 
-    </style>
 </head>
 <body>
 
     <!-- Navigatiebalk -->
-    <nav id="navbar">
+<nav id="navbar">
         <div class="container">
             <a href="#hero" class="logo">Creation<span>+</span>Alt<span>+</span>Fix</a>
             <ul>
-                <li><a href="#diensten">Diensten</a></li>
-                <li><a href="#waarom-wij">Waarom Wij?</a></li>
-                <li><a href="#ai-oplossingen">AI Oplossingen</a></li>
-                <li><a href="#portfolio">Websites</a></li>
-                <li><a href="#github-projects">Projecten</a></li> 
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#diensten" data-translate-key="navDiensten">Diensten</a></li>
+                <li><a href="#waarom-wij" data-translate-key="navWaaromWij">Waarom Wij?</a></li>
+                <li><a href="#ai-oplossingen" data-translate-key="navAiOplossingen">AI Oplossingen</a></li>
+                <li><a href="#portfolio" data-translate-key="navWebsites">Websites</a></li>
+                <li><a href="#github-projects" data-translate-key="navProjecten">Projecten</a></li>
+                <li><a href="#contact" data-translate-key="navContact">Contact</a></li>
             </ul>
-            <div class="nav-social-icons">
-                <a href="https://www.instagram.com/creationaltfix?igsh=MXQyNHhhczgxMXl3eA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram CreationAltFix">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <!-- Hier kun je later meer sociale iconen toevoegen -->
+            <div class="nav-right-cluster">
+                <div class="nav-social-icons">
+                    <a href="https://www.instagram.com/creationaltfix?igsh=MXQyNHhhczgxMXl3eA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram CreationAltFix" data-translate-key-aria="ariaInstagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+                <div id="language-switcher">
+                    <button type="button" data-lang="nl" class="lang-btn">NL</button>
+                    <button type="button" data-lang="en" class="lang-btn">EN</button>
+                </div>
             </div>
         </div>
     </nav>
+
 
     <!-- Hero Sectie -->
     <header id="hero" class="section">
         <div class="hero-content">
             <h1 class="main-title">Creation<span>+</span>Alt<span>+</span>Fix</h1>
-            <p class="subtitle">Van simpele IT-hulp tot slimme AI-oplossingen.</p>
-            <p class="tagline">Technologie die werkt. Voor jou. Vandaag en morgen.</p>
-            <a href="#diensten" class="btn btn-primary">Ontdek Expertise</a>
+            <p class="subtitle" data-translate-key="heroSubtitle">Van simpele IT-hulp tot slimme AI-oplossingen.</p>
+            <p class="tagline" data-translate-key="heroTagline">Technologie die werkt. Voor jou. Vandaag en morgen.</p>
+            <a href="#diensten" class="btn btn-primary" data-translate-key="discoverExpertise">Ontdek Expertise</a>
         </div>
     </header>
 
@@ -64,45 +67,45 @@
         <!-- Introductie Sectie -->
         <section id="intro" class="section text-section">
             <div class="container">
-                <h2 class="section-title">IT die Vastloopt? Wij Creëren <span>Flow.</span></h2>
-                <p>In een wereld die steeds digitaler wordt, is haperende technologie meer dan een irritatie – het is een rem op je productiviteit en innovatie. Van die ene printer die nooit meewerkt tot de vraag hoe AI jouw bedrijf kan transformeren: Creation+Alt+Fix biedt helderheid en concrete oplossingen.</p>
-                <p>Wij zijn jouw partner voor robuuste IT-support en baanbrekende AI-integraties.</p>
+                <h2 class="section-title" data-translate-key="introTitle">IT die Vastloopt? Wij Creëren <span>Flow.</span></h2>
+                <p data-translate-key="introP1">In een wereld die steeds digitaler wordt, is haperende technologie meer dan een irritatie – het is een rem op je productiviteit en innovatie. Van die ene printer die nooit meewerkt tot de vraag hoe AI jouw bedrijf kan transformeren: Creation+Alt+Fix biedt helderheid en concrete oplossingen.</p>
+                <p data-translate-key="introP2">Wij zijn jouw partner voor robuuste IT-support en baanbrekende AI-integraties.</p>
             </div>
         </section>
 
         <!-- Diensten Sectie -->
         <section id="diensten" class="section">
             <div class="container">
-                <h2 class="section-title">Onze Oplossingen: Van <span>Basis</span> tot <span>Baanbrekend</span></h2>
+                <h2 class="section-title" data-translate-key="dienstenTitle">Onze Oplossingen: Van <span>Basis</span> tot <span>Baanbrekend</span></h2>
                 <div class="services-grid">
                     <div class="service-card fade-in">
                         <i class="fas fa-tools card-icon"></i>
-                        <h3>IT Support & Beheer</h3>
-                        <p>PC-reparatie, netwerkoptimalisatie, softwareproblemen, dataherstel. Snelle, betrouwbare support voor particulieren en MKB.</p>
+                        <h3 data-translate-key="dienst1Title">IT Support & Beheer</h3>
+                        <p data-translate-key="dienst1P">PC-reparatie, netwerkoptimalisatie, softwareproblemen, dataherstel. Snelle, betrouwbare support voor particulieren en MKB.</p>
                         <ul class="keywords">
-                            <li>PC & Mac Support</li>
-                            <li>Netwerkbeheer</li>
-                            <li>Virusverwijdering</li>
+                            <li data-translate-key="dienst1K1">PC & Mac Support</li>
+                            <li data-translate-key="dienst1K2">Netwerkbeheer</li>
+                            <li data-translate-key="dienst1K3">Virusverwijdering</li>
                         </ul>
                     </div>
                     <div class="service-card fade-in">
                         <i class="fas fa-brain card-icon"></i>
-                        <h3>Slimme Automatisering & AI</h3>
-                        <p>Laat AI voor je werken. Advies en implementatie van AI-tools voor workflow-automatisering, data-analyse en slimmere processen.</p>
+                        <h3 data-translate-key="dienst2Title">Slimme Automatisering & AI</h3>
+                        <p data-translate-key="dienst2P">Laat AI voor je werken. Advies en implementatie van AI-tools voor workflow-automatisering, data-analyse en slimmere processen.</p>
                         <ul class="keywords">
-                            <li>AI Consultancy</li>
-                            <li>Workflow Automatisering</li>
-                            <li>Data Analyse</li>
+                            <li data-translate-key="dienst2K1">AI Consultancy</li>
+                            <li data-translate-key="dienst2K2">Workflow Automatisering</li>
+                            <li data-translate-key="dienst2K3">Data Analyse</li>
                         </ul>
                     </div>
                     <div class="service-card fade-in">
                         <i class="fas fa-laptop-code card-icon"></i>
-                        <h3>Digitale Creatie & Advies</h3>
-                        <p>Van een strakke, moderne website tot strategisch advies over jouw digitale toekomst. Wij bouwen met oog voor design en functionaliteit.</p>
+                        <h3 data-translate-key="dienst3Title">Digitale Creatie & Advies</h3>
+                        <p data-translate-key="dienst3P">Van een strakke, moderne website tot strategisch advies over jouw digitale toekomst. Wij bouwen met oog voor design en functionaliteit.</p>
                         <ul class="keywords">
-                            <li>Webdesign</li>
-                            <li>IT Strategie</li>
-                            <li>Cloud Oplossingen</li>
+                            <li data-translate-key="dienst3K1">Webdesign</li>
+                            <li data-translate-key="dienst3K2">IT Strategie</li>
+                            <li data-translate-key="dienst3K3">Cloud Oplossingen</li>
                         </ul>
                     </div>
                 </div>
@@ -112,27 +115,27 @@
         <!-- Waarom Wij Sectie -->
         <section id="waarom-wij" class="section text-section accent-bg">
             <div class="container">
-                <h2 class="section-title light-text">De <span>+</span> Factor: Meer dan Alleen een Fix</h2>
+                <h2 class="section-title light-text" data-translate-key="waaromWijTitle">De <span>+</span> Factor: Meer dan Alleen een Fix</h2>
                 <div class="usp-grid">
                     <div class="usp-item fade-in">
                         <i class="fas fa-rocket usp-icon"></i>
-                        <h4>Toekomstgerichte Expertise</h4>
-                        <p>Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.</p>
+                        <h4 data-translate-key="waarom1Title">Toekomstgerichte Expertise</h4>
+                        <p data-translate-key="waarom1P">Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.</p>
                     </div>
                     <div class="usp-item fade-in">
                         <i class="fas fa-comments usp-icon"></i>
-                        <h4>Persoonlijk & Pragmatisch</h4>
-                        <p>Geen onbegrijpelijk jargon. We luisteren, analyseren en leveren een oplossing die past bij jouw situatie. Duidelijk en direct.</p>
+                        <h4 data-translate-key="waarom2Title">Persoonlijk & Pragmatisch</h4>
+                        <p data-translate-key="waarom2P">Geen onbegrijpelijk jargon. We luisteren, analyseren en leveren een oplossing die past bij jouw situatie. Duidelijk en direct.</p>
                     </div>
                     <div class="usp-item fade-in">
                         <i class="fas fa-drafting-compass usp-icon"></i>
-                        <h4>Van Concept tot Creatie</h4>
-                        <p>Of het nu reparatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.</p>
+                        <h4 data-translate-key="waarom3Title">Van Concept tot Creatie</h4>
+                        <p data-translate-key="waarom3P">Of het nu reparatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.</p>
                     </div>
                      <div class="usp-item fade-in">
                         <i class="fas fa-palette usp-icon"></i>
-                        <h4>Design & Functionaliteit</h4>
-                        <p>Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.</p>
+                        <h4 data-translate-key="waarom4Title">Design & Functionaliteit</h4>
+                        <p data-translate-key="waarom4P">Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.</p>
                     </div>
                 </div>
             </div>
@@ -141,35 +144,36 @@
         <!-- AI Oplossingen Sectie -->
         <section id="ai-oplossingen" class="section">
             <div class="container">
-                <h2 class="section-title">AI: Geen Hype, Maar Concrete <span>Voordelen</span></h2>
+                <h2 class="section-title" data-translate-key="aiOplossingenTitle">AI: Geen Hype, Maar Concrete <span>Voordelen</span></h2>
                 <div class="ai-benefits-list">
                     <div class="ai-benefit-item fade-in">
                         <i class="fas fa-cogs list-icon"></i>
-                        <p>Optimaliseer je workflow met AI-gedreven taakautomatisering.</p>
+                        <p data-translate-key="aiBenefit1">Optimaliseer je workflow met AI-gedreven taakautomatisering.</p>
                     </div>
                     <div class="ai-benefit-item fade-in">
                         <i class="fas fa-chart-line list-icon"></i>
-                        <p>Krijg diepere inzichten uit je data met slimme analyse tools.</p>
+                        <p data-translate-key="aiBenefit2">Krijg diepere inzichten uit je data met slimme analyse tools.</p>
                     </div>
                     <div class="ai-benefit-item fade-in">
                         <i class="fas fa-user-astronaut list-icon"></i>
-                        <p>Verbeter klantinteractie met intelligente chatbots.</p>
+                        <p data-translate-key="aiBenefit3">Verbeter klantinteractie met intelligente chatbots.</p>
                     </div>
                     <div class="ai-benefit-item fade-in">
                         <i class="fas fa-robot list-icon"></i>
-                        <p>Laat AI repetitieve taken overnemen, focus op groei.</p>
+                        <p data-translate-key="aiBenefit4">Laat AI repetitieve taken overnemen, focus op groei.</p>
                     </div>
                 </div>
             </div>
         </section>
+
 
         <!-- ======================================== -->
         <!--  Live Websites Showcase Sectie     -->
         <!-- ======================================== -->
         <section id="portfolio" class="section">
             <div class="container">
-                <h2 class="section-title">Bekijk Mijn <span> Websites!</span></h2>
-                <p class="subtitle-showcase">Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.</p>
+                <h2 class="section-title" data-translate-key="portfolioTitle">Bekijk Mijn <span> Websites!</span></h2>
+                <p class="subtitle-showcase" data-translate-key="portfolioSubtitle">Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.</p>
                 <div class="showcase-grid">
                     <!-- Project Item 1 -->
                     <div class="showcase-item fade-in">
@@ -177,9 +181,9 @@
                             <img src="/images/angelastenekes.png" alt="Screenshot van Angela Stenekes Website">
                         </a>
                         <div class="showcase-content">
-                            <h3><a href="http://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer">Angela Stenekes</a></h3>
-                            <p>Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress</p>
-                            <a href="http://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Bekijk Live Website</a>
+                            <h3><a href="http://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" data-translate-key="project1Title">Angela Stenekes</a></h3>
+                            <p data-translate-key="project1P">Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress</p>
+                            <a href="http://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-translate-key="project1Btn">Bekijk Live Website</a>
                         </div>
                     </div>
 
@@ -189,9 +193,9 @@
                             <img src="/images/bakkertjesieg.png" alt="Screenshot van Bakkertje Sieg Website">
                         </a>
                         <div class="showcase-content">
-                            <h3><a href="http://www.bakkertjesieg.nl/" target="_blank" rel="noopener noreferrer">Bakkertje Sieg</a></h3>
-                            <p>Een Webshop, gemaakt met Wordpress. Met receptencatalogus, winkelwagen en integratie van betalingsfunctie voor het verkopen van allerlei recepten! </p>
-                            <a href="http://www.bakkertjesieg.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Ontdek de Webshop!</a>
+                            <h3><a href="http://www.bakkertjesieg.nl/" target="_blank" rel="noopener noreferrer" data-translate-key="project2Title">Bakkertje Sieg</a></h3>
+                            <p data-translate-key="project2P">Een Webshop, gemaakt met Wordpress. Met receptencatalogus, winkelwagen en integratie van betalingsfunctie voor het verkopen van allerlei recepten! </p>
+                            <a href="http://www.bakkertjesieg.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-translate-key="project2Btn">Ontdek de Webshop!</a>
                         </div>
                     </div>
 
@@ -201,20 +205,20 @@
                             <img src="/images/scholte-elektrotechniek.png" alt="Screenshot van Scholte-Elektrotechniek">
                         </a>
                         <div class="showcase-content">
-                            <h3><a href="http://www.scholte-elektrotechniek.nl/" target="_blank" rel="noopener noreferrer">Scholte-Elektrotechniek</a></h3>
-                            <p>Een op maat gemaakte website waar alle informatie over deze fantastische elektromonteur op 1 pagina staat. Gebouwd op snelheid en informativiteit.</p>
-                            <a href="http://www.scholte-elektrotechniek.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Bezoek de Pagina</a>
+                            <h3><a href="http://www.scholte-elektrotechniek.nl/" target="_blank" rel="noopener noreferrer" data-translate-key="project3Title">Scholte-Elektrotechniek</a></h3>
+                            <p data-translate-key="project3P">Een op maat gemaakte website waar alle informatie over deze fantastische elektromonteur op 1 pagina staat. Gebouwd op snelheid en informativiteit.</p>
+                            <a href="http://www.scholte-elektrotechniek.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-translate-key="project3Btn">Bezoek de Pagina</a>
                         </div>
                     </div>
 
                     <!-- Project Item 4  -->
                     <div class="showcase-item fade-in">
-                        <a href="" target="_blank" rel="noopener noreferrer" class="showcase-image-link">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="showcase-image-link"> <!-- Link changed to # -->
                             <img src="/images/creationaltfix.png" alt="Screenshot van deze site">
                         </a>
                         <div class="showcase-content">
-                            <h3><a href="http://www.scholte-elektrotechniek.nl/" target="_blank" rel="noopener noreferrer">Creation+Alt+Fix</a></h3>
-                            <p>En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!</p>
+                            <h3><a href="#" data-translate-key="project4Title">Creation+Alt+Fix</a></h3> <!-- Link changed to # -->
+                            <p data-translate-key="project4P">En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!</p>
                         </div>
                     </div>
                 </div>
@@ -225,35 +229,36 @@
         <!-- GitHub Repositories Sectie -->
         <section id="github-projects" class="section">
             <div class="container">
-                <h2 class="section-title">Mijn <span>Open Source</span> Applicatie Bijdragen</h2>
+                <h2 class="section-title" data-translate-key="githubTitle">Mijn <span>Open Source</span> Applicatie Bijdragen</h2>
                 <div id="repo-container">
-                    <p class="loading">Laden van repositories...</p>
+                    <!-- Content generated by JS, loading message will use translation key -->
                 </div>
             </div>
         </section>
 
 
-        <!-- Contact Sectie -->
+       <!-- Contact Sectie -->
         <section id="contact" class="section dark-bg">
             <div class="container">
-                <h2 class="section-title light-text">Klaar voor de <span>Volgende Stap?</span></h2>
-                <p class="contact-intro light-text">Neem vandaag nog contact op voor een vrijblijvend gesprek. We helpen je graag verder!</p>
+                <h2 class="section-title light-text" data-translate-key="contactTitle">Klaar voor de <span>Volgende Stap?</span></h2>
+                <p class="contact-intro light-text" data-translate-key="contactIntro">Neem vandaag nog contact op voor een vrijblijvend gesprek. We helpen je graag verder!</p>
+                <!-- Form is commented out in original; if you enable it, add data-translate-key-placeholder to inputs/textarea and data-translate-key to button -->
                 <!-- <form id="contact-form" class="fade-in">
                     <div class="form-group">
-                        <input type="text" id="name" name="name" placeholder="Uw Naam" required>
+                        <input type="text" id="name" name="name" placeholder="Uw Naam" required data-translate-key-placeholder="contactNamePlaceholder">
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Uw Emailadres" required>
+                        <input type="email" id="email" name="email" placeholder="Uw Emailadres" required data-translate-key-placeholder="contactEmailPlaceholder">
                     </div>
                     <div class="form-group">
-                        <textarea id="message" name="message" rows="5" placeholder="Uw Bericht" required></textarea>
+                        <textarea id="message" name="message" rows="5" placeholder="Uw Bericht" required data-translate-key-placeholder="contactMessagePlaceholder"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Verstuur Bericht</button>
+                    <button type="submit" class="btn btn-primary" data-translate-key="contactSendButton">Verstuur Bericht</button>
                 </form> -->
                 <div class="contact-details light-text fade-in">
                     <p><i class="fas fa-envelope"></i> <a href="mailto:info@creationaltfix.nl">info@creationaltfix.nl</a></p>
                     <p><i class="fas fa-phone"></i> <a href="tel:+31619135453">+31 6 19135453</a></p>
-                    <p><i class="fas fa-map-marker-alt"></i> Zuidhorn e.o.</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <span data-translate-key="contactLocation">Zuidhorn e.o.</span></p>
                 </div>
             </div>
         </section>
@@ -262,20 +267,20 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-content"> <!-- Extra div voor betere layout controle -->
-                <p>© <span id="currentYear"></span> Creation+Alt+Fix. Alle rechten voorbehouden.</p>
+            <div class="footer-content">
+                <p>© <span id="currentYear"></span> Creation+Alt+Fix. <span data-translate-key="footerRights">Alle rechten voorbehouden.</span></p>
                 <div class="footer-social-and-links">
                     <div class="footer-social-icons">
-                        <a href="https://www.instagram.com/creationaltfix?igsh=MXQyNHhhczgxMXl3eA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram CreationAltFix">
+                        <a href="https://www.instagram.com/creationaltfix?igsh=MXQyNHhhczgxMXl3eA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram CreationAltFix" data-translate-key-aria="ariaInstagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <!-- Hier kun je later meer sociale iconen toevoegen -->
                     </div>
+                    <!-- Links are commented out in original
                     <p class="footer-links">
-                        <!-- <a href="#">Privacybeleid</a> | <a href="#">Algemene Voorwaarden</a> -->
+                         <a href="#" data-translate-key="footerPrivacy">Privacybeleid</a> | <a href="#" data-translate-key="footerTerms">Algemene Voorwaarden</a>
                     </p>
+                    -->
                 </div>
-                <!-- <p class="footer-meta">KVK: [Jouw KVK] | BTW: [Jouw BTW]</p> -->
             </div>
     </footer>
 
