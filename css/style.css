@@ -495,3 +495,96 @@ footer p {
         margin: 0 7px;
     }
 }
+
+/* github section */
+    #github-projects {
+        background-color: #f9f9f9; 
+        padding-top: 60px; 
+        padding-bottom: 60px; 
+    }
+    #repo-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Ruimte tussen de kaarten */
+        justify-content: center; /* Centreer kaarten als ze niet de volledige breedte vullen */
+        margin-top: 30px; /* Ruimte onder de sectietitel */
+    }
+
+    .repo-card {
+        background-color: #fff; /* Witte achtergrond voor kaarten */
+        border: 1px solid #e1e4e8; /* Lichte rand, vergelijkbaar met GitHub */
+        border-radius: 6px; /* Afgeronde hoeken */
+        padding: 20px;
+        width: 100%; /* Volledige breedte op mobiel */
+        max-width: 350px; /* Maximale breedte per kaart */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        display: flex;
+        flex-direction: column; /* Stapel inhoud verticaal */
+        justify-content: space-between; /* Verdeel ruimte, handig als beschrijvingen variëren */
+    }
+
+    .repo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .repo-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.25em; /* Iets groter dan standaard paragraaf */
+        font-weight: 600; /* Semibold, gebruik uw 'Inter' font weights */
+    }
+
+    .repo-card h3 a {
+        text-decoration: none;
+        color: #0366d6; /* GitHub blauw, of pas aan naar uw sitekleur */
+    }
+        .repo-card h3 a:hover {
+        text-decoration: underline;
+        }
+
+    .repo-card p.repo-description {
+        font-size: 0.9em;
+        color: #586069; /* Donkergrijs, GitHub stijl */
+        margin-bottom: 15px;
+        flex-grow: 1; /* Laat beschrijving groeien om ruimte te vullen */
+        min-height: 60px; /* Minimale hoogte voor consistentie */
+    }
+
+    .repo-meta {
+        font-size: 0.8em;
+        color: #586069;
+        border-top: 1px solid #e1e4e8; /* Scheidingslijn */
+        padding-top: 10px;
+        margin-top: auto; /* Duw meta naar de bodem */
+    }
+
+    .repo-meta span {
+        margin-right: 15px;
+    }
+        .repo-meta span i { /* Stijl voor Font Awesome iconen in meta */
+        margin-right: 5px;
+        color: #6a737d; /* Iets lichtere kleur voor iconen */
+        }
+
+    .loading, .error {
+        text-align: center;
+        font-size: 1.1em;
+        color: #555;
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* Responsive aanpassingen voor kaarten indien nodig */
+    @media (min-width: 768px) {
+        .repo-card {
+            width: calc(50% - 10px); /* Twee kaarten per rij, met de 'gap' meegerekend */
+        }
+    }
+    @media (min-width: 992px) {
+        .repo-card {
+                width: calc(33.333% - 14px); /* Drie kaarten per rij (14px is ongeveer 20px * 2/3) */
+        }
+    }
+
