@@ -605,8 +605,8 @@ footer p {
 
     .showcase-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Iets breder voor screenshots */
-        gap: 30px; /* Consistent met je .services-grid */
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Iets breder voor screenshots */
+        gap: 20px; /* Consistent met je .services-grid */
         margin-top: 30px;
     }
 
