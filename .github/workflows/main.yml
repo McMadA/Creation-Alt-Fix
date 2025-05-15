@@ -1,0 +1,22 @@
+name: 🚀 Deploy website on push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+      - name: 📂 Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: web0156.zxcs.nl # Alleen de hostnaam
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp # Of ftps als je server dat ondersteunt
+          port: 21 # Kan weggelaten worden als het de standaard FTP poort is
+          server-dir: domains/creationaltfix.nl/public_html/ # Pad op de server, eindigend met een slash
