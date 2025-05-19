@@ -1,214 +1,213 @@
 document.addEventListener('DOMContentLoaded', function() {
+        // --- LANGUAGE SWITCHER LOGIC START ---
+    const translations = {
+        'nl': {
+            // --- ALGEMEEN & NAVIGATIE ---
+            "pageTitle": "Creation+Alt+Fix - Uw Idee, Snel een Slimme Software Oplossing",
+            "navDiensten": "Diensten",
+            "navWaaromWij": "Waarom Wij?",
+            "navAiOplossingen": "AI Oplossingen",
+            "navWebsites": "Websites",
+            "navProjecten": "Projecten",
+            "navContact": "Contact",
+            "ariaInstagram": "Instagram CreationAltFix",
 
-    // --- LANGUAGE SWITCHER LOGIC START ---
-const translations = {
-    'nl': {
-        // --- ALGEMEEN & NAVIGATIE ---
-        "pageTitle": "Creation+Alt+Fix - Uw Idee, Snel een Slimme Software Oplossing",
-        "navDiensten": "Diensten",
-        "navWaaromWij": "Waarom Wij?",
-        "navAiOplossingen": "AI Oplossingen",
-        "navWebsites": "Websites",
-        "navProjecten": "Projecten",
-        "navContact": "Contact",
-        "ariaInstagram": "Instagram CreationAltFix",
+            // --- HERO SECTIE ---
+            "heroSubtitle": "Uw bedrijfsidee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
+            "heroTagline": "Wij maken software simpel, betaalbaar en snel. U de wens, wij de code.",
+            "discoverExpertise": "Bekijk Snelbouw Oplossingen",
 
-        // --- HERO SECTIE ---
-        "heroSubtitle": "Uw bedrijfsidee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
-        "heroTagline": "Wij maken software simpel, betaalbaar en snel. U de wens, wij de code.",
-        "discoverExpertise": "Bekijk Snelbouw Oplossingen",
+            // --- INTRODUCTIE SECTIE ---
+            "introTitle": "Uw Idee, Onze Code: Snel <span>Software op Maat.</span>",
+            "introP1": "U heeft een slim idee voor uw bedrijf – een handige tool, een geautomatiseerd proces, een beter klantensysteem – maar de stap naar werkende software lijkt groot, duur of technisch ingewikkeld? Creation+Alt+Fix overbrugt die kloof. Wij vertalen uw functionele wens naar een concrete oplossing, razendsnel gerealiseerd met de kracht van AI.",
+            "introP2": "Geen maandenlange ontwikkeltrajecten of onbegrijpelijke technische taal. Wij leveren betaalbare, simpele softwareoplossingen, vaak binnen dagen. Voor ondernemers die vooruit willen, zonder zelf tech-expert te zijn.",
 
-        // --- INTRODUCTIE SECTIE ---
-        "introTitle": "Uw Idee, Onze Code: Snel <span>Software op Maat.</span>",
-        "introP1": "U heeft een slim idee voor uw bedrijf – een handige tool, een geautomatiseerd proces, een beter klantensysteem – maar de stap naar werkende software lijkt groot, duur of technisch ingewikkeld? Creation+Alt+Fix overbrugt die kloof. Wij vertalen uw functionele wens naar een concrete oplossing, razendsnel gerealiseerd met de kracht van AI.",
-        "introP2": "Geen maandenlange ontwikkeltrajecten of onbegrijpelijke technische taal. Wij leveren betaalbare, simpele softwareoplossingen, vaak binnen dagen. Voor ondernemers die vooruit willen, zonder zelf tech-expert te zijn.",
+            // --- DIENSTEN SECTIE ---
+            "dienstenTitle": "Onze Snelbouw Oplossingen: <span>Idee naar Realiteit</span> in Dagen",
+            "dienst1Title": "IT Support & Beheer", // Behoud basis IT-dienst
+            "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen, dataherstel. Snelle, betrouwbare support voor particulieren en MKB.",
+            "dienst1K1": "PC & Mac Support",
+            "dienst1K2": "Netwerkbeheer",
+            "dienst1K3": "Virusverwijdering",
+            "dienst2Title": "Slimme Bedrijfstools & Automatisering",
+            "dienst2P": "Van offertegeneratoren en simpele CRM's tot boekingssystemen en klantenportalen. Wij bouwen de tool die uw werk makkelijker maakt, snel en betaalbaar dankzij AI.",
+            "dienst2K1": "Boekingssystemen",
+            "dienst2K2": "Simpel CRM",
+            "dienst2K3": "Workflow Automatisering",
+            "dienst3Title": "Websites & Digitale Aanwezigheid",
+            "dienst3P": "Een moderne, snelle website of webshop die uw verhaal vertelt en klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor resultaat.",
+            "dienst3K1": "Responsive Webdesign",
+            "dienst3K2": "Webshops",
+            "dienst3K3": "E-mail Flows",
+            // Optionele nieuwe dienstkaart (HTML moet aangepast worden)
+            "dienst4Title": "Data Dashboards & Inzichten",
+            "dienst4P": "Breng uw bedrijfsdata tot leven. Wij creëren overzichtelijke dashboards waarmee u direct ziet hoe uw bedrijf presteert en waar kansen liggen.",
+            "dienst4K1": "Data Visualisatie",
+            "dienst4K2": "KPI Dashboards",
+            "dienst4K3": "Managementinformatie",
 
-        // --- DIENSTEN SECTIE ---
-        "dienstenTitle": "Onze Snelbouw Oplossingen: <span>Idee naar Realiteit</span> in Dagen",
-        "dienst1Title": "IT Support & Beheer", // Behoud basis IT-dienst
-        "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen, dataherstel. Snelle, betrouwbare support voor particulieren en MKB.",
-        "dienst1K1": "PC & Mac Support",
-        "dienst1K2": "Netwerkbeheer",
-        "dienst1K3": "Virusverwijdering",
-        "dienst2Title": "Slimme Bedrijfstools & Automatisering",
-        "dienst2P": "Van offertegeneratoren en simpele CRM's tot boekingssystemen en klantenportalen. Wij bouwen de tool die uw werk makkelijker maakt, snel en betaalbaar dankzij AI.",
-        "dienst2K1": "Boekingssystemen",
-        "dienst2K2": "Simpel CRM",
-        "dienst2K3": "Workflow Automatisering",
-        "dienst3Title": "Websites & Digitale Aanwezigheid",
-        "dienst3P": "Een moderne, snelle website of webshop die uw verhaal vertelt en klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor resultaat.",
-        "dienst3K1": "Responsive Webdesign",
-        "dienst3K2": "Webshops",
-        "dienst3K3": "E-mail Flows",
-        // Optionele nieuwe dienstkaart (HTML moet aangepast worden)
-        "dienst4Title": "Data Dashboards & Inzichten",
-        "dienst4P": "Breng uw bedrijfsdata tot leven. Wij creëren overzichtelijke dashboards waarmee u direct ziet hoe uw bedrijf presteert en waar kansen liggen.",
-        "dienst4K1": "Data Visualisatie",
-        "dienst4K2": "KPI Dashboards",
-        "dienst4K3": "Managementinformatie",
+            // --- WAAROM WIJ SECTIE ---
+            "waaromWijTitle": "De <span>+</span> Factor: Meer dan Alleen een Fix",
+            "waarom1Title": "Toekomstgerichte Expertise",
+            "waarom1P": "Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.",
+            "waarom2Title": "Uw Taal, Onze Techniek",
+            "waarom2P": "U vertelt ons uw wens in heldere taal, wij zorgen voor de technische vertaling en snelle realisatie met AI. Geen jargon, wel resultaat.",
+            "waarom3Title": "Van Concept tot Creatie",
+            "waarom3P": "Of het nu reparatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.",
+            "waarom4Title": "Design & Functionaliteit",
+            "waarom4P": "Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.",
 
-        // --- WAAROM WIJ SECTIE ---
-        "waaromWijTitle": "De <span>+</span> Factor: Meer dan Alleen een Fix",
-        "waarom1Title": "Toekomstgerichte Expertise",
-        "waarom1P": "Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.",
-        "waarom2Title": "Uw Taal, Onze Techniek",
-        "waarom2P": "U vertelt ons uw wens in heldere taal, wij zorgen voor de technische vertaling en snelle realisatie met AI. Geen jargon, wel resultaat.",
-        "waarom3Title": "Van Concept tot Creatie",
-        "waarom3P": "Of het nu reparatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.",
-        "waarom4Title": "Design & Functionaliteit",
-        "waarom4P": "Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.",
+            // --- AI OPLOSSINGEN SECTIE ---
+            "aiOplossingenTitle": "De Kracht van AI: <span>Sneller en Slimmer</span> voor U",
+            "aiBenefit1": "Optimaliseer je workflow met AI-gedreven taakautomatisering.",
+            "aiBenefit2": "Krijg diepere inzichten uit je data met slimme analyse tools.",
+            "aiBenefit3": "Verbeter klantinteractie met intelligente chatbots.",
+            "aiBenefit4": "Laat AI repetitieve taken overnemen, focus op groei.",
+            // Optionele nieuwe AI benefits (HTML moet aangepast worden)
+            "aiBenefit5": "Realiseer software-ideeën in dagen in plaats van maanden.",
+            "aiBenefit6": "Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.",
 
-        // --- AI OPLOSSINGEN SECTIE ---
-        "aiOplossingenTitle": "De Kracht van AI: <span>Sneller en Slimmer</span> voor U",
-        "aiBenefit1": "Optimaliseer je workflow met AI-gedreven taakautomatisering.",
-        "aiBenefit2": "Krijg diepere inzichten uit je data met slimme analyse tools.",
-        "aiBenefit3": "Verbeter klantinteractie met intelligente chatbots.",
-        "aiBenefit4": "Laat AI repetitieve taken overnemen, focus op groei.",
-        // Optionele nieuwe AI benefits (HTML moet aangepast worden)
-        "aiBenefit5": "Realiseer software-ideeën in dagen in plaats van maanden.",
-        "aiBenefit6": "Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.",
+            // --- PORTFOLIO (Websites) SECTIE ---
+            "portfolioTitle": "Bekijk Mijn <span> Websites!</span>",
+            "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.",
+            "project1Title": "Angela Stenekes",
+            "project1P": "Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress",
+            "project1Btn": "Bekijk Live Website",
+            "project2Title": "Bakkertje Sieg",
+            "project2P": "Een Webshop, gemaakt met Wordpress. Met receptencatalogus, winkelwagen en integratie van betalingsfunctie voor het verkopen van allerlei recepten!",
+            "project2Btn": "Ontdek de Webshop!",
+            "project3Title": "Scholte-Elektrotechniek",
+            "project3P": "Een op maat gemaakte website waar alle informatie over deze fantastische elektromonteur op 1 pagina staat. Gebouwd op snelheid en informativiteit.",
+            "project3Btn": "Bezoek de Pagina",
+            "project4Title": "Creation+Alt+Fix",
+            "project4P": "En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!",
 
-        // --- PORTFOLIO (Websites) SECTIE ---
-        "portfolioTitle": "Bekijk Mijn <span> Websites!</span>",
-        "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.",
-        "project1Title": "Angela Stenekes",
-        "project1P": "Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress",
-        "project1Btn": "Bekijk Live Website",
-        "project2Title": "Bakkertje Sieg",
-        "project2P": "Een Webshop, gemaakt met Wordpress. Met receptencatalogus, winkelwagen en integratie van betalingsfunctie voor het verkopen van allerlei recepten!",
-        "project2Btn": "Ontdek de Webshop!",
-        "project3Title": "Scholte-Elektrotechniek",
-        "project3P": "Een op maat gemaakte website waar alle informatie over deze fantastische elektromonteur op 1 pagina staat. Gebouwd op snelheid en informativiteit.",
-        "project3Btn": "Bezoek de Pagina",
-        "project4Title": "Creation+Alt+Fix",
-        "project4P": "En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!",
+            // --- GITHUB PROJECTEN SECTIE ---
+            "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
+            "githubLoading": "Laden van repositories...", // Behoud bestaande sleutel
+            "githubNoRepos": "Geen publieke repositories gevonden.", // Behoud
+            "githubError": "Kon repositories niet laden. Fout: {error}. Bekijk de console voor details.", // Behoud
 
-        // --- GITHUB PROJECTEN SECTIE ---
-        "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
-        "githubLoading": "Laden van repositories...", // Behoud bestaande sleutel
-        "githubNoRepos": "Geen publieke repositories gevonden.", // Behoud
-        "githubError": "Kon repositories niet laden. Fout: {error}. Bekijk de console voor details.", // Behoud
+            // --- CONTACT SECTIE ---
+            "contactTitle": "Uw Idee Bespreken? <span>Laten we Praten!</span>",
+            "contactIntro": "Heeft u een idee voor een slimme tool of software-oplossing? Neem contact op voor een vrijblijvend gesprek. We denken graag mee hoe we uw wens snel en betaalbaar kunnen realiseren.",
+            "contactNamePlaceholder": "Uw Naam",
+            "contactEmailPlaceholder": "Uw Emailadres",
+            "contactMessagePlaceholder": "Uw Bericht",
+            "contactSendButton": "Verstuur Bericht",
+            "contactLocation": "Zuidhorn e.o.",
+            "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)", // Behoud
+            "formErrorFillAll": "Vul alstublieft alle velden in.", // Behoud
 
-        // --- CONTACT SECTIE ---
-        "contactTitle": "Uw Idee Bespreken? <span>Laten we Praten!</span>",
-        "contactIntro": "Heeft u een idee voor een slimme tool of software-oplossing? Neem contact op voor een vrijblijvend gesprek. We denken graag mee hoe we uw wens snel en betaalbaar kunnen realiseren.",
-        "contactNamePlaceholder": "Uw Naam",
-        "contactEmailPlaceholder": "Uw Emailadres",
-        "contactMessagePlaceholder": "Uw Bericht",
-        "contactSendButton": "Verstuur Bericht",
-        "contactLocation": "Zuidhorn e.o.",
-        "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)", // Behoud
-        "formErrorFillAll": "Vul alstublieft alle velden in.", // Behoud
+            // --- FOOTER ---
+            "footerRights": "Alle rechten voorbehouden.",
+            "footerPrivacy": "Privacybeleid", // Behoud, ook al is het gecommentarieerd in HTML
+            "footerTerms": "Algemene Voorwaarden" // Behoud
+        },
+        'en': {
+            // --- GENERAL & NAVIGATION ---
+            "pageTitle": "Creation+Alt+Fix - Your Idea, Quickly a Smart Software Solution",
+            "navDiensten": "Services",
+            "navWaaromWij": "Why Us?",
+            "navAiOplossingen": "AI Solutions",
+            "navWebsites": "Websites",
+            "navProjecten": "Projects",
+            "navContact": "Contact",
+            "ariaInstagram": "Instagram CreationAltFix",
 
-        // --- FOOTER ---
-        "footerRights": "Alle rechten voorbehouden.",
-        "footerPrivacy": "Privacybeleid", // Behoud, ook al is het gecommentarieerd in HTML
-        "footerTerms": "Algemene Voorwaarden" // Behoud
-    },
-    'en': {
-        // --- GENERAL & NAVIGATION ---
-        "pageTitle": "Creation+Alt+Fix - Your Idea, Quickly a Smart Software Solution",
-        "navDiensten": "Services",
-        "navWaaromWij": "Why Us?",
-        "navAiOplossingen": "AI Solutions",
-        "navWebsites": "Websites",
-        "navProjecten": "Projects",
-        "navContact": "Contact",
-        "ariaInstagram": "Instagram CreationAltFix",
+            // --- HERO SECTION ---
+            "heroSubtitle": "Your business idea, a working solution at lightning speed. Thanks to smart AI, translated by us.",
+            "heroTagline": "We make software simple, affordable, and fast. You have the wish, we write the code.",
+            "discoverExpertise": "Explore Quick-Build Solutions",
 
-        // --- HERO SECTION ---
-        "heroSubtitle": "Your business idea, a working solution at lightning speed. Thanks to smart AI, translated by us.",
-        "heroTagline": "We make software simple, affordable, and fast. You have the wish, we write the code.",
-        "discoverExpertise": "Explore Quick-Build Solutions",
+            // --- INTRODUCTION SECTION ---
+            "introTitle": "Your Idea, Our Code: Fast <span>Custom Software.</span>",
+            "introP1": "You have a smart idea for your business – a handy tool, an automated process, a better customer system – but the step to working software seems big, expensive, or technically complicated? Creation+Alt+Fix bridges that gap. We translate your functional wish into a concrete solution, realized at lightning speed with the power of AI.",
+            "introP2": "No month-long development processes or incomprehensible technical jargon. We deliver affordable, simple software solutions, often within days. For entrepreneurs who want to move forward, without being tech experts themselves.",
 
-        // --- INTRODUCTION SECTION ---
-        "introTitle": "Your Idea, Our Code: Fast <span>Custom Software.</span>",
-        "introP1": "You have a smart idea for your business – a handy tool, an automated process, a better customer system – but the step to working software seems big, expensive, or technically complicated? Creation+Alt+Fix bridges that gap. We translate your functional wish into a concrete solution, realized at lightning speed with the power of AI.",
-        "introP2": "No month-long development processes or incomprehensible technical jargon. We deliver affordable, simple software solutions, often within days. For entrepreneurs who want to move forward, without being tech experts themselves.",
+            // --- SERVICES SECTION ---
+            "dienstenTitle": "Our Quick-Build Solutions: <span>Idea to Reality</span> in Days",
+            "dienst1Title": "IT Support & Management", // Keep basic IT service
+            "dienst1P": "PC repair, network optimization, software issues, data recovery. Fast, reliable support for individuals and SMEs.",
+            "dienst1K1": "PC & Mac Support",
+            "dienst1K2": "Network Management",
+            "dienst1K3": "Virus Removal",
+            "dienst2Title": "Smart Business Tools & Automation",
+            "dienst2P": "From quote generators and simple CRMs to booking systems and customer portals. We build the tool that makes your work easier, quickly and affordably thanks to AI.",
+            "dienst2K1": "Booking Systems",
+            "dienst2K2": "Simple CRM",
+            "dienst2K3": "Workflow Automation",
+            "dienst3Title": "Websites & Digital Presence",
+            "dienst3P": "A modern, fast website or webshop that tells your story and attracts customers. Designed with attention to detail, built for results.",
+            "dienst3K1": "Responsive Web Design",
+            "dienst3K2": "Webshops",
+            "dienst3K3": "Email Flows",
+            // Optional new service card (HTML needs adjustment)
+            "dienst4Title": "Data Dashboards & Insights",
+            "dienst4P": "Bring your business data to life. We create clear dashboards that allow you to instantly see how your business is performing and where opportunities lie.",
+            "dienst4K1": "Data Visualization",
+            "dienst4K2": "KPI Dashboards",
+            "dienst4K3": "Management Information",
 
-        // --- SERVICES SECTION ---
-        "dienstenTitle": "Our Quick-Build Solutions: <span>Idea to Reality</span> in Days",
-        "dienst1Title": "IT Support & Management", // Keep basic IT service
-        "dienst1P": "PC repair, network optimization, software issues, data recovery. Fast, reliable support for individuals and SMEs.",
-        "dienst1K1": "PC & Mac Support",
-        "dienst1K2": "Network Management",
-        "dienst1K3": "Virus Removal",
-        "dienst2Title": "Smart Business Tools & Automation",
-        "dienst2P": "From quote generators and simple CRMs to booking systems and customer portals. We build the tool that makes your work easier, quickly and affordably thanks to AI.",
-        "dienst2K1": "Booking Systems",
-        "dienst2K2": "Simple CRM",
-        "dienst2K3": "Workflow Automation",
-        "dienst3Title": "Websites & Digital Presence",
-        "dienst3P": "A modern, fast website or webshop that tells your story and attracts customers. Designed with attention to detail, built for results.",
-        "dienst3K1": "Responsive Web Design",
-        "dienst3K2": "Webshops",
-        "dienst3K3": "Email Flows",
-        // Optional new service card (HTML needs adjustment)
-        "dienst4Title": "Data Dashboards & Insights",
-        "dienst4P": "Bring your business data to life. We create clear dashboards that allow you to instantly see how your business is performing and where opportunities lie.",
-        "dienst4K1": "Data Visualization",
-        "dienst4K2": "KPI Dashboards",
-        "dienst4K3": "Management Information",
+            // --- WHY US SECTION ---
+            "waaromWijTitle": "The <span>+</span> Factor: More Than Just a Fix",
+            "waarom1Title": "Future-Oriented Expertise",
+            "waarom1P": "Years of IT experience combined with the latest AI developments. Sustainable solutions, not temporary patches.",
+            "waarom2Title": "Your Language, Our Technology",
+            "waarom2P": "You tell us your wish in clear language, we take care of the technical translation and fast realization with AI. No jargon, just results.",
+            "waarom3Title": "From Concept to Creation",
+            "waarom3P": "Whether it's a repair or a complex AI strategy, we guide the entire process. Your partner in digital transformation.",
+            "waarom4Title": "Design & Functionality",
+            "waarom4P": "Inspired by the best designs, we deliver solutions that not only work perfectly but also look the part.",
 
-        // --- WHY US SECTION ---
-        "waaromWijTitle": "The <span>+</span> Factor: More Than Just a Fix",
-        "waarom1Title": "Future-Oriented Expertise",
-        "waarom1P": "Years of IT experience combined with the latest AI developments. Sustainable solutions, not temporary patches.",
-        "waarom2Title": "Your Language, Our Technology",
-        "waarom2P": "You tell us your wish in clear language, we take care of the technical translation and fast realization with AI. No jargon, just results.",
-        "waarom3Title": "From Concept to Creation",
-        "waarom3P": "Whether it's a repair or a complex AI strategy, we guide the entire process. Your partner in digital transformation.",
-        "waarom4Title": "Design & Functionality",
-        "waarom4P": "Inspired by the best designs, we deliver solutions that not only work perfectly but also look the part.",
+            // --- AI SOLUTIONS SECTION ---
+            "aiOplossingenTitle": "The Power of AI: <span>Faster and Smarter</span> for You",
+            "aiBenefit1": "Optimize your workflow with AI-driven task automation.",
+            "aiBenefit2": "Gain deeper insights from your data with smart analysis tools.",
+            "aiBenefit3": "Improve customer interaction with intelligent chatbots.",
+            "aiBenefit4": "Let AI take over repetitive tasks, focus on growth.",
+            // Optional new AI benefits (HTML needs adjustment)
+            "aiBenefit5": "Realize software ideas in days instead of months.",
+            "aiBenefit6": "Save significantly on development costs for simple solutions.",
 
-        // --- AI SOLUTIONS SECTION ---
-        "aiOplossingenTitle": "The Power of AI: <span>Faster and Smarter</span> for You",
-        "aiBenefit1": "Optimize your workflow with AI-driven task automation.",
-        "aiBenefit2": "Gain deeper insights from your data with smart analysis tools.",
-        "aiBenefit3": "Improve customer interaction with intelligent chatbots.",
-        "aiBenefit4": "Let AI take over repetitive tasks, focus on growth.",
-        // Optional new AI benefits (HTML needs adjustment)
-        "aiBenefit5": "Realize software ideas in days instead of months.",
-        "aiBenefit6": "Save significantly on development costs for simple solutions.",
+            // --- PORTFOLIO (Websites) SECTION ---
+            "portfolioTitle": "Check Out My <span>Websites!</span>",
+            "portfolioSubtitle": "Below is a selection of websites and applications I have recently developed. This gives an idea of what I can achieve for you.",
+            "project1Title": "Angela Stenekes",
+            "project1P": "A modern, responsive website for a local hairdresser with writing ambitions, full of stories and made with WordPress.",
+            "project1Btn": "View Live Website",
+            "project2Title": "Bakkertje Sieg",
+            "project2P": "A Webshop, made with Wordpress. With recipe catalog, shopping cart and integration of payment function for selling all kinds of recipes!",
+            "project2Btn": "Discover the Webshop!",
+            "project3Title": "Scholte-Elektrotechniek",
+            "project3P": "A custom-made website where all information about this fantastic electrician is on one page. Built for speed and informativeness.",
+            "project3Btn": "Visit the Page",
+            "project4Title": "Creation+Alt+Fix",
+            "project4P": "And of course this site. Made with old HTML, CSS and JavaScript techniques in combination with AI!",
 
-        // --- PORTFOLIO (Websites) SECTION ---
-        "portfolioTitle": "Check Out My <span>Websites!</span>",
-        "portfolioSubtitle": "Below is a selection of websites and applications I have recently developed. This gives an idea of what I can achieve for you.",
-        "project1Title": "Angela Stenekes",
-        "project1P": "A modern, responsive website for a local hairdresser with writing ambitions, full of stories and made with WordPress.",
-        "project1Btn": "View Live Website",
-        "project2Title": "Bakkertje Sieg",
-        "project2P": "A Webshop, made with Wordpress. With recipe catalog, shopping cart and integration of payment function for selling all kinds of recipes!",
-        "project2Btn": "Discover the Webshop!",
-        "project3Title": "Scholte-Elektrotechniek",
-        "project3P": "A custom-made website where all information about this fantastic electrician is on one page. Built for speed and informativeness.",
-        "project3Btn": "Visit the Page",
-        "project4Title": "Creation+Alt+Fix",
-        "project4P": "And of course this site. Made with old HTML, CSS and JavaScript techniques in combination with AI!",
+            // --- GITHUB PROJECTS SECTION ---
+            "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
+            "githubLoading": "Loading repositories...", // Keep existing key
+            "githubNoRepos": "No public repositories found.", // Keep
+            "githubError": "Could not load repositories. Error: {error}. Check the console for details.", // Keep
 
-        // --- GITHUB PROJECTS SECTION ---
-        "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
-        "githubLoading": "Loading repositories...", // Keep existing key
-        "githubNoRepos": "No public repositories found.", // Keep
-        "githubError": "Could not load repositories. Error: {error}. Check the console for details.", // Keep
+            // --- CONTACT SECTION ---
+            "contactTitle": "Discuss Your Idea? <span>Let's Talk!</span>",
+            "contactIntro": "Have an idea for a smart tool or software solution? Contact us for a no-obligation chat. We're happy to brainstorm how we can realize your wish quickly and affordably.",
+            "contactNamePlaceholder": "Your Name",
+            "contactEmailPlaceholder": "Your Email Address",
+            "contactMessagePlaceholder": "Your Message",
+            "contactSendButton": "Send Message",
+            "contactLocation": "Zuidhorn area",
+            "formThanks": "Thank you for your message! (This is a demo, no email was sent)", // Keep
+            "formErrorFillAll": "Please fill in all fields.", // Keep
 
-        // --- CONTACT SECTION ---
-        "contactTitle": "Discuss Your Idea? <span>Let's Talk!</span>",
-        "contactIntro": "Have an idea for a smart tool or software solution? Contact us for a no-obligation chat. We're happy to brainstorm how we can realize your wish quickly and affordably.",
-        "contactNamePlaceholder": "Your Name",
-        "contactEmailPlaceholder": "Your Email Address",
-        "contactMessagePlaceholder": "Your Message",
-        "contactSendButton": "Send Message",
-        "contactLocation": "Zuidhorn area",
-        "formThanks": "Thank you for your message! (This is a demo, no email was sent)", // Keep
-        "formErrorFillAll": "Please fill in all fields.", // Keep
-
-        // --- FOOTER ---
-        "footerRights": "All rights reserved.",
-        "footerPrivacy": "Privacy Policy", // Keep, even if commented out in HTML
-        "footerTerms": "Terms and Conditions" // Keep
-    }
-};
+            // --- FOOTER ---
+            "footerRights": "All rights reserved.",
+            "footerPrivacy": "Privacy Policy", // Keep, even if commented out in HTML
+            "footerTerms": "Terms and Conditions" // Keep
+        }
+    };
 
     let currentLanguage = 'nl'; // Default language, will be updated by initializeLanguage
     let intersectionObserverInstance; // For fade-in animations
@@ -281,6 +280,7 @@ const translations = {
     function initializeLanguage() {
         const savedLang = localStorage.getItem('preferredLanguage');
         const browserLang = navigator.language.split('-')[0];
+        console.log("Initial Language Check: Saved Lang =", savedLang, "Browser Lang =", browserLang); // DEBUG
 
         let initialLang = 'nl'; // Default
         if (savedLang && translations[savedLang]) {
@@ -288,10 +288,20 @@ const translations = {
         } else if (translations[browserLang]) {
             initialLang = browserLang;
         }
-        // Apply translations without saving to localStorage yet, changeLanguage will do that.
-        applyTranslations(initialLang); // Apply first, then ensure localStorage is set by changeLanguage
-        localStorage.setItem('preferredLanguage', initialLang); // Explicitly set it here after first application
-    }
+        console.log("Initial Language Check: Determined initialLang =", initialLang); // DEBUG
+        // Roep applyTranslations aan met de vastgestelde taal
+        applyTranslations(initialLang);
+        // Sla de taal op, zelfs als het de default is, voor consistentie
+        localStorage.setItem('preferredLanguage', initialLang);
+        }
+    
+    // Initialiseer de taal bij DOMContentLoaded
+    initializeLanguage();
+    // --- LANGUAGE SWITCHER LOGIC END ---
+
+    // console.log("DOMContentLoaded: Forcing browser language translations directly.");
+    // applyTranslations('nl'); // Forceer NL direct
+    // localStorage.setItem('preferredLanguage', 'nl'); // Zet ook localStorage
 
     document.querySelectorAll('#language-switcher .lang-btn').forEach(button => {
         button.addEventListener('click', function() {
