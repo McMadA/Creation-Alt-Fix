@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /cgi-bin/ # Voorbeeld van een map die je misschien wilt disallowen
+
+Sitemap: https://www.creationaltfix.nl/sitemap.xml # VERVANG DOOR JE ECHTE DOMEIN

@@ -215,6 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let intersectionObserverInstance; // For fade-in animations
 
     function applyTranslations(lang) {
+
+        
         if (!translations[lang]) {
             console.error(`Translations for language "${lang}" not found.`);
             return;
@@ -249,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.setAttribute('aria-label', translations[lang][key]);
             }
         });
+        
         
         // Special case for page title element if it has data-translate-key
         const pageTitleElement = document.querySelector('title[data-translate-key="pageTitle"]');

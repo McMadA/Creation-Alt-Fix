@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.creationaltfix.nl/</loc>
+    <lastmod>2023-10-27</lastmod> <!-- Datum laatste aanpassing -->
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Als je verschillende taalversies op aparte URL's had (bv. /nl en /en), zou je die hier ook toevoegen -->
+</urlset>
