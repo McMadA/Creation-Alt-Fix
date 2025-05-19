@@ -128,6 +128,24 @@ a:hover {
     -webkit-backdrop-filter: blur(10px);
 }
 
+.hamburger {
+    display: none; /* Hidden by default, shown on mobile */
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.8rem; /* Increased size */
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1; /* Ensure icon is vertically centered */
+    z-index: 1001; /* Above nav-menu-items if it were outside */
+}
+/* Default for nav-menu-items (desktop) */
+.nav-menu-items {
+    display: flex;
+    align-items: center;
+}
+
+
 /* Aan het einde van je #navbar styles, of in een nieuwe sectie */
 #navbar .container {
     display: flex;
@@ -167,9 +185,90 @@ a:hover {
 
 /* Responsive aanpassing voor navbar als de social icons apart moeten staan */
 @media (max-width: 768px) {
-    #navbar .container {
-        flex-direction: column; /* Huidige gedrag */
+    #navbar .logo {
+         order: 1;
+         margin-bottom: 0; /* Remove bottom margin if it was for column layout */	
     }
+    #navbar .container {
+        flex-direction: row; /* Override previous column layout */
+        justify-content: space-between;
+        align-items: center;
+        /* position: relative; Ensure .container is a positioning context if needed, but navbar itself is sticky */
+    }
+
+    .hamburger {
+        display: inline-flex; /* Show hamburger button */
+        order: 3; /* Logo, (nothing), Hamburger */
+    }
+
+    .nav-menu-items {
+    display: none; /* Hidden by default on mobile */
+    flex-direction: column;
+    align-items: center; /* Center items vertically in the dropdown */
+    position: absolute;
+    top: 100%; /* Position below the navbar */
+    left: 0;
+    width: 100%;
+    background-color: rgba(26, 26, 26, 0.97); /* Same as navbar, slightly more opaque */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.5rem 0; /* More padding for dropdown */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle top border */
+    /* order: 3; Not needed if it's absolute positioned like this */
+    max-height: calc(100vh - 60px); /* Example: limit height and make scrollable if too many items */
+    overflow-y: auto; /* Scroll if content exceeds max-height */
+
+    }
+
+    .nav-menu-items.active {
+        display: flex; /* Show when active */
+    }
+
+    /* Styling for items within the open mobile menu */
+    .nav-menu-items ul {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-menu-items ul li {
+        margin: 0; /* Remove horizontal margins */
+        width: 100%;
+    }
+    .nav-menu-items ul li a {
+        display: block;
+        padding: 0.8rem 1rem; /* Generous padding for touch targets */
+        text-align: center;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
+    }
+    .nav-menu-items ul li:last-child a {
+        border-bottom: none;
+    }
+    
+
+    .nav-menu-items .nav-right-cluster {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1.5rem; /* Space between nav links and this cluster */
+        padding-top: 1rem; /* Space above social icons */
+        border-top: 1px solid rgba(255,255,255,0.1); /* Separator line */
+        width: 90%; /* Contain a bit */
+        gap: 1rem; /* Space between social icons and lang switcher */
+    }
+    
+    .nav-menu-items .nav-right-cluster .nav-social-icons {
+        margin-left: 0; /* Reset margin */
+        font-size: 1.8rem; /* Slightly larger icons in menu */
+    }
+    .nav-menu-items .nav-right-cluster #language-switcher {
+        margin-left: 0; /* Reset margin */
+        margin-top: 0.5rem; /* Space from social icons if stacked */
+    }
+
     #navbar .nav-links {
         margin-top: 0.5rem; /* Huidige gedrag */
         padding-left: 0;
@@ -823,12 +922,5 @@ footer .footer-links {
             margin-left: 20px; 
         }
     }
-    @media (max-width: 420px) { /* Adjusted breakpoint for stacking */
-            #navbar .nav-right-cluster {
-            flex-direction: column;
-            gap: 10px;
-        }
-        #language-switcher {
-            margin-left: 0;
-        }
-    }
+
+

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "navProjecten": "Projecten",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
+            "ariaToggleNav": "Navigatie in-/uitklappen",
 
             // --- HERO SECTIE ---
             "heroSubtitle": "Uw bedrijfsidee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
@@ -114,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "navProjecten": "Projects",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
+            "ariaToggleNav": "Toggle navigation",
 
             // --- HERO SECTION ---
             "heroSubtitle": "Your business idea, a working solution at lightning speed. Thanks to smart AI, translated by us.",
@@ -490,3 +492,37 @@ if (document.readyState === 'loading') {
     console.log('[GitHub] fetchRepos direct aangeroepen.');
 }
 
+    // --- HAMBURGER MENU LOGIC START ---
+    const hamburgerBtn = document.getElementById('hamburger-menu');
+    const navMenuItems = document.getElementById('nav-menu-items');
+    const hamburgerIcon = hamburgerBtn.querySelector('i'); // Get the icon element
+
+    if (hamburgerBtn && navMenuItems && hamburgerIcon) {
+        hamburgerBtn.addEventListener('click', () => {
+            navMenuItems.classList.toggle('active');
+            const isActive = navMenuItems.classList.contains('active');
+            hamburgerBtn.setAttribute('aria-expanded', isActive);
+
+            if (isActive) {
+                hamburgerIcon.classList.remove('fa-bars');
+                hamburgerIcon.classList.add('fa-times');
+            } else {
+                hamburgerIcon.classList.remove('fa-times');
+                hamburgerIcon.classList.add('fa-bars');
+            }
+        });
+
+        // Close menu when a link inside it is clicked
+        const navMenuLinks = navMenuItems.querySelectorAll('a[href^="#"]');
+        navMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (navMenuItems.classList.contains('active')) {
+                    navMenuItems.classList.remove('active');
+                    hamburgerBtn.setAttribute('aria-expanded', 'false');
+                    hamburgerIcon.classList.remove('fa-times');
+                    hamburgerIcon.classList.add('fa-bars');
+                }
+            });
+        });
+    }
+    // --- HAMBURGER MENU LOGIC END ---
