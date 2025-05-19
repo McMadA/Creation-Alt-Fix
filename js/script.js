@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "ariaToggleNav": "Navigatie in-/uitklappen",
 
             // --- HERO SECTIE ---
-            "heroSubtitle": "Uw bedrijfsidee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
+            "heroSubtitle": "Uw idee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
             "heroTagline": "Wij maken software simpel, betaalbaar en snel. U de wens, wij de code.",
             "discoverExpertise": "Bekijk Snelbouw Oplossingen",
 
