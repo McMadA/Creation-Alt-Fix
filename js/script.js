@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // --- DIENSTEN SECTIE ---
             "dienstenTitle": "Onze Snelbouw Oplossingen: <span>Idee naar Realiteit</span> in Dagen",
             "dienst1Title": "IT Support & Beheer", // Behoud basis IT-dienst
-            "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen, dataherstel. Snelle, betrouwbare support voor particulieren en MKB.",
+            "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen. Snelle, betrouwbare support voor particulieren en MKB.",
             "dienst1K1": "PC & Mac Support",
             "dienst1K2": "Netwerkbeheer",
             "dienst1K3": "Virusverwijdering",
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "contactEmailPlaceholder": "Uw Emailadres",
             "contactMessagePlaceholder": "Uw Bericht",
             "contactSendButton": "Verstuur Bericht",
-            "contactLocation": "Zuidhorn e.o.",
+            "contactLocation": "Groningen e.o.",
             "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)", // Behoud
             "formErrorFillAll": "Vul alstublieft alle velden in.", // Behoud
 
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "contactEmailPlaceholder": "Your Email Address",
             "contactMessagePlaceholder": "Your Message",
             "contactSendButton": "Send Message",
-            "contactLocation": "Zuidhorn area",
+            "contactLocation": "Groningen area",
             "formThanks": "Thank you for your message! (This is a demo, no email was sent)", // Keep
             "formErrorFillAll": "Please fill in all fields.", // Keep
 
