@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "dienst2K1": "Boekingssystemen",
             "dienst2K2": "Simpel CRM",
             "dienst2K3": "Workflow Automatisering",
-            "dienst3Title": "Websites & Digitale Aanwezigheid",
+            "dienst3Title": "Websites & Digitale Aanwezigheid vanaf €99",
             "dienst3P": "Een moderne, snelle website of webshop die uw verhaal vertelt en klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor resultaat.",
             "dienst3K1": "Responsive Webdesign",
             "dienst3K2": "Webshops",
@@ -82,6 +82,15 @@ document.addEventListener('DOMContentLoaded', function() {
             "project3Btn": "Bezoek de Pagina",
             "project4Title": "Creation+Alt+Fix",
             "project4P": "En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!",
+
+            "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>", 
+            "faq1Q": "Kan ik echt binnen een dag een website hebben?",
+            "faq1A": "Ja, voor simpele websites zoals een online visitekaartje, een landingspagina, of een basis informatieve site is dit vaak mogelijk. Neem contact op met uw wensen, dan geven we direct een inschatting.",  
+            "faq2Q": "Wat kost het om snel een simpele website te laten maken?",
+            "faq2A": "De kosten voor een snelle, simpele website zijn aanzienlijk lager dan voor complexe maatwerkprojecten. We bieden transparante pakketten vanaf €99. Vraag een vrijblijvende offerte voor uw specifieke situatie.",
+            "faq3Q": "Welke informatie hebben jullie nodig om mijn website snel te kunnen bouwen?",
+            "faq3A": "Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.",
+
 
             // --- GITHUB PROJECTEN SECTIE ---
             "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
@@ -139,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "dienst2K1": "Booking Systems",
             "dienst2K2": "Simple CRM",
             "dienst2K3": "Workflow Automation",
-            "dienst3Title": "Websites & Digital Presence",
+            "dienst3Title": "Websites & Digital Presence from €99",
             "dienst3P": "A modern, fast website or webshop that tells your story and attracts customers. Designed with attention to detail, built for results.",
             "dienst3K1": "Responsive Web Design",
             "dienst3K2": "Webshops",
@@ -186,6 +195,15 @@ document.addEventListener('DOMContentLoaded', function() {
             "project3Btn": "Visit the Page",
             "project4Title": "Creation+Alt+Fix",
             "project4P": "And of course this site. Made with old HTML, CSS and JavaScript techniques in combination with AI!",
+
+            "faqTitle": "Frequently Asked Questions: <span>Quick Websites</span>",
+            "faq1Q": "Can I really have a website within a day?",
+            "faq1A": "Yes, for simple websites like an online business card, a landing page, or a basic informative site, this is often possible. Contact us with your wishes, and we will give you an estimate right away.",
+            "faq2Q": "How much does it cost to quickly create a simple website?",
+            "faq2A": "The costs for a quick, simple website are significantly lower than for complex custom projects. We offer transparent packages starting from €99. Request a non-binding quote for your specific situation.",
+            "faq3Q": "What information do you need to quickly build my website?",
+            "faq3A": "To deliver quickly, we need your basic texts, possibly a logo, and desired color schemes. We also have templates and examples to speed up the process if you don't have content yet.",
+
 
             // --- GITHUB PROJECTS SECTION ---
             "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
