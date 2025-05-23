@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "pageTitle": "Creation+Alt+Fix - Uw Idee, Snel een Slimme Software Oplossing",
             "navDiensten": "Diensten",
             "navWaaromWij": "Waarom Wij?",
-            "navAiOplossingen": "AI Oplossingen",
+            "navAiOplossingen": "AI ",
             "navWebsites": "Websites",
             "navProjecten": "Projecten",
             "navContact": "Contact",
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "aiBenefit6": "Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.",
 
             // --- PORTFOLIO (Websites) SECTIE ---
-            "portfolioTitle": "Bekijk Mijn <span> Websites!</span>",
+            "portfolioTitle": "Bekijk onze <span> Websites!</span>",
             "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.",
             "project1Title": "Angela Stenekes",
             "project1P": "Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress",
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "aiBenefit6": "Save significantly on development costs for simple solutions.",
 
             // --- PORTFOLIO (Websites) SECTION ---
-            "portfolioTitle": "Check Out My <span>Websites!</span>",
+            "portfolioTitle": "Check Out Our <span>Websites!</span>",
             "portfolioSubtitle": "Below is a selection of websites and applications I have recently developed. This gives an idea of what I can achieve for you.",
             "project1Title": "Angela Stenekes",
             "project1P": "A modern, responsive website for a local hairdresser with writing ambitions, full of stories and made with WordPress.",
