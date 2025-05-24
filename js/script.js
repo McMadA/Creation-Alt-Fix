@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
             "heroSubtitle": "Uw idee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
             "heroTagline": "Wij maken software simpel, betaalbaar en snel. U de wens, wij de code.",
             "discoverExpertise": "Bekijk Snelbouw Oplossingen",
+            "viewWebsites": "Bekijk Websites!",
+
 
             // --- INTRODUCTIE SECTIE ---
             "introTitle": "Uw Idee, Onze Code: Snel <span>Software op Maat.</span>",
@@ -130,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "heroSubtitle": "Your business idea, a working solution at lightning speed. Thanks to smart AI, translated by us.",
             "heroTagline": "We make software simple, affordable, and fast. You have the wish, we write the code.",
             "discoverExpertise": "Explore Quick-Build Solutions",
+            "viewWebsites": "View Websites!",
 
             // --- INTRODUCTION SECTION ---
             "introTitle": "Your Idea, Our Code: Fast <span>Custom Software.</span>",
