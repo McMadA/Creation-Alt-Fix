@@ -84,6 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project3Btn": "Bezoek de Pagina",
             "project4Title": "Creation+Alt+Fix",
             "project4P": "En natuurlijk deze site. Gemaakt met de oude HTML, CSS en JavaScript techniek i.c.m. AI!",
+            "project5Title": "PompPop",
+            "project5P": "Aanmeldpagina voor een prachtig feest!",
+            "project5Btn": "Aanmelden!",
 
             "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>", 
             "faq1Q": "Kan ik echt binnen een dag een website hebben?",
@@ -198,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project3Btn": "Visit the Page",
             "project4Title": "Creation+Alt+Fix",
             "project4P": "And of course this site. Made with old HTML, CSS and JavaScript techniques in combination with AI!",
+            "project5Title": "PompPop",
+            "project5P": "Registration page for a wonderful party!",
+            "project5Btn": "Visit the Page",
 
             "faqTitle": "Frequently Asked Questions: <span>Quick Websites</span>",
             "faq1Q": "Can I really have a website within a day?",
