@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix</title>
+    <meta name="description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome (voor iconen) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Onze eigen CSS -->
+    <link rel="stylesheet" href="css/live-demo.css">
+</head>
+<body>
+
+    <header class="demo-header">
+        <div class="container">
+            <h1>De Geboorte van een Website</h1>
+            <p>Scroll naar beneden om te zien hoe een simpele tekst transformeert in een interactieve webpagina.</p>
+            <a href="/index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Terug naar de hoofdpagina</a>
+        </div>
+    </header>
+
+    <main class="timeline-container">
+        <!-- STAP 1: HTML -->
+        <section id="step-html" class="timeline-step">
+            <div class="timeline-content">
+                <div class="timeline-milestone">1</div>
+                <h2>De Blauwdruk: Pure HTML</h2>
+                <p>Alles begint met HTML (HyperText Markup Language). Dit is het skelet van de pagina. Het definieert de structuur en de inhoud, zoals koppen, paragrafen en knoppen, maar zonder enige opmaak.</p>
+                <pre><code class="language-html">&lt;h1&gt;Mijn Product&lt;/h1&gt;
+&lt;p&gt;Dit is een geweldig product.&lt;/p&gt;
+&lt;button&gt;Koop nu&lt;/button&gt;</code></pre>
+            </div>
+            <div class="timeline-preview">
+                <div class="preview-box" id="preview-box-html">
+                    <!-- Dit is de content die we gaan stylen -->
+                    <h1>Mijn Product</h1>
+                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button>Koop nu</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAP 2: Basis CSS -->
+        <section id="step-css1" class="timeline-step">
+            <div class="timeline-content">
+                <div class="timeline-milestone">2</div>
+                <h2>De Eerste Verflaag: Basis CSS</h2>
+                <p>Met CSS (Cascading Style Sheets) voegen we stijl toe. We beginnen met de basis: lettertypes, kleuren en wat opvulling (padding) om de tekst leesbaarder te maken en het er netter uit te laten zien.</p>
+                <pre><code class="language-css">body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f0f0;
+}
+.preview-box {
+  padding: 20px;
+}</code></pre>
+            </div>
+            <div class="timeline-preview">
+                <div class="preview-box" id="preview-box-css-1">
+                    <h1>Mijn Product</h1>
+                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button>Koop nu</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAP 3: Geavanceerde CSS -->
+        <section id="step-css2" class="timeline-step">
+            <div class="timeline-content">
+                <div class="timeline-milestone">3</div>
+                <h2>Design & Layout: Meer CSS</h2>
+                <p>Nu maken we het visueel aantrekkelijk. We centreren de inhoud, geven de "box" een mooie schaduw en stijlen de knop zodat hij uitnodigend is om op te klikken. Dit is waar het design echt tot leven komt.</p>
+                <pre><code class="language-css">.preview-box {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+button {
+  background-color: #007AFF;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}</code></pre>
+            </div>
+            <div class="timeline-preview">
+                <div class="preview-box" id="preview-box-css-2">
+                    <h1>Mijn Product</h1>
+                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button>Koop nu</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAP 4: JavaScript -->
+        <section id="step-js" class="timeline-step">
+            <div class="timeline-content">
+                <div class="timeline-milestone">4</div>
+                <h2>De Magie: JavaScript</h2>
+                <p>JavaScript voegt interactiviteit toe. Het is het brein van de pagina. Hier maken we de knop functioneel. Klik op de "Koop nu" knop in het voorbeeld om te zien wat er gebeurt!</p>
+                <pre><code class="language-js">const button = document.getElementById('js-button');
+const text = document.getElementById('js-text');
+
+button.addEventListener('click', () => {
+  text.textContent = 'Bedankt voor uw aankoop!';
+});</code></pre>
+            </div>
+            <div class="timeline-preview">
+                <div class="preview-box" id="preview-box-js">
+                    <h1 id="js-title">Mijn Product</h1>
+                    <p id="js-text">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button id="js-button">Koop nu</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="demo-footer">
+        <p>Dit is het eindresultaat: een gestileerde en interactieve webcomponent.</p>
+        <a href="/index.html" class="btn-back">Terug naar Creation+Alt+Fix</a>
+    </footer>
+
+    <script src="js/live-demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+/* --- Globale Stijlen --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f7f6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+/* --- Header & Footer --- */
+.demo-header {
+    background: #1a1a1a;
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+}
+.demo-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+.demo-header p {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+.btn-back {
+    display: inline-block;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-back:hover {
+    background-color: white;
+    color: #1a1a1a;
+}
+.demo-footer {
+    text-align: center;
+    padding: 40px 0;
+    background: #e9ecef;
+}
+.demo-footer p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+.demo-footer .btn-back {
+    color: #1a1a1a;
+    border-color: #1a1a1a;
+}
+.demo-footer .btn-back:hover {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+/* --- Tijdlijn Container --- */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+/* De verticale lijn */
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #e0e0e0;
+    transform: translateX(-50%);
+}
+
+/* --- Tijdlijn Stap --- */
+.timeline-step {
+    display: flex;
+    position: relative;
+    margin-bottom: 80px;
+    opacity: 0; /* Initieel onzichtbaar voor animatie */
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.timeline-step.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-content, .timeline-preview {
+    width: 50%;
+    padding: 0 40px;
+}
+
+/* Oneven stappen (content links, preview rechts) */
+.timeline-step:nth-child(odd) .timeline-content {
+    text-align: right;
+}
+/* Even stappen (preview links, content rechts) */
+.timeline-step:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.timeline-milestone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background-color: #007AFF;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 5px solid #f4f7f6;
+    z-index: 10;
+}
+
+.timeline-content h2 {
+    font-size: 1.8rem;
+    color: #007AFF;
+    margin-bottom: 1rem;
+}
+.timeline-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Code Snippet Stijl --- */
+pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: left;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.9rem;
+    overflow-x: auto;
+}
+
+/* --- Preview Box Stijlen --- */
+.preview-box {
+    border: 2px dashed #ccc;
+    padding: 30px;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+.preview-box h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+.preview-box p {
+    margin-bottom: 1.5rem;
+}
+.preview-box button {
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+/* STAP 1: Alleen kale HTML (standaard browserstijlen) */
+#preview-box-html {
+    /* Geen extra stijlen */
+}
+
+/* STAP 2: Basis CSS */
+#preview-box-css-1 {
+    font-family: 'Inter', sans-serif;
+    background-color: #e9ecef;
+    border-style: solid;
+    border-color: #dee2e6;
+    color: #495057;
+}
+
+/* STAP 3: Geavanceerde CSS */
+#preview-box-css-2 {
+    font-family: 'Inter', sans-serif;
+    background-color: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+#preview-box-css-2 h1 {
+    color: #1a1a1a;
+}
+#preview-box-css-2 button {
+    background-color: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+#preview-box-css-2 button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* STAP 4: JavaScript (erft stijlen van stap 3) */
+#preview-box-js {
+    font-family: 'Inter', sans-serif;
+    background-color: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+#preview-box-js h1 {
+    color: #1a1a1a;
+}
+#preview-box-js button {
+    background-color: #28a745; /* Groene knop voor actie */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+#preview-box-js button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+/* --- Responsive Aanpassingen --- */
+@media (max-width: 768px) {
+    .timeline-container::before {
+        left: 25px; /* Lijn aan de linkerkant */
+        transform: translateX(0);
+    }
+    .timeline-step {
+        flex-direction: column;
+    }
+    .timeline-step:nth-child(even) {
+        flex-direction: column;
+    }
+    .timeline-content, .timeline-preview {
+        width: 100%;
+        padding: 0;
+    }
+    .timeline-content {
+        padding-left: 70px; /* Ruimte voor de lijn en bol */
+        margin-bottom: 30px;
+        text-align: left !important;
+    }
+    .timeline-milestone {
+        left: 25px;
+        top: 0;
+        transform: translateX(-50%);
+    }
+    .demo-header h1 {
+        font-size: 2.2rem;
+    }
+}
