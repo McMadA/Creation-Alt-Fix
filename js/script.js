@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project5Title": "PompPop",
             "project5P": "Aanmeldpagina voor een prachtig feest!",
             "project5Btn": "Aanmelden!",
+            "project6Title": "Stenekes Rioolspecialist",
+            "project6P": "Alle informatie over uw verstoppingen!",
+            "project6Btn": "Kijk snel!",
 
             "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>", 
             "faq1Q": "Kan ik echt binnen een dag een website hebben?",
@@ -204,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project5Title": "PompPop",
             "project5P": "Registration page for a wonderful party!",
             "project5Btn": "Visit the Page",
+            "project6Title": "Stenekes Rioolspecialist",
+            "project6P": "All information about your blockages!",
+            "project6Btn": "Check it out quickly!",
 
             "faqTitle": "Frequently Asked Questions: <span>Quick Websites</span>",
             "faq1Q": "Can I really have a website within a day?",
