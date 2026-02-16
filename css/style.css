@@ -615,6 +615,15 @@ footer .footer-links {
     }
 }
 
+/* Stealth Links (voor SEO subpagina's) */
+.stealth-link {
+    color: inherit;
+    text-decoration: none;
+}
+.stealth-link:hover {
+    color: inherit;
+}
+
 /* Fade-in Animation (voor JS) */
 .fade-in {
     opacity: 0;
