@@ -1,33 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
-        // --- LANGUAGE SWITCHER LOGIC START ---
+    // --- LANGUAGE SWITCHER LOGIC START ---
     const translations = {
         'nl': {
             // --- ALGEMEEN & NAVIGATIE ---
-            "pageTitle": "Creation+Alt+Fix - Uw Idee, Snel een Slimme Software Oplossing",
-            "navDiensten": "Diensten",
-            "navWaaromWij": "Waarom Wij?",
-            "navAiOplossingen": "AI ",
-            "navWebsites": "Websites",
-            "navProjecten": "Projecten",
+            "pageTitle": "Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen",
+            "navHome": "Home",
+            "navAIServices": "AI Services",
+            "navWebDesign": "Web Design & Tech",
+            "navProjects": "Projecten",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
+            "ariaLinkedIn": "LinkedIn CreationAltFix",
             "ariaToggleNav": "Navigatie in-/uitklappen",
 
             // --- HERO SECTIE ---
-            "heroSubtitle": "Uw idee, razendsnel een werkende oplossing. Dankzij slimme AI, door ons vertaald.",
-            "heroTagline": "Wij maken software simpel, betaalbaar en snel. U de wens, wij de code.",
-            "discoverExpertise": "Bekijk Snelbouw Oplossingen",
-            "viewWebsites": "Bekijk Websites!",
+            "heroBadge": "AI-Powered Solutions",
+            "heroHeadline": "Intelligente <span class=\"accent\">AI-Oplossingen</span> voor Jouw Bedrijf",
+            "heroSubtitle": "Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.",
+            "heroCtaPrimary": "Ontdek AI Services",
+            "heroCtaSecondary": "Gratis AI Consult",
 
+            // --- AI SERVICES SECTIE ---
+            "aiServicesTitle": "AI-Gedreven <span>Oplossingen</span>",
+            "learnMore": "Meer info <i class=\"fas fa-arrow-right\"></i>",
 
-            // --- INTRODUCTIE SECTIE ---
-            "introTitle": "Uw Idee, Onze Code: Snel <span>Software op Maat.</span>",
-            "introP1": "U heeft een slim idee voor uw bedrijf – een handige tool, een geautomatiseerd proces, een beter klantensysteem – maar de stap naar werkende software lijkt groot, duur of technisch ingewikkeld? Creation+Alt+Fix overbrugt die kloof. Wij vertalen uw functionele wens naar een concrete oplossing, razendsnel gerealiseerd met de kracht van AI.",
-            "introP2": "Geen maandenlange ontwikkeltrajecten of onbegrijpelijke technische taal. Wij leveren betaalbare, simpele softwareoplossingen, vaak binnen dagen. Voor ondernemers die vooruit willen, zonder zelf tech-expert te zijn.",
-
-            // --- DIENSTEN SECTIE ---
-            "dienstenTitle": "Onze Snelbouw Oplossingen: <span>Idee naar Realiteit</span> in Dagen",
-            "dienst1Title": "IT Support & Beheer", // Behoud basis IT-dienst
+            // --- DIENSTEN ---
+            "dienst1Title": "IT Support & Beheer",
             "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen. Snelle, betrouwbare support voor particulieren en MKB.",
             "dienst1K1": "PC & Mac Support",
             "dienst1K2": "Netwerkbeheer",
@@ -37,20 +35,19 @@ document.addEventListener('DOMContentLoaded', function() {
             "dienst2K1": "Boekingssystemen",
             "dienst2K2": "Simpel CRM",
             "dienst2K3": "Workflow Automatisering",
-            "dienst3Title": "Websites & Digitale Aanwezigheid vanaf €99",
+            "dienst3Title": "Websites & Digitale Aanwezigheid vanaf \u20ac99",
             "dienst3P": "Een moderne, snelle website of webshop die uw verhaal vertelt en klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor resultaat.",
             "dienst3K1": "Responsive Webdesign",
             "dienst3K2": "Webshops",
             "dienst3K3": "E-mail Flows",
-            // Optionele nieuwe dienstkaart (HTML moet aangepast worden)
             "dienst4Title": "Data Dashboards & Inzichten",
             "dienst4P": "Breng uw bedrijfsdata tot leven. Wij creëren overzichtelijke dashboards waarmee u direct ziet hoe uw bedrijf presteert en waar kansen liggen.",
             "dienst4K1": "Data Visualisatie",
             "dienst4K2": "KPI Dashboards",
             "dienst4K3": "Managementinformatie",
 
-            // --- WAAROM WIJ SECTIE ---
-            "waaromWijTitle": "De <span>+</span> Factor: Meer dan Alleen een Fix",
+            // --- WEB DESIGN / WAAROM WIJ ---
+            "webDesignTitle": "Waarom <span>Creation+Alt+Fix</span>?",
             "waarom1Title": "Toekomstgerichte Expertise",
             "waarom1P": "Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.",
             "waarom2Title": "Uw Taal, Onze Techniek",
@@ -60,18 +57,17 @@ document.addEventListener('DOMContentLoaded', function() {
             "waarom4Title": "Design & Functionaliteit",
             "waarom4P": "Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.",
 
-            // --- AI OPLOSSINGEN SECTIE ---
-            "aiOplossingenTitle": "De Kracht van AI: <span>Sneller en Slimmer</span> voor U",
+            // --- AI BENEFITS ---
+            "aiOplossingenTitle": "De Kracht van AI: <span>Sneller en Slimmer</span>",
             "aiBenefit1": "Optimaliseer je workflow met AI-gedreven taakautomatisering.",
             "aiBenefit2": "Krijg diepere inzichten uit je data met slimme analyse tools.",
             "aiBenefit3": "Verbeter klantinteractie met intelligente chatbots.",
             "aiBenefit4": "Laat AI repetitieve taken overnemen, focus op groei.",
-            // Optionele nieuwe AI benefits (HTML moet aangepast worden)
             "aiBenefit5": "Realiseer software-ideeën in dagen in plaats van maanden.",
             "aiBenefit6": "Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.",
 
-            // --- PORTFOLIO (Websites) SECTIE ---
-            "portfolioTitle": "Bekijk onze <span> Websites!</span>",
+            // --- PORTFOLIO ---
+            "portfolioTitle": "Bekijk onze <span>Websites!</span>",
             "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.",
             "project1Title": "Angela Stenekes",
             "project1P": "Een moderne, responsive website voor een lokale knipperij met schrijfambities, vol met verhaaltjes en gemaakt met WordPress",
@@ -96,64 +92,73 @@ document.addEventListener('DOMContentLoaded', function() {
             "project8Title": "Capybara Culture",
             "project8P": "Check hier wat NFT's zijn!",
             "project8Btn": "Kijk snel!",
+            "liveDemoBtn": "Bekijk de live demo hoe een website tot stand komt!",
 
-            "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>", 
+            // --- FAQ ---
+            "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>",
             "faq1Q": "Kan ik echt binnen een dag een website hebben?",
-            "faq1A": "Ja, voor simpele websites zoals een online visitekaartje, een landingspagina, of een basis informatieve site is dit vaak mogelijk. Neem contact op met uw wensen, dan geven we direct een inschatting.",  
+            "faq1A": "Ja, voor simpele websites zoals een online visitekaartje, een landingspagina, of een basis informatieve site is dit vaak mogelijk. Neem contact op met uw wensen, dan geven we direct een inschatting.",
             "faq2Q": "Wat kost het om snel een simpele website te laten maken?",
-            "faq2A": "De kosten voor een snelle, simpele website zijn aanzienlijk lager dan voor complexe maatwerkprojecten. We bieden transparante pakketten vanaf €99. Vraag een vrijblijvende offerte voor uw specifieke situatie.",
+            "faq2A": "De kosten voor een snelle, simpele website zijn aanzienlijk lager dan voor complexe maatwerkprojecten. We bieden transparante pakketten vanaf \u20ac99. Vraag een vrijblijvende offerte voor uw specifieke situatie.",
             "faq3Q": "Welke informatie hebben jullie nodig om mijn website snel te kunnen bouwen?",
             "faq3A": "Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.",
 
-
-            // --- GITHUB PROJECTEN SECTIE ---
+            // --- GITHUB ---
             "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
-            "githubLoading": "Laden van repositories...", // Behoud bestaande sleutel
-            "githubNoRepos": "Geen publieke repositories gevonden.", // Behoud
-            "githubError": "Kon repositories niet laden. Fout: {error}. Bekijk de console voor details.", // Behoud
+            "githubLoading": "Laden van repositories...",
+            "githubNoRepos": "Geen publieke repositories gevonden.",
+            "githubError": "Kon repositories niet laden. Fout: {error}. Bekijk de console voor details.",
 
-            // --- CONTACT SECTIE ---
-            "contactTitle": "Uw Idee Bespreken? <span>Laten we Praten!</span>",
+            // --- TRUST / TESTIMONIALS ---
+            "trustTitle": "Wat Klanten <span>Zeggen</span>",
+            "testimonial1Quote": "\"Creation+Alt+Fix heeft onze werkprocessen volledig getransformeerd met slimme AI-automatisering. Wat voorheen uren kostte, is nu in minuten geregeld.\"",
+            "testimonial1Author": "Mark de Vries",
+            "testimonial1Role": "Ondernemer, Groningen",
+            "testimonial2Quote": "\"Binnen twee dagen had ik een professionele website die er fantastisch uitziet. Snel, betaalbaar en precies wat ik nodig had.\"",
+            "testimonial2Author": "Lisa Bakker",
+            "testimonial2Role": "Freelancer, Haren",
+            "testimonial3Quote": "\"Het dashboard dat ze voor ons hebben gebouwd geeft direct inzicht in onze KPI's. Eindelijk data-gedreven beslissingen zonder technische kennis.\"",
+            "testimonial3Author": "Jan Scholten",
+            "testimonial3Role": "Directeur MKB, Zuidhorn",
+
+            // --- CONTACT ---
+            "contactTitle": "Klaar voor <span>AI-Transformatie?</span>",
             "contactIntro": "Heeft u een idee voor een slimme tool of software-oplossing? Neem contact op voor een vrijblijvend gesprek. We denken graag mee hoe we uw wens snel en betaalbaar kunnen realiseren.",
-            "contactNamePlaceholder": "Uw Naam",
-            "contactEmailPlaceholder": "Uw Emailadres",
-            "contactMessagePlaceholder": "Uw Bericht",
-            "contactSendButton": "Verstuur Bericht",
+            "contactCtaBtn": "Contact voor AI Strategie",
             "contactLocation": "Groningen e.o.",
-            "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)", // Behoud
-            "formErrorFillAll": "Vul alstublieft alle velden in.", // Behoud
+            "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)",
+            "formErrorFillAll": "Vul alstublieft alle velden in.",
 
             // --- FOOTER ---
             "footerRights": "Alle rechten voorbehouden.",
-            "footerPrivacy": "Privacybeleid", // Behoud, ook al is het gecommentarieerd in HTML
-            "footerTerms": "Algemene Voorwaarden" // Behoud
+            "footerPrivacy": "Privacybeleid",
+            "footerTerms": "Algemene Voorwaarden"
         },
         'en': {
             // --- GENERAL & NAVIGATION ---
-            "pageTitle": "Creation+Alt+Fix - Your Idea, Quickly a Smart Software Solution",
-            "navDiensten": "Services",
-            "navWaaromWij": "Why Us?",
-            "navAiOplossingen": "AI Solutions",
-            "navWebsites": "Websites",
-            "navProjecten": "Projects",
+            "pageTitle": "Creation+Alt+Fix - Intelligent AI Solutions & IT Services Groningen",
+            "navHome": "Home",
+            "navAIServices": "AI Services",
+            "navWebDesign": "Web Design & Tech",
+            "navProjects": "Projects",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
+            "ariaLinkedIn": "LinkedIn CreationAltFix",
             "ariaToggleNav": "Toggle navigation",
 
             // --- HERO SECTION ---
-            "heroSubtitle": "Your business idea, a working solution at lightning speed. Thanks to smart AI, translated by us.",
-            "heroTagline": "We make software simple, affordable, and fast. You have the wish, we write the code.",
-            "discoverExpertise": "Explore Quick-Build Solutions",
-            "viewWebsites": "View Websites!",
+            "heroBadge": "AI-Powered Solutions",
+            "heroHeadline": "Intelligent <span class=\"accent\">AI Solutions</span> for Your Business",
+            "heroSubtitle": "We translate your idea into working software at lightning speed. From smart automation to complete websites, powered by AI.",
+            "heroCtaPrimary": "Discover AI Services",
+            "heroCtaSecondary": "Free AI Consult",
 
-            // --- INTRODUCTION SECTION ---
-            "introTitle": "Your Idea, Our Code: Fast <span>Custom Software.</span>",
-            "introP1": "You have a smart idea for your business – a handy tool, an automated process, a better customer system – but the step to working software seems big, expensive, or technically complicated? Creation+Alt+Fix bridges that gap. We translate your functional wish into a concrete solution, realized at lightning speed with the power of AI.",
-            "introP2": "No month-long development processes or incomprehensible technical jargon. We deliver affordable, simple software solutions, often within days. For entrepreneurs who want to move forward, without being tech experts themselves.",
+            // --- AI SERVICES SECTION ---
+            "aiServicesTitle": "AI-Driven <span>Solutions</span>",
+            "learnMore": "Learn more <i class=\"fas fa-arrow-right\"></i>",
 
-            // --- SERVICES SECTION ---
-            "dienstenTitle": "Our Quick-Build Solutions: <span>Idea to Reality</span> in Days",
-            "dienst1Title": "IT Support & Management", // Keep basic IT service
+            // --- SERVICES ---
+            "dienst1Title": "IT Support & Management",
             "dienst1P": "PC repair, network optimization, software issues, data recovery. Fast, reliable support for individuals and SMEs.",
             "dienst1K1": "PC & Mac Support",
             "dienst1K2": "Network Management",
@@ -163,20 +168,19 @@ document.addEventListener('DOMContentLoaded', function() {
             "dienst2K1": "Booking Systems",
             "dienst2K2": "Simple CRM",
             "dienst2K3": "Workflow Automation",
-            "dienst3Title": "Websites & Digital Presence from €99",
+            "dienst3Title": "Websites & Digital Presence from \u20ac99",
             "dienst3P": "A modern, fast website or webshop that tells your story and attracts customers. Designed with attention to detail, built for results.",
             "dienst3K1": "Responsive Web Design",
             "dienst3K2": "Webshops",
             "dienst3K3": "Email Flows",
-            // Optional new service card (HTML needs adjustment)
             "dienst4Title": "Data Dashboards & Insights",
             "dienst4P": "Bring your business data to life. We create clear dashboards that allow you to instantly see how your business is performing and where opportunities lie.",
             "dienst4K1": "Data Visualization",
             "dienst4K2": "KPI Dashboards",
             "dienst4K3": "Management Information",
 
-            // --- WHY US SECTION ---
-            "waaromWijTitle": "The <span>+</span> Factor: More Than Just a Fix",
+            // --- WEB DESIGN / WHY US ---
+            "webDesignTitle": "Why <span>Creation+Alt+Fix</span>?",
             "waarom1Title": "Future-Oriented Expertise",
             "waarom1P": "Years of IT experience combined with the latest AI developments. Sustainable solutions, not temporary patches.",
             "waarom2Title": "Your Language, Our Technology",
@@ -186,17 +190,16 @@ document.addEventListener('DOMContentLoaded', function() {
             "waarom4Title": "Design & Functionality",
             "waarom4P": "Inspired by the best designs, we deliver solutions that not only work perfectly but also look the part.",
 
-            // --- AI SOLUTIONS SECTION ---
-            "aiOplossingenTitle": "The Power of AI: <span>Faster and Smarter</span> for You",
+            // --- AI BENEFITS ---
+            "aiOplossingenTitle": "The Power of AI: <span>Faster and Smarter</span>",
             "aiBenefit1": "Optimize your workflow with AI-driven task automation.",
             "aiBenefit2": "Gain deeper insights from your data with smart analysis tools.",
             "aiBenefit3": "Improve customer interaction with intelligent chatbots.",
             "aiBenefit4": "Let AI take over repetitive tasks, focus on growth.",
-            // Optional new AI benefits (HTML needs adjustment)
             "aiBenefit5": "Realize software ideas in days instead of months.",
             "aiBenefit6": "Save significantly on development costs for simple solutions.",
 
-            // --- PORTFOLIO (Websites) SECTION ---
+            // --- PORTFOLIO ---
             "portfolioTitle": "Check Out Our <span>Websites!</span>",
             "portfolioSubtitle": "Below is a selection of websites and applications I have recently developed. This gives an idea of what I can achieve for you.",
             "project1Title": "Angela Stenekes",
@@ -222,90 +225,86 @@ document.addEventListener('DOMContentLoaded', function() {
             "project8Title": "Capybara Culture",
             "project8P": "Check out what NFTs are!",
             "project8Btn": "Check it out quickly!",
+            "liveDemoBtn": "Watch the live demo of how a website is built!",
 
+            // --- FAQ ---
             "faqTitle": "Frequently Asked Questions: <span>Quick Websites</span>",
             "faq1Q": "Can I really have a website within a day?",
             "faq1A": "Yes, for simple websites like an online business card, a landing page, or a basic informative site, this is often possible. Contact us with your wishes, and we will give you an estimate right away.",
             "faq2Q": "How much does it cost to quickly create a simple website?",
-            "faq2A": "The costs for a quick, simple website are significantly lower than for complex custom projects. We offer transparent packages starting from €99. Request a non-binding quote for your specific situation.",
+            "faq2A": "The costs for a quick, simple website are significantly lower than for complex custom projects. We offer transparent packages starting from \u20ac99. Request a non-binding quote for your specific situation.",
             "faq3Q": "What information do you need to quickly build my website?",
             "faq3A": "To deliver quickly, we need your basic texts, possibly a logo, and desired color schemes. We also have templates and examples to speed up the process if you don't have content yet.",
 
-
-            // --- GITHUB PROJECTS SECTION ---
+            // --- GITHUB ---
             "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
-            "githubLoading": "Loading repositories...", // Keep existing key
-            "githubNoRepos": "No public repositories found.", // Keep
-            "githubError": "Could not load repositories. Error: {error}. Check the console for details.", // Keep
+            "githubLoading": "Loading repositories...",
+            "githubNoRepos": "No public repositories found.",
+            "githubError": "Could not load repositories. Error: {error}. Check the console for details.",
 
-            // --- CONTACT SECTION ---
-            "contactTitle": "Discuss Your Idea? <span>Let's Talk!</span>",
+            // --- TRUST / TESTIMONIALS ---
+            "trustTitle": "What Clients <span>Say</span>",
+            "testimonial1Quote": "\"Creation+Alt+Fix completely transformed our work processes with smart AI automation. What used to take hours is now done in minutes.\"",
+            "testimonial1Author": "Mark de Vries",
+            "testimonial1Role": "Entrepreneur, Groningen",
+            "testimonial2Quote": "\"Within two days I had a professional website that looks fantastic. Fast, affordable and exactly what I needed.\"",
+            "testimonial2Author": "Lisa Bakker",
+            "testimonial2Role": "Freelancer, Haren",
+            "testimonial3Quote": "\"The dashboard they built for us provides instant insight into our KPIs. Finally data-driven decisions without technical knowledge.\"",
+            "testimonial3Author": "Jan Scholten",
+            "testimonial3Role": "SME Director, Zuidhorn",
+
+            // --- CONTACT ---
+            "contactTitle": "Ready for <span>AI Transformation?</span>",
             "contactIntro": "Have an idea for a smart tool or software solution? Contact us for a no-obligation chat. We're happy to brainstorm how we can realize your wish quickly and affordably.",
-            "contactNamePlaceholder": "Your Name",
-            "contactEmailPlaceholder": "Your Email Address",
-            "contactMessagePlaceholder": "Your Message",
-            "contactSendButton": "Send Message",
+            "contactCtaBtn": "Contact for AI Strategy",
             "contactLocation": "Groningen area",
-            "formThanks": "Thank you for your message! (This is a demo, no email was sent)", // Keep
-            "formErrorFillAll": "Please fill in all fields.", // Keep
+            "formThanks": "Thank you for your message! (This is a demo, no email was sent)",
+            "formErrorFillAll": "Please fill in all fields.",
 
             // --- FOOTER ---
             "footerRights": "All rights reserved.",
-            "footerPrivacy": "Privacy Policy", // Keep, even if commented out in HTML
-            "footerTerms": "Terms and Conditions" // Keep
+            "footerPrivacy": "Privacy Policy",
+            "footerTerms": "Terms and Conditions"
         }
     };
 
-    let currentLanguage = 'nl'; // Default language, will be updated by initializeLanguage
-    let intersectionObserverInstance; // For fade-in animations
+    let currentLanguage = 'nl';
 
     function applyTranslations(lang) {
-
-        
         if (!translations[lang]) {
-            console.error(`Translations for language "${lang}" not found.`);
+            console.error('Translations for language "' + lang + '" not found.');
             return;
         }
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
-        document.querySelectorAll('[data-translate-key]').forEach(element => {
-            const key = element.getAttribute('data-translate-key');
+        document.querySelectorAll('[data-translate-key]').forEach(function(element) {
+            var key = element.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
                 element.innerHTML = translations[lang][key];
-            } else {
-                console.warn(`Translation key "${key}" not found for language "${lang}" in element:`, element);
             }
         });
 
-        document.querySelectorAll('[data-translate-key-placeholder]').forEach(element => {
-            const key = element.getAttribute('data-translate-key-placeholder');
+        document.querySelectorAll('[data-translate-key-placeholder]').forEach(function(element) {
+            var key = element.getAttribute('data-translate-key-placeholder');
             if (translations[lang][key] !== undefined) {
                 element.placeholder = translations[lang][key];
             }
         });
-        document.querySelectorAll('[data-translate-key-title]').forEach(element => {
-            const key = element.getAttribute('data-translate-key-title');
-            if (translations[lang][key] !== undefined) {
-                element.title = translations[lang][key];
-            }
-        });
-        document.querySelectorAll('[data-translate-key-aria]').forEach(element => {
-            const key = element.getAttribute('data-translate-key-aria');
+        document.querySelectorAll('[data-translate-key-aria]').forEach(function(element) {
+            var key = element.getAttribute('data-translate-key-aria');
             if (translations[lang][key] !== undefined) {
                 element.setAttribute('aria-label', translations[lang][key]);
             }
         });
-        
-        
-        // Special case for page title element if it has data-translate-key
-        const pageTitleElement = document.querySelector('title[data-translate-key="pageTitle"]');
+
+        var pageTitleElement = document.querySelector('title[data-translate-key="pageTitle"]');
         if (pageTitleElement && translations[lang]['pageTitle']) {
-            document.title = translations[lang]['pageTitle']; // Also update the actual document.title
+            document.title = translations[lang]['pageTitle'];
         }
 
-
-        document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
+        document.querySelectorAll('#language-switcher .lang-btn').forEach(function(btn) {
             btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
         });
     }
@@ -313,264 +312,248 @@ document.addEventListener('DOMContentLoaded', function() {
     function changeLanguage(lang) {
         applyTranslations(lang);
         localStorage.setItem('preferredLanguage', lang);
-        // If GitHub repos are already loaded and you want to refresh their text (e.g. "Loading...", "No repos..."), call fetchRepos again.
-        // This example assumes fetchRepos will be called once on page load after language init.
-        // If you need to refresh already displayed repo cards' descriptions (if they were translatable), that's more complex.
-        // For now, only messages like "Loading..." from fetchRepos will use the new language if fetchRepos is called.
         if (typeof fetchRepos === 'function' && document.getElementById('repo-container')) {
-             // If the container is empty or shows a message, re-fetch to update message.
-             // If cards are already there, their content won't change unless you explicitly update them or re-fetch all.
-            const repoContainer = document.getElementById('repo-container');
-            if (!repoContainer.querySelector('.repo-card')) { // Only re-fetch if no cards are present (i.e., it's showing a message or is empty)
+            var repoContainer = document.getElementById('repo-container');
+            if (!repoContainer.querySelector('.repo-card')) {
                 fetchRepos();
             }
         }
     }
 
     function initializeLanguage() {
-        const savedLang = localStorage.getItem('preferredLanguage');
-        const browserLang = navigator.language.split('-')[0];
-        console.log("Initial Language Check: Saved Lang =", savedLang, "Browser Lang =", browserLang); // DEBUG
-
-        let initialLang = 'nl'; // Default
+        var savedLang = localStorage.getItem('preferredLanguage');
+        var browserLang = navigator.language.split('-')[0];
+        var initialLang = 'nl';
         if (savedLang && translations[savedLang]) {
             initialLang = savedLang;
         } else if (translations[browserLang]) {
             initialLang = browserLang;
         }
-        console.log("Initial Language Check: Determined initialLang =", initialLang); // DEBUG
-        // Roep applyTranslations aan met de vastgestelde taal
         applyTranslations(initialLang);
-        // Sla de taal op, zelfs als het de default is, voor consistentie
         localStorage.setItem('preferredLanguage', initialLang);
-        }
-    
-    // Initialiseer de taal bij DOMContentLoaded
+    }
+
     initializeLanguage();
-    // --- LANGUAGE SWITCHER LOGIC END ---
 
-    // console.log("DOMContentLoaded: Forcing browser language translations directly.");
-    // applyTranslations('nl'); // Forceer NL direct
-    // localStorage.setItem('preferredLanguage', 'nl'); // Zet ook localStorage
-
-    document.querySelectorAll('#language-switcher .lang-btn').forEach(button => {
+    document.querySelectorAll('#language-switcher .lang-btn').forEach(function(button) {
         button.addEventListener('click', function() {
-            const lang = this.getAttribute('data-lang');
+            var lang = this.getAttribute('data-lang');
             changeLanguage(lang);
         });
     });
-    // --- LANGUAGE SWITCHER LOGIC END ---
 
-
-    // Smooth scrolling voor navigatielinks (redundant als html scroll-behavior werkt, maar goede fallback)
-    const navLinks = document.querySelectorAll('#navbar a[href^="#"]');
-    navLinks.forEach(link => {
+    // Smooth scrolling for nav links
+    var navLinks = document.querySelectorAll('#navbar a[href^="#"]');
+    navLinks.forEach(function(link) {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            let targetId = this.getAttribute('href');
-            // Special case voor #hero, anders scrollt het niet helemaal naar boven
+            var targetId = this.getAttribute('href');
             if (targetId === '#hero') {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                let targetElement = document.querySelector(targetId);
+                var targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    // Calculate offset for sticky navbar
-                    const navbarHeight = document.getElementById('navbar').offsetHeight;
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
+                    var navbarHeight = document.getElementById('navbar').offsetHeight;
+                    var elementPosition = targetElement.getBoundingClientRect().top;
+                    var offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                 }
             }
         });
     });
 
-    // Huidige jaar in footer
-    const currentYearSpan = document.getElementById('currentYear');
+    // Current year in footer
+    var currentYearSpan = document.getElementById('currentYear');
     if (currentYearSpan) {
         currentYearSpan.textContent = new Date().getFullYear();
     }
 
-    // Fade-in effect bij scrollen
-    const fadeInElements = document.querySelectorAll('.fade-in');
-
-    const observerOptions = {
-        root: null, // viewport
-        rootMargin: '0px',
-        threshold: 0.1 // Trigger als 10% van element zichtbaar is
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
+    // Fade-in on scroll
+    var fadeInElements = document.querySelectorAll('.fade-in');
+    var observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                observer.unobserve(entry.target); // Stop observing once visible
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
+    fadeInElements.forEach(function(el) { observer.observe(el); });
 
-    fadeInElements.forEach(el => {
-        observer.observe(el);
-    });
-
-    // Contactformulier (simpele console log, voor echte functionaliteit heb je backend nodig)
-    const contactForm = document.getElementById('contact-form');
+    // Contact form
+    var contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var message = document.getElementById('message').value;
             if (name && email && message) {
-                console.log('Formulier verzonden:');
-                console.log('Naam:', name);
-                console.log('Email:', email);
-                console.log('Bericht:', message);
-                alert('Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)');
+                alert(translations[currentLanguage]['formThanks']);
                 contactForm.reset();
             } else {
-                alert('Vul alstublieft alle velden in.');
+                alert(translations[currentLanguage]['formErrorFillAll']);
             }
         });
     }
 
-});
-const githubUsername = 'McMadA'; // VERVANG DEZE!
-const maxReposToShow = 6;
+    // --- HAMBURGER MENU LOGIC ---
+    var hamburgerBtn = document.getElementById('hamburger-menu');
+    var navMenuItems = document.getElementById('nav-menu-items');
+    if (hamburgerBtn && navMenuItems) {
+        var hamburgerIcon = hamburgerBtn.querySelector('i');
+        hamburgerBtn.addEventListener('click', function() {
+            navMenuItems.classList.toggle('active');
+            var isActive = navMenuItems.classList.contains('active');
+            hamburgerBtn.setAttribute('aria-expanded', isActive);
+            if (hamburgerIcon) {
+                hamburgerIcon.classList.toggle('fa-bars', !isActive);
+                hamburgerIcon.classList.toggle('fa-times', isActive);
+            }
+        });
 
-const repoContainer = document.getElementById('repo-container');
-console.log('[GitHub] Script gestart. repoContainer gevonden:', repoContainer);
-
-async function fetchRepos() {
-    if (!repoContainer) {
-        console.error('[GitHub] FOUT: Element met ID "repo-container" niet gevonden.');
-        return;
+        navMenuItems.querySelectorAll('a[href^="#"]').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (navMenuItems.classList.contains('active')) {
+                    navMenuItems.classList.remove('active');
+                    hamburgerBtn.setAttribute('aria-expanded', 'false');
+                    if (hamburgerIcon) {
+                        hamburgerIcon.classList.remove('fa-times');
+                        hamburgerIcon.classList.add('fa-bars');
+                    }
+                }
+            });
+        });
     }
-    repoContainer.innerHTML = '<p class="loading">Laden van repositories...</p>';
-    console.log('[GitHub] Laadbericht getoond.');
 
-    try {
-        console.log(`[GitHub] Ophalen van repositories voor gebruiker: ${githubUsername}`);
-        const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=pushed&direction=desc&per_page=100`);
-        console.log('[GitHub] Fetch response status:', response.status, response.statusText);
+    // --- PARTICLE SYSTEM (lightweight, disabled on mobile) ---
+    var canvas = document.getElementById('hero-particles');
+    if (canvas && window.innerWidth > 768) {
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var particleCount = 35;
 
-        if (!response.ok) {
-            const errorBody = await response.text(); // Probeer de body te lezen voor meer info
-            console.error('[GitHub] API Fout Details:', errorBody);
-            throw new Error(`GitHub API fout: ${response.status} ${response.statusText}`);
+        function resizeCanvas() {
+            var hero = document.getElementById('hero');
+            if (hero) {
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+            }
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        for (var i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                r: Math.random() * 2 + 1
+            });
         }
 
-        let repos = await response.json();
-        console.log('[GitHub] Ruwe data ontvangen van API:', JSON.parse(JSON.stringify(repos))); // Kopie voor logging
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        // Optioneel: filter forks
-        // repos = repos.filter(repo => !repo.fork);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+                ctx.fill();
 
+                // Draw connections
+                for (var j = i + 1; j < particles.length; j++) {
+                    var p2 = particles[j];
+                    var dx = p.x - p2.x;
+                    var dy = p.y - p2.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = 'rgba(99, 102, 241, ' + (0.1 * (1 - dist / 150)) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+    }
+});
+
+// --- GITHUB REPOS ---
+var githubUsername = 'McMadA';
+var maxReposToShow = 6;
+var repoContainer = document.getElementById('repo-container');
+
+async function fetchRepos() {
+    if (!repoContainer) return;
+    repoContainer.innerHTML = '<p class="loading">Laden van repositories...</p>';
+
+    try {
+        var response = await fetch('https://api.github.com/users/' + githubUsername + '/repos?sort=pushed&direction=desc&per_page=100');
+        if (!response.ok) {
+            throw new Error('GitHub API fout: ' + response.status + ' ' + response.statusText);
+        }
+
+        var repos = await response.json();
         repos = repos.slice(0, maxReposToShow);
-        console.log(`[GitHub] Repositories na filter/slice (max ${maxReposToShow}):`, JSON.parse(JSON.stringify(repos)));
-
-        repoContainer.innerHTML = ''; // Wis laadbericht
-        console.log('[GitHub] Laadbericht gewist.');
+        repoContainer.innerHTML = '';
 
         if (repos.length === 0) {
-            console.log('[GitHub] Geen publieke repositories om weer te geven.');
             repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
             return;
         }
 
-        console.log(`[GitHub] Verwerken van ${repos.length} repositories...`);
-        repos.forEach((repo, index) => {
-            console.log(`[GitHub] Verwerken repo ${index + 1}: ${repo.name}`);
-            const repoCard = document.createElement('div');
-            // BELANGRIJKE WIJZIGING HIER: voeg 'visible' toe
+        repos.forEach(function(repo) {
+            var repoCard = document.createElement('div');
             repoCard.className = 'repo-card fade-in visible';
 
-            let description = repo.description || 'Geen beschrijving opgegeven.';
+            var description = repo.description || 'Geen beschrijving opgegeven.';
             if (description.length > 120) {
                 description = description.substring(0, 117) + '...';
             }
 
-            repoCard.innerHTML = `
-                <h3><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></h3>
-                <p class="repo-description">${description}</p>
-                <div class="repo-meta">
-                    ${repo.language ? `<span><i class="fas fa-circle" style="color:${getLanguageColor(repo.language)};"></i> ${repo.language}</span>` : ''}
-                    <span><i class="fas fa-star"></i> ${repo.stargazers_count}</span>
-                    <span><i class="fas fa-code-branch"></i> ${repo.forks_count}</span>
-                </div>
-            `;
+            repoCard.innerHTML =
+                '<h3><a href="' + repo.html_url + '" target="_blank" rel="noopener noreferrer">' + repo.name + '</a></h3>' +
+                '<p class="repo-description">' + description + '</p>' +
+                '<div class="repo-meta">' +
+                (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + repo.language + '</span>' : '') +
+                '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
+                '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
+                '</div>';
             repoContainer.appendChild(repoCard);
-            console.log(`[GitHub] Kaart toegevoegd voor ${repo.name}`);
         });
-        console.log('[GitHub] Alle kaarten toegevoegd.');
 
     } catch (error) {
-        console.error('[GitHub] Fout tijdens laden/verwerken repositories:', error);
-        if (repoContainer) { // Zorg ervoor dat repoContainer nog steeds bestaat
-            repoContainer.innerHTML = `<p class="error">Kon repositories niet laden. Fout: ${error.message}. Bekijk de console voor details.</p>`;
+        console.error('[GitHub] Error:', error);
+        if (repoContainer) {
+            repoContainer.innerHTML = '<p class="error">Kon repositories niet laden. Fout: ' + error.message + '</p>';
         }
     }
 }
 
 function getLanguageColor(language) {
-    const colors = {
+    var colors = {
         "JavaScript": "#f1e05a", "HTML": "#e34c26", "CSS": "#563d7c", "Python": "#3572A5",
         "Java": "#b07219", "TypeScript": "#2b7489", "PHP": "#4F5D95", "Ruby": "#701516",
         "C++": "#f34b7d", "C#": "#178600", "Go": "#00ADD8", "Shell": "#89e051", "SCSS": "#c6538c",
         "Vue": "#4FC08D", "Jupyter Notebook": "#DA5B0B"
-        // Voeg meer toe naar wens
     };
     return colors[language] || '#cccccc';
 }
 
-// Roep functie aan. Script staat aan het einde van de body, dus DOM is wss geladen.
-// Voor extra zekerheid, vooral als je js/script.js ook DOM manipuleert:
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fetchRepos);
-        console.log('[GitHub] DOMContentLoaded listener toegevoegd voor fetchRepos.');
 } else {
     fetchRepos();
-    console.log('[GitHub] fetchRepos direct aangeroepen.');
 }
-
-    // --- HAMBURGER MENU LOGIC START ---
-    const hamburgerBtn = document.getElementById('hamburger-menu');
-    const navMenuItems = document.getElementById('nav-menu-items');
-    const hamburgerIcon = hamburgerBtn.querySelector('i'); // Get the icon element
-
-    if (hamburgerBtn && navMenuItems && hamburgerIcon) {
-        hamburgerBtn.addEventListener('click', () => {
-            navMenuItems.classList.toggle('active');
-            const isActive = navMenuItems.classList.contains('active');
-            hamburgerBtn.setAttribute('aria-expanded', isActive);
-
-            if (isActive) {
-                hamburgerIcon.classList.remove('fa-bars');
-                hamburgerIcon.classList.add('fa-times');
-            } else {
-                hamburgerIcon.classList.remove('fa-times');
-                hamburgerIcon.classList.add('fa-bars');
-            }
-        });
-
-        // Close menu when a link inside it is clicked
-        const navMenuLinks = navMenuItems.querySelectorAll('a[href^="#"]');
-        navMenuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (navMenuItems.classList.contains('active')) {
-                    navMenuItems.classList.remove('active');
-                    hamburgerBtn.setAttribute('aria-expanded', 'false');
-                    hamburgerIcon.classList.remove('fa-times');
-                    hamburgerIcon.classList.add('fa-bars');
-                }
-            });
-        });
-    }
-    // --- HAMBURGER MENU LOGIC END ---

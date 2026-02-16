@@ -1,75 +1,97 @@
 /* ===========================================
    SUBPAGE STYLES - Creation+Alt+Fix
-   Aanvullende CSS voor dienstpagina's
+   Dark AI Theme - Service Pages
    =========================================== */
 
 /* Breadcrumbs */
 .breadcrumbs {
     padding: 15px 0;
     font-size: 0.9rem;
-    color: #777;
+    color: var(--color-text-secondary);
 }
 .breadcrumbs a {
-    color: #007AFF;
+    color: var(--color-primary-light);
     text-decoration: none;
+    transition: color var(--transition-base);
 }
 .breadcrumbs a:hover {
+    color: var(--color-accent);
     text-decoration: underline;
 }
 .breadcrumbs span.separator {
     margin: 0 8px;
-    color: #aaa;
+    color: var(--color-text-secondary);
 }
 .breadcrumbs span.current {
-    color: #333;
+    color: var(--color-text-primary);
     font-weight: 500;
 }
 
 /* Subpage Hero */
 .subpage-hero {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    background: var(--gradient-hero);
     color: #fff;
     padding: 80px 0 60px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.subpage-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 40% at 30% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 70% 30%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
+    pointer-events: none;
 }
 .subpage-hero h1 {
+    font-family: var(--font-heading);
     font-size: 2.8rem;
     font-weight: 800;
     margin-bottom: 1rem;
     color: #fff;
+    position: relative;
 }
 .subpage-hero h1 span {
-    color: #007AFF;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 .subpage-hero .lead {
     font-size: 1.2rem;
-    color: #d0d0d0;
+    color: var(--color-text-secondary);
     max-width: 700px;
     margin: 0 auto;
     line-height: 1.7;
+    position: relative;
 }
 
 /* Content Section */
 .content-section {
     padding: 60px 0;
+    background-color: var(--color-bg-primary);
 }
 .content-section h2 {
+    font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
     margin-bottom: 1.5rem;
 }
 .content-section h3 {
+    font-family: var(--font-heading);
     font-size: 1.4rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
     margin-bottom: 1rem;
     margin-top: 2rem;
 }
 .content-section p {
     font-size: 1.05rem;
     line-height: 1.8;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 1.2rem;
     max-width: 800px;
 }
@@ -81,11 +103,11 @@
 .content-section ul li {
     font-size: 1.05rem;
     line-height: 1.8;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 0.5rem;
 }
 
-/* Detail Cards Grid */
+/* Detail Cards Grid (Glassmorphism) */
 .detail-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -93,66 +115,92 @@
     margin: 2rem 0;
 }
 .detail-card {
-    background: #fff;
+    background: rgba(26, 31, 53, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
     padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+.detail-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+.detail-card:hover::before {
+    opacity: 1;
 }
 .detail-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--color-border-hover);
 }
 .detail-card i {
     font-size: 2rem;
-    color: #007AFF;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 0.75rem;
     display: block;
 }
 .detail-card h4 {
+    font-family: var(--font-heading);
     font-size: 1.2rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
     margin-bottom: 0.5rem;
 }
 .detail-card p {
     font-size: 0.95rem;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 0;
 }
 
 /* FAQ Section (subpage-specific) */
 .subpage-faq {
-    background-color: #f9f9f9;
+    background-color: var(--color-bg-secondary);
     padding: 60px 0;
 }
 .subpage-faq h2 {
+    font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 2.5rem;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
 }
 .faq-list {
     max-width: 800px;
     margin: 0 auto;
 }
 .faq-list-item {
-    background: #fff;
+    background: rgba(26, 31, 53, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
     padding: 20px 25px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     margin-bottom: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 .faq-list-item h4 {
     font-size: 1.15rem;
-    color: #007AFF;
+    color: var(--color-primary-light);
     margin-bottom: 0.5rem;
     font-weight: 600;
 }
 .faq-list-item p {
     font-size: 1rem;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 0;
     line-height: 1.7;
 }
@@ -160,13 +208,15 @@
 /* Related Services */
 .related-services {
     padding: 60px 0;
+    background-color: var(--color-bg-primary);
 }
 .related-services h2 {
+    font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 2.5rem;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
 }
 .related-grid {
     display: grid;
@@ -174,65 +224,87 @@
     gap: 25px;
 }
 .related-card {
-    background: #fff;
+    background: rgba(26, 31, 53, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    border-radius: var(--radius-md);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
     text-decoration: none;
     color: inherit;
     display: block;
 }
 .related-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--color-border-hover);
     color: inherit;
 }
 .related-card i {
     font-size: 2.5rem;
-    color: #007AFF;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 1rem;
     display: block;
 }
 .related-card h4 {
+    font-family: var(--font-heading);
     font-size: 1.3rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
     margin-bottom: 0.5rem;
 }
 .related-card p {
     font-size: 0.95rem;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 0;
 }
 
 /* CTA Section */
 .cta-section {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    background: var(--gradient-hero);
     color: #fff;
     padding: 60px 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 50% 50% at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 50%, rgba(34, 211, 238, 0.08) 0%, transparent 50%);
+    pointer-events: none;
 }
 .cta-section h2 {
+    font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 1rem;
     color: #fff;
+    position: relative;
 }
 .cta-section p {
     font-size: 1.1rem;
-    color: #d0d0d0;
+    color: var(--color-text-secondary);
     margin-bottom: 2rem;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 }
 .cta-buttons {
     display: flex;
     gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
+    position: relative;
 }
 .cta-buttons .btn {
     display: inline-flex;
@@ -251,37 +323,60 @@
     margin: 2rem 0;
 }
 .dienst-overview-card {
-    background: #fff;
+    background: rgba(26, 31, 53, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
     padding: 35px 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    border-radius: var(--radius-md);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+.dienst-overview-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+.dienst-overview-card:hover::before {
+    opacity: 1;
 }
 .dienst-overview-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--color-border-hover);
     color: inherit;
 }
 .dienst-overview-card i.card-icon {
     font-size: 3rem;
-    color: #007AFF;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 1rem;
 }
 .dienst-overview-card h3 {
+    font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--color-text-heading);
     margin-bottom: 0.75rem;
 }
 .dienst-overview-card p {
     font-size: 0.95rem;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 1.5rem;
     flex-grow: 1;
 }
@@ -296,12 +391,6 @@
 }
 .stealth-link:hover {
     color: inherit;
-}
-
-/* Subpage Navbar adjustments */
-.subpage-nav ul {
-    list-style: none;
-    display: flex;
 }
 
 /* Responsive */

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell:*)",
+      "Bash(git -C \"C:\\\\Users\\\\Admin\\\\Documents\\\\GitHub\\\\Creation-Alt-Fix\" diff --stat)"
+    ]
+  }
+}

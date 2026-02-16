@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const translations = {
         'nl': {
             // Nav
-            "navAlleDiensten": "Alle Diensten",
-            "navWebsites": "Websites",
+            "navHome": "Home",
+            "navAIServices": "AI Services",
+            "navWebDesign": "Web Design & Tech",
+            "navProjects": "Projecten",
             "navContact": "Contact",
 
             // Diensten Overview
@@ -164,8 +166,10 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'en': {
             // Nav
-            "navAlleDiensten": "All Services",
-            "navWebsites": "Websites",
+            "navHome": "Home",
+            "navAIServices": "AI Services",
+            "navWebDesign": "Web Design & Tech",
+            "navProjects": "Projects",
             "navContact": "Contact",
 
             // Diensten Overview
