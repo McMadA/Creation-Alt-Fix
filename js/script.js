@@ -279,10 +279,21 @@ document.addEventListener('DOMContentLoaded', function() {
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
+        // Keys containing HTML markup — must use innerHTML; all others use textContent for XSS safety
+        var htmlKeys = new Set([
+            'heroHeadline', 'aiServicesTitle', 'learnMore', 'webDesignTitle',
+            'aiOplossingenTitle', 'portfolioTitle', 'faqTitle', 'githubTitle',
+            'trustTitle', 'contactTitle'
+        ]);
+
         document.querySelectorAll('[data-translate-key]').forEach(function(element) {
             var key = element.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
-                element.innerHTML = translations[lang][key];
+                if (htmlKeys.has(key)) {
+                    element.innerHTML = translations[lang][key];
+                } else {
+                    element.textContent = translations[lang][key];
+                }
             }
         });
 
@@ -491,6 +502,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- GITHUB REPOS ---
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 var githubUsername = 'McMadA';
 var maxReposToShow = 6;
 var repoContainer = document.getElementById('repo-container');
@@ -523,11 +540,15 @@ async function fetchRepos() {
                 description = description.substring(0, 117) + '...';
             }
 
+            var safeName = escapeHtml(repo.name);
+            var safeDescription = escapeHtml(description);
+            var safeLanguage = repo.language ? escapeHtml(repo.language) : '';
+
             repoCard.innerHTML =
-                '<h3><a href="' + repo.html_url + '" target="_blank" rel="noopener noreferrer">' + repo.name + '</a></h3>' +
-                '<p class="repo-description">' + description + '</p>' +
+                '<h3><a href="' + escapeHtml(repo.html_url) + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a></h3>' +
+                '<p class="repo-description">' + safeDescription + '</p>' +
                 '<div class="repo-meta">' +
-                (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + repo.language + '</span>' : '') +
+                (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + safeLanguage + '</span>' : '') +
                 '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
                 '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
                 '</div>';

@@ -336,10 +336,21 @@ document.addEventListener('DOMContentLoaded', function() {
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
+        // Keys containing HTML markup — must use innerHTML; all others use textContent for XSS safety
+        var htmlKeys = new Set([
+            'dienstenOverviewTitle', 'dienstenOverviewH1',
+            'itH1', 'itP4', 'aiH1', 'aiP3', 'aiP4',
+            'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4'
+        ]);
+
         document.querySelectorAll('[data-translate-key]').forEach(function(el) {
             var key = el.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
-                el.innerHTML = translations[lang][key];
+                if (htmlKeys.has(key)) {
+                    el.innerHTML = translations[lang][key];
+                } else {
+                    el.textContent = translations[lang][key];
+                }
             }
         });
 
