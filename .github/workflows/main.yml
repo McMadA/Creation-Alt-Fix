@@ -17,6 +17,15 @@ jobs:
           for file in images/*.png; do
             cwebp -q 80 "$file" -o "${file%.png}.webp"
           done
+      - name: 🗜️ Minify CSS and JS
+        run: |
+          npm install -g clean-css-cli terser
+          for file in css/*.css; do
+            cleancss -o "$file" "$file"
+          done
+          for file in js/*.js; do
+            terser "$file" -o "$file" --compress --mangle
+          done
       - name: 📂 Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

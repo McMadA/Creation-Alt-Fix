@@ -465,7 +465,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        var animationId = null;
+        var isCanvasVisible = true;
+
         function drawParticles() {
+            if (!isCanvasVisible) { animationId = null; return; }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (var i = 0; i < particles.length; i++) {
                 var p = particles[i];
@@ -495,8 +499,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            requestAnimationFrame(drawParticles);
+            animationId = requestAnimationFrame(drawParticles);
         }
+
+        // Pause particle animation when hero section is off-screen to save CPU
+        var heroSection = document.getElementById('hero');
+        if (heroSection) {
+            var particleObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    isCanvasVisible = entry.isIntersecting;
+                    if (isCanvasVisible && !animationId) {
+                        drawParticles();
+                    }
+                });
+            }, { threshold: 0 });
+            particleObserver.observe(heroSection);
+        }
+
         drawParticles();
     }
 });
