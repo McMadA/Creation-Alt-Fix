@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
+      - name: 🖼️ Convert images to WebP
+        run: |
+          sudo apt-get install -y -qq webp
+          for file in images/*.png; do
+            cwebp -q 80 "$file" -o "${file%.png}.webp"
+          done
       - name: 📂 Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
