@@ -392,6 +392,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }, observerOptions);
     fadeInElements.forEach(function(el) { observer.observe(el); });
 
+    // Toast notification system
+    function showToast(message, type) {
+        type = type || 'success';
+        var container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            container.setAttribute('aria-live', 'polite');
+            container.setAttribute('role', 'status');
+            document.body.appendChild(container);
+        }
+        var toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(function() {
+            toast.classList.add('visible');
+        });
+        setTimeout(function() {
+            toast.classList.remove('visible');
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 4000);
+    }
+
     // Contact form
     var contactForm = document.getElementById('contact-form');
     if (contactForm) {
@@ -401,10 +425,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var email = document.getElementById('email').value;
             var message = document.getElementById('message').value;
             if (name && email && message) {
-                alert(translations[currentLanguage]['formThanks']);
+                showToast(translations[currentLanguage]['formThanks'], 'success');
                 contactForm.reset();
             } else {
-                alert(translations[currentLanguage]['formErrorFillAll']);
+                showToast(translations[currentLanguage]['formErrorFillAll'], 'error');
             }
         });
     }

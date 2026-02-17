@@ -1260,3 +1260,37 @@ footer .footer-links {
         margin-left: 0;
     }
 }
+
+/* ============ TOAST NOTIFICATIONS ============ */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    background: rgba(26, 31, 53, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 24px;
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-card);
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 360px;
+}
+.toast.visible {
+    transform: translateX(0);
+}
+.toast.toast-success {
+    border-left: 4px solid #22c55e;
+}
+.toast.toast-error {
+    border-left: 4px solid #ef4444;
+}
