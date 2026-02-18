@@ -575,9 +575,54 @@ var githubUsername = 'McMadA';
 var maxReposToShow = 6;
 var repoContainer = document.getElementById('repo-container');
 
+function renderRepos(repos) {
+    repoContainer.innerHTML = '';
+    if (repos.length === 0) {
+        repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
+        return;
+    }
+    repos.forEach(function(repo) {
+        var repoCard = document.createElement('div');
+        repoCard.className = 'repo-card fade-in visible';
+
+        var description = repo.description || 'Geen beschrijving opgegeven.';
+        if (description.length > 120) {
+            description = description.substring(0, 117) + '...';
+        }
+
+        var safeName = escapeHtml(repo.name);
+        var safeDescription = escapeHtml(description);
+        var safeLanguage = repo.language ? escapeHtml(repo.language) : '';
+
+        repoCard.innerHTML =
+            '<h3><a href="' + escapeHtml(repo.html_url) + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a></h3>' +
+            '<p class="repo-description">' + safeDescription + '</p>' +
+            '<div class="repo-meta">' +
+            (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + safeLanguage + '</span>' : '') +
+            '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
+            '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
+            '</div>';
+        repoContainer.appendChild(repoCard);
+    });
+}
+
 async function fetchRepos() {
     if (!repoContainer) return;
-    repoContainer.innerHTML = '<p class="loading">Laden van repositories...</p>';
+
+    // Check sessionStorage cache (5 minute TTL)
+    var cacheKey = 'github_repos_' + githubUsername;
+    var cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            var cachedData = JSON.parse(cached);
+            if (Date.now() - cachedData.timestamp < 300000) {
+                renderRepos(cachedData.repos);
+                return;
+            }
+        } catch(e) { /* ignore parse errors */ }
+    }
+
+    repoContainer.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Laden van repositories...</p></div>';
 
     try {
         var response = await fetch('https://api.github.com/users/' + githubUsername + '/repos?sort=pushed&direction=desc&per_page=100');
@@ -587,37 +632,14 @@ async function fetchRepos() {
 
         var repos = await response.json();
         repos = repos.slice(0, maxReposToShow);
-        repoContainer.innerHTML = '';
 
-        if (repos.length === 0) {
-            repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
-            return;
-        }
+        // Cache in sessionStorage
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+            repos: repos,
+            timestamp: Date.now()
+        }));
 
-        repos.forEach(function(repo) {
-            var repoCard = document.createElement('div');
-            repoCard.className = 'repo-card fade-in visible';
-
-            var description = repo.description || 'Geen beschrijving opgegeven.';
-            if (description.length > 120) {
-                description = description.substring(0, 117) + '...';
-            }
-
-            var safeName = escapeHtml(repo.name);
-            var safeDescription = escapeHtml(description);
-            var safeLanguage = repo.language ? escapeHtml(repo.language) : '';
-
-            repoCard.innerHTML =
-                '<h3><a href="' + escapeHtml(repo.html_url) + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a></h3>' +
-                '<p class="repo-description">' + safeDescription + '</p>' +
-                '<div class="repo-meta">' +
-                (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + safeLanguage + '</span>' : '') +
-                '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
-                '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
-                '</div>';
-            repoContainer.appendChild(repoCard);
-        });
-
+        renderRepos(repos);
     } catch (error) {
         console.error('[GitHub] Error:', error);
         if (repoContainer) {
