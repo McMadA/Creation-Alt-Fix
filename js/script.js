@@ -373,6 +373,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Scroll spy for active nav state
+    var sections = document.querySelectorAll('.section[id]');
+    var navLinksAll = document.querySelectorAll('#navbar ul a[href^="#"]');
+    if (sections.length > 0 && navLinksAll.length > 0) {
+        var scrollSpyObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var id = entry.target.getAttribute('id');
+                    navLinksAll.forEach(function(link) {
+                        link.classList.remove('nav-active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('nav-active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-20% 0px -80% 0px' });
+        sections.forEach(function(section) { scrollSpyObserver.observe(section); });
+    }
+
     // Current year in footer
     var currentYearSpan = document.getElementById('currentYear');
     if (currentYearSpan) {

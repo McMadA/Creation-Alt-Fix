@@ -96,6 +96,7 @@
     </script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
 
     <nav id="navbar">
         <div class="container">
@@ -126,13 +127,13 @@
     </nav>
 
     <div class="container">
-        <div class="breadcrumbs">
-            <a href="/" data-translate-key="breadcrumbHome">Home</a>
-            <span class="separator">&rsaquo;</span>
-            <a href="/diensten/" data-translate-key="breadcrumbDiensten">Diensten</a>
-            <span class="separator">&rsaquo;</span>
-            <span class="current">IT Support & Beheer</span>
-        </div>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
+                <li><a href="/diensten/" data-translate-key="breadcrumbDiensten">Diensten</a></li>
+                <li aria-current="page"><span class="current">IT Support & Beheer</span></li>
+            </ol>
+        </nav>
     </div>
 
     <header class="subpage-hero">
@@ -142,7 +143,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <section class="content-section">
             <div class="container">
                 <h2 data-translate-key="itH2Wat">Wat wij doen</h2>

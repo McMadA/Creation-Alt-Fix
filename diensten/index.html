@@ -48,6 +48,7 @@
     </script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
 
     <nav id="navbar">
         <div class="container">
@@ -82,11 +83,12 @@
     </nav>
 
     <div class="container">
-        <div class="breadcrumbs">
-            <a href="/" data-translate-key="breadcrumbHome">Home</a>
-            <span class="separator">&rsaquo;</span>
-            <span class="current" data-translate-key="breadcrumbDiensten">Diensten</span>
-        </div>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
+                <li aria-current="page"><span class="current" data-translate-key="breadcrumbDiensten">Diensten</span></li>
+            </ol>
+        </nav>
     </div>
 
     <header class="subpage-hero">
@@ -96,7 +98,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <section class="content-section">
             <div class="container">
                 <div class="diensten-overview-grid">

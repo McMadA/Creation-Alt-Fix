@@ -2,6 +2,27 @@
    CREATION+ALT+FIX - Dark AI Theme
    =========================================== */
 
+/* ============ SKIP LINK ============ */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 12px 24px;
+    z-index: 10000;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    border-radius: 0 0 8px 0;
+    transition: top 0.2s;
+    text-decoration: none;
+}
+.skip-link:focus {
+    top: 0;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
 /* Design Tokens */
 :root {
     --color-bg-primary: #0a0e1a;
@@ -295,7 +316,8 @@ a:hover {
     padding: 5px 0;
     transition: color var(--transition-base), text-shadow var(--transition-base);
 }
-#navbar ul li a:hover {
+#navbar ul li a:hover,
+#navbar ul li a.nav-active {
     color: #fff;
     text-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
 }
