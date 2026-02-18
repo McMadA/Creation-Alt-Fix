@@ -279,10 +279,21 @@ document.addEventListener('DOMContentLoaded', function() {
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
+        // Keys containing HTML markup — must use innerHTML; all others use textContent for XSS safety
+        var htmlKeys = new Set([
+            'heroHeadline', 'aiServicesTitle', 'learnMore', 'webDesignTitle',
+            'aiOplossingenTitle', 'portfolioTitle', 'faqTitle', 'githubTitle',
+            'trustTitle', 'contactTitle'
+        ]);
+
         document.querySelectorAll('[data-translate-key]').forEach(function(element) {
             var key = element.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
-                element.innerHTML = translations[lang][key];
+                if (htmlKeys.has(key)) {
+                    element.innerHTML = translations[lang][key];
+                } else {
+                    element.textContent = translations[lang][key];
+                }
             }
         });
 
@@ -362,6 +373,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Scroll spy for active nav state
+    var sections = document.querySelectorAll('.section[id]');
+    var navLinksAll = document.querySelectorAll('#navbar ul a[href^="#"]');
+    if (sections.length > 0 && navLinksAll.length > 0) {
+        var scrollSpyObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var id = entry.target.getAttribute('id');
+                    navLinksAll.forEach(function(link) {
+                        link.classList.remove('nav-active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('nav-active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-20% 0px -80% 0px' });
+        sections.forEach(function(section) { scrollSpyObserver.observe(section); });
+    }
+
     // Current year in footer
     var currentYearSpan = document.getElementById('currentYear');
     if (currentYearSpan) {
@@ -381,6 +412,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }, observerOptions);
     fadeInElements.forEach(function(el) { observer.observe(el); });
 
+    // Toast notification system
+    function showToast(message, type) {
+        type = type || 'success';
+        var container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            container.setAttribute('aria-live', 'polite');
+            container.setAttribute('role', 'status');
+            document.body.appendChild(container);
+        }
+        var toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(function() {
+            toast.classList.add('visible');
+        });
+        setTimeout(function() {
+            toast.classList.remove('visible');
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 4000);
+    }
+
     // Contact form
     var contactForm = document.getElementById('contact-form');
     if (contactForm) {
@@ -390,10 +445,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var email = document.getElementById('email').value;
             var message = document.getElementById('message').value;
             if (name && email && message) {
-                alert(translations[currentLanguage]['formThanks']);
+                showToast(translations[currentLanguage]['formThanks'], 'success');
                 contactForm.reset();
             } else {
-                alert(translations[currentLanguage]['formErrorFillAll']);
+                showToast(translations[currentLanguage]['formErrorFillAll'], 'error');
             }
         });
     }
@@ -454,7 +509,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        var animationId = null;
+        var isCanvasVisible = true;
+
         function drawParticles() {
+            if (!isCanvasVisible) { animationId = null; return; }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (var i = 0; i < particles.length; i++) {
                 var p = particles[i];
@@ -484,20 +543,86 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            requestAnimationFrame(drawParticles);
+            animationId = requestAnimationFrame(drawParticles);
         }
+
+        // Pause particle animation when hero section is off-screen to save CPU
+        var heroSection = document.getElementById('hero');
+        if (heroSection) {
+            var particleObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    isCanvasVisible = entry.isIntersecting;
+                    if (isCanvasVisible && !animationId) {
+                        drawParticles();
+                    }
+                });
+            }, { threshold: 0 });
+            particleObserver.observe(heroSection);
+        }
+
         drawParticles();
     }
 });
 
 // --- GITHUB REPOS ---
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 var githubUsername = 'McMadA';
 var maxReposToShow = 6;
 var repoContainer = document.getElementById('repo-container');
 
+function renderRepos(repos) {
+    repoContainer.innerHTML = '';
+    if (repos.length === 0) {
+        repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
+        return;
+    }
+    repos.forEach(function(repo) {
+        var repoCard = document.createElement('div');
+        repoCard.className = 'repo-card fade-in visible';
+
+        var description = repo.description || 'Geen beschrijving opgegeven.';
+        if (description.length > 120) {
+            description = description.substring(0, 117) + '...';
+        }
+
+        var safeName = escapeHtml(repo.name);
+        var safeDescription = escapeHtml(description);
+        var safeLanguage = repo.language ? escapeHtml(repo.language) : '';
+
+        repoCard.innerHTML =
+            '<h3><a href="' + escapeHtml(repo.html_url) + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a></h3>' +
+            '<p class="repo-description">' + safeDescription + '</p>' +
+            '<div class="repo-meta">' +
+            (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + safeLanguage + '</span>' : '') +
+            '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
+            '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
+            '</div>';
+        repoContainer.appendChild(repoCard);
+    });
+}
+
 async function fetchRepos() {
     if (!repoContainer) return;
-    repoContainer.innerHTML = '<p class="loading">Laden van repositories...</p>';
+
+    // Check sessionStorage cache (5 minute TTL)
+    var cacheKey = 'github_repos_' + githubUsername;
+    var cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            var cachedData = JSON.parse(cached);
+            if (Date.now() - cachedData.timestamp < 300000) {
+                renderRepos(cachedData.repos);
+                return;
+            }
+        } catch(e) { /* ignore parse errors */ }
+    }
+
+    repoContainer.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Laden van repositories...</p></div>';
 
     try {
         var response = await fetch('https://api.github.com/users/' + githubUsername + '/repos?sort=pushed&direction=desc&per_page=100');
@@ -507,33 +632,14 @@ async function fetchRepos() {
 
         var repos = await response.json();
         repos = repos.slice(0, maxReposToShow);
-        repoContainer.innerHTML = '';
 
-        if (repos.length === 0) {
-            repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
-            return;
-        }
+        // Cache in sessionStorage
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+            repos: repos,
+            timestamp: Date.now()
+        }));
 
-        repos.forEach(function(repo) {
-            var repoCard = document.createElement('div');
-            repoCard.className = 'repo-card fade-in visible';
-
-            var description = repo.description || 'Geen beschrijving opgegeven.';
-            if (description.length > 120) {
-                description = description.substring(0, 117) + '...';
-            }
-
-            repoCard.innerHTML =
-                '<h3><a href="' + repo.html_url + '" target="_blank" rel="noopener noreferrer">' + repo.name + '</a></h3>' +
-                '<p class="repo-description">' + description + '</p>' +
-                '<div class="repo-meta">' +
-                (repo.language ? '<span><i class="fas fa-circle" style="color:' + getLanguageColor(repo.language) + ';"></i> ' + repo.language + '</span>' : '') +
-                '<span><i class="fas fa-star"></i> ' + repo.stargazers_count + '</span>' +
-                '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
-                '</div>';
-            repoContainer.appendChild(repoCard);
-        });
-
+        renderRepos(repos);
     } catch (error) {
         console.error('[GitHub] Error:', error);
         if (repoContainer) {

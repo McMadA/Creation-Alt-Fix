@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <title>Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix</title>
     <meta name="description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
 
@@ -13,12 +15,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- Font Awesome (voor iconen) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
 
     <!-- Onze eigen CSS -->
     <link rel="stylesheet" href="css/live-demo.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
 
     <header class="demo-header">
         <div class="container">
@@ -28,7 +31,7 @@
         </div>
     </header>
 
-    <main class="timeline-container">
+    <main id="main-content" class="timeline-container">
         <!-- STAP 1: HTML -->
         <section id="step-html" class="timeline-step">
             <div class="timeline-content">
@@ -128,6 +131,6 @@ button.addEventListener('click', () => {
         <a href="/index.html" class="btn-back">Terug naar Creation+Alt+Fix</a>
     </footer>
 
-    <script src="js/live-demo.js"></script>
+    <script src="js/live-demo.js" defer></script>
 </body>
 </html>
