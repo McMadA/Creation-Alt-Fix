@@ -203,7 +203,46 @@ document.addEventListener('DOMContentLoaded', function() {
             "hbiCtaText": "Wilt u een soortgelijke AI-applicatie voor uw branche? Of bent u benieuwd naar een demo? Neem vrijblijvend contact op.",
             "hbiCtaDemo": "Bekijk Live Demo",
             "hbiCtaMail": "Neem Contact Op",
-            "breadcrumbProjecten": "Projecten"
+            "breadcrumbProjecten": "Projecten",
+
+            // Wind Cloud Sync Project Page
+            "windPageTitle": "Wind \u2013 Cloud Sync Tools | Creation+Alt+Fix",
+            "windH1": "Wind \u2013 Cloud <span>Sync Tools</span>",
+            "windLead": "Synchroniseer uw bestanden naadloos tussen OneDrive, Google Drive, iCloud en Google Photos. Met integriteitsverificatie, multi-threaded uploads en een browser-interface voor real-time monitoring.",
+            "windH2Problem": "Het probleem: versnipperde cloudopslag",
+            "windP1": "Foto\u2019s op iCloud, documenten op OneDrive, back-ups op Google Drive. De meeste mensen hebben hun bestanden verspreid over meerdere clouddiensten. Handmatig synchroniseren is tijdrovend, foutgevoelig en biedt geen garantie dat bestanden intact overkomen. Bestaande tools ondersteunen zelden alle grote platforms tegelijk.",
+            "windH2Solution": "De oplossing: \u00e9\u00e9n tool voor al uw clouds",
+            "windP2": "Wind verbindt OneDrive, Google Drive, iCloud en Google Photos in \u00e9\u00e9n krachtige sync engine. Upload, verplaats of kopieer bestanden tussen elke combinatie van diensten \u2014 met automatische integriteitscontrole via SHA256, MD5 of bestandsgrootte. Geen enkel bestand gaat verloren.",
+            "windH2Features": "Waarom <span>Wind?</span>",
+            "windCard1Title": "Multi-Cloud Support",
+            "windCard1P": "Sync tussen OneDrive, Google Drive, iCloud Drive en Google Photos. Elke combinatie van bron en bestemming werkt out-of-the-box.",
+            "windCard2Title": "Integriteitsverificatie",
+            "windCard2P": "Elk bestand wordt geverifieerd na overdracht. SHA256 voor OneDrive, MD5 voor Google Drive, bestandsgrootte voor iCloud. Nul dataverlies.",
+            "windCard3Title": "Multi-Threaded Uploads",
+            "windCard3P": "Configureerbare worker threads voor parallel uploaden. Batch-processing via de Google Photos API reduceert API-calls met factor 50.",
+            "windCard4Title": "Browser Interface",
+            "windCard4P": "FastAPI-powered web UI met real-time log streaming via Server-Sent Events. Configureer syncs via formulieren, geen CLI-kennis nodig.",
+            "windCard5Title": "Slimme Deduplicatie",
+            "windCard5P": "Drie dedup-modes: bestandsnaam, hash of beide. Voorkom dubbele uploads en bespaar opslagruimte automatisch.",
+            "windCard6Title": "Veilige Move-Modus",
+            "windCard6P": "Verplaats bestanden met een Copy-Verify-Delete strategie. Bronbestanden worden pas verwijderd na succesvolle verificatie.",
+            "windH2HowItWorks": "Hoe werkt het?",
+            "windStep1Title": "Configureren",
+            "windStep1P": "Kies bron- en bestemmingsdienst via de web-interface of CLI. Stel opties in zoals move-modus, dry-run of dedup-strategie.",
+            "windStep2Title": "Downloaden",
+            "windStep2P": "Bestanden worden recursief opgehaald van de bron en tijdelijk lokaal opgeslagen. De mappenstructuur blijft behouden.",
+            "windStep3Title": "Uploaden & Verifi\u00ebren",
+            "windStep3P": "Bestanden worden ge\u00fcpload naar de bestemming en automatisch geverifieerd via checksums. Fouten worden direct gemeld.",
+            "windStep4Title": "Rapportage",
+            "windStep4P": "Een samenvatting toont het aantal overgedragen, geverifieerde en gefaalde bestanden. Alles wordt gelogd voor audit.",
+            "windH2Tech": "De technologie achter Wind",
+            "windTechP": "Gebouwd met beproefde technologie\u00ebn voor betrouwbaarheid en performance bij grote volumes.",
+            "windTechCore": "Core Engine",
+            "windTechInfra": "Infrastructuur",
+            "windCtaTitle": "Interesse in cloud-synchronisatie?",
+            "windCtaText": "Wilt u een vergelijkbare integratietool voor uw organisatie? Of heeft u een custom sync-oplossing nodig? Neem vrijblijvend contact op.",
+            "windCtaMail": "Neem Contact Op",
+            "windCtaCall": "Bel Ons"
         },
         'en': {
             // Nav
@@ -407,7 +446,46 @@ document.addEventListener('DOMContentLoaded', function() {
             "hbiCtaText": "Want a similar AI application for your industry? Or curious about a demo? Get in touch, no obligation.",
             "hbiCtaDemo": "View Live Demo",
             "hbiCtaMail": "Get in Touch",
-            "breadcrumbProjecten": "Projects"
+            "breadcrumbProjecten": "Projects",
+
+            // Wind Cloud Sync Project Page
+            "windPageTitle": "Wind \u2013 Cloud Sync Tools | Creation+Alt+Fix",
+            "windH1": "Wind \u2013 Cloud <span>Sync Tools</span>",
+            "windLead": "Seamlessly sync your files between OneDrive, Google Drive, iCloud and Google Photos. With integrity verification, multi-threaded uploads and a browser interface for real-time monitoring.",
+            "windH2Problem": "The problem: fragmented cloud storage",
+            "windP1": "Photos on iCloud, documents on OneDrive, backups on Google Drive. Most people have their files scattered across multiple cloud services. Manual syncing is time-consuming, error-prone and offers no guarantee that files arrive intact. Existing tools rarely support all major platforms at once.",
+            "windH2Solution": "The solution: one tool for all your clouds",
+            "windP2": "Wind connects OneDrive, Google Drive, iCloud and Google Photos in one powerful sync engine. Upload, move or copy files between any combination of services \u2014 with automatic integrity checks via SHA256, MD5 or file size. Not a single file gets lost.",
+            "windH2Features": "Why <span>Wind?</span>",
+            "windCard1Title": "Multi-Cloud Support",
+            "windCard1P": "Sync between OneDrive, Google Drive, iCloud Drive and Google Photos. Every combination of source and destination works out-of-the-box.",
+            "windCard2Title": "Integrity Verification",
+            "windCard2P": "Every file is verified after transfer. SHA256 for OneDrive, MD5 for Google Drive, file size for iCloud. Zero data loss.",
+            "windCard3Title": "Multi-Threaded Uploads",
+            "windCard3P": "Configurable worker threads for parallel uploading. Batch processing via the Google Photos API reduces API calls by a factor of 50.",
+            "windCard4Title": "Browser Interface",
+            "windCard4P": "FastAPI-powered web UI with real-time log streaming via Server-Sent Events. Configure syncs through forms, no CLI knowledge needed.",
+            "windCard5Title": "Smart Deduplication",
+            "windCard5P": "Three dedup modes: filename, hash or both. Prevent duplicate uploads and save storage space automatically.",
+            "windCard6Title": "Safe Move Mode",
+            "windCard6P": "Move files with a Copy-Verify-Delete strategy. Source files are only deleted after successful verification.",
+            "windH2HowItWorks": "How does it work?",
+            "windStep1Title": "Configure",
+            "windStep1P": "Choose source and destination service via the web interface or CLI. Set options like move mode, dry-run or dedup strategy.",
+            "windStep2Title": "Download",
+            "windStep2P": "Files are recursively fetched from the source and temporarily stored locally. The folder structure is preserved.",
+            "windStep3Title": "Upload & Verify",
+            "windStep3P": "Files are uploaded to the destination and automatically verified via checksums. Errors are reported immediately.",
+            "windStep4Title": "Report",
+            "windStep4P": "A summary shows the number of transferred, verified and failed files. Everything is logged for audit.",
+            "windH2Tech": "The technology behind Wind",
+            "windTechP": "Built with proven technologies for reliability and performance at large volumes.",
+            "windTechCore": "Core Engine",
+            "windTechInfra": "Infrastructure",
+            "windCtaTitle": "Interested in cloud synchronisation?",
+            "windCtaText": "Want a similar integration tool for your organisation? Or need a custom sync solution? Get in touch, no obligation.",
+            "windCtaMail": "Get in Touch",
+            "windCtaCall": "Call Us"
         }
     };
 
@@ -423,7 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'dienstenOverviewTitle', 'dienstenOverviewH1',
             'itH1', 'itP4', 'aiH1', 'aiP3', 'aiP4',
             'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4',
-            'hbiH1', 'hbiH2Features'
+            'hbiH1', 'hbiH2Features',
+            'windH1', 'windH2Features'
         ]);
 
         document.querySelectorAll('[data-translate-key]').forEach(function(el) {

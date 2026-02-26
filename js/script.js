@@ -95,6 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project9Title": "Home Buyer Intelligence",
             "project9P": "AI-gedreven woninganalyse met risicoscoring en biedstrategie voor de Nederlandse huizenmarkt. Gebouwd met React, Fastify en Google Gemini AI.",
             "project9Btn": "Bekijk Case",
+            "project10Title": "Wind \u2013 Cloud Sync Tools",
+            "project10P": "Synchroniseer bestanden tussen OneDrive, Google Drive, iCloud en Google Photos met integriteitsverificatie en real-time monitoring.",
+            "project10Btn": "Bekijk Case",
             "liveDemoBtn": "Bekijk de live demo hoe een website tot stand komt!",
 
             // --- FAQ ---
@@ -231,6 +234,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project9Title": "Home Buyer Intelligence",
             "project9P": "AI-powered property analysis with risk scoring and bidding strategy for the Dutch housing market. Built with React, Fastify and Google Gemini AI.",
             "project9Btn": "View Case",
+            "project10Title": "Wind \u2013 Cloud Sync Tools",
+            "project10P": "Sync files between OneDrive, Google Drive, iCloud and Google Photos with integrity verification and real-time monitoring.",
+            "project10Btn": "View Case",
             "liveDemoBtn": "Watch the live demo of how a website is built!",
 
             // --- FAQ ---

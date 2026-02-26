@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <title data-translate-key="windPageTitle">Wind – Cloud Sync Tools | Creation+Alt+Fix</title>
+    <meta name="description" content="Wind: synchroniseer bestanden tussen OneDrive, Google Drive, iCloud en Google Photos. Multi-threaded uploads, integriteitsverificatie en een web-interface voor real-time monitoring.">
+    <meta name="keywords" content="cloud sync, OneDrive, Google Drive, iCloud, Google Photos, bestandssynchronisatie, cloud storage, backup tool">
+    <link rel="canonical" href="https://www.creationaltfix.nl/projects/wind/">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.creationaltfix.nl/projects/wind/">
+    <meta property="og:title" content="Wind – Cloud Sync Tools | Creation+Alt+Fix">
+    <meta property="og:description" content="Synchroniseer bestanden tussen OneDrive, Google Drive, iCloud en Google Photos met integriteitsverificatie en real-time monitoring.">
+    <meta property="og:image" content="https://www.creationaltfix.nl/images/wind-hero.png">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/subpage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Wind – Cloud Storage Sync Tools",
+        "description": "Synchroniseer bestanden tussen OneDrive, Google Drive, iCloud en Google Photos met integriteitsverificatie.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web, Windows, Linux, macOS",
+        "provider": {
+            "@type": "ProfessionalService",
+            "@id": "https://www.creationaltfix.nl/#organization"
+        },
+        "url": "https://www.creationaltfix.nl/projects/wind/"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.creationaltfix.nl/" },
+            { "@type": "ListItem", "position": 2, "name": "Projecten", "item": "https://www.creationaltfix.nl/#projects" },
+            { "@type": "ListItem", "position": 3, "name": "Wind", "item": "https://www.creationaltfix.nl/projects/wind/" }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <nav id="navbar">
+        <div class="container">
+            <a href="/" class="logo">Creation<span>+</span>Alt<span>+</span>Fix</a>
+            <button class="hamburger" id="hamburger-menu" aria-label="Navigatiemenu wisselen" aria-expanded="false" aria-controls="nav-menu-items">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-menu-items" id="nav-menu-items">
+                <ul>
+                    <li><a href="/" data-translate-key="navHome">Home</a></li>
+                    <li><a href="/#ai-services" data-translate-key="navAIServices">AI Services</a></li>
+                    <li><a href="/#web-design" data-translate-key="navWebDesign">Web Design &amp; Tech</a></li>
+                    <li><a href="/#projects" data-translate-key="navProjects">Projecten</a></li>
+                    <li><a href="/#contact" data-translate-key="navContact">Contact</a></li>
+                </ul>
+                <div class="nav-right-cluster">
+                    <div class="nav-social-icons">
+                        <a href="https://www.instagram.com/creationaltfix" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/in/allardveldman/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                    <div id="language-switcher">
+                        <button type="button" data-lang="nl" class="lang-btn">NL</button>
+                        <button type="button" data-lang="en" class="lang-btn">EN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
+                <li><a href="/#projects" data-translate-key="breadcrumbProjecten">Projecten</a></li>
+                <li aria-current="page"><span class="current">Wind</span></li>
+            </ol>
+        </nav>
+    </div>
+
+    <header class="subpage-hero">
+        <div class="container">
+            <h1 data-translate-key="windH1">Wind – Cloud <span>Sync Tools</span></h1>
+            <p class="lead" data-translate-key="windLead">Synchroniseer uw bestanden naadloos tussen OneDrive, Google Drive, iCloud en Google Photos. Met integriteitsverificatie, multi-threaded uploads en een browser-interface voor real-time monitoring.</p>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Problem → Solution -->
+        <section class="content-section">
+            <div class="container">
+                <h2 data-translate-key="windH2Problem">Het probleem: versnipperde cloudopslag</h2>
+                <p data-translate-key="windP1">Foto's op iCloud, documenten op OneDrive, back-ups op Google Drive. De meeste mensen hebben hun bestanden verspreid over meerdere clouddiensten. Handmatig synchroniseren is tijdrovend, foutgevoelig en biedt geen garantie dat bestanden intact overkomen. Bestaande tools ondersteunen zelden alle grote platforms tegelijk.</p>
+
+                <h2 data-translate-key="windH2Solution">De oplossing: één tool voor al uw clouds</h2>
+                <p data-translate-key="windP2">Wind verbindt OneDrive, Google Drive, iCloud en Google Photos in één krachtige sync engine. Upload, verplaats of kopieer bestanden tussen elke combinatie van diensten — met automatische integriteitscontrole via SHA256, MD5 of bestandsgrootte. Geen enkel bestand gaat verloren.</p>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="content-section" style="background-color: var(--color-bg-secondary);">
+            <div class="container">
+                <h2 data-translate-key="windH2Features" style="text-align: center; margin-bottom: 2.5rem;">Waarom <span style="background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Wind?</span></h2>
+                <div class="detail-cards">
+                    <div class="detail-card">
+                        <i class="fas fa-cloud"></i>
+                        <h4 data-translate-key="windCard1Title">Multi-Cloud Support</h4>
+                        <p data-translate-key="windCard1P">Sync tussen OneDrive, Google Drive, iCloud Drive en Google Photos. Elke combinatie van bron en bestemming werkt out-of-the-box.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-check-double"></i>
+                        <h4 data-translate-key="windCard2Title">Integriteitsverificatie</h4>
+                        <p data-translate-key="windCard2P">Elk bestand wordt geverifieerd na overdracht. SHA256 voor OneDrive, MD5 voor Google Drive, bestandsgrootte voor iCloud. Nul dataverlies.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <h4 data-translate-key="windCard3Title">Multi-Threaded Uploads</h4>
+                        <p data-translate-key="windCard3P">Configureerbare worker threads voor parallel uploaden. Batch-processing via de Google Photos API reduceert API-calls met factor 50.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-desktop"></i>
+                        <h4 data-translate-key="windCard4Title">Browser Interface</h4>
+                        <p data-translate-key="windCard4P">FastAPI-powered web UI met real-time log streaming via Server-Sent Events. Configureer syncs via formulieren, geen CLI-kennis nodig.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-clone"></i>
+                        <h4 data-translate-key="windCard5Title">Slimme Deduplicatie</h4>
+                        <p data-translate-key="windCard5P">Drie dedup-modes: bestandsnaam, hash of beide. Voorkom dubbele uploads en bespaar opslagruimte automatisch.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4 data-translate-key="windCard6Title">Veilige Move-Modus</h4>
+                        <p data-translate-key="windCard6P">Verplaats bestanden met een Copy-Verify-Delete strategie. Bronbestanden worden pas verwijderd na succesvolle verificatie.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it Works -->
+        <section class="content-section">
+            <div class="container">
+                <h2 data-translate-key="windH2HowItWorks" style="text-align: center; margin-bottom: 2.5rem;">Hoe werkt het?</h2>
+                <div class="steps-flow">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <i class="fas fa-cog"></i>
+                        <h4 data-translate-key="windStep1Title">Configureren</h4>
+                        <p data-translate-key="windStep1P">Kies bron- en bestemmingsdienst via de web-interface of CLI. Stel opties in zoals move-modus, dry-run of dedup-strategie.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <i class="fas fa-download"></i>
+                        <h4 data-translate-key="windStep2Title">Downloaden</h4>
+                        <p data-translate-key="windStep2P">Bestanden worden recursief opgehaald van de bron en tijdelijk lokaal opgeslagen. De mappenstructuur blijft behouden.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <i class="fas fa-upload"></i>
+                        <h4 data-translate-key="windStep3Title">Uploaden & Verifiëren</h4>
+                        <p data-translate-key="windStep3P">Bestanden worden geüpload naar de bestemming en automatisch geverifieerd via checksums. Fouten worden direct gemeld.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <i class="fas fa-clipboard-check"></i>
+                        <h4 data-translate-key="windStep4Title">Rapportage</h4>
+                        <p data-translate-key="windStep4P">Een samenvatting toont het aantal overgedragen, geverifieerde en gefaalde bestanden. Alles wordt gelogd voor audit.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Image -->
+        <section class="content-section" style="background-color: var(--color-bg-secondary); padding: 40px 0;">
+            <div class="container" style="text-align: center;">
+                <img src="/images/wind-hero.png" alt="Wind Cloud Sync Tools Interface" loading="lazy" decoding="async" style="max-width: 90%; border-radius: var(--radius-md); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); border: 1px solid var(--color-border);">
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section class="content-section">
+            <div class="container">
+                <h2 data-translate-key="windH2Tech" style="text-align: center; margin-bottom: 1rem;">De technologie achter Wind</h2>
+                <p style="text-align: center; max-width: 600px; margin: 0 auto 2rem;" data-translate-key="windTechP">Gebouwd met beproefde technologieën voor betrouwbaarheid en performance bij grote volumes.</p>
+                <div class="tech-stack-grid">
+                    <div class="tech-category">
+                        <h4 data-translate-key="windTechCore">Core Engine</h4>
+                        <ul class="keywords">
+                            <li>Python 3.11+</li>
+                            <li>Multi-Threading</li>
+                            <li>Rich CLI</li>
+                            <li>Batch Processing</li>
+                        </ul>
+                    </div>
+                    <div class="tech-category">
+                        <h4>Web Interface</h4>
+                        <ul class="keywords">
+                            <li>FastAPI</li>
+                            <li>Server-Sent Events</li>
+                            <li>HTML/CSS/JS</li>
+                            <li>Real-time Streaming</li>
+                        </ul>
+                    </div>
+                    <div class="tech-category">
+                        <h4>Cloud API's</h4>
+                        <ul class="keywords">
+                            <li>Microsoft Graph</li>
+                            <li>Google Drive API</li>
+                            <li>Google Photos API</li>
+                            <li>iCloud API</li>
+                            <li>OAuth 2.0</li>
+                        </ul>
+                    </div>
+                    <div class="tech-category">
+                        <h4 data-translate-key="windTechInfra">Infrastructuur</h4>
+                        <ul class="keywords">
+                            <li>Azure Bicep IaC</li>
+                            <li>Ubuntu VM</li>
+                            <li>Azure Free Tier</li>
+                            <li>SHA256 / MD5</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <h2 data-translate-key="windCtaTitle">Interesse in cloud-synchronisatie?</h2>
+                <p data-translate-key="windCtaText">Wilt u een vergelijkbare integratietool voor uw organisatie? Of heeft u een custom sync-oplossing nodig? Neem vrijblijvend contact op.</p>
+                <div class="cta-buttons">
+                    <a href="mailto:info@creationaltfix.nl" class="btn btn-primary"><i class="fas fa-envelope"></i> <span data-translate-key="windCtaMail">Neem Contact Op</span></a>
+                    <a href="/#contact" class="btn btn-secondary" style="color:#fff;border-color:#fff;"><i class="fas fa-phone"></i> <span data-translate-key="windCtaCall">Bel Ons</span></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; <span id="currentYear"></span> Creation+Alt+Fix. <span data-translate-key="footerRights">Alle rechten voorbehouden.</span></p>
+                <div class="footer-social-and-links">
+                    <div class="footer-social-icons">
+                        <a href="https://www.instagram.com/creationaltfix" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                    <div class="footer-social-icons">
+                        <a href="https://www.linkedin.com/in/allardveldman/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/subpage.js" defer></script>
+</body>
+</html>
