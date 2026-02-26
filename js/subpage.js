@@ -162,7 +162,48 @@ document.addEventListener('DOMContentLoaded', function() {
             "relWebTitle": "Website Laten Maken",
             "relWebP": "Moderne websites en webshops vanaf \u20ac99",
             "relDashTitle": "Data Dashboards",
-            "relDashP": "KPI dashboards en data visualisatie"
+            "relDashP": "KPI dashboards en data visualisatie",
+
+            // Home Buyer Intelligence Project Page
+            "hbiPageTitle": "Home Buyer Intelligence - AI Woninganalyse | Creation+Alt+Fix",
+            "hbiH1": "Home Buyer <span>Intelligence</span>",
+            "hbiLead": "AI-gedreven woninganalyse die huizenkopers helpt de juiste beslissing te nemen. Upload uw documenten, ontvang een risicoscore en een persoonlijke biedstrategie \u2014 volledig GDPR-compliant.",
+            "hbiH2Problem": "Het probleem: blind bieden op de huizenmarkt",
+            "hbiP1": "Een huis kopen in Nederland is spannend, maar ook risicovol. Kopers ontvangen stapels documenten \u2014 VvE-rapporten, kadastergegevens, energielabels, juridische stukken \u2014 maar hebben vaak niet de expertise om deze goed te beoordelen. Het resultaat? Overbieden, verborgen gebreken missen, of juist kansen laten liggen.",
+            "hbiH2Solution": "De oplossing: AI die uw documenten analyseert",
+            "hbiP2": "Home Buyer Intelligence analyseert uw woningdocumenten met Google Gemini AI en levert binnen minuten een complete risicobeoordeling. U ontvangt een gewogen risicoscore, inzicht in structurele, juridische, financi\u00eble en milieu-risico\u2019s, en een gepersonaliseerde biedstrategie. Zodat u met vertrouwen kunt bieden.",
+            "hbiH2Features": "Wat maakt dit product <span>uniek?</span>",
+            "hbiCard1Title": "AI Documentanalyse",
+            "hbiCard1P": "Upload tot 15 documenten tegelijk. Gemini AI extraheert automatisch alle relevante informatie uit VvE-rapporten, kadasterstukken en meer.",
+            "hbiCard2Title": "Risicoscoring",
+            "hbiCard2P": "Gewogen risicobeoordeling over vier categorie\u00ebn: structureel, juridisch, financieel en milieu. Overzichtelijke score van 0\u2013100.",
+            "hbiCard3Title": "Biedstrategie",
+            "hbiCard3P": "Ontvang een risico-gecorrigeerd biedadvies met minimum, aanbevolen en maximum bod \u2014 afgestemd op marktdata en woningconditie.",
+            "hbiCard4Title": "100% GDPR-Compliant",
+            "hbiCard4P": "Uw data wordt na 24 uur automatisch verwijderd. Sessie-isolatie, \u00e9\u00e9n-klik dataverwijdering en geen permanente opslag.",
+            "hbiCard5Title": "Nederlandse Huizenmarkt",
+            "hbiCard5P": "Specifiek ontwikkeld voor de Nederlandse markt. Integratie met BAG, Kadaster, EP-Online en CBS voor actuele marktdata.",
+            "hbiCard6Title": "Visueel Dashboard",
+            "hbiCard6P": "Donker-themed dashboard met interactieve grafieken, risico-overzichten en marktanalyse. Direct bruikbaar na analyse.",
+            "hbiH2HowItWorks": "Hoe werkt het?",
+            "hbiStep1Title": "Documenten uploaden",
+            "hbiStep1P": "Sleep uw woningdocumenten in de upload zone. Tot 15 bestanden tegelijk, maximaal 25 MB per bestand.",
+            "hbiStep2Title": "AI Analyse",
+            "hbiStep2P": "Google Gemini AI leest en begrijpt uw documenten. Het extraheert woningdetails, VvE-financi\u00ebn en juridische risico\u2019s.",
+            "hbiStep3Title": "Risicobeoordeling",
+            "hbiStep3P": "De resultaten worden verwerkt door ons risicoscoringsmodel. U ontvangt een gewogen score per categorie.",
+            "hbiStep4Title": "Biedadvies",
+            "hbiStep4P": "Op basis van de risicoanalyse en marktdata ontvangt u een gepersonaliseerd biedadvies met drie scenario\u2019s.",
+            "hbiH2Tech": "Gebouwd met bewezen technologie",
+            "hbiTechP": "Een robuuste, schaalbare architectuur die klaar is voor productie en enterprise-gebruik.",
+            "hbiTechFrontend": "Frontend",
+            "hbiTechBackend": "Backend",
+            "hbiTechInfra": "Infrastructuur",
+            "hbiCtaTitle": "Interesse in deze oplossing?",
+            "hbiCtaText": "Wilt u een soortgelijke AI-applicatie voor uw branche? Of bent u benieuwd naar een demo? Neem vrijblijvend contact op.",
+            "hbiCtaDemo": "Bekijk Live Demo",
+            "hbiCtaMail": "Neem Contact Op",
+            "breadcrumbProjecten": "Projecten"
         },
         'en': {
             // Nav
@@ -325,7 +366,48 @@ document.addEventListener('DOMContentLoaded', function() {
             "relWebTitle": "Website Development",
             "relWebP": "Modern websites and webshops from \u20ac99",
             "relDashTitle": "Data Dashboards",
-            "relDashP": "KPI dashboards and data visualization"
+            "relDashP": "KPI dashboards and data visualization",
+
+            // Home Buyer Intelligence Project Page
+            "hbiPageTitle": "Home Buyer Intelligence - AI Property Analysis | Creation+Alt+Fix",
+            "hbiH1": "Home Buyer <span>Intelligence</span>",
+            "hbiLead": "AI-powered property analysis that helps home buyers make the right decision. Upload your documents, receive a risk score and a personalised bidding strategy \u2014 fully GDPR-compliant.",
+            "hbiH2Problem": "The problem: bidding blind on the housing market",
+            "hbiP1": "Buying a house in the Netherlands is exciting, but also risky. Buyers receive stacks of documents \u2014 VvE reports, Kadaster extracts, energy labels, legal disclosures \u2014 but often lack the expertise to properly assess them. The result? Overbidding, missing hidden defects, or losing out on opportunities.",
+            "hbiH2Solution": "The solution: AI that analyses your documents",
+            "hbiP2": "Home Buyer Intelligence analyses your property documents with Google Gemini AI and delivers a complete risk assessment in minutes. You receive a weighted risk score, insight into structural, legal, financial and environmental risks, and a personalised bidding strategy. So you can bid with confidence.",
+            "hbiH2Features": "What makes this product <span>unique?</span>",
+            "hbiCard1Title": "AI Document Analysis",
+            "hbiCard1P": "Upload up to 15 documents at once. Gemini AI automatically extracts all relevant information from VvE reports, cadastral records and more.",
+            "hbiCard2Title": "Risk Scoring",
+            "hbiCard2P": "Weighted risk assessment across four categories: structural, legal, financial and environmental. Clear score from 0\u2013100.",
+            "hbiCard3Title": "Bidding Strategy",
+            "hbiCard3P": "Receive a risk-adjusted bidding recommendation with minimum, recommended and maximum bid \u2014 based on market data and property condition.",
+            "hbiCard4Title": "100% GDPR-Compliant",
+            "hbiCard4P": "Your data is automatically deleted after 24 hours. Session isolation, one-click data deletion and no permanent storage.",
+            "hbiCard5Title": "Dutch Housing Market",
+            "hbiCard5P": "Specifically built for the Dutch market. Integration with BAG, Kadaster, EP-Online and CBS for current market data.",
+            "hbiCard6Title": "Visual Dashboard",
+            "hbiCard6P": "Dark-themed dashboard with interactive charts, risk overviews and market analysis. Ready to use after analysis.",
+            "hbiH2HowItWorks": "How does it work?",
+            "hbiStep1Title": "Upload Documents",
+            "hbiStep1P": "Drag your property documents into the upload zone. Up to 15 files at once, maximum 25 MB per file.",
+            "hbiStep2Title": "AI Analysis",
+            "hbiStep2P": "Google Gemini AI reads and understands your documents. It extracts property details, VvE financials and legal risks.",
+            "hbiStep3Title": "Risk Assessment",
+            "hbiStep3P": "The results are processed by our risk scoring model. You receive a weighted score per category.",
+            "hbiStep4Title": "Bidding Advice",
+            "hbiStep4P": "Based on the risk analysis and market data, you receive personalised bidding advice with three scenarios.",
+            "hbiH2Tech": "Built with proven technology",
+            "hbiTechP": "A robust, scalable architecture that is ready for production and enterprise use.",
+            "hbiTechFrontend": "Frontend",
+            "hbiTechBackend": "Backend",
+            "hbiTechInfra": "Infrastructure",
+            "hbiCtaTitle": "Interested in this solution?",
+            "hbiCtaText": "Want a similar AI application for your industry? Or curious about a demo? Get in touch, no obligation.",
+            "hbiCtaDemo": "View Live Demo",
+            "hbiCtaMail": "Get in Touch",
+            "breadcrumbProjecten": "Projects"
         }
     };
 
@@ -340,7 +422,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var htmlKeys = new Set([
             'dienstenOverviewTitle', 'dienstenOverviewH1',
             'itH1', 'itP4', 'aiH1', 'aiP3', 'aiP4',
-            'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4'
+            'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4',
+            'hbiH1', 'hbiH2Features'
         ]);
 
         document.querySelectorAll('[data-translate-key]').forEach(function(el) {

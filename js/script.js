@@ -92,6 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project8Title": "Capybara Culture",
             "project8P": "Check hier wat NFT's zijn!",
             "project8Btn": "Kijk snel!",
+            "project9Title": "Home Buyer Intelligence",
+            "project9P": "AI-gedreven woninganalyse met risicoscoring en biedstrategie voor de Nederlandse huizenmarkt. Gebouwd met React, Fastify en Google Gemini AI.",
+            "project9Btn": "Bekijk Case",
             "liveDemoBtn": "Bekijk de live demo hoe een website tot stand komt!",
 
             // --- FAQ ---
@@ -225,6 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "project8Title": "Capybara Culture",
             "project8P": "Check out what NFTs are!",
             "project8Btn": "Check it out quickly!",
+            "project9Title": "Home Buyer Intelligence",
+            "project9P": "AI-powered property analysis with risk scoring and bidding strategy for the Dutch housing market. Built with React, Fastify and Google Gemini AI.",
+            "project9Btn": "View Case",
             "liveDemoBtn": "Watch the live demo of how a website is built!",
 
             // --- FAQ ---
