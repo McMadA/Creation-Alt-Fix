@@ -1,4 +1,19 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // --- LOAD COMPONENTS ---
+    const loadComponent = async (id, file) => {
+        const el = document.getElementById(id);
+        if (el) {
+            try {
+                const response = await fetch(file);
+                if (response.ok) { el.outerHTML = await response.text(); }
+            } catch (e) { console.error("Failed to load component:", file, e); }
+        }
+    };
+    await Promise.all([
+        loadComponent('navbar-placeholder', '/components/navbar.html'),
+        loadComponent('footer-placeholder', '/components/footer.html')
+    ]);
+
     // --- LANGUAGE SWITCHER LOGIC START ---
     const translations = {
         'nl': {
