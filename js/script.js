@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             "learnMore": "Meer info <i class=\"fas fa-arrow-right\"></i>",
 
             // --- DIENSTEN ---
-            "dienst1Title": "IT Support & Beheer",
-            "dienst1P": "PC-reparatie, netwerkoptimalisatie, softwareproblemen. Snelle, betrouwbare support voor particulieren en MKB.",
-            "dienst1K1": "PC & Mac Support",
+            "dienst1Title": "Software Support & Systeembeheer",
+            "dienst1P": "Systeemoptimalisatie, netwerkbeheer, softwareondersteuning. Snelle, betrouwbare support voor particulieren en MKB.",
+            "dienst1K1": "Software & Systeem Support",
             "dienst1K2": "Netwerkbeheer",
             "dienst1K3": "Virusverwijdering",
             "dienst2Title": "Slimme Bedrijfstools & Automatisering",
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "waarom2Title": "Uw Taal, Onze Techniek",
             "waarom2P": "U vertelt ons uw wens in heldere taal, wij zorgen voor de technische vertaling en snelle realisatie met AI. Geen jargon, wel resultaat.",
             "waarom3Title": "Van Concept tot Creatie",
-            "waarom3P": "Of het nu reparatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.",
+            "waarom3P": "Of het nu softwareoptimalisatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.",
             "waarom4Title": "Design & Functionaliteit",
             "waarom4P": "Geinspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.",
 
@@ -179,9 +179,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             "learnMore": "Learn more <i class=\"fas fa-arrow-right\"></i>",
 
             // --- SERVICES ---
-            "dienst1Title": "IT Support & Management",
-            "dienst1P": "PC repair, network optimization, software issues, data recovery. Fast, reliable support for individuals and SMEs.",
-            "dienst1K1": "PC & Mac Support",
+            "dienst1Title": "Software Support & System Management",
+            "dienst1P": "Software optimization, network management, software support. Fast, reliable support for individuals and SMEs.",
+            "dienst1K1": "Software & System Support",
             "dienst1K2": "Network Management",
             "dienst1K3": "Virus Removal",
             "dienst2Title": "Smart Business Tools & Automation",
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "waarom2Title": "Your Language, Our Technology",
             "waarom2P": "You tell us your wish in clear language, we take care of the technical translation and fast realization with AI. No jargon, just results.",
             "waarom3Title": "From Concept to Creation",
-            "waarom3P": "Whether it's a repair or a complex AI strategy, we guide the entire process. Your partner in digital transformation.",
+            "waarom3P": "Whether it's software optimization or a complex AI strategy, we guide the entire process. Your partner in digital transformation.",
             "waarom4Title": "Design & Functionality",
             "waarom4P": "Inspired by the best designs, we deliver solutions that not only work perfectly but also look the part.",
 
