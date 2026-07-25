@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "overMijPageTitle": "Over mij - Allard Veldman | Creation+Alt+Fix",
             "overMijMetaDesc": "Allard Veldman, de drijvende kracht achter Creation+Alt+Fix. Ontdek mijn passie voor Software-Only services, AI-automatisering en supersnelle websites in Groningen.",
             "overMijBadge": "Allard Veldman",
-            "overMijH1": "Over <span>Mij</span>",
+            "overMijH1": "Over Mij",
             "overMijLead": "De drijvende kracht achter Creation+Alt+Fix. Ik maak complexe technologie toegankelijk en bruikbaar voor MKB en particulieren in Groningen en omstreken.",
             "overMijMissieTitle": "Mijn Missie & Achtergrond",
             "overMijMissieP1": "Technologie moet voor jou werken, niet andersom. Met een persoonlijke aanpak en resultaatgerichte oplossingen zorg ik ervoor dat digitale vraagstukken helder en overzichtelijk worden.",

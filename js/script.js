@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "faq3A": "Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.",
 
             // --- ABOUT ---
-            "aboutTitle": "Over <span>Mij</span>",
+            "aboutTitle": "Over Mij",
             "aboutP1": "Hoi, ik ben Allard Veldman, de drijvende kracht achter Creation+Alt+Fix. Met een diepe passie voor technologie en een scherp oog voor detail help ik ondernemers en particulieren om hun digitale uitdagingen om te zetten in kansen.",
             "aboutP2": "Mijn missie is simpel: complexe technologie toegankelijk en bruikbaar maken. Of het nu gaat om het bouwen van een bliksemsnelle website, het automatiseren van tijdrovende processen met AI, of het bieden van betrouwbare IT-support – ik sta voor een persoonlijke aanpak en resultaatgerichte oplossingen.",
             "aboutP3": "Laten we samen kijken hoe we technologie in jouw voordeel kunnen laten werken!",
