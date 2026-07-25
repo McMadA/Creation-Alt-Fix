@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morocco ERP & POS Architecture</title>
+    <meta name="description" content="Database architecture for a mobile-first French/Moroccan-style ERP & POS application contextually built for small-to-medium businesses in Morocco.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        
+        <header>
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>AtlasERP</h1>
+            </div>
+            <p class="subtitle">Next-Gen Moroccan Enterprise Workflow Architecture</p>
+        </header>
+
+        <main>
+            <section class="overview glass-panel fade-in">
+                <h2><i class="icon">🎯</i> Role & Objective</h2>
+                <p>
+                    Robust, scalable, production-ready PostgreSQL database schema (with Prisma ORM definitions) 
+                    for a mobile-first French/Moroccan-style ERP & POS application. Specifically tailored for small-to-medium businesses (SMBs) in Morocco.
+                </p>
+            </section>
+
+            <div class="grid">
+                <section class="localization glass-panel fade-in delay-1">
+                    <h2><i class="icon">🇲🇦</i> Localized Rules</h2>
+                    <ul>
+                        <li><strong>Currency:</strong> MAD (Moroccan Dirham) stored in standard decimal formats <code>DECIMAL(12, 2)</code>.</li>
+                        <li><strong>Taxation (TVA):</strong> Line-item level support for 20%, 10%, 14%, 7%, and 0% (exempt).</li>
+                        <li><strong>Legal Identifiers:</strong> Built-in fields for <code>ICE</code> (15 digits), <code>IF</code>, <code>RC</code>, and <code>CNSS</code>.</li>
+                        <li><strong>Sequential Codes:</strong> Enforced document numbering per fiscal year (e.g., <code>DEV-2026-0001</code>).</li>
+                    </ul>
+                </section>
+
+                <section class="workflow glass-panel fade-in delay-2">
+                    <h2><i class="icon">🔄</i> Workflow Chain</h2>
+                    <div class="flow">
+                        <div class="flow-step">Devis</div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-step">Bon de Commande</div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-step">Bon de Livraison</div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-step">Facture</div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-step">Reçu</div>
+                    </div>
+                    <p class="explanation">
+                        Strict state transitions ensure documents move from Draft ➔ Validated ➔ Partial/Fulfilled ➔ Invoiced ➔ Paid.
+                    </p>
+                </section>
+            </div>
+
+            <section class="critical-integrity glass-panel fade-in delay-3">
+                <h2><i class="icon">🛡️</i> Critical Schema Gaps Addressed</h2>
+                
+                <div class="integrity-grid">
+                    <div class="integrity-card">
+                        <h3>Stock Movement Atomicity</h3>
+                        <p>Inventory levels cannot drop below zero. Enforced via a `quantity Int @default(0)` coupled with a raw SQL migration check constraint <code>CHECK (quantity >= 0)</code> on the `WarehouseStock` table.</p>
+                    </div>
+                    
+                    <div class="integrity-card">
+                        <h3>Price Snapshotting</h3>
+                        <p>Line items strictly store historical unit prices and TVA rates at the exact time of document creation. This protects financial records from retroactive changes if product pricing updates later.</p>
+                    </div>
+
+                    <div class="integrity-card">
+                        <h3>Audit Logs & Immutability</h3>
+                        <p>Immutable audit trail built in via the `AuditLog` model to track invoice cancellations, stock adjustments, and administrative overrides.</p>
+                    </div>
+                    
+                    <div class="integrity-card">
+                        <h3>Document Lineage (Partial Conversions)</h3>
+                        <p>Implemented via the <code>parentDocumentId</code> self-relation on the `Document` model. A Devis can convert into multiple partial BLs, and multiple BLs can aggregate into one Facture. This robust tree structure traces origin and avoids double stock deduction.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="schema-viewer glass-panel fade-in delay-4">
+                <div class="schema-header">
+                    <h2><i class="icon">💻</i> Prisma Schema Explorer</h2>
+                    <a href="schema.prisma" download class="btn-download">Download .prisma</a>
+                </div>
+                <div class="code-window">
+                    <div class="window-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">schema.prisma</span>
+                    </div>
+                    <pre><code class="language-prisma" id="prisma-code">Loading schema...</code></pre>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2026 AtlasERP / Creation+Alt+Fix. Designed for Moroccan Business Excellence.</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
