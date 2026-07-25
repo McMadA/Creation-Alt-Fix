@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klant Intake - Creation+Alt+Fix</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/intake.css">
+</head>
+<body>
+
+    <div class="intake-container">
+        <header class="intake-header">
+            <img src="/images/logo.png" alt="Creation+Alt+Fix Logo" class="intake-logo">
+            <h1>Welkom bij <span class="accent">Creation+Alt+Fix</span></h1>
+            <p>Leuk dat we gaan samenwerken! Vul hieronder je wensen en gegevens in, dan kunnen we direct aan de slag met jouw project.</p>
+        </header>
+
+        <form id="intake-form" class="intake-form">
+            
+            <div class="form-section">
+                <h2>1. Bedrijfsgegevens</h2>
+                <div class="form-group">
+                    <label for="companyName">Bedrijfsnaam *</label>
+                    <input type="text" id="companyName" class="form-control" required placeholder="Bijv. Jansen IT">
+                </div>
+                <div class="form-group">
+                    <label for="contactName">Contactpersoon *</label>
+                    <input type="text" id="contactName" class="form-control" required placeholder="Jouw volledige naam">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mailadres *</label>
+                    <input type="email" id="email" class="form-control" required placeholder="info@bedrijf.nl">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>2. Project Details</h2>
+                <div class="form-group">
+                    <label for="serviceType">Welke dienst nemen we af? *</label>
+                    <select id="serviceType" class="form-control" required>
+                        <option value="" disabled selected>Kies een dienst...</option>
+                        <option value="Website & Webshop">Website & Webshop (vanaf €99)</option>
+                        <option value="Slimme Automatisering (AI)">Slimme Automatisering (AI)</option>
+                        <option value="Data Dashboard">Data Dashboard</option>
+                        <option value="Anders">Anders...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="domainName">Heb je al een domeinnaam?</label>
+                    <input type="text" id="domainName" class="form-control" placeholder="Bijv. www.mijnbedrijf.nl of 'Nee, ik heb er nog geen'">
+                </div>
+                <div class="form-group">
+                    <label for="projectGoals">Wat is het belangrijkste doel van dit project? *</label>
+                    <textarea id="projectGoals" class="form-control" required rows="4" placeholder="Bijv. Meer aanvragen via de website, of handmatig werk automatiseren..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>3. Design & Bestanden</h2>
+                <div class="form-group">
+                    <label for="designPreferences">Heb je voorkeur voor bepaalde kleuren of een stijl?</label>
+                    <input type="text" id="designPreferences" class="form-control" placeholder="Bijv. Blauw en strak, of zie bijlage">
+                </div>
+                <!-- Simpele bestandsopmerking voor nu, later kan dit aan Firebase Storage -->
+                <div class="form-group">
+                    <label>Logo's & Teksten (Later uploaden)</label>
+                    <p class="help-text">Zodra we deze intake hebben ontvangen, sturen we je een veilige link om je logo's en bestanden te uploaden.</p>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                <i class="fas fa-paper-plane"></i> Intake Versturen
+            </button>
+            <div id="success-msg" class="success-msg hidden">
+                <i class="fas fa-check-circle"></i> Bedankt! Je intake is succesvol ontvangen. We nemen snel contact met je op.
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/intake.js" type="module"></script>
+</body>
+</html>

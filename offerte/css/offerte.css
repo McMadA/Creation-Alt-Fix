@@ -1,0 +1,91 @@
+/* ===========================================
+   INTERACTIVE PROPOSAL - Dark AI Theme 
+   =========================================== */
+
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+   :root {
+       --color-bg-primary: #0a0e1a;
+       --color-bg-secondary: #111827;
+       --color-bg-card: #1a1f35;
+       --color-bg-input: #0f1629;
+       --color-primary: #6366f1;
+       --color-primary-light: #818cf8;
+       --color-accent: #22d3ee;
+       --color-accent-alt: #a855f7;
+       --color-text-primary: #e2e8f0;
+       --color-text-secondary: #94a3b8;
+       --color-text-heading: #f1f5f9;
+       --color-border: rgba(99, 102, 241, 0.15);
+       --gradient-accent: linear-gradient(135deg, #6366f1, #a855f7, #22d3ee);
+       --font-heading: 'Space Grotesk', 'Inter', sans-serif;
+       --font-body: 'Inter', sans-serif;
+       --radius-sm: 6px;
+       --radius-md: 12px;
+       --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   
+   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+   body { font-family: var(--font-body); color: var(--color-text-primary); background-color: var(--color-bg-primary); padding: 40px 20px; line-height: 1.6; }
+   
+   /* Typography */
+   h1, h2, h3 { font-family: var(--font-heading); color: var(--color-text-heading); }
+   .accent { background: var(--gradient-accent); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+   .text-right { text-align: right; }
+   .hidden { display: none !important; }
+   
+   .loader-overlay { position: fixed; inset: 0; background: var(--color-bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+   .spinner { width: 40px; height: 40px; border: 4px solid rgba(99,102,241,0.2); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+   @keyframes spin { to { transform: rotate(360deg); } }
+   
+   .offerte-container { max-width: 800px; margin: 0 auto; background: var(--color-bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--color-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; }
+   
+   .offerte-header { padding: 40px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; background: rgba(26, 31, 53, 0.4); }
+   .header-content { display: flex; gap: 20px; align-items: center; }
+   .offerte-logo { width: 70px; height: 70px; object-fit: contain; }
+   .company-details h1 { font-size: 1.8rem; margin-bottom: 5px; }
+   .company-details p { color: var(--color-text-secondary); font-size: 0.9rem; }
+   
+   .client-details { text-align: right; font-size: 0.95rem; }
+   .client-details p { margin-bottom: 5px; }
+   .client-details span { color: var(--color-text-heading); }
+   
+   .offerte-body { padding: 40px; }
+   .offerte-body h2 { font-size: 1.3rem; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+   
+   .scope-box { background: var(--color-bg-input); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: 40px; color: var(--color-text-secondary); white-space: pre-line; }
+   
+   .pricing-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+   .pricing-table th { padding: 15px; background: rgba(0,0,0,0.2); color: var(--color-text-secondary); font-family: var(--font-heading); text-transform: uppercase; font-size: 0.85rem; border-bottom: 1px solid var(--color-border); }
+   .pricing-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+   .pricing-table tfoot td { font-size: 1.2rem; border-top: 2px solid var(--color-border); border-bottom: none; padding-top: 20px; }
+   
+   .offerte-action { padding: 40px; background: rgba(99, 102, 241, 0.05); border-top: 1px solid var(--color-border); text-align: center; }
+   .offerte-action h3 { margin-bottom: 10px; }
+   .offerte-action p { color: var(--color-text-secondary); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
+   
+   .action-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+   
+   .btn { padding: 14px 24px; border-radius: var(--radius-sm); border: none; font-family: var(--font-heading); font-weight: 600; font-size: 1.05rem; cursor: pointer; transition: var(--transition-base); display: inline-flex; align-items: center; gap: 10px; }
+   .btn-primary { background: var(--gradient-accent); color: #fff; }
+   .btn-primary:hover { box-shadow: 0 6px 20px rgba(99,102,241,0.4); transform: translateY(-2px); }
+   .btn-secondary { background: transparent; border: 1px solid var(--color-border); color: var(--color-primary-light); }
+   .btn-secondary:hover { background: rgba(99,102,241,0.1); border-color: var(--color-primary); color: #fff; }
+   
+   .success-box { padding: 60px 40px; text-align: center; }
+   .success-icon { font-size: 4rem; color: #4ade80; margin-bottom: 20px; }
+   .success-box h2 { color: #4ade80; margin-bottom: 10px; }
+   
+   @media (max-width: 600px) {
+       .offerte-header { flex-direction: column; text-align: center; align-items: center; }
+       .client-details { text-align: center; margin-top: 10px; }
+   }
+   
+   @media print {
+       body { background: white; color: black; padding: 0; }
+       .offerte-container { box-shadow: none; border: none; background: white; }
+       .offerte-header, .scope-box { background: white; border: 1px solid #ccc; color: black; }
+       h1, h2, h3, p, span, td, th { color: black !important; }
+       .accent { background: none; -webkit-text-fill-color: black; color: black; }
+       .offerte-action { display: none; }
+   }

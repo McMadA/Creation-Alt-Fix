@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creation+Alt+Fix - Admin Dashboard</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Auth Overlay (Simple placeholder for Firebase Auth) -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card">
+            <img src="/images/logo.png" alt="Logo" class="auth-logo">
+            <h2>Admin Login</h2>
+            <p>Log in om toegang te krijgen tot het dashboard.</p>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="E-mailadres" required class="admin-input">
+                <input type="password" id="password" placeholder="Wachtwoord" required class="admin-input">
+                <button type="submit" class="btn btn-primary">Inloggen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout -->
+    <div id="admin-app" class="admin-layout hidden">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h3>Creation+Alt+Fix</h3>
+                <span class="badge badge-concept">Tailscale Ready</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-home"></i> Overzicht</a>
+                <a href="#" class="nav-item" data-view="leads"><i class="fas fa-user-plus"></i> Leads & Intake</a>
+                <a href="#" class="nav-item" data-view="projects"><i class="fas fa-project-diagram"></i> Projecten</a>
+                <a href="#" class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Instellingen</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-sm"><i class="fas fa-sign-out-alt"></i> Uitloggen</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>Dashboard <span class="accent">Overzicht</span></h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openNewLeadModal()"><i class="fas fa-plus"></i> Nieuwe Lead</button>
+                </div>
+            </header>
+
+            <div class="content-area" id="view-dashboard">
+                <!-- Stats -->
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-inbox stat-icon"></i>
+                        <div class="stat-label">Nieuwe Leads</div>
+                        <div class="stat-value" id="stat-leads">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-spinner stat-icon"></i>
+                        <div class="stat-label">Lopende Projecten</div>
+                        <div class="stat-value" id="stat-projects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle stat-icon"></i>
+                        <div class="stat-label">Wachten op Akkoord</div>
+                        <div class="stat-value" id="stat-waiting">0</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Kanban / List -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2>Recente Klanten & Projecten</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Klant / Bedrijf</th>
+                                    <th>Dienst</th>
+                                    <th>Status</th>
+                                    <th>Laatste Update</th>
+                                    <th>Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Project Details</h2>
+                <button class="close-btn" onclick="closeModal('project-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('project-modal')">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/admin.js" type="module"></script>
+</body>
+</html>

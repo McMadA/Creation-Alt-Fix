@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navAIServices": "AI Services",
             "navWebDesign": "Web Design & Tech",
             "navProjects": "Projecten",
+            "navAbout": "Over mij",
             "navContact": "Contact",
 
             // Diensten Overview
@@ -265,6 +266,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navAIServices": "AI Services",
             "navWebDesign": "Web Design & Tech",
             "navProjects": "Projects",
+            "navAbout": "About me",
             "navContact": "Contact",
 
             // Diensten Overview

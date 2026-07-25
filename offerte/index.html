@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offerte - Creation+Alt+Fix</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/offerte.css">
+</head>
+<body>
+
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <p>Offerte laden...</p>
+    </div>
+
+    <div id="offerte-container" class="offerte-container hidden">
+        <header class="offerte-header">
+            <div class="header-content">
+                <img src="/images/logo.png" alt="Creation+Alt+Fix Logo" class="offerte-logo">
+                <div class="company-details">
+                    <h1>Project Offerte</h1>
+                    <p>Creation+Alt+Fix</p>
+                    <p>info@creationaltfix.nl</p>
+                </div>
+            </div>
+            <div class="client-details">
+                <p><strong>Voor:</strong> <span id="client-name">Laden...</span></p>
+                <p><strong>Project:</strong> <span id="project-service">Laden...</span></p>
+                <p><strong>Datum:</strong> <span id="offerte-date">Laden...</span></p>
+            </div>
+        </header>
+
+        <section class="offerte-body">
+            <h2>Project Omschrijving</h2>
+            <div class="scope-box" id="project-scope">
+                <!-- Injected via JS -->
+            </div>
+
+            <h2>Investering</h2>
+            <table class="pricing-table">
+                <thead>
+                    <tr>
+                        <th>Omschrijving</th>
+                        <th class="text-right">Bedrag</th>
+                    </tr>
+                </thead>
+                <tbody id="pricing-body">
+                    <!-- Injected via JS -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Totaal (excl. BTW)</strong></td>
+                        <td class="text-right"><strong class="accent" id="total-price">€ 0,00</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+
+        <section class="offerte-action">
+            <h3>Klaar om te starten?</h3>
+            <p>Door hieronder op akkoord te klikken, bevestig je de offerte en kunnen we direct beginnen met de ontwikkeling van je project.</p>
+            <div class="action-buttons">
+                <button id="btn-akkoord" class="btn btn-primary"><i class="fas fa-signature"></i> Digitaal Akkoord Geven</button>
+                <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Printen / Opslaan als PDF</button>
+            </div>
+        </section>
+
+        <div id="success-msg" class="success-box hidden">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Fantastisch!</h2>
+            <p>De offerte is succesvol geaccepteerd. We hebben direct een seintje gekregen en we starten het project op.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/offerte.js" type="module"></script>
+</body>
+</html>

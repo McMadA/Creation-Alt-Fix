@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navAIServices": "AI Services",
             "navWebDesign": "Web Design & Tech",
             "navProjects": "Projecten",
+            "navAbout": "Over mij",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
             "ariaLinkedIn": "LinkedIn CreationAltFix",
@@ -124,6 +125,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             "faq3Q": "Welke informatie hebben jullie nodig om mijn website snel te kunnen bouwen?",
             "faq3A": "Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.",
 
+            // --- ABOUT ---
+            "aboutTitle": "Over <span>Mij</span>",
+            "aboutP1": "Hoi, ik ben Allard Veldman, de drijvende kracht achter Creation+Alt+Fix. Met een diepe passie voor technologie en een scherp oog voor detail help ik ondernemers en particulieren om hun digitale uitdagingen om te zetten in kansen.",
+            "aboutP2": "Mijn missie is simpel: complexe technologie toegankelijk en bruikbaar maken. Of het nu gaat om het bouwen van een bliksemsnelle website, het automatiseren van tijdrovende processen met AI, of het bieden van betrouwbare IT-support – ik sta voor een persoonlijke aanpak en resultaatgerichte oplossingen.",
+            "aboutP3": "Laten we samen kijken hoe we technologie in jouw voordeel kunnen laten werken!",
+
             // --- GITHUB ---
             "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
             "githubLoading": "Laden van repositories...",
@@ -162,6 +169,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navAIServices": "AI Services",
             "navWebDesign": "Web Design & Tech",
             "navProjects": "Projects",
+            "navAbout": "About me",
             "navContact": "Contact",
             "ariaInstagram": "Instagram CreationAltFix",
             "ariaLinkedIn": "LinkedIn CreationAltFix",
@@ -262,6 +270,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             "faq2A": "The costs for a quick, simple website are significantly lower than for complex custom projects. We offer transparent packages starting from \u20ac99. Request a non-binding quote for your specific situation.",
             "faq3Q": "What information do you need to quickly build my website?",
             "faq3A": "To deliver quickly, we need your basic texts, possibly a logo, and desired color schemes. We also have templates and examples to speed up the process if you don't have content yet.",
+
+            // --- ABOUT ---
+            "aboutTitle": "About <span>Me</span>",
+            "aboutP1": "Hi, I'm Allard Veldman, the driving force behind Creation+Alt+Fix. With a deep passion for technology and a keen eye for detail, I help entrepreneurs and individuals turn their digital challenges into opportunities.",
+            "aboutP2": "My mission is simple: making complex technology accessible and usable. Whether it's building a lightning-fast website, automating time-consuming processes with AI, or providing reliable IT support – I stand for a personal approach and result-oriented solutions.",
+            "aboutP3": "Let's see how we can make technology work to your advantage together!",
 
             // --- GITHUB ---
             "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
