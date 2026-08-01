@@ -6,7 +6,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // TODO: Vul hier je Firebase configuratie in zodra je het project hebt aangemaakt!
 const firebaseConfig = {
@@ -158,15 +158,27 @@ async function loadDashboardData() {
     const tbody = document.querySelector('#projects-table tbody');
     tbody.innerHTML = '';
     
+    const getTaskNr = (status) => {
+        if (!status) return "";
+        if (status.includes("Nieuwe Lead")) return "Taak 01/02";
+        if (status.includes("Wacht op Akkoord")) return "Taak 03";
+        if (status.includes("Ontwikkeling")) return "Fase 3";
+        if (status.includes("Mollie")) return "Taak 05";
+        if (status.includes("Aftercare")) return "Taak 06";
+        return "";
+    };
+
     projects.forEach(p => {
         const row = document.createElement('tr');
+        const taskNr = getTaskNr(p.status);
         row.innerHTML = `
             <td><strong>${p.client}</strong></td>
             <td>${p.service}</td>
-            <td><span class="badge badge-${p.statusClass}">${p.status}</span></td>
+            <td><span class="badge badge-${p.statusClass}">${p.status} ${taskNr ? `(${taskNr})` : ''}</span></td>
             <td>${p.date}</td>
             <td>
                 <button class="btn btn-secondary btn-sm" onclick="openProjectDetails('${p.id}', '${p.client}')">Beheren</button>
+                <button class="btn btn-sm" onclick="deleteProject('${p.id}')" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;"><i class="fas fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(row);
@@ -175,11 +187,21 @@ async function loadDashboardData() {
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
+    const contentAreas = document.querySelectorAll('.content-area');
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
+            
+            const targetView = item.getAttribute('data-view');
+            contentAreas.forEach(area => {
+                if(area.id === 'view-' + targetView) {
+                    area.classList.remove('hidden');
+                } else {
+                    area.classList.add('hidden');
+                }
+            });
         });
     });
 }
@@ -190,11 +212,55 @@ window.openNewLeadModal = () => {
     document.getElementById('modal-body').innerHTML = `
         <p>Voeg handmatig een lead toe. Later koppelen we dit aan je website contactformulier en Google Ads campagnes.</p>
         <br>
-        <input type="text" class="admin-input" placeholder="Naam of Bedrijf">
-        <input type="email" class="admin-input" placeholder="E-mailadres">
-        <textarea class="admin-input" placeholder="Wensen / Omschrijving" rows="4"></textarea>
+        <input type="text" id="new-lead-name" class="admin-input" placeholder="Naam of Bedrijf">
+        <input type="email" id="new-lead-email" class="admin-input" placeholder="E-mailadres">
+        <textarea id="new-lead-desc" class="admin-input" placeholder="Wensen / Omschrijving" rows="4"></textarea>
+        <button class="btn btn-primary" onclick="saveNewLead()" style="margin-top: 15px;">Opslaan</button>
     `;
     document.getElementById('project-modal').classList.remove('hidden');
+};
+
+window.saveNewLead = async () => {
+    const name = document.getElementById('new-lead-name').value;
+    const email = document.getElementById('new-lead-email').value;
+    const desc = document.getElementById('new-lead-desc').value;
+    
+    if (!name) return alert('Naam of Bedrijf is verplicht');
+    
+    if (db) {
+        try {
+            await addDoc(collection(db, "projects"), {
+                client: name,
+                email: email,
+                service: desc || "Onbekend",
+                status: "Nieuwe Lead",
+                statusClass: "waiting",
+                date: new Date().toLocaleDateString('nl-NL')
+            });
+        } catch(e) {
+            console.error("Error saving lead", e);
+            alert("Fout bij opslaan lead.");
+        }
+    } else {
+        alert("Opslaan gesimuleerd (Firebase is nog mock data)");
+    }
+    closeModal('project-modal');
+    loadDashboardData();
+};
+
+window.deleteProject = async (id) => {
+    if (confirm('Weet je zeker dat je deze klant/dit project wilt verwijderen?')) {
+        if (db) {
+            try {
+                await deleteDoc(doc(db, "projects", id));
+            } catch(e) {
+                console.error("Error deleting", e);
+            }
+        } else {
+            alert("Verwijderen gesimuleerd (mock data)");
+        }
+        loadDashboardData();
+    }
 };
 
 window.openProjectDetails = (id, name) => {
