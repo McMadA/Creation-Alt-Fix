@@ -38,7 +38,7 @@
             margin: 0 auto 30px;
             border-radius: 50%;
             padding: 5px;
-            background: linear-gradient(135deg, var(--primary), var(--accent-alt), var(--accent));
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent-alt), var(--color-accent));
             box-shadow: 0 10px 25px rgba(99,102,241,0.4);
         }
         .profile-image {
@@ -46,12 +46,25 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            background-color: var(--bg-card);
+            background-color: var(--color-bg-card);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 4rem;
-            color: var(--text-muted);
+            color: var(--color-text-secondary);
+        }
+        .tech-icons-container {
+            display: flex; 
+            justify-content: center; 
+            gap: 30px; 
+            font-size: 3rem; 
+            margin-top: 30px;
+        }
+        .tech-icons-container i {
+            transition: transform 0.3s;
+        }
+        .tech-icons-container i:hover {
+            transform: scale(1.2);
         }
     </style>
 </head>
@@ -61,85 +74,87 @@
     <!-- Navbar -->
     <div id="navbar-placeholder"></div>
 
-    <main id="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section" style="padding-top: 150px; padding-bottom: 80px; position: relative; overflow: hidden; text-align: center;">
-            <div class="hero-orb orb-1"></div>
-            <div class="hero-orb orb-2"></div>
-            <div class="container relative z-10 mx-auto px-4" style="max-width: 1100px; margin: 0 auto; padding: 0 20px;">
-                
-                <div class="profile-image-container">
-                    <img src="/images/1764963087201.jpg" alt="Allard Veldman" class="profile-image">
-                </div>
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
+                <li aria-current="page"><span class="current" data-translate-key="overMijPageTitle">Over mij</span></li>
+            </ol>
+        </nav>
+    </div>
 
-                <div class="badge inline-block mb-4" data-translate-key="overMijBadge" style="margin-bottom: 1rem;">Over mij</div>
-                <h1 class="font-bold gradient-text" data-translate-key="overMijH1" style="font-size: 3rem; margin-bottom: 1.5rem; line-height: 1.2;">Allard Veldman</h1>
-                <p class="text-muted" data-translate-key="overMijLead" style="font-size: 1.25rem; max-width: 42rem; margin: 0 auto;">
-                    De drijvende kracht achter Creation+Alt+Fix. Ik maak complexe technologie toegankelijk en bruikbaar voor MKB en particulieren in Groningen en omstreken.
-                </p>
-                <div style="margin-top: 30px;">
-                    <a href="https://www.linkedin.com/in/allardveldman/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: #0077b5; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; transition: transform 0.3s, box-shadow 0.3s; font-size: 1.1rem;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 25px rgba(0,119,181,0.4)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                        <i class="fab fa-linkedin" style="font-size: 1.5rem;"></i> Connect op LinkedIn
-                    </a>
-                </div>
+    <header class="subpage-hero">
+        <div class="container relative z-10 mx-auto px-4" style="max-width: 1100px; margin: 0 auto;">
+            <div class="profile-image-container">
+                <img src="/images/1764963087201.jpg" alt="Allard Veldman" class="profile-image">
             </div>
-        </section>
+            <div class="hero-badge" style="display: inline-block; padding: 6px 16px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 50px; font-size: 0.9rem; color: var(--color-accent); margin-bottom: 1rem; font-family: var(--font-heading);" data-translate-key="overMijBadge">Over mij</div>
+            <h1 data-translate-key="overMijH1">Allard Veldman</h1>
+            <p class="lead" data-translate-key="overMijLead">
+                De drijvende kracht achter Creation+Alt+Fix. Ik maak complexe technologie toegankelijk en bruikbaar voor MKB en particulieren in Groningen en omstreken.
+            </p>
+            <div style="margin-top: 30px;">
+                <a href="https://www.linkedin.com/in/allardveldman/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem;">
+                    <i class="fab fa-linkedin" style="font-size: 1.5rem;"></i> Connect op LinkedIn
+                </a>
+            </div>
+        </div>
+    </header>
 
-        <div class="shimmer-divider"></div>
-
+    <main id="main-content">
         <!-- Missie & Achtergrond Sectie -->
-        <section class="section" style="padding: 4rem 0;">
-            <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 0 20px;">
-                <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; text-align: left;">
+        <section class="content-section">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 60px;">
                     <div>
-                        <h2 class="section-title text-accent" data-translate-key="overMijMissieTitle" style="font-size: 1.5rem; margin-bottom: 1.5rem; text-align: left;">Mijn Missie & Achtergrond</h2>
-                        <p class="text-muted" data-translate-key="overMijMissieP1" style="margin-bottom: 1rem;">
+                        <h2 data-translate-key="overMijMissieTitle">Mijn Missie & Achtergrond</h2>
+                        <p data-translate-key="overMijMissieP1">
                             Technologie moet voor jou werken, niet andersom. Met een persoonlijke aanpak en resultaatgerichte oplossingen zorg ik ervoor dat digitale vraagstukken helder en overzichtelijk worden.
                         </p>
-                        <p class="text-muted" data-translate-key="overMijMissieP2" style="margin-bottom: 1rem;">
+                        <p data-translate-key="overMijMissieP2">
                             Mijn achtergrond in de wiskunde vormt de basis van mijn werkwijze. Als voormalig prijswinnaar van de Nederlandse Wiskunde Olympiade en auteur voor het wiskundetijdschrift Pythagoras, benader ik IT-uitdagingen sterk analytisch. Ik doorzie complexe systemen snel en vertaal ze naar efficiënte oplossingen.
                         </p>
-                        <p class="text-muted" data-translate-key="overMijMissieP3" style="margin-bottom: 1.5rem;">
-                            Mijn focus ligt uitsluitend op <strong class="text-white">Software-Only Services</strong>. Denk hierbij aan software support, systeembeheer en slimmere werkprocessen. <span class="text-primary">Let op: ik voer geen computer- of hardware reparaties meer uit.</span>
+                        <p data-translate-key="overMijMissieP3">
+                            Mijn focus ligt uitsluitend op <strong style="color: #fff;">Software-Only Services</strong>. Denk hierbij aan software support, systeembeheer en slimmere werkprocessen. <span style="color: var(--color-primary-light);">Let op: ik voer geen computer- of hardware reparaties meer uit.</span>
                         </p>
                     </div>
                     <div>
-                        <h2 class="section-title text-accent" data-translate-key="overMijFocusTitle" style="font-size: 1.5rem; margin-bottom: 1.5rem; text-align: left;">Focus & Diensten</h2>
-                        <ul class="text-muted list-none space-y-3" style="list-style: none; padding: 0;">
-                            <li style="margin-bottom: 15px;"><i class="fas fa-check text-primary mr-2" style="margin-right: 10px;"></i> <span data-translate-key="overMijFocusLi1">AI-gedreven oplossingen & tools (zoals de Home Buyer Intelligence app)</span></li>
-                            <li style="margin-bottom: 15px;"><i class="fas fa-check text-primary mr-2" style="margin-right: 10px;"></i> <span data-translate-key="overMijFocusLi2">Slimme automatisering (klantenportalen, offertegeneratoren)</span></li>
-                            <li style="margin-bottom: 15px;"><i class="fas fa-check text-primary mr-2" style="margin-right: 10px;"></i> <span data-translate-key="overMijFocusLi3">Data dashboards voor direct inzicht in bedrijfsdata</span></li>
-                            <li style="margin-bottom: 15px;"><i class="fas fa-check text-primary mr-2" style="margin-right: 10px;"></i> <span data-translate-key="overMijFocusLi4">Supersnelle websites (vanaf €99)</span></li>
+                        <h2 data-translate-key="overMijFocusTitle">Focus & Diensten</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start;"><i class="fas fa-check" style="color: var(--color-primary); margin-right: 15px; margin-top: 5px;"></i> <span data-translate-key="overMijFocusLi1">AI-gedreven oplossingen & tools (zoals de Home Buyer Intelligence app)</span></li>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start;"><i class="fas fa-check" style="color: var(--color-primary); margin-right: 15px; margin-top: 5px;"></i> <span data-translate-key="overMijFocusLi2">Slimme automatisering (klantenportalen, offertegeneratoren)</span></li>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start;"><i class="fas fa-check" style="color: var(--color-primary); margin-right: 15px; margin-top: 5px;"></i> <span data-translate-key="overMijFocusLi3">Data dashboards voor direct inzicht in bedrijfsdata</span></li>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start;"><i class="fas fa-check" style="color: var(--color-primary); margin-right: 15px; margin-top: 5px;"></i> <span data-translate-key="overMijFocusLi4">Supersnelle websites (vanaf €99)</span></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div class="shimmer-divider"></div>
-
         <!-- Tech Stack & Aanpak -->
-        <section class="section" style="padding: 4rem 0; background: rgba(17,24,39,0.3); text-align: center;">
-            <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 20px;">
-                <h2 class="section-title font-bold" data-translate-key="overMijTechTitle" style="font-size: 2rem; margin-bottom: 1.5rem;">Tech Stack & Aanpak</h2>
-                <p class="text-muted" data-translate-key="overMijTechP" style="margin-bottom: 2rem; max-width: 48rem; margin-left: auto; margin-right: auto;">
+        <section class="content-section" style="background-color: var(--color-bg-secondary); text-align: center;">
+            <div class="container" style="max-width: 900px;">
+                <h2 data-translate-key="overMijTechTitle">Tech Stack & Aanpak</h2>
+                <p data-translate-key="overMijTechP" style="margin: 0 auto 2rem;">
                     Ik combineer jarenlange IT-ervaring met de nieuwste AI-ontwikkelingen om innovatieve en robuuste oplossingen te bouwen. Ik werk bij voorkeur met solide, snelle technieken zoals Vanilla JS, Firebase en Tailwind/CSS. Dit garandeert applicaties die er professioneel uitzien én onder de motorkap perfect presteren. Mijn tone of voice is altijd professioneel, toegankelijk, innovatief en transparant.
                 </p>
-                <div style="display: flex; justify-content: center; gap: 30px; font-size: 3rem; margin-top: 30px;">
-                    <i class="fab fa-js text-accent" title="Vanilla JS"></i>
-                    <i class="fas fa-fire text-accent-alt" title="Firebase"></i>
-                    <i class="fab fa-css3-alt text-primary" title="CSS3 / Tailwind"></i>
-                    <i class="fas fa-robot text-accent" title="Artificial Intelligence"></i>
+                <div class="tech-icons-container">
+                    <i class="fab fa-js" style="color: var(--color-accent);" title="Vanilla JS"></i>
+                    <i class="fas fa-fire" style="color: var(--color-accent-alt);" title="Firebase"></i>
+                    <i class="fab fa-css3-alt" style="color: var(--color-primary-light);" title="CSS3 / Tailwind"></i>
+                    <i class="fas fa-robot" style="color: var(--color-accent);" title="Artificial Intelligence"></i>
                 </div>
             </div>
         </section>
         
-        <div class="shimmer-divider"></div>
-        
-        <section class="section" style="padding: 5rem 0; text-align: center;">
-             <h2 class="section-title font-bold" data-translate-key="overMijContactTitle" style="font-size: 2rem; margin-bottom: 1.5rem;">Klaar om samen te werken?</h2>
-             <p class="text-muted" data-translate-key="overMijContactP" style="margin-bottom: 2rem;">Transparant, professioneel en innovatief. Neem contact op voor een vrijblijvende kennismaking.</p>
-             <a href="/intake" class="cta-btn" style="display: inline-block; padding: 18px 36px; background: linear-gradient(135deg, var(--primary), var(--accent-alt)); color: white; text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 600; border-radius: 8px; transition: transform 0.3s, box-shadow 0.3s;" data-translate-key="overMijContactBtn">Start jouw project</a>
+        <section class="cta-section">
+            <div class="container">
+                 <h2 data-translate-key="overMijContactTitle">Klaar om samen te werken?</h2>
+                 <p data-translate-key="overMijContactP">Transparant, professioneel en innovatief. Neem contact op voor een vrijblijvende kennismaking.</p>
+                 <div class="cta-buttons" style="margin-top: 2rem;">
+                     <a href="/intake" class="btn btn-primary" data-translate-key="overMijContactBtn">Start jouw project</a>
+                 </div>
+            </div>
         </section>
 
     </main>
