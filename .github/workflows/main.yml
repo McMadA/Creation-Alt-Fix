@@ -37,8 +37,9 @@ jobs:
           server: web0156.zxcs.nl
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
+          protocol: ftps
           port: 21
+          security: loose
           local-dir: ./website/
           server-dir: domains/creationaltfix.nl/public_html/
 
@@ -48,7 +49,8 @@ jobs:
           server: web0156.zxcs.nl
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
+          protocol: ftps
           port: 21
+          security: loose
           local-dir: ./crm/
           server-dir: domains/creationaltfix.nl/public_html/portal/
