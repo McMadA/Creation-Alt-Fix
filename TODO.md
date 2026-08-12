@@ -1,81 +1,129 @@
-# Creation+Alt+Fix - TODO List
+# 🛠️ Creation+Alt+Fix - DevOps Backlog & Engineering Roadmap
 
-> **Note**: Alle taken uit het oorspronkelijke Customer Journey Plan (`crm/customer-journey-plan/`) zijn hieronder gecentraliseerd.
-
----
-
-## 🚀 Priority 1: CRM & Klantenportaal Upgrades
-
-- [x] **1. Notificaties bij Nieuwe Intakes** *(Blueprint Taak 02)*
-  - Implementeer een actieve push-notificatie (bijv. via EmailJS, Formspree of Webhook naar Telegram/Discord/Teams).
-  - Allard ontvangt direct een e-mail/notificatie op zijn telefoon zodra een lead het `/intake` formulier verstuurt.
-
-- [x] **2. Intake Details Modal & Klantkaart (Admin Dashboard)** *(Blueprint Taak 01 & 02)*
-  - Bouw een detailweergave (modal/slide-over) in `/admin` voor het aanklikken van een klant/lead.
-  - Toon de volledige intake: bedrijfsnaam, contactpersoon, e-mail, gewenste domeinnaam, projectdoelen en designvoorkeuren.
-  - Voeg snelacties toe (1-klik e-mailen, offerte genereren op basis van de intake).
-
-- [x] **3. Digitaal Ondertekenen van Offertes (`/offerte` -> `/status`)** *(Blueprint Taak 03)*
-  - Voeg een formeel akkoordvinkje / digitaal handtekeningsveld toe op de geintegreerde offertepagina in het klantportaal.
-  - Werk de status in Firestore automatisch bij naar *"Wacht op Ontwikkeling"* zodra de klant accordeert.
-  - Stuur automatisch een seintje naar de beheerders bij akkoord.
-
-- [x] **4. Live Klant Voortgangs-Tracker (`/status`)** *(Blueprint Taak 01 & 03)*
-  - Bouw een klant-voortgangspagina (`portal.creationaltfix.nl/status/`).
-  - Geef de klant een visuele timeline met fasen: *1. Intake & Akkoord* -> *2. Design & Ontwerp* -> *3. Ontwikkeling & Testen* -> *4. Livegang*.
-  - Integreer Firebase Auth inloggen en beveiliging.
-
-- [ ] **5. Zoek- & Filterbalk + CSV Export (Admin Dashboard)** *(Blueprint Taak 01)*
-  - Voeg in het Admin Dashboard een zoekbalk toe voor het zoeken op klantnaam of e-mail.
-  - Voeg een filterdropdown toe op status (*Nieuwe Lead*, *Wacht op Akkoord*, *Actief*, *Afgerond*).
-  - Voeg een exportknop toe om leads/projecten te downloaden als CSV.
+> **System Overview**: Centralized Engineering Backlog for Creation+Alt+Fix (Marketing Site, CRM Portal & Financial Automations).
+> **Architecture**: Vanilla JS / HTML5 / CSS3 (Dark AI Design Token System) + Firebase Auth & Firestore + Dual-path FTP CI/CD Pipeline.
 
 ---
 
-## 💳 Priority 2: Backend & Betalingsintegratie
+## 📊 Sprint Status Dashboard
 
-- [ ] **6. Mollie Python Backend Integratie & Webhooks** *(Blueprint Taak 05)*
-  - Integreer de officiële Mollie Python SDK in de Flask boekhoudbackend (`Boekhouding`).
-  - Richt webhooks in via Tailscale tunnel om betaalstatussen automatisch te synchroniseren in de database en CRM-status bij te werken (zie `crm/Mollie_Integration_Guide.md`).
+| Metric | Status | Count |
+| :--- | :--- | :--- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **12 Epics & Tasks** |
+| **Completed Work Items** | ✅ Done | **7 Tasks (58%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (42%)** |
+| **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
----
-
-## 🤖 Priority 3: AI & Automatisering
-
-- [ ] **7. Geautomatiseerde Aftercare Cronjobs (2-Weken & Halfjaarlijkse APK)** *(Blueprint Taak 06)*
-  - Automatiseer de 2-weken check-in (Google Review & Instagram uitnodiging) en de 6-maanden AI APK check-in via achtergrond-cronjobs of scheduled triggers.
-
-- [ ] **8. Live OpenAI / Gemini API Integratie voor E-mail Drafter** *(Blueprint Taak 04)*
-  - Koppel een live LLM API (OpenAI/Gemini) aan het Admin Dashboard om op basis van de binnenkomende intake automatisch maatwerk e-mail concepten te genereren in plaats van statische sjablonen.
+**Sprint Completion Progress:**
+`[██████████████░░░░░░░░░░] 58% Complete`
 
 ---
 
-## 🎨 Priority 4: Klantbeleving & Co-creatie
+## 🎯 Active Epics & Backlog
 
-- [ ] **9. Visuele Feedbacktool op Demo Omgeving** *(Blueprint §3)*
-  - Integreer een visuele feedbacktool/overlay (bijv. Marker.io of custom overlay) op klant-demo sites voor directe visuele opmerkingen tijdens de co-creatie fase.
+### 🚀 EPIC-01: CRM & Client Portal Infrastructure
+**Domain**: `crm/` | **Stack**: Firebase Auth (v10), Firestore, Vanilla JS ES6 Modules
 
-- [ ] **10. Klant Overdracht & Documentatie Sjabloon** *(Blueprint §4)*
-  - Maak een standaard opleverpagina/handleiding sjabloon (of instructievideo format) in de Dark AI huisstijl voor overdracht van opgeleverde websites/systemen.
+- [x] `[TASK-101]` `[P1-CRITICAL]` `[STATUS: DONE]` **Intake Alert & Push Notification Dispatcher**
+  - **Scope**: `crm/intake/js/notifications.js`
+  - **Details**: Zero-setup FormSubmit email delivery targeting `info@creationaltfix.nl` combined with Webhook (Telegram/Discord) and EmailJS fallback upon intake submission.
+
+- [x] `[TASK-102]` `[P1-CRITICAL]` `[STATUS: DONE]` **Admin Klantkaart & Detailed Lead Inspector**
+  - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
+  - **Details**: Slide-over modal in Admin Dashboard surfacing complete client metadata, service requirements, goals, design preferences, and personalized AI email drafter.
+
+- [x] `[TASK-103]` `[P1-CRITICAL]` `[STATUS: DONE]` **Integrated Digital Proposal Signing Suite**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`
+  - **Details**: Integrated digital signature flow within client status dashboard. Automatically transitions Firestore project status to `"Wacht op Ontwikkeling"` upon client agreement.
+
+- [x] `[TASK-104]` `[P1-CRITICAL]` `[STATUS: DONE]` **Live Client Progress Tracker (`/status`)**
+  - **Scope**: `crm/status/`
+  - **Details**: Responsive 4-stage visual pipeline (*Intake & Akkoord* -> *Design & Ontwerp* -> *Ontwikkeling & Testen* -> *Livegang*). Fully authenticated via Firebase Auth with strict `/admin` access control.
+
+- [ ] `[TASK-105]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Admin Data Table Search, Filtering & CSV Exporter**
+  - **Scope**: `crm/admin/js/admin.js`
+  - **Acceptance Criteria**:
+    - Real-time client name & email search input.
+    - Status filter dropdown (*Nieuwe Lead*, *Wacht op Akkoord*, *In Ontwikkeling*, *Opgeleverd*).
+    - 1-click CSV data export for accounting & CRM reporting.
 
 ---
 
-## 📈 Priority 5: Marketing & Hosting Beheer
+### 💳 EPIC-02: FinTech & Payment Pipeline
+**Domain**: `Boekhouding/` | **Stack**: Python, Flask, Mollie Python SDK, Tailscale Tunneling
 
-- [ ] **11. Google Ads Campagne Activatie (€400 Tegoed)** *(Blueprint Taak 07)*
-  - Stel de Google Ads campagne in gericht op zoekwoorden ("website laten maken", "AI automatisering", "software support") leidend naar `landing.html`.
-
-- [ ] **12. Hosting & Strippenkaart Structuur** *(Blueprint §4 & §5)*
-  - Richt het hostingbeheer (€25/jaar .nl) en strippenkaartsysteem voor uren/onderhoud formeel in voor terugkerende omzet.
+- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Mollie API Integration & Webhook Listener**
+  - **Scope**: Python Boekhouding Backend, `crm/Mollie_Integration_Guide.md`
+  - **Acceptance Criteria**:
+    - Embed official Mollie Python SDK into Flask accounting service.
+    - Setup webhook endpoint over Tailscale tunnel to automatically process payment events and reflect status updates in Firestore.
 
 ---
 
-## ✅ Afgerond (Customer Journey Baseline)
+### 🤖 EPIC-03: AI Operations & Automation
+**Domain**: `crm/admin` & Cloud Functions | **Stack**: OpenAI / Gemini API, Scheduled Triggers
 
-- [x] **Project Dashboard (CRM Hub - Taak 01)**: Gebouwd in `/crm/admin` met Dark AI Theme, status lifecycle tracking, klantdetails modal, offerte-link generatie en Mollie betaallink simulatie.
-- [x] **Klant Intake Portaal (Taak 02)**: Gebouwd in `/crm/intake` met Firebase Firestore integratie voor automatische opslag in het dashboard.
-- [x] **Interactieve Offertes Basis (Taak 03)**: Gebouwd in `/crm/offerte` met dynamische Firestore gegevens-ophaal op basis van URL parameters.
-- [x] **AI E-mail Drafter Basis (Taak 04)**: Gebouwd als concept-e-mail generator modal in `/crm/admin`.
-- [x] **Mollie Betaallink Simulatie (Taak 05)**: Actie in `/crm/admin` om Mollie Plink URL's te tonen en status naar "Opgeleverd" te zetten.
-- [x] **Aftercare Check-in Acties (Taak 06)**: Handmatige aftercare inplanningsactie in `/crm/admin`.
-- [x] **Google Ads Landingspagina (Taak 07)**: Converterende landingspagina gebouwd op `website/landing.html`.
+- [ ] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated Aftercare Cronjobs (14-Day Check-in & 6-Month APK)**
+  - **Scope**: Cloud Background Cronjobs
+  - **Acceptance Criteria**:
+    - Trigger automated 14-day post-delivery check-in email (Google Review & Instagram follow invite).
+    - Trigger 6-month AI system check-in for recurring support.
+
+- [ ] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Live LLM API Integration for AI Email Drafter**
+  - **Scope**: `crm/admin/js/admin.js`
+  - **Acceptance Criteria**:
+    - Connect live OpenAI / Gemini API endpoint to dynamically generate custom email responses from intake data instead of static templates.
+
+---
+
+### 🎨 EPIC-04: Client Experience & Co-Creation
+**Domain**: Client Staging & Handover | **Stack**: Marker.io / Custom DOM Overlay, Static Templates
+
+- [ ] `[TASK-401]` `[P4-LOW]` `[STATUS: BACKLOG]` **Visual Feedback & Annotation Overlay on Demo Environments**
+  - **Scope**: Client Staging Subdomains
+  - **Acceptance Criteria**:
+    - Inject visual feedback widget on client demo sites allowing clients to leave point-and-click visual feedback during design review.
+
+- [ ] `[TASK-402]` `[P4-LOW]` `[STATUS: BACKLOG]` **Client System Handover & Documentation Template**
+  - **Scope**: `website/docs/`
+  - **Acceptance Criteria**:
+    - Create standardized dark-mode handover guide & video documentation template for completed website/system delivery.
+
+---
+
+### 📈 EPIC-05: Growth, Marketing & Infra Pipelines
+**Domain**: `website/` & `.github/workflows/` | **Stack**: GitHub Actions, DirectAdmin FTP, Google Ads
+
+- [ ] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Google Ads Campaign Activation (€400 Credit)**
+  - **Scope**: Google Ads Campaign leading to `website/landing.html`
+  - **Acceptance Criteria**:
+    - Launch targeted search ads targeting "website laten maken", "AI automatisering", "software support" driving traffic to high-converting landing page.
+
+- [ ] `[TASK-502]` `[P4-LOW]` `[STATUS: BACKLOG]` **Hosting Management & Recurring Service Structure**
+  - **Scope**: DirectAdmin / Vimexx Management
+  - **Acceptance Criteria**:
+    - Formalize €25/year .nl domain & hosting structure + prepaid hourly maintenance packages for recurring revenue.
+
+---
+
+## 🔒 Security & Deployment Architecture
+
+```
+                               ┌───────────────────────────┐
+                               │   GitHub Main Repository  │
+                               └─────────────┬─────────────┘
+                                             │
+                       ┌─────────────────────┴─────────────────────┐
+                       ▼                                           ▼
+             [website/ Directory]                       [crm/ Directory]
+                       │                                           │
+          FTP Deploy to Vimexx                       FTP Deploy to DirectAdmin
+         `public_html/` Root                      `public_html/portal/` Subdomain
+                       │                                           │
+                       ▼                                           ▼
+            https://creationaltfix.nl                   https://creationaltfix.nl/portal/
+            (Public Marketing Site)                     (Client Portal & Admin Hub)
+```
+
+- **Admin Access Security**: Strict client account isolation in Firebase Auth + IP restriction / Tailscale exit node protection on `crm/admin/.htaccess`.
+- **Client Access Security**: In-memory secondary Firebase Auth instance prevents admin session contamination during client intake account generation.

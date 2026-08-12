@@ -4,8 +4,8 @@
  * Fallbacks to mock data if Firebase is not yet configured.
  */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // TODO: Vul hier je Firebase configuratie in zodra je het project hebt aangemaakt!
@@ -27,11 +27,15 @@ const firebaseConfig = {
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
-let app, auth, db;
+let app, auth, db, secondaryAuth;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+
+    const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
+    secondaryAuth = getAuth(secondaryApp);
+    setPersistence(secondaryAuth, inMemoryPersistence).catch(console.warn);
 } catch (error) {
     console.warn("Firebase is nog niet (juist) geconfigureerd. Gebruik dummy config.");
 }
@@ -446,11 +450,16 @@ window.openProjectDetails = (id) => {
                 <div class="intake-box" style="margin-top: 15px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
                     <h4><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
                     <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
-                        Klant gebruikt e-mailadres <strong>${email || 'Nog geen e-mail'}</strong> voor het Klantenportaal.
+                        Klant gebruikt e-mailadres <strong>${email || 'Nog geen e-mail ingevuld'}</strong> voor het Klantenportaal.
                     </p>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')" style="margin-top: 4px;">
-                        <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail naar Klant
-                    </button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}')">
+                            <i class="fas fa-user-plus"></i> Activeer Klantaccount & Stuur Inlog-Mail
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')">
+                            <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
+                        </button>
+                    </div>
                 </div>
 
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
@@ -679,5 +688,47 @@ window.triggerAdminPasswordReset = async (email) => {
     } catch (error) {
         console.error("Fout bij versturen wachtwoord reset:", error);
         alert(`Fout bij versturen reset-mail: ${error.message}`);
+    }
+};
+
+window.createClientAuthAccount = async (projectId, email) => {
+    if (!email || email === 'undefined' || !email.trim()) {
+        alert("Vul eerst een geldig e-mailadres in op de Klantkaart en sla de wijzigingen op.");
+        return;
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const tempPassword = 'CAF-' + Math.random().toString(36).substring(2, 8);
+
+    if (!confirm(`Wilt u een Firebase Auth account aanmaken/activeren voor ${cleanEmail}?`)) return;
+
+    try {
+        let clientUid = null;
+        try {
+            const userCred = await createUserWithEmailAndPassword(secondaryAuth, cleanEmail, tempPassword);
+            clientUid = userCred.user.uid;
+            console.log("Client Auth user account created:", clientUid);
+        } catch (authErr) {
+            console.warn("Auth info (account match/exists):", authErr.message);
+        }
+
+        // Update document in Firestore
+        if (db && projectId) {
+            const docRef = doc(db, "projects", projectId);
+            await updateDoc(docRef, {
+                email: cleanEmail,
+                isClientAccount: true,
+                clientUid: clientUid || null
+            });
+        }
+
+        // Stuur direct de inlog- / wachtwoord-instel e-mail naar de klant
+        await sendPasswordResetEmail(auth, cleanEmail);
+
+        alert(`Succes! Het account voor ${cleanEmail} is geactiveerd in Firebase Auth.\n\nEr is automatisch een e-mail gestuurd naar ${cleanEmail} waarmee de klant zijn/haar wachtwoord kan instellen om in te loggen op het Klantenportaal.`);
+        loadDashboardData();
+        closeModal('project-modal');
+    } catch (error) {
+        console.error("Fout bij activeren klantaccount:", error);
+        alert(`Fout bij activeren account: ${error.message}`);
     }
 };
