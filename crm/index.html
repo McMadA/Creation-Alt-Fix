@@ -270,15 +270,31 @@
             appId: "1:755599901945:web:589450049c785dacfcce28"
         };
 
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        async function isClient(email, uid) {
+            try {
+                const q = query(collection(db, "projects"), where("email", "==", (email || '').toLowerCase()));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    const data = snap.docs[0].data();
+                    if (data.isClientAccount || data.clientUid === uid) return true;
+                }
+            } catch (err) {
+                console.warn("Fout bij isClient check:", err);
+            }
+            return false;
+        }
 
         // Automatisch doorsturen als de gebruiker al ingelogd is
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userEmail = (user.email || '').toLowerCase();
-                const isAdmin = (userEmail === "info@creationaltfix.nl" || userEmail === "allard@creationaltfix.nl");
-                if (!isAdmin) {
+                const userIsClient = await isClient(user.email, user.uid);
+                if (userIsClient) {
                     window.location.href = "status/";
                 }
             }
@@ -297,11 +313,11 @@
 
             try {
                 const userCred = await signInWithEmailAndPassword(auth, email, password);
-                const userEmail = (userCred.user.email || '').toLowerCase();
-                if (userEmail === "info@creationaltfix.nl" || userEmail === "allard@creationaltfix.nl") {
-                    window.location.href = "admin/";
-                } else {
+                const userIsClient = await isClient(userCred.user.email, userCred.user.uid);
+                if (userIsClient) {
                     window.location.href = "status/";
+                } else {
+                    window.location.href = "admin/";
                 }
             } catch (error) {
                 console.error("Login mislukt:", error);

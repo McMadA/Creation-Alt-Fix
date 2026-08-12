@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { sendIntakeNotification } from "./notifications.js";
 
@@ -19,6 +19,7 @@ const db = getFirestore(app);
 // Secondaire app instantie om klantaccounts aan te maken zonder admin inlog te muteren
 const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
 const secondaryAuth = getAuth(secondaryApp);
+setPersistence(secondaryAuth, inMemoryPersistence).catch(console.warn);
 
 function generateTempPassword() {
     const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contactName: document.getElementById('contactName').value,
             email: emailInput,
             clientUid: clientUid,
+            isClientAccount: true,
             generatedPassword: tempPassword,
             service: document.getElementById('serviceType').value,
             domainName: document.getElementById('domainName').value,

@@ -158,9 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
 });
 
-// Beheerders met toegang tot het admin dashboard
-const ALLOWED_ADMIN_EMAILS = ["info@creationaltfix.nl", "allard@creationaltfix.nl"];
-
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -169,14 +166,32 @@ if (auth) {
 
         if (user) {
             const userEmail = (user.email || '').toLowerCase();
-            const isAdmin = ALLOWED_ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
-            if (!isAdmin) {
-                console.warn("Onbevoegde poging tot admin toegang door:", userEmail);
+            
+            // Controleer of het e-mailadres gekoppeld is aan een klant-intake
+            let isClientAccount = false;
+            try {
+                if (db) {
+                    const q = query(collection(db, "projects"), where("email", "==", userEmail));
+                    const snap = await getDocs(q);
+                    if (!snap.empty) {
+                        const pData = snap.docs[0].data();
+                        if (pData.isClientAccount || pData.clientUid === user.uid) {
+                            isClientAccount = true;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Fout bij check beheerder-rechten:", err);
+            }
+
+            if (isClientAccount) {
+                console.warn("Onbevoegde poging tot admin toegang door klant-account:", userEmail);
                 await signOut(auth);
-                alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
+                alert("Toegang geweigerd: Klantaccounts hebben geen toegang tot het beheerdersdashboard.");
                 window.location.href = "../index.html";
                 return;
             }
+
             authOverlay.classList.add('hidden');
             adminApp.classList.remove('hidden');
             loadDashboardData();
