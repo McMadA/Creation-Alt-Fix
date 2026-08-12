@@ -206,8 +206,6 @@ async function loadDashboardData() {
 
     // 2. Load Projects Table
     cachedProjects = await API.getProjects();
-    const tbody = document.querySelector('#projects-table tbody');
-    tbody.innerHTML = '';
     
     const getTaskNr = (status) => {
         if (!status) return "";
@@ -219,7 +217,7 @@ async function loadDashboardData() {
         return "";
     };
 
-    cachedProjects.forEach(p => {
+    const createRow = (p) => {
         const row = document.createElement('tr');
         const taskNr = getTaskNr(p.status);
         row.innerHTML = `
@@ -232,8 +230,39 @@ async function loadDashboardData() {
                 <button class="btn btn-sm" onclick="deleteProject('${p.id}')" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
             </td>
         `;
-        tbody.appendChild(row);
-    });
+        return row;
+    };
+
+    // A. Overview Table (#projects-table)
+    const overviewBody = document.querySelector('#projects-table tbody');
+    if (overviewBody) {
+        overviewBody.innerHTML = '';
+        cachedProjects.forEach(p => overviewBody.appendChild(createRow(p)));
+    }
+
+    // B. Leads & Intakes Table (#leads-table)
+    const leadsBody = document.querySelector('#leads-table tbody');
+    if (leadsBody) {
+        leadsBody.innerHTML = '';
+        const leads = cachedProjects.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
+        if (leads.length === 0) {
+            leadsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
+        } else {
+            leads.forEach(p => leadsBody.appendChild(createRow(p)));
+        }
+    }
+
+    // C. Lopende Projecten Table (#active-projects-table)
+    const activeProjectsBody = document.querySelector('#active-projects-table tbody');
+    if (activeProjectsBody) {
+        activeProjectsBody.innerHTML = '';
+        const activeProjects = cachedProjects.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
+        if (activeProjects.length === 0) {
+            activeProjectsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden. Pas de status van een lead aan naar "In Ontwikkeling" of "Wacht op Akkoord".</td></tr>`;
+        } else {
+            activeProjects.forEach(p => activeProjectsBody.appendChild(createRow(p)));
+        }
+    }
 }
 
 function setupNavigation() {
@@ -257,11 +286,11 @@ function setupNavigation() {
     });
 }
 
-// --- Modals (Global so HTML onClick works) ---
+// --- Modals & Editable Klantkaart ---
 window.openNewLeadModal = () => {
     document.getElementById('modal-title').innerText = 'Nieuwe Lead Toevoegen';
     document.getElementById('modal-body').innerHTML = `
-        <p>Voeg handmatig een lead toe. Later koppelen we dit aan je website contactformulier en Google Ads campagnes.</p>
+        <p>Voeg handmatig een lead toe. Deze verschijnt direct in het overzicht en onder het tabblad Leads.</p>
         <br>
         <input type="text" id="new-lead-name" class="admin-input" placeholder="Naam of Bedrijf">
         <input type="email" id="new-lead-email" class="admin-input" placeholder="E-mailadres">
@@ -278,17 +307,19 @@ window.saveNewLead = async () => {
     
     if (!name) return alert('Naam of Bedrijf is verplicht');
     
+    const newLeadObj = {
+        client: name,
+        contactName: name,
+        email: email,
+        service: desc || "Onbekend",
+        status: "Nieuwe Lead",
+        statusClass: "waiting",
+        date: new Date().toLocaleDateString('nl-NL')
+    };
+
     if (db) {
         try {
-            await addDoc(collection(db, "projects"), {
-                client: name,
-                contactName: name,
-                email: email,
-                service: desc || "Onbekend",
-                status: "Nieuwe Lead",
-                statusClass: "waiting",
-                date: new Date().toLocaleDateString('nl-NL')
-            });
+            await addDoc(collection(db, "projects"), newLeadObj);
         } catch(e) {
             console.error("Error saving lead", e);
             alert("Fout bij opslaan lead.");
@@ -319,17 +350,16 @@ window.openProjectDetails = (id) => {
     const p = cachedProjects.find(item => item.id == id) || { id, client: "Onbekende Klant", service: "Onbekend", status: "Nieuwe Lead", statusClass: "waiting", date: "Zojuist" };
 
     const clientName = p.client || p.companyName || "Onbekend Bedrijf";
-    const contact = p.contactName || p.client || "Niet opgegeven";
+    const contact = p.contactName || p.client || "";
     const email = p.email || "";
-    const domain = p.domainName || "Nog niet aanwezig";
-    const service = p.service || "Onbekend";
-    const goals = p.goals || p.projectGoals || "Geen specifieke projectdoelen opgegeven bij intake.";
-    const design = p.design || p.designPreferences || "Geen specifieke stijlvoorkeuren opgegeven.";
+    const domain = p.domainName || "";
+    const service = p.service || "";
+    const goals = p.goals || p.projectGoals || "";
+    const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
-    const statusClass = p.statusClass || "waiting";
 
-    document.getElementById('modal-title').innerText = `Klantkaart: ${clientName}`;
+    document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
         <div class="klantkaart-container">
             <div class="klantkaart-header">
@@ -337,41 +367,61 @@ window.openProjectDetails = (id) => {
                     <strong style="font-size: 1.1rem; color: #fff;">${clientName}</strong>
                     <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${dateSubmitted}</span>
                 </div>
-                <span class="badge badge-${statusClass}">${status}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">Status:</label>
+                    <select id="edit-project-status" class="admin-input" style="margin: 0; padding: 6px 12px; width: auto; font-weight: 600; cursor: pointer;" onchange="updateProjectStatusDirect('${id}', this.value)">
+                        <option value="Nieuwe Lead" ${status === "Nieuwe Lead" ? "selected" : ""}>Nieuwe Lead</option>
+                        <option value="Intake Voltooid" ${status === "Intake Voltooid" ? "selected" : ""}>Intake Voltooid</option>
+                        <option value="Wacht op Akkoord" ${status === "Wacht op Akkoord" ? "selected" : ""}>Wacht op Akkoord</option>
+                        <option value="In Ontwikkeling" ${status === "In Ontwikkeling" ? "selected" : ""}>In Ontwikkeling (Lopend)</option>
+                        <option value="Opgeleverd (Betaling via Mollie)" ${status.includes("Mollie") || status === "Opgeleverd" ? "selected" : ""}>Opgeleverd (Mollie)</option>
+                        <option value="Afgerond" ${status === "Afgerond" ? "selected" : ""}>Afgerond</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="klantkaart-meta-grid">
-                <div class="meta-box">
-                    <div class="meta-label"><i class="fas fa-user"></i> Contactpersoon</div>
-                    <div class="meta-value">${contact}</div>
-                </div>
-                <div class="meta-box">
-                    <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
-                    <div class="meta-value">
-                        ${email ? `<a href="mailto:${email}?subject=Creation%2BAlt%2BFix%20-%20Jouw%20Aanvraag">${email}</a>` : 'Geen e-mail'}
+            <form id="edit-klantkaart-form" onsubmit="saveKlantkaartChanges(event, '${id}')">
+                <h4 class="actions-title" style="margin-top: 0;"><i class="fas fa-edit"></i> Klantgegevens & Intake Bewerken</h4>
+                
+                <div class="klantkaart-meta-grid">
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-building"></i> Bedrijfsnaam</div>
+                        <input type="text" id="edit-client" class="admin-input" value="${clientName}" required style="margin: 4px 0 0 0;">
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-user"></i> Contactpersoon</div>
+                        <input type="text" id="edit-contact" class="admin-input" value="${contact}" style="margin: 4px 0 0 0;" placeholder="Volledige naam">
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
+                        <input type="email" id="edit-email" class="admin-input" value="${email}" style="margin: 4px 0 0 0;" placeholder="info@bedrijf.nl">
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-globe"></i> Gewenste Domeinnaam</div>
+                        <input type="text" id="edit-domain" class="admin-input" value="${domain}" style="margin: 4px 0 0 0;" placeholder="www.bedrijf.nl">
+                    </div>
+                    <div class="meta-box" style="grid-column: 1 / -1;">
+                        <div class="meta-label"><i class="fas fa-concierge-bell"></i> Dienst</div>
+                        <input type="text" id="edit-service" class="admin-input" value="${service}" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop">
                     </div>
                 </div>
-                <div class="meta-box">
-                    <div class="meta-label"><i class="fas fa-globe"></i> Domeinnaam</div>
-                    <div class="meta-value">${domain}</div>
+
+                <div class="intake-box" style="margin-top: 15px;">
+                    <h4><i class="fas fa-bullseye"></i> Projectdoelen & Omschrijving</h4>
+                    <textarea id="edit-goals" class="admin-input" rows="4" style="margin: 4px 0 0 0;" placeholder="Omschrijving van het project en de doelen...">${goals}</textarea>
                 </div>
-                <div class="meta-box">
-                    <div class="meta-label"><i class="fas fa-concierge-bell"></i> Dienst</div>
-                    <div class="meta-value">${service}</div>
+
+                <div class="intake-box" style="margin-top: 15px;">
+                    <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
+                    <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
                 </div>
-            </div>
 
-            <div class="intake-box">
-                <h4><i class="fas fa-bullseye"></i> Projectdoelen & Omschrijving</h4>
-                <p>${goals}</p>
-            </div>
+                <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan</button>
+                </div>
+            </form>
 
-            <div class="intake-box">
-                <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
-                <p>${design}</p>
-            </div>
-
-            <div>
+            <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties</h4>
                 <div class="action-buttons-grid">
                     <button class="btn btn-secondary btn-sm" onclick="generateAiEmail('${id}')">
@@ -407,6 +457,63 @@ window.openProjectDetails = (id) => {
     `;
     document.getElementById('project-modal').classList.remove('hidden');
 };
+
+window.saveKlantkaartChanges = async (e, id) => {
+    e.preventDefault();
+    const updatedData = {
+        client: document.getElementById('edit-client').value,
+        contactName: document.getElementById('edit-contact').value,
+        email: document.getElementById('edit-email').value,
+        domainName: document.getElementById('edit-domain').value,
+        service: document.getElementById('edit-service').value,
+        goals: document.getElementById('edit-goals').value,
+        design: document.getElementById('edit-design').value,
+    };
+
+    const itemIndex = cachedProjects.findIndex(p => p.id == id);
+    if (itemIndex !== -1) {
+        cachedProjects[itemIndex] = { ...cachedProjects[itemIndex], ...updatedData };
+    }
+
+    if (db) {
+        try {
+            const docRef = doc(db, "projects", id);
+            await updateDoc(docRef, updatedData);
+        } catch(err) {
+            console.error("Fout bij opslaan in Firestore:", err);
+        }
+    }
+
+    alert("Klantkaart gegevens succesvol bijgewerkt!");
+    closeModal('project-modal');
+    loadDashboardData();
+};
+
+window.updateProjectStatusDirect = async (id, newStatus) => {
+    let statusClass = "active";
+    if (newStatus === "Nieuwe Lead" || newStatus === "Wacht op Akkoord") statusClass = "waiting";
+    if (newStatus.includes("Mollie")) statusClass = "concept";
+
+    const itemIndex = cachedProjects.findIndex(p => p.id == id);
+    if (itemIndex !== -1) {
+        cachedProjects[itemIndex].status = newStatus;
+        cachedProjects[itemIndex].statusClass = statusClass;
+    }
+
+    if (db) {
+        try {
+            const docRef = doc(db, "projects", id);
+            await updateDoc(docRef, { status: newStatus, statusClass: statusClass });
+        } catch(err) {
+            console.error("Fout bij updaten status in Firestore:", err);
+        }
+    }
+
+    alert(`Status gewijzigd naar: "${newStatus}"!\nHet project staat nu ook op het juiste tabblad.`);
+    closeModal('project-modal');
+    loadDashboardData();
+};
+
 
 window.generateProposal = async (id) => {
     if (!db) {

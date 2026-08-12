@@ -54,17 +54,60 @@
                 </div>
             </header>
 
-            <div class="content-area hidden" id="view-leads" style="padding: 20px;">
-                <h2>Leads & Intake</h2>
-                <p>Hier komen straks de gedetailleerde weergaven van alle ingevulde intakeformulieren.</p>
+            <div class="content-area hidden" id="view-leads">
+                <div class="admin-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2><i class="fas fa-user-plus" style="color: var(--color-accent); margin-right: 8px;"></i> Leads & Intakes</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openNewLeadModal()"><i class="fas fa-plus"></i> Nieuwe Lead</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Klant / Bedrijf</th>
+                                    <th>Dienst</th>
+                                    <th>Status</th>
+                                    <th>Datum</th>
+                                    <th>Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="content-area hidden" id="view-projects" style="padding: 20px;">
-                <h2>Projecten</h2>
-                <p>Hier komt het uitgebreide overzicht per project inclusief urenregistratie.</p>
+
+            <div class="content-area hidden" id="view-projects">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-project-diagram" style="color: var(--color-primary-light); margin-right: 8px;"></i> Lopende Projecten</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="active-projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Klant / Bedrijf</th>
+                                    <th>Dienst</th>
+                                    <th>Status</th>
+                                    <th>Datum</th>
+                                    <th>Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="content-area hidden" id="view-settings" style="padding: 20px;">
-                <h2>Instellingen</h2>
-                <p>Firebase configuratie, Mollie API keys en e-mail templates instellen.</p>
+
+            <div class="content-area hidden" id="view-settings">
+                <div class="admin-card" style="padding: 24px;">
+                    <h2><i class="fas fa-cog" style="color: var(--color-accent-alt); margin-right: 8px;"></i> Instellingen</h2>
+                    <p style="color: var(--color-text-secondary); margin-top: 10px;">Firebase configuratie status: <strong style="color: #4ade80;">Firestore Verbonden (mythical-cider-475118-e5)</strong></p>
+                </div>
             </div>
             <div class="content-area" id="view-dashboard">
                 <!-- Stats -->
