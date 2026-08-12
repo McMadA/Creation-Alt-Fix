@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { sendIntakeNotification } from "./notifications.js";
 
@@ -52,8 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, emailInput, tempPassword);
             clientUid = userCred.user.uid;
             console.log("Klantaccount succesvol aangemaakt in Firebase Auth:", clientUid);
+
+            // Stuur direct de Firebase Auth wachtwoord-instel e-mail naar de klant
+            await sendPasswordResetEmail(secondaryAuth, emailInput);
+            console.log("✅ Firebase Auth wachtwoord-instel e-mail verstuurd naar:", emailInput);
         } catch (authErr) {
             console.warn("Klant Auth account kon niet (of opnieuw) worden aangemaakt:", authErr.message);
+            // Probeer alsnog wachtwoord reset mail te sturen als account al bestond
+            try {
+                await sendPasswordResetEmail(secondaryAuth, emailInput);
+            } catch (rErr) {
+                console.warn("Reset email warning:", rErr.message);
+            }
         }
 
         // Gather Data

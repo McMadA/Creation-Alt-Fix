@@ -52,18 +52,6 @@ export async function sendIntakeNotification(data, docId) {
         } catch (err) {
             console.warn("⚠️ FormSubmit email notification failed:", err.message);
         }
-    }
-
-    // 2. Client Welcome & Login Credentials Email
-    if (data.email && data.generatedPassword) {
-        try {
-            await dispatchClientWelcomeEmail(data);
-            console.log("✅ Client portal login credentials sent to:", data.email);
-        } catch (err) {
-            console.warn("⚠️ Client welcome email failed:", err.message);
-        }
-    }
-
     // 2. Webhook Push Notification (Telegram / Discord / Custom Endpoint)
     if (NOTIFICATION_CONFIG.webhookUrl) {
         const message = formatNotificationText(data, docId);
@@ -227,34 +215,4 @@ async function dispatchEmailJS(data, docId) {
     }
 }
 
-/**
- * Dispatches Client Welcome Email with Portal Login Credentials
- */
-async function dispatchClientWelcomeEmail(data) {
-    const url = `https://formsubmit.co/ajax/${encodeURIComponent(data.email)}`;
 
-    const payload = {
-        "_subject": "🚀 Welkom bij Creation+Alt+Fix - Je Inloggegevens voor het Klantenportaal",
-        "_template": "table",
-        "_captcha": "false",
-        "Beste": data.contactName || data.client || "klant",
-        "Bericht": "Bedankt voor je intake! We hebben een persoonlijk account voor je aangemaakt in ons Klantenportaal.",
-        "Portaal Website": "https://creationaltfix.nl/portal/",
-        "Inlog E-mailadres": data.email,
-        "Wachtwoord": data.generatedPassword,
-        "Volg je projectstatus": "Log in op de website om de status van je project live te volgen en eventuele offertes in te zien."
-    };
-
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-        throw new Error(`FormSubmit client email HTTP error ${res.status}`);
-    }
-}

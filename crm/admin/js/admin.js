@@ -481,7 +481,7 @@ window.openProjectDetails = (id) => {
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
-    const isAuthActivated = !!(p.isClientAccount && p.clientUid);
+    const isAuthActivated = Boolean(p.clientUid);
 
     document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
@@ -828,26 +828,10 @@ window.createClientAuthAccount = async (projectId, email, contactName) => {
             }
         }
 
-        // Verstuur een nette, merk-gepersonaliseerde welkomst e-mail via FormSubmit
-        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(cleanEmail)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                "_subject": "🚀 Welkom bij Creation+Alt+Fix - Je Klantenportaal Account is Geactiveerd",
-                "_template": "table",
-                "_captcha": "false",
-                "Beste": contactName || "klant",
-                "Bericht": "Je account voor het Creation+Alt+Fix Klantenportaal is geactiveerd.",
-                "Portaal Inlogpagina": "https://creationaltfix.nl/portal/",
-                "Inlog E-mailadres": cleanEmail,
-                "Wachtwoord Instellen": "Er is een aparte e-mail verstuurd waarmee je je eigen wachtwoord veilig kunt instellen."
-            })
-        }).catch(err => console.warn("FormSubmit welcome mail error:", err));
-
-        // Stuur ook de Firebase wachtwoord-instel e-mail naar de klant
+        // Stuur de officiële Firebase Auth wachtwoord-instel e-mail rechtstreeks naar de klant
         await sendPasswordResetEmail(auth, cleanEmail);
 
-        alert(`Succes! Het account voor ${cleanEmail} is geactiveerd in Firebase Auth.\n\nEr is een e-mail gestuurd naar ${cleanEmail} om het wachtwoord in te stellen. De activatieknop is nu verborgen.`);
+        alert(`Succes! Het account voor ${cleanEmail} is geactiveerd in Firebase Auth.\n\nEr is een e-mail gestuurd naar ${cleanEmail} om het wachtwoord in te stellen.`);
         loadDashboardData();
         closeModal('project-modal');
     } catch (error) {
