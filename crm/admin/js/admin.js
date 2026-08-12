@@ -481,7 +481,7 @@ window.openProjectDetails = (id) => {
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
-    const isAuthActivated = Boolean(p.isClientAccount || p.clientUid);
+    const isAuthActivated = Boolean(p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2');
 
     document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `

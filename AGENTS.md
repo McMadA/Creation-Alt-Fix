@@ -51,6 +51,10 @@
 - **[2026-08-12] Verified Clean Intake Submission**: Confirmed clean intake dispatch log (`Intake verstuurd! Dashboard en notificatie geactiveerd`). Internal notification sent strictly to `info@creationaltfix.nl` without sending unwanted FormSubmit client mails or throwing syntax errors.
 - **[2026-08-12] Backlog Expansion: Branded Client Welcome Email**: Added `TASK-107` to `TODO.md` backlog covering dedicated branded HTML client welcome emails (Creation+Alt+Fix theme, portal onboarding, direct login links) via transactional email API.
 - **[2026-08-12] Auth Activation State Logic Fix**: Updated `isAuthActivated` check on line 484 of `crm/admin/js/admin.js` to evaluate `Boolean(p.isClientAccount || p.clientUid)`. Ensures leads created via intake (or where email-already-in-use occurs) properly reflect the green `Geactiveerd in Firebase Auth` badge without requiring a manual UID overwrite.
+- **[2026-08-12] Firebase Auth Verification vs Firestore Dummy Data**: Identified discrepancy where manual Firestore documents held mock `clientUid` values despite no user record existing in Firebase Authentication (`secondaryAuth`). Confirmed that executing `createClientAuthAccount` from the Klantkaart provisions the real Firebase Auth user account and updates Firestore with the authentic `user.uid`.
+- **[2026-08-12] Non-Dummy Client UID Verification**: Updated `isAuthActivated` logic in `crm/admin/js/admin.js` to filter out legacy mock UIDs (`QVzS7PyJkeXi7mM50HOgXsSiQFe2`). Ensures leads without an authentic Firebase Auth account consistently surface the yellow `Niet geactiveerd in Firebase Auth` badge and active registration trigger.
+
+
 
 
 
