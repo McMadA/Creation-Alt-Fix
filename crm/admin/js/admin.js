@@ -481,7 +481,7 @@ window.openProjectDetails = (id) => {
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
-    const isAuthActivated = Boolean(p.clientUid);
+    const isAuthActivated = Boolean(p.isClientAccount || p.clientUid);
 
     document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
@@ -816,15 +816,15 @@ window.createClientAuthAccount = async (projectId, email, contactName) => {
             const docRef = doc(db, "projects", projectId);
             await updateDoc(docRef, {
                 email: cleanEmail,
-                isClientAccount: Boolean(clientUid),
+                isClientAccount: true,
                 clientUid: clientUid || null
             });
 
             // Update in-memory cache as well
             const pIdx = cachedProjects.findIndex(p => p.id == projectId);
             if (pIdx !== -1) {
-                cachedProjects[pIdx].isClientAccount = Boolean(clientUid);
-                cachedProjects[pIdx].clientUid = clientUid || null;
+                cachedProjects[pIdx].isClientAccount = true;
+                if (clientUid) cachedProjects[pIdx].clientUid = clientUid;
             }
         }
 

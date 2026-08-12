@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **13 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **8 Tasks (62%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (38%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **14 Epics & Tasks** |
+| **Completed Work Items** | ✅ Done | **8 Tasks (57%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **6 Tasks (43%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░░] 62% Complete`
+`[████████████████░░░░░░░░░] 57% Complete`
 
 ---
 
@@ -50,6 +50,13 @@
     - Configure custom domain verification in Firebase Console (e.g. `auth.creationaltfix.nl` or custom SMTP server `noreply@creationaltfix.nl`).
     - Add required DNS records (DKIM, SPF, CNAME) to Vimexx/DirectAdmin DNS settings to prevent authentication and password reset emails from landing in spam folders.
     - Ensure all automated transactional emails originate from official `creationaltfix.nl` identity.
+
+- [ ] `[TASK-107]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Dedicated Branded Client Welcome Email Dispatcher**
+  - **Scope**: `crm/intake/js/notifications.js`, Transactional Email Service (Resend / EmailJS / Custom SMTP)
+  - **Acceptance Criteria**:
+    - Build a clean HTML welcome email (with Creation+Alt+Fix branding, dark mode styling, and portal onboarding instructions).
+    - Dispatch automatically upon intake completion without using FormSubmit raw tables or third-party sponsor footers.
+    - Provide direct link to login portal (`https://creationaltfix.nl/portal/`) alongside password setup instructions.
 
 ---
 

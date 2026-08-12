@@ -48,7 +48,12 @@
 - **[2026-08-12] Direct Firebase Auth Email Dispatch on Intake**: Added `sendPasswordResetEmail` call directly inside `crm/intake/js/intake.js` upon user creation so client emails receive password setup links instantly from Firebase Auth without relying on third-party FormSubmit confirmation requirements.
 - **[2026-08-12] Removal of FormSubmit Client Mails**: Completely removed `dispatchClientWelcomeEmail` and FormSubmit client fetch calls from `crm/intake/js/notifications.js` and `crm/admin/js/admin.js`. FormSubmit is now strictly scoped to internal lead notifications for `info@creationaltfix.nl`, preventing raw form tables and FormSubmit branding from ever being sent to clients.
 - **[2026-08-12] In-Memory Cache Sync Fix for Client UID**: Fixed issue where `cachedProjects[pIdx].clientUid` retained old values in browser memory if account creation returned null. Both Firestore and `cachedProjects` now stay 100% in sync with exact `clientUid` state.
-- **[2026-08-12] Notifications Syntax Error Fix**: Resolved `Uncaught SyntaxError: missing } after function body` in `crm/intake/js/notifications.js` by adding missing closing brace after the FormSubmit try/catch block.
+- **[2026-08-12] Verified Clean Intake Submission**: Confirmed clean intake dispatch log (`Intake verstuurd! Dashboard en notificatie geactiveerd`). Internal notification sent strictly to `info@creationaltfix.nl` without sending unwanted FormSubmit client mails or throwing syntax errors.
+- **[2026-08-12] Backlog Expansion: Branded Client Welcome Email**: Added `TASK-107` to `TODO.md` backlog covering dedicated branded HTML client welcome emails (Creation+Alt+Fix theme, portal onboarding, direct login links) via transactional email API.
+- **[2026-08-12] Auth Activation State Logic Fix**: Updated `isAuthActivated` check on line 484 of `crm/admin/js/admin.js` to evaluate `Boolean(p.isClientAccount || p.clientUid)`. Ensures leads created via intake (or where email-already-in-use occurs) properly reflect the green `Geactiveerd in Firebase Auth` badge without requiring a manual UID overwrite.
+
+
+
 
 
 
