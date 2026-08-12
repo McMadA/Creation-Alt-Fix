@@ -160,7 +160,90 @@ let cachedProjects = [];
 // --- UI Logic ---
 document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
+    setupSearchAndFilters();
 });
+
+// --- Search, Filter & CSV Export ---
+function setupSearchAndFilters() {
+    const searchInput = document.getElementById('admin-search-input');
+    const statusFilter = document.getElementById('admin-status-filter');
+
+    searchInput?.addEventListener('input', () => filterAndRenderTables());
+    statusFilter?.addEventListener('change', () => filterAndRenderTables());
+}
+
+function filterAndRenderTables() {
+    const searchVal = (document.getElementById('admin-search-input')?.value || '').toLowerCase().trim();
+    const statusVal = document.getElementById('admin-status-filter')?.value || 'all';
+
+    const filtered = cachedProjects.filter(p => {
+        const clientName = (p.client || p.companyName || '').toLowerCase();
+        const contactName = (p.contactName || '').toLowerCase();
+        const email = (p.email || '').toLowerCase();
+        const domain = (p.domainName || '').toLowerCase();
+        const service = (p.service || '').toLowerCase();
+        const goals = (p.goals || p.projectGoals || '').toLowerCase();
+        const status = (p.status || '').toLowerCase();
+
+        // Search match
+        const matchesSearch = !searchVal || 
+            clientName.includes(searchVal) || 
+            contactName.includes(searchVal) || 
+            email.includes(searchVal) || 
+            domain.includes(searchVal) || 
+            service.includes(searchVal) || 
+            goals.includes(searchVal);
+
+        // Status match
+        let matchesStatus = true;
+        if (statusVal !== 'all') {
+            matchesStatus = status.includes(statusVal.toLowerCase());
+        }
+
+        return matchesSearch && matchesStatus;
+    });
+
+    renderTablesData(filtered);
+}
+
+window.exportProjectsToCSV = () => {
+    if (!cachedProjects || cachedProjects.length === 0) {
+        alert("Geen projecten/leads om te exporteren.");
+        return;
+    }
+
+    const headers = ["Bedrijfsnaam", "Contactpersoon", "E-mailadres", "Dienst", "Gewenste Domeinnaam", "Status", "Datum", "Projectdoelen"];
+    
+    const rows = cachedProjects.map(p => {
+        const escapeCsv = (val) => {
+            if (!val) return '""';
+            const clean = String(val).replace(/"/g, '""');
+            return `"${clean}"`;
+        };
+        return [
+            escapeCsv(p.client || p.companyName),
+            escapeCsv(p.contactName),
+            escapeCsv(p.email),
+            escapeCsv(p.service),
+            escapeCsv(p.domainName),
+            escapeCsv(p.status),
+            escapeCsv(p.date),
+            escapeCsv(p.goals || p.projectGoals)
+        ].join(',');
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `creation_alt_fix_leads_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
 
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
 if (auth) {
@@ -238,6 +321,11 @@ async function loadDashboardData() {
     // 2. Load Projects Table
     cachedProjects = await API.getProjects();
     
+    // Initial Render
+    filterAndRenderTables();
+}
+
+function renderTablesData(projectsToRender) {
     const getTaskNr = (status) => {
         if (!status) return "";
         if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Taak 01/02";
@@ -268,14 +356,18 @@ async function loadDashboardData() {
     const overviewBody = document.querySelector('#projects-table tbody');
     if (overviewBody) {
         overviewBody.innerHTML = '';
-        cachedProjects.forEach(p => overviewBody.appendChild(createRow(p)));
+        if (projectsToRender.length === 0) {
+            overviewBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen resultaten gevonden voor deze zoekopdracht/filter.</td></tr>`;
+        } else {
+            projectsToRender.forEach(p => overviewBody.appendChild(createRow(p)));
+        }
     }
 
     // B. Leads & Intakes Table (#leads-table)
     const leadsBody = document.querySelector('#leads-table tbody');
     if (leadsBody) {
         leadsBody.innerHTML = '';
-        const leads = cachedProjects.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
+        const leads = projectsToRender.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
         if (leads.length === 0) {
             leadsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
         } else {
@@ -287,9 +379,9 @@ async function loadDashboardData() {
     const activeProjectsBody = document.querySelector('#active-projects-table tbody');
     if (activeProjectsBody) {
         activeProjectsBody.innerHTML = '';
-        const activeProjects = cachedProjects.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
+        const activeProjects = projectsToRender.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
         if (activeProjects.length === 0) {
-            activeProjectsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden. Pas de status van een lead aan naar "In Ontwikkeling" of "Wacht op Akkoord".</td></tr>`;
+            activeProjectsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
         } else {
             activeProjects.forEach(p => activeProjectsBody.appendChild(createRow(p)));
         }
@@ -447,15 +539,20 @@ window.openProjectDetails = (id) => {
                     <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
                 </div>
 
-                <div class="intake-box" style="margin-top: 15px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+                <div class="intake-box" style="margin-top: 15px; background: ${(p.isClientAccount || p.clientUid) ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${(p.isClientAccount || p.clientUid) ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
                     <h4><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
                     <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
-                        Klant gebruikt e-mailadres <strong>${email || 'Nog geen e-mail ingevuld'}</strong> voor het Klantenportaal.
+                        E-mailadres: <strong>${email || 'Nog geen e-mail ingevuld'}</strong> 
+                        ${(p.isClientAccount || p.clientUid) 
+                            ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
+                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Nog niet geactiveerd</span>`}
                     </p>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}')">
-                            <i class="fas fa-user-plus"></i> Activeer Klantaccount & Stuur Inlog-Mail
-                        </button>
+                        ${!(p.isClientAccount || p.clientUid) ? `
+                            <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}', '${contact}')">
+                                <i class="fas fa-user-plus"></i> Activeer Klantaccount & Stuur Inlog-Mail
+                            </button>
+                        ` : ''}
                         <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')">
                             <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
                         </button>
@@ -691,7 +788,7 @@ window.triggerAdminPasswordReset = async (email) => {
     }
 };
 
-window.createClientAuthAccount = async (projectId, email) => {
+window.createClientAuthAccount = async (projectId, email, contactName) => {
     if (!email || email === 'undefined' || !email.trim()) {
         alert("Vul eerst een geldig e-mailadres in op de Klantkaart en sla de wijzigingen op.");
         return;
@@ -699,7 +796,7 @@ window.createClientAuthAccount = async (projectId, email) => {
     const cleanEmail = email.trim().toLowerCase();
     const tempPassword = 'CAF-' + Math.random().toString(36).substring(2, 8);
 
-    if (!confirm(`Wilt u een Firebase Auth account aanmaken/activeren voor ${cleanEmail}?`)) return;
+    if (!confirm(`Wilt u het Firebase Auth account aanmaken en activeren voor ${cleanEmail}?`)) return;
 
     try {
         let clientUid = null;
@@ -711,7 +808,7 @@ window.createClientAuthAccount = async (projectId, email) => {
             console.warn("Auth info (account match/exists):", authErr.message);
         }
 
-        // Update document in Firestore
+        // Update document in Firestore so UI updates immediately
         if (db && projectId) {
             const docRef = doc(db, "projects", projectId);
             await updateDoc(docRef, {
@@ -719,12 +816,35 @@ window.createClientAuthAccount = async (projectId, email) => {
                 isClientAccount: true,
                 clientUid: clientUid || null
             });
+
+            // Update in-memory cache as well
+            const pIdx = cachedProjects.findIndex(p => p.id == projectId);
+            if (pIdx !== -1) {
+                cachedProjects[pIdx].isClientAccount = true;
+                if (clientUid) cachedProjects[pIdx].clientUid = clientUid;
+            }
         }
 
-        // Stuur direct de inlog- / wachtwoord-instel e-mail naar de klant
+        // Verstuur een nette, merk-gepersonaliseerde welkomst e-mail via FormSubmit
+        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(cleanEmail)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                "_subject": "🚀 Welkom bij Creation+Alt+Fix - Je Klantenportaal Account is Geactiveerd",
+                "_template": "table",
+                "_captcha": "false",
+                "Beste": contactName || "klant",
+                "Bericht": "Je account voor het Creation+Alt+Fix Klantenportaal is geactiveerd.",
+                "Portaal Inlogpagina": "https://creationaltfix.nl/portal/",
+                "Inlog E-mailadres": cleanEmail,
+                "Wachtwoord Instellen": "Er is een aparte e-mail verstuurd waarmee je je eigen wachtwoord veilig kunt instellen."
+            })
+        }).catch(err => console.warn("FormSubmit welcome mail error:", err));
+
+        // Stuur ook de Firebase wachtwoord-instel e-mail naar de klant
         await sendPasswordResetEmail(auth, cleanEmail);
 
-        alert(`Succes! Het account voor ${cleanEmail} is geactiveerd in Firebase Auth.\n\nEr is automatisch een e-mail gestuurd naar ${cleanEmail} waarmee de klant zijn/haar wachtwoord kan instellen om in te loggen op het Klantenportaal.`);
+        alert(`Succes! Het account voor ${cleanEmail} is geactiveerd in Firebase Auth.\n\nEr is een e-mail gestuurd naar ${cleanEmail} om het wachtwoord in te stellen. De activatieknop is nu verborgen.`);
         loadDashboardData();
         closeModal('project-modal');
     } catch (error) {

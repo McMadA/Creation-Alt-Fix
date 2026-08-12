@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **12 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **7 Tasks (58%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (42%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **13 Epics & Tasks** |
+| **Completed Work Items** | ✅ Done | **8 Tasks (62%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (38%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[██████████████░░░░░░░░░░] 58% Complete`
+`[████████████████░░░░░░░░░] 62% Complete`
 
 ---
 
@@ -40,12 +40,16 @@
   - **Scope**: `crm/status/`
   - **Details**: Responsive 4-stage visual pipeline (*Intake & Akkoord* -> *Design & Ontwerp* -> *Ontwikkeling & Testen* -> *Livegang*). Fully authenticated via Firebase Auth with strict `/admin` access control.
 
-- [ ] `[TASK-105]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Admin Data Table Search, Filtering & CSV Exporter**
-  - **Scope**: `crm/admin/js/admin.js`
+- [x] `[TASK-105]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Data Table Search, Filtering & CSV Exporter**
+  - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
+  - **Details**: Real-time multi-field search bar (client, contact person, email, domain, goals), status filter dropdown, and 1-click UTF-8 BOM CSV export for accounting & CRM reporting.
+
+- [ ] `[TASK-106]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Auth Custom Sender Domain & SMTP Integration**
+  - **Scope**: Firebase Console, DNS Settings (`creationaltfix.nl`)
   - **Acceptance Criteria**:
-    - Real-time client name & email search input.
-    - Status filter dropdown (*Nieuwe Lead*, *Wacht op Akkoord*, *In Ontwikkeling*, *Opgeleverd*).
-    - 1-click CSV data export for accounting & CRM reporting.
+    - Configure custom domain verification in Firebase Console (e.g. `auth.creationaltfix.nl` or custom SMTP server `noreply@creationaltfix.nl`).
+    - Add required DNS records (DKIM, SPF, CNAME) to Vimexx/DirectAdmin DNS settings to prevent authentication and password reset emails from landing in spam folders.
+    - Ensure all automated transactional emails originate from official `creationaltfix.nl` identity.
 
 ---
 
