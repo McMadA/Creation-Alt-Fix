@@ -100,3 +100,21 @@ h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--color-text-headi
 .close-btn:hover { color: #fff; }
 .modal-body { padding: 20px; overflow-y: auto; }
 .modal-footer { padding: 20px; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Klantkaart Details Styling */
+.klantkaart-container { display: flex; flex-direction: column; gap: 20px; }
+.klantkaart-header { display: flex; justify-content: space-between; align-items: center; background: rgba(99,102,241,0.08); border: 1px solid var(--color-border); padding: 15px 20px; border-radius: var(--radius-sm); }
+.klantkaart-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.meta-box { background: var(--color-bg-input); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 12px 16px; }
+.meta-label { font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.meta-value { font-size: 0.95rem; font-weight: 600; color: #fff; word-break: break-word; }
+.meta-value a { color: var(--color-accent); text-decoration: none; }
+.meta-value a:hover { text-decoration: underline; }
+
+.intake-box { background: rgba(15, 23, 42, 0.9); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 16px; }
+.intake-box h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--color-accent); display: flex; align-items: center; gap: 8px; }
+.intake-box p { font-size: 0.9rem; color: var(--color-text-primary); line-height: 1.6; white-space: pre-wrap; }
+
+.actions-title { font-size: 1rem; margin-top: 10px; margin-bottom: 12px; font-family: var(--font-heading); color: var(--color-text-heading); }
+.action-buttons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+

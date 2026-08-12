@@ -94,13 +94,64 @@ const API = {
 
     getMockProjects() {
         return [
-            { id: 1, client: "Bakkerij de Vries", service: "Slimme Automatisering (AI)", status: "In Ontwikkeling", statusClass: "active", date: "Vandaag" },
-            { id: 2, client: "Jansen IT", service: "Data Dashboard", status: "Wacht op Akkoord", statusClass: "waiting", date: "Gisteren" },
-            { id: 3, client: "Stenekes Riool", service: "Website & Hosting", status: "Opgeleverd (Betaling via Mollie)", statusClass: "concept", date: "3 Dagen Geleden" },
-            { id: 4, client: "Nieuwe Aanvraag", service: "Onbekend", status: "Nieuwe Lead", statusClass: "waiting", date: "Zojuist" }
+            {
+                id: 1,
+                client: "Bakkerij de Vries",
+                contactName: "Jan de Vries",
+                email: "jan@bakkerijdevries.nl",
+                domainName: "www.bakkerijdevries.nl",
+                service: "Slimme Automatisering (AI)",
+                goals: "Automatisch dagelijkse bestellingen scannen uit e-mails en doorzetten naar de bakkerij-planning.",
+                design: "Ambachtelijk maar modern, warm oranje en donkerblauw.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "Vandaag"
+            },
+            {
+                id: 2,
+                client: "Jansen IT",
+                contactName: "Mark Jansen",
+                email: "info@jansenit.nl",
+                domainName: "www.jansenit.nl",
+                service: "Data Dashboard",
+                goals: "Centraal inzicht in alle server-statussen en klanttickets via PowerBI / custom dashboard.",
+                design: "Strak tech design, donkere modus met cyaan accenten.",
+                status: "Wacht op Akkoord",
+                statusClass: "waiting",
+                date: "Gisteren"
+            },
+            {
+                id: 3,
+                client: "Stenekes Riool",
+                contactName: "Angela Stenekes",
+                email: "angela@stenekes.nl",
+                domainName: "www.stenekesriool.nl",
+                service: "Website & Hosting",
+                goals: "Nieuwe one-pager met directe belknop en offerte-intake voor rioolreiniging.",
+                design: "Schoon en betrouwbaar, groen en wit.",
+                status: "Opgeleverd (Betaling via Mollie)",
+                statusClass: "concept",
+                date: "3 Dagen Geleden"
+            },
+            {
+                id: 4,
+                client: "Nieuwe Aanvraag",
+                contactName: "Karel Visser",
+                email: "karel@visserlogistics.com",
+                domainName: "Nog geen domein",
+                service: "Website & Webshop",
+                goals: "Wil een online portal waar transportklanten vrachtaanvragen kunnen indienen en rechtstreeks kunnen inloggen.",
+                design: "Zakelijk, snelle laadtijd, mobiel geoptimaliseerd.",
+                status: "Nieuwe Lead",
+                statusClass: "waiting",
+                date: "Zojuist"
+            }
         ];
     }
 };
+
+let cachedProjects = [];
+
 
 // --- UI Logic ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -154,13 +205,13 @@ async function loadDashboardData() {
     document.getElementById('stat-waiting').innerText = stats.waiting;
 
     // 2. Load Projects Table
-    const projects = await API.getProjects();
+    cachedProjects = await API.getProjects();
     const tbody = document.querySelector('#projects-table tbody');
     tbody.innerHTML = '';
     
     const getTaskNr = (status) => {
         if (!status) return "";
-        if (status.includes("Nieuwe Lead")) return "Taak 01/02";
+        if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Taak 01/02";
         if (status.includes("Wacht op Akkoord")) return "Taak 03";
         if (status.includes("Ontwikkeling")) return "Fase 3";
         if (status.includes("Mollie")) return "Taak 05";
@@ -168,17 +219,17 @@ async function loadDashboardData() {
         return "";
     };
 
-    projects.forEach(p => {
+    cachedProjects.forEach(p => {
         const row = document.createElement('tr');
         const taskNr = getTaskNr(p.status);
         row.innerHTML = `
-            <td><strong>${p.client}</strong></td>
-            <td>${p.service}</td>
+            <td><strong>${p.client || p.companyName || 'Onbekend'}</strong></td>
+            <td>${p.service || 'Onbekend'}</td>
             <td><span class="badge badge-${p.statusClass}">${p.status} ${taskNr ? `(${taskNr})` : ''}</span></td>
-            <td>${p.date}</td>
+            <td>${p.date || 'Onbekend'}</td>
             <td>
-                <button class="btn btn-secondary btn-sm" onclick="openProjectDetails('${p.id}', '${p.client}')">Beheren</button>
-                <button class="btn btn-sm" onclick="deleteProject('${p.id}')" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-secondary btn-sm" onclick="openProjectDetails('${p.id}')"><i class="fas fa-eye"></i> Klantkaart</button>
+                <button class="btn btn-sm" onclick="deleteProject('${p.id}')" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(row);
@@ -231,6 +282,7 @@ window.saveNewLead = async () => {
         try {
             await addDoc(collection(db, "projects"), {
                 client: name,
+                contactName: name,
                 email: email,
                 service: desc || "Onbekend",
                 status: "Nieuwe Lead",
@@ -263,26 +315,94 @@ window.deleteProject = async (id) => {
     }
 };
 
-window.openProjectDetails = (id, name) => {
-    document.getElementById('modal-title').innerText = `Project: ${name}`;
+window.openProjectDetails = (id) => {
+    const p = cachedProjects.find(item => item.id == id) || { id, client: "Onbekende Klant", service: "Onbekend", status: "Nieuwe Lead", statusClass: "waiting", date: "Zojuist" };
+
+    const clientName = p.client || p.companyName || "Onbekend Bedrijf";
+    const contact = p.contactName || p.client || "Niet opgegeven";
+    const email = p.email || "";
+    const domain = p.domainName || "Nog niet aanwezig";
+    const service = p.service || "Onbekend";
+    const goals = p.goals || p.projectGoals || "Geen specifieke projectdoelen opgegeven bij intake.";
+    const design = p.design || p.designPreferences || "Geen specifieke stijlvoorkeuren opgegeven.";
+    const dateSubmitted = p.date || "Onbekend";
+    const status = p.status || "Nieuwe Lead";
+    const statusClass = p.statusClass || "waiting";
+
+    document.getElementById('modal-title').innerText = `Klantkaart: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
-        <h3>Acties voor dit project</h3>
-        <br>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button class="btn btn-secondary" onclick="generateAiEmail('${id}')"><i class="fas fa-robot"></i> Genereer AI Concept E-mail (Taak 04)</button>
-            <button class="btn btn-secondary" onclick="generateProposal('${id}')"><i class="fas fa-file-contract"></i> Genereer Online Offerte (Taak 03)</button>
-            <button class="btn btn-secondary" onclick="generateInvoiceMollieLink('${id}', '${name}')"><i class="fas fa-euro-sign"></i> Genereer Factuur + Mollie Link (Taak 05)</button>
-            <button class="btn btn-secondary" onclick="triggerCheckIn('${id}', '${name}')"><i class="fas fa-sync-alt"></i> Plan 14-Dagen Check-in Mail in (Taak 06)</button>
-        </div>
-        <div id="ai-email-container" class="hidden" style="margin-top: 15px; padding: 15px; background: rgba(34, 211, 238, 0.1); border-radius: 6px; border: 1px solid rgba(34, 211, 238, 0.3);">
-            <p style="margin-bottom: 10px;"><strong>AI Concept E-mail:</strong> (Concept op basis van intake)</p>
-            <textarea id="ai-email-body" class="admin-input" rows="8"></textarea>
-            <button class="btn btn-primary btn-sm" onclick="alert('E-mail functionaliteit kan later gekoppeld worden aan je mailserver!')">Verstuur E-mail</button>
-        </div>
-        <div id="proposal-link-container" class="hidden" style="margin-top: 15px; padding: 15px; background: rgba(99,102,241,0.1); border-radius: 6px; border: 1px solid rgba(99,102,241,0.3);">
-            <p style="margin-bottom: 10px;"><strong>Offerte Link:</strong> Stuur deze link naar de klant.</p>
-            <input type="text" id="proposal-link" class="admin-input" readonly style="margin-bottom: 10px;">
-            <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm">Bekijk Offerte</a>
+        <div class="klantkaart-container">
+            <div class="klantkaart-header">
+                <div>
+                    <strong style="font-size: 1.1rem; color: #fff;">${clientName}</strong>
+                    <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${dateSubmitted}</span>
+                </div>
+                <span class="badge badge-${statusClass}">${status}</span>
+            </div>
+
+            <div class="klantkaart-meta-grid">
+                <div class="meta-box">
+                    <div class="meta-label"><i class="fas fa-user"></i> Contactpersoon</div>
+                    <div class="meta-value">${contact}</div>
+                </div>
+                <div class="meta-box">
+                    <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
+                    <div class="meta-value">
+                        ${email ? `<a href="mailto:${email}?subject=Creation%2BAlt%2BFix%20-%20Jouw%20Aanvraag">${email}</a>` : 'Geen e-mail'}
+                    </div>
+                </div>
+                <div class="meta-box">
+                    <div class="meta-label"><i class="fas fa-globe"></i> Domeinnaam</div>
+                    <div class="meta-value">${domain}</div>
+                </div>
+                <div class="meta-box">
+                    <div class="meta-label"><i class="fas fa-concierge-bell"></i> Dienst</div>
+                    <div class="meta-value">${service}</div>
+                </div>
+            </div>
+
+            <div class="intake-box">
+                <h4><i class="fas fa-bullseye"></i> Projectdoelen & Omschrijving</h4>
+                <p>${goals}</p>
+            </div>
+
+            <div class="intake-box">
+                <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
+                <p>${design}</p>
+            </div>
+
+            <div>
+                <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties</h4>
+                <div class="action-buttons-grid">
+                    <button class="btn btn-secondary btn-sm" onclick="generateAiEmail('${id}')">
+                        <i class="fas fa-robot"></i> AI Concept E-mail (Taak 04)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="generateProposal('${id}')">
+                        <i class="fas fa-file-contract"></i> Genereer Offerte (Taak 03)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="generateInvoiceMollieLink('${id}', '${clientName}')">
+                        <i class="fas fa-euro-sign"></i> Factuur + Mollie Link (Taak 05)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="triggerCheckIn('${id}', '${clientName}')">
+                        <i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Taak 06)
+                    </button>
+                </div>
+            </div>
+
+            <div id="ai-email-container" class="hidden" style="padding: 15px; background: rgba(34, 211, 238, 0.08); border-radius: 8px; border: 1px solid rgba(34, 211, 238, 0.3);">
+                <p style="margin-bottom: 10px; font-weight: 600; color: var(--color-accent);"><i class="fas fa-magic"></i> AI Concept E-mail (Gepersonaliseerd op basis van intake):</p>
+                <textarea id="ai-email-body" class="admin-input" rows="7" style="font-family: var(--font-body);"></textarea>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn btn-primary btn-sm" onclick="sendMailToClient('${email}')"><i class="fas fa-paper-plane"></i> Open in E-mail Client</button>
+                    <button class="btn btn-secondary btn-sm" onclick="copyAiEmail()"><i class="fas fa-copy"></i> Kopiëren</button>
+                </div>
+            </div>
+
+            <div id="proposal-link-container" class="hidden" style="padding: 15px; background: rgba(99,102,241,0.08); border-radius: 8px; border: 1px solid rgba(99,102,241,0.3);">
+                <p style="margin-bottom: 10px; font-weight: 600; color: #818cf8;"><i class="fas fa-link"></i> Gegenereerde Online Offerte Link:</p>
+                <input type="text" id="proposal-link" class="admin-input" readonly style="margin-bottom: 10px;">
+                <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Bekijk Offerte</a>
+            </div>
         </div>
     `;
     document.getElementById('project-modal').classList.remove('hidden');
@@ -290,11 +410,10 @@ window.openProjectDetails = (id, name) => {
 
 window.generateProposal = async (id) => {
     if (!db) {
-        alert("Firestore is niet verbonden.");
+        alert("Firestore is niet verbonden (in mock-modus).");
         return;
     }
     
-    // In een echte app zou je hier een formulier tonen voor de prijs, we simuleren het even met een prompt:
     const priceInput = prompt("Wat is de prijs voor dit project? (bijv. 450,00)");
     if (!priceInput) return;
 
@@ -307,9 +426,7 @@ window.generateProposal = async (id) => {
             proposalGeneratedAt: new Date().toISOString()
         });
 
-        // Genereer Link
         const baseUrl = window.location.origin;
-        // Zorg dat we de juiste map pakken als we op localhost of github pages draaien
         const link = `${baseUrl}/offerte/index.html?id=${id}`;
         
         const container = document.getElementById('proposal-link-container');
@@ -317,7 +434,6 @@ window.generateProposal = async (id) => {
         document.getElementById('proposal-visit-btn').href = link;
         container.classList.remove('hidden');
 
-        // Herlaad de tabel data stilletjes op de achtergrond
         loadDashboardData();
     } catch (e) {
         console.error("Fout bij updaten offerte:", e);
@@ -325,22 +441,33 @@ window.generateProposal = async (id) => {
     }
 };
 
-window.generateAiEmail = async (id) => {
-    if (!db) return;
-    try {
-        const docRef = doc(db, "projects", id);
-        const snap = await window.getDocObj(docRef); // We need getDoc imported, but let's just fetch it from the UI or state.
-        // Actually, let's just mock the email for now to keep it simple.
-        const emailContainer = document.getElementById('ai-email-container');
-        const emailBody = document.getElementById('ai-email-body');
-        
-        emailBody.value = `Beste klant,\n\nBedankt voor je aanvraag! We hebben je intake in goede orde ontvangen.\nJe gaf aan dat je doel is om meer aanvragen te genereren. Wij kunnen hier perfect bij helpen met onze Slimme Automatisering.\n\nZullen we binnenkort even bellen om dit door te spreken?\n\nMet vriendelijke groet,\nCreation+Alt+Fix`;
-        
-        emailContainer.classList.remove('hidden');
-    } catch (e) {
-        console.error(e);
-    }
+window.generateAiEmail = (id) => {
+    const p = cachedProjects.find(item => item.id == id) || {};
+    const contact = p.contactName || p.client || "klant";
+    const service = p.service || "je project";
+    const goals = p.goals || p.projectGoals || "jouw gewenste doelen";
+
+    const emailContainer = document.getElementById('ai-email-container');
+    const emailBody = document.getElementById('ai-email-body');
+    
+    emailBody.value = `Beste ${contact},\n\nBedankt voor je intake bij Creation+Alt+Fix voor ${service}!\n\nWe hebben je wensen in goede orde ontvangen. Je gaf aan dat het voornaamste doel is:\n"${goals}"\n\nDit kunnen we uitstekend voor je realiseren. Zullen we deze week even kort telefonisch of via Video Call de details afstemmen?\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix\nwww.creationaltfix.nl`;
+    
+    emailContainer.classList.remove('hidden');
 };
+
+window.sendMailToClient = (email) => {
+    const body = encodeURIComponent(document.getElementById('ai-email-body').value);
+    const subject = encodeURIComponent("Creation+Alt+Fix - Vervolg op je intake");
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+};
+
+window.copyAiEmail = () => {
+    const body = document.getElementById('ai-email-body');
+    body.select();
+    navigator.clipboard.writeText(body.value);
+    alert("Concept e-mail gekopieerd naar klembord!");
+};
+
 
 window.generateInvoiceMollieLink = async (id, name) => {
     if (!db) {
