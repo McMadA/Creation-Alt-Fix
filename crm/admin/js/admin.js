@@ -475,12 +475,13 @@ window.openProjectDetails = (id) => {
     const clientName = p.client || p.companyName || "Onbekend Bedrijf";
     const contact = p.contactName || p.client || "";
     const email = p.email || "";
-    const domain = p.domainName || "";
+    const domain = p.domainName || p.domain || "";
     const service = p.service || "";
     const goals = p.goals || p.projectGoals || "";
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
+    const isAuthActivated = !!(p.isClientAccount && p.clientUid);
 
     document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
@@ -539,20 +540,18 @@ window.openProjectDetails = (id) => {
                     <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
                 </div>
 
-                <div class="intake-box" style="margin-top: 15px; background: ${(p.isClientAccount || p.clientUid) ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${(p.isClientAccount || p.clientUid) ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
+                <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
                     <h4><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
                     <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
                         E-mailadres: <strong>${email || 'Nog geen e-mail ingevuld'}</strong> 
-                        ${(p.isClientAccount || p.clientUid) 
+                        ${isAuthActivated 
                             ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
-                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Nog niet geactiveerd</span>`}
+                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`}
                     </p>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-                        ${!(p.isClientAccount || p.clientUid) ? `
-                            <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}', '${contact}')">
-                                <i class="fas fa-user-plus"></i> Activeer Klantaccount & Stuur Inlog-Mail
-                            </button>
-                        ` : ''}
+                        <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}', '${contact}')">
+                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Maak Account in Auth' : 'Activeer Klantaccount & Stuur Inlog-Mail'}
+                        </button>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')">
                             <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
                         </button>
@@ -605,12 +604,16 @@ window.saveKlantkaartChanges = async (e, id) => {
     e.preventDefault();
     const updatedData = {
         client: document.getElementById('edit-client').value,
+        companyName: document.getElementById('edit-client').value,
         contactName: document.getElementById('edit-contact').value,
         email: document.getElementById('edit-email').value,
         domainName: document.getElementById('edit-domain').value,
+        domain: document.getElementById('edit-domain').value,
         service: document.getElementById('edit-service').value,
         goals: document.getElementById('edit-goals').value,
+        projectGoals: document.getElementById('edit-goals').value,
         design: document.getElementById('edit-design').value,
+        designPreferences: document.getElementById('edit-design').value,
     };
 
     const itemIndex = cachedProjects.findIndex(p => p.id == id);
@@ -627,7 +630,7 @@ window.saveKlantkaartChanges = async (e, id) => {
         }
     }
 
-    alert("Klantkaart gegevens succesvol bijgewerkt!");
+    alert("Klantkaart gegevens (inclusief domeinnaam) succesvol bijgewerkt!");
     closeModal('project-modal');
     loadDashboardData();
 };
