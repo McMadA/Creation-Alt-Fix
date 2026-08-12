@@ -26,10 +26,10 @@ export const NOTIFICATION_CONFIG = {
 
     // EmailJS Configuration (optional direct client-side email delivery)
     emailJs: {
-        enabled: false,
-        serviceId: "",   // e.g. 'service_creation_alt_fix'
-        templateId: "",  // e.g. 'template_intake_alert'
-        publicKey: "",   // e.g. 'user_xxxxx'
+        enabled: true,
+        serviceId: "service_mwhtpq1",   // Vimexx SMTP Service
+        templateId: "template_zihp21d", // e.g. 'template_intake_alert'
+        publicKey: "tZxaPDxDxlE0ME3Xk" , //e.g. 'user_xxxxx'
         toEmail: "info@creationaltfix.nl"
     }
 };
@@ -80,10 +80,12 @@ export async function sendIntakeNotification(data, docId) {
     // 4. Dedicated Client Welcome Email (via EmailJS)
     if (data.email) {
         try {
-            await dispatchClientWelcomeEmailJS(data);
-            console.log("✅ Dedicated client welcome email dispatched to:", data.email);
+            const sent = await dispatchClientWelcomeEmailJS(data);
+            if (sent) {
+                console.log("✅ Dedicated client welcome email dispatched to:", data.email);
+            }
         } catch (err) {
-            console.warn("⚠️ Client welcome email dispatch skipped or failed:", err.message);
+            console.warn("⚠️ Client welcome email dispatch failed:", err.message);
         }
     }
 }
@@ -234,7 +236,7 @@ async function dispatchClientWelcomeEmailJS(data) {
     const config = NOTIFICATION_CONFIG.emailJs;
     if (!config.enabled || !config.publicKey || !config.serviceId || !config.templateId) {
         console.info("ℹ️ Dedicated client welcome email skipped (EmailJS config pending setup in NOTIFICATION_CONFIG).");
-        return;
+        return false;
     }
 
     const url = "https://api.emailjs.com/api/v1.0/email/send";
@@ -261,6 +263,7 @@ async function dispatchClientWelcomeEmailJS(data) {
     if (!res.ok) {
         throw new Error(`EmailJS client welcome email error: HTTP ${res.status}`);
     }
+    return true;
 }
 
 

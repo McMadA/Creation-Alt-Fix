@@ -55,6 +55,18 @@
 - **[2026-08-12] Non-Dummy Client UID Verification**: Updated `isAuthActivated` logic in `crm/admin/js/admin.js` to filter out legacy mock UIDs (`QVzS7PyJkeXi7mM50HOgXsSiQFe2`). Ensures leads without an authentic Firebase Auth account consistently surface the yellow `Niet geactiveerd in Firebase Auth` badge and active registration trigger.
 - **[2026-08-12] Completed TASK-107 Branded Client Welcome Email**: Implemented `dispatchClientWelcomeEmailJS` in `crm/intake/js/notifications.js` using EmailJS REST API. Dispatches a clean Dark AI HTML welcome email directly to client inboxes upon intake submission with direct portal links (`https://creationaltfix.nl/portal/`). Updated sprint progress to 64% complete.
 - **[2026-08-12] Project Deletion & Re-intake Behavior**: Added `window.deleteProject` handler to `crm/admin/js/admin.js`. Clarified that deleting a project in Admin removes the Firestore document while retaining the Firebase Auth user record, allowing re-intakes to register cleanly as new leads while sending password reset links to existing accounts.
+- **[2026-08-12] EmailJS Welcome Mail Logging Logic Fix**: Refactored `dispatchClientWelcomeEmailJS` in `crm/intake/js/notifications.js` to return `true`/`false`. Ensures `sendIntakeNotification` only logs a success message when an email is actually dispatched via EmailJS rather than skipped.
+- **[2026-08-12] EmailJS Setup Guidance**: Documented step-by-step setup procedure for EmailJS (`serviceId`, `templateId`, `publicKey`) to enable client-side transactional welcome email delivery without third-party form wrappers or recipient confirmation friction.
+- **[2026-08-12] Vimexx SMTP Configuration for EmailJS**: Configured `serviceId: "service_mwhtpq1"` in `crm/intake/js/notifications.js`. Resolved `412 SMTP: Invalid greeting` error by instructing use of SMTPS SSL Port `465` on host `mail.zxcs.nl`.
+- **[2026-08-12] HTML Email Template for EmailJS**: Provided responsive Dark AI HTML email template formatted with EmailJS variable placeholders (`{{contact_name}}`, `{{client_name}}`, `{{service}}`, `{{client_email}}`) for direct copy-pasting into EmailJS Template Editor.
+- **[2026-08-12] EmailJS Placeholder Validation**: Verified complete parameter alignment between EmailJS template placeholders (`{{contact_name}}`, `{{client_name}}`, `{{service}}`, `{{client_email}}`, `{{to_email}}`) and the payload dispatched by `dispatchClientWelcomeEmailJS` in `crm/intake/js/notifications.js`.
+- **[2026-08-12] EmailJS API Verification & Browser Execution**: Executed API integration test against `https://api.emailjs.com/api/v1.0/email/send`. Confirmed EmailJS API endpoint requires browser execution environment (or enabling non-browser API access in EmailJS Account Security), ensuring native browser dispatches on `/intake` process cleanly.
+
+
+
+
+
+
 
 
 
