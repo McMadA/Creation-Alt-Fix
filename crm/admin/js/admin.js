@@ -5,7 +5,7 @@
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // TODO: Vul hier je Firebase configuratie in zodra je het project hebt aangemaakt!
@@ -158,13 +158,25 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
 });
 
+// Beheerders met toegang tot het admin dashboard
+const ALLOWED_ADMIN_EMAILS = ["info@creationaltfix.nl", "allard@creationaltfix.nl"];
+
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
 if (auth) {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const authOverlay = document.getElementById('auth-overlay');
         const adminApp = document.getElementById('admin-app');
 
         if (user) {
+            const userEmail = (user.email || '').toLowerCase();
+            const isAdmin = ALLOWED_ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+            if (!isAdmin) {
+                console.warn("Onbevoegde poging tot admin toegang door:", userEmail);
+                await signOut(auth);
+                alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
+                window.location.href = "../index.html";
+                return;
+            }
             authOverlay.classList.add('hidden');
             adminApp.classList.remove('hidden');
             loadDashboardData();
@@ -416,6 +428,16 @@ window.openProjectDetails = (id) => {
                     <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
                 </div>
 
+                <div class="intake-box" style="margin-top: 15px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+                    <h4><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
+                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
+                        Klant gebruikt e-mailadres <strong>${email || 'Nog geen e-mail'}</strong> voor het Klantenportaal.
+                    </p>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')" style="margin-top: 4px;">
+                        <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail naar Klant
+                    </button>
+                </div>
+
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan</button>
                 </div>
@@ -627,4 +649,20 @@ window.triggerCheckIn = async (id, name) => {
 
 window.closeModal = (id) => {
     document.getElementById(id).classList.add('hidden');
+};
+
+window.triggerAdminPasswordReset = async (email) => {
+    if (!email || email === 'undefined') {
+        alert("Geen geldig e-mailadres bekend voor deze klant.");
+        return;
+    }
+    if (!confirm(`Wil je een e-mail sturen naar ${email} om zijn/haar wachtwoord in te stellen?`)) return;
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert(`Succes! Er is een e-mail gestuurd naar ${email}.\nDe klant kan via de link in die e-mail een nieuw wachtwoord instellen.`);
+    } catch (error) {
+        console.error("Fout bij versturen wachtwoord reset:", error);
+        alert(`Fout bij versturen reset-mail: ${error.message}`);
+    }
 };

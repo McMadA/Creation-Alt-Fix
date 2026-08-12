@@ -15,14 +15,15 @@
   - Toon de volledige intake: bedrijfsnaam, contactpersoon, e-mail, gewenste domeinnaam, projectdoelen en designvoorkeuren.
   - Voeg snelacties toe (1-klik e-mailen, offerte genereren op basis van de intake).
 
-- [ ] **3. Digitaal Ondertekenen van Offertes (`/offerte`)** *(Blueprint Taak 03)*
-  - Voeg een formeel akkoordvinkje / digitaal handtekeningsveld toe op de interactieve offertepagina.
-  - Werk de status in Firestore automatisch bij naar *"Geaccepteerd & Gestart"* zodra de klant accordeert.
+- [x] **3. Digitaal Ondertekenen van Offertes (`/offerte` -> `/status`)** *(Blueprint Taak 03)*
+  - Voeg een formeel akkoordvinkje / digitaal handtekeningsveld toe op de geintegreerde offertepagina in het klantportaal.
+  - Werk de status in Firestore automatisch bij naar *"Wacht op Ontwikkeling"* zodra de klant accordeert.
   - Stuur automatisch een seintje naar de beheerders bij akkoord.
 
-- [ ] **4. Live Klant Voortgangs-Tracker (`/status`)** *(Blueprint Taak 01 & 03)*
-  - Bouw een klant-voortgangspagina (`portal.creationaltfix.nl/status/?id=...`).
+- [x] **4. Live Klant Voortgangs-Tracker (`/status`)** *(Blueprint Taak 01 & 03)*
+  - Bouw een klant-voortgangspagina (`portal.creationaltfix.nl/status/`).
   - Geef de klant een visuele timeline met fasen: *1. Intake & Akkoord* -> *2. Design & Ontwerp* -> *3. Ontwikkeling & Testen* -> *4. Livegang*.
+  - Integreer Firebase Auth inloggen en beveiliging.
 
 - [ ] **5. Zoek- & Filterbalk + CSV Export (Admin Dashboard)** *(Blueprint Taak 01)*
   - Voeg in het Admin Dashboard een zoekbalk toe voor het zoeken op klantnaam of e-mail.

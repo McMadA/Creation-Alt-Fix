@@ -1,9 +1,5 @@
-/**
- * Intake Form Logic
- * Sends data directly to Firestore so it appears in the Admin Dashboard
- */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { sendIntakeNotification } from "./notifications.js";
 
@@ -20,6 +16,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Secondaire app instantie om klantaccounts aan te maken zonder admin inlog te muteren
+const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
+const secondaryAuth = getAuth(secondaryApp);
+
+function generateTempPassword() {
+    const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+    let code = 'CAF-';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('intake-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -33,11 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met versturen...';
         submitBtn.disabled = true;
 
+        const emailInput = document.getElementById('email').value.trim().toLowerCase();
+        const tempPassword = generateTempPassword();
+        let clientUid = null;
+
+        // Probeer een Firebase Auth account voor de klant aan te maken
+        try {
+            const userCred = await createUserWithEmailAndPassword(secondaryAuth, emailInput, tempPassword);
+            clientUid = userCred.user.uid;
+            console.log("Klantaccount succesvol aangemaakt in Firebase Auth:", clientUid);
+        } catch (authErr) {
+            console.warn("Klant Auth account kon niet (of opnieuw) worden aangemaakt:", authErr.message);
+        }
+
         // Gather Data
         const formData = {
             client: document.getElementById('companyName').value,
             contactName: document.getElementById('contactName').value,
-            email: document.getElementById('email').value,
+            email: emailInput,
+            clientUid: clientUid,
+            generatedPassword: tempPassword,
             service: document.getElementById('serviceType').value,
             domainName: document.getElementById('domainName').value,
             goals: document.getElementById('projectGoals').value,

@@ -49,16 +49,12 @@
         <main class="admin-main">
             <header class="admin-header">
                 <h1>Dashboard <span class="accent">Overzicht</span></h1>
-                <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openNewLeadModal()"><i class="fas fa-plus"></i> Nieuwe Lead</button>
-                </div>
             </header>
 
             <div class="content-area hidden" id="view-leads">
                 <div class="admin-card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="card-header">
                         <h2><i class="fas fa-user-plus" style="color: var(--color-accent); margin-right: 8px;"></i> Leads & Intakes</h2>
-                        <button class="btn btn-primary btn-sm" onclick="openNewLeadModal()"><i class="fas fa-plus"></i> Nieuwe Lead</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="leads-table">
