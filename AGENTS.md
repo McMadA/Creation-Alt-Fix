@@ -53,6 +53,10 @@
 - **[2026-08-12] Auth Activation State Logic Fix**: Updated `isAuthActivated` check on line 484 of `crm/admin/js/admin.js` to evaluate `Boolean(p.isClientAccount || p.clientUid)`. Ensures leads created via intake (or where email-already-in-use occurs) properly reflect the green `Geactiveerd in Firebase Auth` badge without requiring a manual UID overwrite.
 - **[2026-08-12] Firebase Auth Verification vs Firestore Dummy Data**: Identified discrepancy where manual Firestore documents held mock `clientUid` values despite no user record existing in Firebase Authentication (`secondaryAuth`). Confirmed that executing `createClientAuthAccount` from the Klantkaart provisions the real Firebase Auth user account and updates Firestore with the authentic `user.uid`.
 - **[2026-08-12] Non-Dummy Client UID Verification**: Updated `isAuthActivated` logic in `crm/admin/js/admin.js` to filter out legacy mock UIDs (`QVzS7PyJkeXi7mM50HOgXsSiQFe2`). Ensures leads without an authentic Firebase Auth account consistently surface the yellow `Niet geactiveerd in Firebase Auth` badge and active registration trigger.
+- **[2026-08-12] Completed TASK-107 Branded Client Welcome Email**: Implemented `dispatchClientWelcomeEmailJS` in `crm/intake/js/notifications.js` using EmailJS REST API. Dispatches a clean Dark AI HTML welcome email directly to client inboxes upon intake submission with direct portal links (`https://creationaltfix.nl/portal/`). Updated sprint progress to 64% complete.
+- **[2026-08-12] Project Deletion & Re-intake Behavior**: Added `window.deleteProject` handler to `crm/admin/js/admin.js`. Clarified that deleting a project in Admin removes the Firestore document while retaining the Firebase Auth user record, allowing re-intakes to register cleanly as new leads while sending password reset links to existing accounts.
+
+
 
 
 

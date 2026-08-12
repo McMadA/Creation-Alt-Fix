@@ -839,3 +839,21 @@ window.createClientAuthAccount = async (projectId, email, contactName) => {
         alert(`Fout bij activeren account: ${error.message}`);
     }
 };
+
+window.deleteProject = async (id) => {
+    const p = cachedProjects.find(item => item.id == id);
+    const clientName = p ? (p.client || p.companyName || 'dit project') : 'dit project';
+    if (!confirm(`Weet je zeker dat je "${clientName}" wilt verwijderen uit het dashboard?`)) return;
+
+    if (db) {
+        try {
+            await deleteDoc(doc(db, "projects", id));
+            cachedProjects = cachedProjects.filter(item => item.id != id);
+            filterAndRenderTables();
+            alert(`Project "${clientName}" is succesvol verwijderd.`);
+        } catch (err) {
+            console.error("Fout bij verwijderen project:", err);
+            alert("Fout bij verwijderen: " + err.message);
+        }
+    }
+};

@@ -76,6 +76,16 @@ export async function sendIntakeNotification(data, docId) {
             console.warn("⚠️ EmailJS notification failed:", err.message);
         }
     }
+
+    // 4. Dedicated Client Welcome Email (via EmailJS)
+    if (data.email) {
+        try {
+            await dispatchClientWelcomeEmailJS(data);
+            console.log("✅ Dedicated client welcome email dispatched to:", data.email);
+        } catch (err) {
+            console.warn("⚠️ Client welcome email dispatch skipped or failed:", err.message);
+        }
+    }
 }
 
 /**
@@ -214,6 +224,42 @@ async function dispatchEmailJS(data, docId) {
 
     if (!res.ok) {
         throw new Error(`EmailJS API response ${res.status}`);
+    }
+}
+
+/**
+ * Dispatches a beautifully styled Dark AI HTML Welcome Email to the client upon intake completion
+ */
+async function dispatchClientWelcomeEmailJS(data) {
+    const config = NOTIFICATION_CONFIG.emailJs;
+    if (!config.enabled || !config.publicKey || !config.serviceId || !config.templateId) {
+        console.info("ℹ️ Dedicated client welcome email skipped (EmailJS config pending setup in NOTIFICATION_CONFIG).");
+        return;
+    }
+
+    const url = "https://api.emailjs.com/api/v1.0/email/send";
+    const payload = {
+        service_id: config.serviceId,
+        template_id: config.templateId,
+        user_id: config.publicKey,
+        template_params: {
+            client_name: data.client || "jouw bedrijf",
+            contact_name: data.contactName || data.client || "klant",
+            client_email: data.email,
+            service: data.service || "software & web services",
+            portal_url: "https://creationaltfix.nl/portal/",
+            to_email: data.email
+        }
+    };
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+        throw new Error(`EmailJS client welcome email error: HTTP ${res.status}`);
     }
 }
 

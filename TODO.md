@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **14 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **8 Tasks (57%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **6 Tasks (43%)** |
+| **Completed Work Items** | ✅ Done | **9 Tasks (64%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (36%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░░] 57% Complete`
+`[██████████████████░░░░░░░] 64% Complete`
 
 ---
 
@@ -44,19 +44,16 @@
   - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
   - **Details**: Real-time multi-field search bar (client, contact person, email, domain, goals), status filter dropdown, and 1-click UTF-8 BOM CSV export for accounting & CRM reporting.
 
+- [x] `[TASK-107]` `[P2-HIGH]` `[STATUS: DONE]` **Dedicated Branded Client Welcome Email Dispatcher**
+  - **Scope**: `crm/intake/js/notifications.js`
+  - **Details**: Clean Dark AI HTML client welcome email (with onboarding instructions and direct portal link `https://creationaltfix.nl/portal/`) dispatched via EmailJS REST API upon intake submission.
+
 - [ ] `[TASK-106]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Auth Custom Sender Domain & SMTP Integration**
   - **Scope**: Firebase Console, DNS Settings (`creationaltfix.nl`)
   - **Acceptance Criteria**:
     - Configure custom domain verification in Firebase Console (e.g. `auth.creationaltfix.nl` or custom SMTP server `noreply@creationaltfix.nl`).
     - Add required DNS records (DKIM, SPF, CNAME) to Vimexx/DirectAdmin DNS settings to prevent authentication and password reset emails from landing in spam folders.
     - Ensure all automated transactional emails originate from official `creationaltfix.nl` identity.
-
-- [ ] `[TASK-107]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Dedicated Branded Client Welcome Email Dispatcher**
-  - **Scope**: `crm/intake/js/notifications.js`, Transactional Email Service (Resend / EmailJS / Custom SMTP)
-  - **Acceptance Criteria**:
-    - Build a clean HTML welcome email (with Creation+Alt+Fix branding, dark mode styling, and portal onboarding instructions).
-    - Dispatch automatically upon intake completion without using FormSubmit raw tables or third-party sponsor footers.
-    - Provide direct link to login portal (`https://creationaltfix.nl/portal/`) alongside password setup instructions.
 
 ---
 
