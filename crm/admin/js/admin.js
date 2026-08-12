@@ -816,15 +816,15 @@ window.createClientAuthAccount = async (projectId, email, contactName) => {
             const docRef = doc(db, "projects", projectId);
             await updateDoc(docRef, {
                 email: cleanEmail,
-                isClientAccount: true,
+                isClientAccount: Boolean(clientUid),
                 clientUid: clientUid || null
             });
 
             // Update in-memory cache as well
             const pIdx = cachedProjects.findIndex(p => p.id == projectId);
             if (pIdx !== -1) {
-                cachedProjects[pIdx].isClientAccount = true;
-                if (clientUid) cachedProjects[pIdx].clientUid = clientUid;
+                cachedProjects[pIdx].isClientAccount = Boolean(clientUid);
+                cachedProjects[pIdx].clientUid = clientUid || null;
             }
         }
 

@@ -47,5 +47,9 @@
 - **[2026-08-12] Strict Auth Account Status Check**: Refactored `openProjectDetails` in `crm/admin/js/admin.js` to strictly require `p.clientUid` before rendering the green "Geactiveerd in Firebase Auth" status badge. Prevents leads without a verified Firebase Auth UID from falsely displaying as activated.
 - **[2026-08-12] Direct Firebase Auth Email Dispatch on Intake**: Added `sendPasswordResetEmail` call directly inside `crm/intake/js/intake.js` upon user creation so client emails receive password setup links instantly from Firebase Auth without relying on third-party FormSubmit confirmation requirements.
 - **[2026-08-12] Removal of FormSubmit Client Mails**: Completely removed `dispatchClientWelcomeEmail` and FormSubmit client fetch calls from `crm/intake/js/notifications.js` and `crm/admin/js/admin.js`. FormSubmit is now strictly scoped to internal lead notifications for `info@creationaltfix.nl`, preventing raw form tables and FormSubmit branding from ever being sent to clients.
+- **[2026-08-12] In-Memory Cache Sync Fix for Client UID**: Fixed issue where `cachedProjects[pIdx].clientUid` retained old values in browser memory if account creation returned null. Both Firestore and `cachedProjects` now stay 100% in sync with exact `clientUid` state.
+- **[2026-08-12] Notifications Syntax Error Fix**: Resolved `Uncaught SyntaxError: missing } after function body` in `crm/intake/js/notifications.js` by adding missing closing brace after the FormSubmit try/catch block.
+
+
 
 

@@ -52,6 +52,8 @@ export async function sendIntakeNotification(data, docId) {
         } catch (err) {
             console.warn("⚠️ FormSubmit email notification failed:", err.message);
         }
+    }
+
     // 2. Webhook Push Notification (Telegram / Discord / Custom Endpoint)
     if (NOTIFICATION_CONFIG.webhookUrl) {
         const message = formatNotificationText(data, docId);
