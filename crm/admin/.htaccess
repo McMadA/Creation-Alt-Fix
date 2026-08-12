@@ -1,0 +1,12 @@
+# Disable Directory Browsing
+Options -Indexes
+
+# ----------------------------------------------------------------------
+# Security & Access Control for Admin Dashboard
+# ----------------------------------------------------------------------
+# Uncomment and replace <YOUR_TAILSCALE_OR_STATIC_IP> with your Tailscale exit node or trusted public IP address
+# to restrict access to this directory.
+#
+# <IfModule mod_authz_core.c>
+#     Require ip <YOUR_TAILSCALE_OR_STATIC_IP>
+# </IfModule>

@@ -5,6 +5,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { sendIntakeNotification } from "./notifications.js";
 
 // Zelfde Firebase config als in het Admin dashboard
 const firebaseConfig = {
@@ -49,15 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Write to Firestore (Collection 'projects')
-            await addDoc(collection(db, "projects"), formData);
+            const docRef = await addDoc(collection(db, "projects"), formData);
             
-            // Success
+            // Dispatch active push / email notifications (non-blocking)
+            sendIntakeNotification(formData, docRef ? docRef.id : null).catch(err => {
+                console.warn("Error sending intake notification:", err);
+            });
+
+            // Success UI
             form.reset();
             submitBtn.classList.add('hidden');
             successMsg.classList.remove('hidden');
 
-            // Notificatie Trigger simulatie (Hier kan later een Cloud Function / Python webhook aan hangen)
-            console.log("Intake verstuurd! Dashboard is geüpdatet.");
+            console.log("Intake verstuurd! Dashboard en notificatie geactiveerd.");
 
         } catch (error) {
             console.error("Fout bij het versturen:", error);
