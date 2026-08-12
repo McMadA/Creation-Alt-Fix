@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal & CRM - Creation+Alt+Fix</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0e1a;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --color-primary: #6366f1;
+            --color-accent: #22d3ee;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .portal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        .logo {
+            max-width: 140px;
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+        .accent {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .nav-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .nav-card:hover {
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+            background: rgba(34, 211, 238, 0.05);
+        }
+        .nav-card i {
+            font-size: 1.4rem;
+            color: var(--color-accent);
+            width: 30px;
+            text-align: center;
+        }
+        .nav-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        .nav-card span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .back-link {
+            margin-top: 25px;
+            display: inline-block;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portal-card">
+        <img src="images/logo.png" alt="Creation+Alt+Fix Logo" class="logo">
+        <h1>Creation+Alt+Fix <span class="accent">Portal</span></h1>
+        <p>Welkom op de centrale omgeving voor intakes, interactieve offertes en klantbeheer.</p>
+
+        <div class="nav-grid">
+            <a href="intake/" class="nav-card">
+                <i class="fas fa-file-signature"></i>
+                <div>
+                    <h3>Project Intake Formulier</h3>
+                    <span>Start een nieuw project en verstuur je wensen</span>
+                </div>
+            </a>
+            <a href="admin/" class="nav-card">
+                <i class="fas fa-user-shield"></i>
+                <div>
+                    <h3>Admin Dashboard</h3>
+                    <span>Beheer leads, offertes en projectstatus (Beheerders)</span>
+                </div>
+            </a>
+        </div>
+
+        <a href="https://creationaltfix.nl" class="back-link">
+            <i class="fas fa-arrow-left"></i> Terug naar hoofdwebsite (creationaltfix.nl)
+        </a>
+    </div>
+
+</body>
+</html>
