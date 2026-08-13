@@ -87,6 +87,6 @@
     4. *Repurposed TASK-302*: Reframed `TASK-302` in `TODO.md` from an obsolete intake welcome email drafter to an **AI Proposal Scope & Investeringsvoorstel Generator** for Phase 2 digital quotes.
   - **Proposed Next Steps for Tomorrow:**
     - *Option A - Dynamic Offerte Scope*: Upgrade the "Genereer Offerte" modal in Admin (`crm/admin/js/admin.js`) to allow editing `proposalScope` deliverables alongside the price, populating the Client Portal agreement view.
-    - *Option B - Klantkaart Visual Expansion / Full-Screen View (TASK-605)*: Redesign the Klantkaart modal to be full-screen or convert it to a dedicated full page (`crm/admin/project.html?id=...`) to give all client details, files, and actions breathing room without popup scrolling.
-    - *Option C - Interne Notities & Logboek (TASK-601)*: Add private admin notes and timestamped activity logging to the Klantkaart.
+    - *Option B - Portfolio & Showcase Pagina (TASK-701 & 702)*: Build `website/projecten.html` featuring completed projects and showcasing the proprietary Creation+Alt+Fix CRM as a flagship case study.
+    - *Option C - Klantkaart Visual Expansion / Full-Screen View (TASK-605)*: Redesign the Klantkaart modal to be full-screen or convert it to a dedicated full page (`crm/admin/project.html?id=...`).
     - *Option D - Custom Domain Sender for Auth (TASK-106)*: Setup DNS records (SPF, DKIM, CNAME) for `auth.creationaltfix.nl` to brand all Firebase emails.

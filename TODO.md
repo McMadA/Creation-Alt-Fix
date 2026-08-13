@@ -140,7 +140,7 @@
 
 ---
 
-### ??? EPIC-06: Advanced CRM Features (Expansion)
+### 🗃️ EPIC-06: Advanced CRM Features (Expansion)
 **Domain**: CRM Portal & Admin Hub | **Stack**: Firestore, Cloud Functions
 
 - [ ] `[TASK-601]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Internal Notes & Audit Trail (Logboek)**
@@ -162,5 +162,19 @@
 - [ ] `[TASK-605]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
   - **Scope**: `crm/admin/`
   - **Acceptance Criteria**: Redesign the Klantkaart modal to be full-width/fullscreen, or convert it into a dedicated project page view (`crm/admin/project.html?id=...`) to comfortably display intake details, project assets, timeline actions, and notes without cramped popup scrolling.
+
+---
+
+### 🎨 EPIC-07: Public Portfolio & Project Showcase (Website)
+**Domain**: `website/` | **Stack**: Vanilla JS Component Architecture, HTML5, CSS3 Token System
+
+- [ ] `[TASK-701]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Portfolio & Project Showcase Subpage (`website/projecten.html`)**
+  - **Scope**: `website/projecten.html`, `website/js/`, `website/components/`
+  - **Acceptance Criteria**: Build a dedicated Dark AI showcase page featuring completed web development, custom software, and system optimization projects with interactive previews, tech stack badges, and client results.
+
+- [ ] `[TASK-702]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
+  - **Scope**: `website/projecten.html`
+  - **Acceptance Criteria**: Feature the custom Creation+Alt+Fix CRM & Client Portal as a flagship case study on the portfolio page, highlighting real-time Firebase tracking, digital signatures, automated onboarding, and client portals to build high authority with potential clients.
+
 
 
