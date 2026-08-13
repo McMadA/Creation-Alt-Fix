@@ -481,7 +481,6 @@ window.openProjectDetails = (id) => {
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
-    const isAuthActivated = Boolean(p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2');
 
     let currentPhase = 1;
     if (status === "Nieuwe Lead" || status === "Intake Voltooid") currentPhase = 1;
@@ -490,7 +489,7 @@ window.openProjectDetails = (id) => {
     else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
     else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
 
-    document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
+    document.getElementById('modal-title').innerText = `Klantkaart: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
         <div class="klantkaart-container">
             <div class="klantkaart-header">
@@ -499,15 +498,7 @@ window.openProjectDetails = (id) => {
                     <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${dateSubmitted}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">Status:</label>
-                    <select id="edit-project-status" class="admin-input" style="margin: 0; padding: 6px 12px; width: auto; font-weight: 600; cursor: pointer;" onchange="updateProjectStatusDirect('${id}', this.value)">
-                        <option value="Intake Voltooid" ${status === "Intake Voltooid" || status === "Nieuwe Lead" ? "selected" : ""}>Fase 1: Intake Voltooid</option>
-                        <option value="Wacht op Akkoord" ${status === "Wacht op Akkoord" ? "selected" : ""}>Fase 2: Offerte & Akkoord (Wacht op Klant)</option>
-                        <option value="Design & Ontwerp" ${status === "Design & Ontwerp" ? "selected" : ""}>Fase 3: Design & Ontwerp</option>
-                        <option value="In Ontwikkeling" ${status === "In Ontwikkeling" || status === "Wacht op Ontwikkeling" ? "selected" : ""}>Fase 4: Ontwikkeling (Lopend)</option>
-                        <option value="Opgeleverd (Betaling via Mollie)" ${status.includes("Mollie") || status === "Opgeleverd" ? "selected" : ""}>Fase 5: Livegang & Mollie Factuur</option>
-                        <option value="Afgerond" ${status === "Afgerond" ? "selected" : ""}>Fase 5: Afgerond</option>
-                    </select>
+                    <span class="badge badge-${p.statusClass || 'primary'}" style="font-size: 0.85rem; padding: 6px 12px; font-weight: 600;">Fase ${currentPhase}: ${status}</span>
                 </div>
             </div>
 
@@ -564,24 +555,6 @@ window.openProjectDetails = (id) => {
                 <div class="intake-box" style="margin-top: 15px;">
                     <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
                     <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
-                </div>
-
-                <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
-                    <h4><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
-                        E-mailadres: <strong>${email || 'Nog geen e-mail ingevuld'}</strong> 
-                        ${isAuthActivated 
-                            ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
-                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`}
-                    </p>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="createClientAuthAccount('${id}', '${email}', '${contact}')">
-                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Maak Account in Auth' : 'Activeer Klantaccount & Stuur Inlog-Mail'}
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAdminPasswordReset('${email}')">
-                            <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
-                        </button>
-                    </div>
                 </div>
 
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
