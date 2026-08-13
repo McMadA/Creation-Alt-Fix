@@ -79,16 +79,14 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-- **[2026-08-13] CRM Customer Journey UX Improvements**: Polished the client experience across the CRM funnel. 1) Updated /intake success message to actively direct clients to their email and the login portal. 2) Replaced the native prompt() for 'Wachtwoord vergeten' in the /crm portal login with a sleek inline Dark AI styled form for better UI/UX. 3) Added an explicit 'Ik heb feedback' button in the Design Review step of the /status portal, allowing clients to easily email feedback instead of feeling forced to click 'Akkoord'.
-
-- **[2026-08-13] Integrated Firebase Storage for Client Document Management**: Implemented secure file uploads in the Client Status Portal (Fase 1). Clients can now upload logos and copy directly to their project via \irebase-storage.js\. The files are saved in the bucket as \projects/{projectId}/{timestamp}_{filename}\ and their URLs are appended to the Firestore project document. Updated the Admin Dashboard Klantkaart modal to parse and display these uploaded assets, allowing administrators to easily download client files without relying on external file-sharing tools. Added future advanced CRM tasks to \TODO.md\ (EPIC-06).
+- **[2026-08-13] Daily Engineering & CRM Synthesis**:
+  - **Completed Today:**
+    1. *Customer Journey & UX Polish*: Updated `/intake` success banner with direct portal links, replaced native `prompt()` password reset in `/crm` with an inline Dark AI form, and added an explicit "Ik heb feedback" mailto trigger in Phase 3 Design Review (`crm/status/js/status.js`).
+    2. *Firebase Storage Asset Management*: Integrated Firebase Storage SDK (`v10.12.0`). Built "Project Bestanden" upload section in client portal (`crm/status/index.html` & `status.js`) saving to `projects/{projectId}/{timestamp}_{filename}`. Updated Admin Klantkaart modal (`crm/admin/js/admin.js`) to parse and display uploaded client assets with 1-click download buttons.
+    3. *CRM Backlog Expansion (EPIC-06)*: Evaluated missing core CRM features and added 4 new backlog items (`TASK-601` t/m `TASK-604`) covering internal notes/audit logs, task deadlines, PDF generation, and in-app ticketing.
+    4. *Repurposed TASK-302*: Reframed `TASK-302` in `TODO.md` from an obsolete intake welcome email drafter to an **AI Proposal Scope & Investeringsvoorstel Generator** for Phase 2 digital quotes.
+  - **Proposed Next Steps for Tomorrow:**
+    - *Option A - Dynamic Offerte Scope*: Upgrade the "Genereer Offerte" modal in Admin (`crm/admin/js/admin.js`) to allow editing `proposalScope` deliverables alongside the price, populating the Client Portal agreement view.
+    - *Option B - Klantkaart Visual Expansion / Full-Screen View (TASK-605)*: Redesign the Klantkaart modal to be full-screen or convert it to a dedicated full page (`crm/admin/project.html?id=...`) to give all client details, files, and actions breathing room without popup scrolling.
+    - *Option C - Interne Notities & Logboek (TASK-601)*: Add private admin notes and timestamped activity logging to the Klantkaart.
+    - *Option D - Custom Domain Sender for Auth (TASK-106)*: Setup DNS records (SPF, DKIM, CNAME) for `auth.creationaltfix.nl` to brand all Firebase emails.

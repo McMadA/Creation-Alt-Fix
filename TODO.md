@@ -77,10 +77,12 @@
     - Trigger automated 14-day post-delivery check-in email (Google Review & Instagram follow invite).
     - Trigger 6-month AI system check-in for recurring support.
 
-- [ ] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Live LLM API Integration for AI Email Drafter**
-  - **Scope**: `crm/admin/js/admin.js`
+- [ ] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Live LLM API Integration for AI Proposal Scope Generator**
+  - **Scope**: `crm/admin/js/admin.js`, `crm/status/js/status.js`
   - **Acceptance Criteria**:
-    - Connect live OpenAI / Gemini API endpoint to dynamically generate custom email responses from intake data instead of static templates.
+    - Repurpose the Admin Klantkaart AI drafter into an AI Offerte Scope & Investeringsvoorstel Generator (Fase 2).
+    - Connect live OpenAI / Gemini API endpoint to analyze client intake answers and automatically draft detailed project deliverables and scope.
+    - Save the generated `proposalScope` to Firestore so clients see their custom project deliverables before digitally signing in `/status`.
 
 ---
 
@@ -156,4 +158,9 @@
 - [ ] `[TASK-604]` `[P4-LOW]` `[STATUS: BACKLOG]` **In-App Messaging / Ticketing**
   - **Scope**: `crm/status/` & `crm/admin/`
   - **Acceptance Criteria**: Replace standard mailto feedback buttons with a centralized Firestore-based chat/ticket thread per project.
+
+- [ ] `[TASK-605]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
+  - **Scope**: `crm/admin/`
+  - **Acceptance Criteria**: Redesign the Klantkaart modal to be full-width/fullscreen, or convert it into a dedicated project page view (`crm/admin/project.html?id=...`) to comfortably display intake details, project assets, timeline actions, and notes without cramped popup scrolling.
+
 
