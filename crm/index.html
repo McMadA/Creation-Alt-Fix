@@ -217,7 +217,7 @@
         <p class="subtitle">Log in om de live status van je project te volgen en je offerte in te zien.</p>
 
         <!-- Klant Inlog Formulier -->
-        <div class="login-box">
+        <div id="login-box-container" class="login-box">
             <h2><i class="fas fa-user-lock"></i> Klant Inloggen</h2>
             
             <div id="login-error" class="error-msg hidden"></div>
@@ -238,6 +238,24 @@
                     <i class="fas fa-sign-in-alt"></i> Inloggen op Klantenportaal
                 </button>
             </form>
+        </div>
+
+        <!-- Wachtwoord Vergeten Box -->
+        <div id="forgot-password-box" class="login-box hidden">
+            <h2><i class="fas fa-key"></i> Wachtwoord Resetten</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Vul je e-mailadres in om een veilige reset-link te ontvangen.</p>
+            <form id="forgot-password-form">
+                <div class="form-group">
+                    <label for="reset-email"><i class="fas fa-envelope"></i> E-mailadres</label>
+                    <input type="email" id="reset-email" class="input-field" placeholder="je-naam@bedrijf.nl" required>
+                </div>
+                <button type="submit" id="btn-reset-password" class="btn-submit" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+                    <i class="fas fa-paper-plane"></i> Reset Link Versturen
+                </button>
+            </form>
+            <a href="#" id="back-to-login-link" style="display: block; text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--color-accent); text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Terug naar inloggen
+            </a>
         </div>
 
         <div class="divider"><span>Nog geen lopend project?</span></div>
@@ -341,18 +359,43 @@
         });
 
         // Wachtwoord Vergeten Handler
-        document.getElementById('forgot-password-link')?.addEventListener('click', async (e) => {
+        document.getElementById('forgot-password-link')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const emailInput = document.getElementById('client-email').value;
-            const email = prompt("Voer je e-mailadres in om je wachtwoord opnieuw in te stellen:", emailInput || "");
+            document.getElementById('login-box-container').classList.add('hidden');
+            document.getElementById('forgot-password-box').classList.remove('hidden');
+            document.getElementById('reset-email').value = document.getElementById('client-email').value;
+        });
+
+        document.getElementById('back-to-login-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('forgot-password-box').classList.add('hidden');
+            document.getElementById('login-box-container').classList.remove('hidden');
+        });
+
+        document.getElementById('forgot-password-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value.trim();
+            const btn = document.getElementById('btn-reset-password');
+            const originalBtn = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met versturen...';
+            btn.disabled = true;
             
-            if (email && email.trim()) {
+            if (email) {
                 try {
-                    await sendPasswordResetEmail(auth, email.trim());
-                    alert(`Een e-mail om je wachtwoord opnieuw in te stellen is verzonden naar ${email.trim()}.\nCheck je inbox (en spambox).`);
+                    await sendPasswordResetEmail(auth, email);
+                    
+                    const box = document.getElementById('forgot-password-box');
+                    box.innerHTML = `
+                        <h2><i class="fas fa-check-circle" style="color: #10b981;"></i> E-mail Verstuurd</h2>
+                        <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 15px;">Er is een e-mail verstuurd met instructies om je wachtwoord opnieuw in te stellen. Check ook je spambox.</p>
+                        <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> Terug naar inloggen</button>
+                    `;
                 } catch (err) {
                     console.error("Reset error:", err);
                     alert("Kon de reset-mail niet versturen. Controleer of het e-mailadres juist is.");
+                    btn.innerHTML = originalBtn;
+                    btn.disabled = false;
                 }
             }
         });

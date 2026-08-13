@@ -442,11 +442,16 @@ function renderDesignSection(data) {
         designSuccess.classList.add('hidden');
         designAction.classList.remove('hidden');
         designAction.innerHTML = `
-            <button id="btn-design-akkoord" class="btn-akkoord" style="background: linear-gradient(135deg, #a855f7, #7c3aed);">
-                <i class="fas fa-palette"></i> Akkoord op Design & Start Code
-            </button>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
-                <i class="fas fa-shield-alt"></i> Door te klikken geef je goedkeuring op het ontwerp en starten we met de ontwikkeling.
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="btn-design-akkoord" class="btn-akkoord" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #a855f7, #7c3aed);">
+                    <i class="fas fa-palette"></i> Akkoord op Design
+                </button>
+                <a href="mailto:info@creationaltfix.nl?subject=Feedback%20Design%20Project" class="btn-akkoord" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); text-align: center; text-decoration: none;">
+                    <i class="fas fa-comment-dots"></i> Ik heb feedback
+                </a>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                <i class="fas fa-shield-alt"></i> Door op 'Akkoord' te klikken geef je goedkeuring op het ontwerp en starten we met de ontwikkeling.
             </p>
         `;
 

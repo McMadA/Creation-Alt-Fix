@@ -80,8 +80,11 @@
             <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
                 <i class="fas fa-paper-plane"></i> Intake Versturen
             </button>
-            <div id="success-msg" class="success-msg hidden">
-                <i class="fas fa-check-circle"></i> Bedankt! Je intake is succesvol ontvangen. We nemen snel contact met je op.
+            <div id="success-msg" class="success-msg hidden" style="display: flex; flex-direction: column; align-items: center; gap: 15px; text-align: center; padding: 25px;">
+                <div><i class="fas fa-check-circle" style="font-size: 2.5rem; color: #10b981;"></i></div>
+                <strong style="font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif;">Bedankt! Je account is succesvol aangemaakt.</strong>
+                <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 5px;">We hebben je zojuist een e-mail gestuurd (check ook je spambox) met een link om je wachtwoord in te stellen. Daarna kun je direct inloggen op het klantenportaal om de status van je project te volgen.</p>
+                <a href="../index.html" class="btn btn-primary" style="width: auto; padding: 12px 25px; margin-top: 10px;"><i class="fas fa-sign-in-alt"></i> Naar Klantenportaal</a>
             </div>
         </form>
     </div>
