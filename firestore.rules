@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // Helper: Check if the authenticated user is an admin
+    // Requires a document in the 'admins' collection with the user's UID as doc ID
+    // ============================================================
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // ============================================================
+    // Admins Collection
+    // Only readable by authenticated users (for login check)
+    // Only writable via Firebase Console (manual provisioning)
+    // ============================================================
+    match /admins/{adminId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // ============================================================
+    // Projects Collection
+    // Core CRM data - tiered access control
+    // ============================================================
+    match /projects/{projectId} {
+
+      // CREATE: Anyone can create a new project (public intake form)
+      allow create: if true;
+
+      // GET (single document): 
+      //   - Admins can read any project
+      //   - Authenticated clients can read their OWN project (matched by clientUid)
+      //   - Unauthenticated visitors can read a specific project by ID (offerte/shareable link)
+      allow get: if isAdmin()
+                 || (request.auth != null && resource.data.clientUid == request.auth.uid)
+                 || true;
+
+      // LIST (query all documents):
+      //   - Only admins can list/query all projects
+      //   - Clients can list projects where their email or UID matches
+      allow list: if isAdmin()
+                  || (request.auth != null && (
+                       resource.data.clientUid == request.auth.uid
+                       || resource.data.email == request.auth.token.email
+                     ));
+
+      // UPDATE:
+      //   - Admins can update any field
+      //   - Authenticated clients can only update specific status fields (digital signature)
+      allow update: if isAdmin()
+                    || (request.auth != null 
+                        && resource.data.clientUid == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['status', 'statusClass', 'proposalAcceptedAt', 'designAcceptedAt']));
+
+      // DELETE: Only admins
+      allow delete: if isAdmin();
+    }
+  }
+}

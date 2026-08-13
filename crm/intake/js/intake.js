@@ -2,16 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { sendIntakeNotification } from "./notifications.js";
-
-// Zelfde Firebase config als in het Admin dashboard
-const firebaseConfig = {
-    apiKey: "AIzaSyAj2_cXCL6fs9qjp2q89F3ezLbErDp4wI8",
-    authDomain: "mythical-cider-475118-e5.firebaseapp.com",
-    projectId: "mythical-cider-475118-e5",
-    storageBucket: "mythical-cider-475118-e5.firebasestorage.app",
-    messagingSenderId: "755599901945",
-    appId: "1:755599901945:web:589450049c785dacfcce28"
-};
+import { firebaseConfig } from "../../js/firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -73,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             email: emailInput,
             clientUid: clientUid,
             isClientAccount: true,
-            generatedPassword: tempPassword,
             service: document.getElementById('serviceType').value,
             domainName: document.getElementById('domainName').value,
             goals: document.getElementById('projectGoals').value,

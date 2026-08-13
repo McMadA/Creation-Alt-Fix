@@ -33,8 +33,36 @@
             <p style="color: var(--text-muted);">Je project-dashboard wordt geladen...</p>
         </div>
 
+        <!-- No Project View (hidden by default) -->
+        <div id="no-project-view" class="card hidden" style="text-align: center; padding: 50px;">
+            <i class="fas fa-folder-open" style="font-size: 3rem; color: #fbbf24; margin-bottom: 15px;"></i>
+            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 10px;">Geen actief project gevonden</h2>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 25px auto;">
+                Er is momenteel geen actief project gekoppeld aan dit e-mailadres. Heb je recent een intake ingevuld of wil je een nieuw project starten?
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="../intake/" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-file-signature"></i> Nieuwe Intake Invoeren
+                </a>
+                <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20account." target="_blank" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.05); color: white; border-radius: 8px; text-decoration: none;">
+                    <i class="fab fa-whatsapp" style="color: #25D366;"></i> Neem contact op via WhatsApp
+                </a>
+            </div>
+        </div>
+
         <!-- Dashboard Content (hidden until loaded) -->
         <div id="dashboard-content" class="hidden">
+            
+            <!-- Multi-Project Switcher Dropdown (visible when >1 projects exist) -->
+            <div id="multi-project-selector" class="card hidden" style="padding: 15px 25px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-layer-group" style="color: var(--color-accent); font-size: 1.2rem;"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Je hebt meerdere projecten:</span>
+                </div>
+                <select id="project-dropdown" style="padding: 8px 14px; background: #0f1629; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: inherit; font-size: 0.9rem; cursor: pointer;">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
             
             <!-- Project Header & Progress -->
             <section class="card">
@@ -135,6 +163,35 @@
                 </div>
             </section>
 
+            <!-- Fase 3: Design & Ontwerp Review Sectie -->
+            <section id="design-card" class="card hidden">
+                <h2 class="section-title"><i class="fas fa-palette"></i> Design & Ontwerp Review</h2>
+                
+                <div class="design-box">
+                    <div class="offerte-header" style="border-color: rgba(168, 85, 247, 0.2);">
+                        <div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Visueel Ontwerp & Wireframe</h3>
+                            <span id="design-status-pill" class="offerte-status-pill pending">
+                                <i class="fas fa-clock"></i> In behandeling
+                            </span>
+                        </div>
+                        <div style="font-size: 2rem; color: #c084fc;"><i class="fas fa-drafting-compass"></i></div>
+                    </div>
+
+                    <div id="design-preview-container" class="hidden" style="margin-bottom: 16px;">
+                        <!-- Dynamisch gevuld met Figma/preview link -->
+                    </div>
+
+                    <div id="design-action-container">
+                        <!-- Dynamisch gevuld: wacht-knop of akkoord-knop -->
+                    </div>
+
+                    <div id="design-success-msg" class="hidden" style="margin-top: 15px; padding: 14px 20px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; color: #c084fc;">
+                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong>Design Goedgekeurd!</strong> Je hebt op <span id="design-accepted-date">vandaag</span> akkoord gegeven op het ontwerp. De ontwikkeling is gestart.
+                    </div>
+                </div>
+            </section>
+
             <!-- Demo & Factuur Links & Direct Contact -->
             <section class="card">
                 <h2 class="section-title"><i class="fas fa-link"></i> Snelle Acties & Contact</h2>
@@ -159,7 +216,7 @@
                     </a>
 
                     <!-- Contact via WhatsApp -->
-                    <a href="https://wa.me/31612345678?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" class="action-card">
+                    <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" class="action-card">
                         <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                         <div>
                             <h4>WhatsApp met Allard</h4>

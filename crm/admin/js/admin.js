@@ -2,28 +2,14 @@
  * Admin Dashboard Logic
  * Integrated with Firebase Auth & Firestore.
  * Fallbacks to mock data if Firebase is not yet configured.
+ * 
+ * Security: XSS-escaped output, centralized config, admin whitelist.
  */
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// TODO: Vul hier je Firebase configuratie in zodra je het project hebt aangemaakt!
-const firebaseConfig = {
-
-  apiKey: "AIzaSyAj2_cXCL6fs9qjp2q89F3ezLbErDp4wI8",
-
-  authDomain: "mythical-cider-475118-e5.firebaseapp.com",
-
-  projectId: "mythical-cider-475118-e5",
-
-  storageBucket: "mythical-cider-475118-e5.firebasestorage.app",
-
-  messagingSenderId: "755599901945",
-
-  appId: "1:755599901945:web:589450049c785dacfcce28"
-
-};
+import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
@@ -69,9 +55,13 @@ const API = {
             let leads = 0, projects = 0, waiting = 0;
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                if (data.status === "Nieuwe Lead") leads++;
-                if (data.status === "In Ontwikkeling") projects++;
-                if (data.status === "Wacht op Akkoord") waiting++;
+                const s = data.status || '';
+                // Fase 1: Leads & Intakes
+                if (s === "Nieuwe Lead" || s === "Intake Voltooid") leads++;
+                // Fase 2-4: Lopende Projecten
+                if (s === "In Ontwikkeling" || s === "Wacht op Ontwikkeling" || s === "Wacht op Design & Ontwerp" || s === "Design Gereed voor Review") projects++;
+                // Wacht op akkoord (offerte of design)
+                if (s === "Wacht op Akkoord") waiting++;
             });
             return { leads, projects, waiting };
         } catch (e) {
@@ -254,27 +244,27 @@ if (auth) {
         if (user) {
             const userEmail = (user.email || '').toLowerCase();
             
-            // Controleer of het e-mailadres gekoppeld is aan een klant-intake
-            let isClientAccount = false;
-            try {
-                if (db) {
-                    const q = query(collection(db, "projects"), where("email", "==", userEmail));
-                    const snap = await getDocs(q);
-                    if (!snap.empty) {
-                        const pData = snap.docs[0].data();
-                        if (pData.isClientAccount || pData.clientUid === user.uid) {
-                            isClientAccount = true;
-                        }
+            // Geautoriseerde beheerders via centraal geïmporteerde whitelist
+            let isAdmin = isAdminEmail(userEmail);
+
+            // Optioneel: Controleer ook de Firestore 'admins' collectie indien aanwezig
+            if (!isAdmin && db) {
+                try {
+                    const qAdmin = query(collection(db, "admins"), where("email", "==", userEmail));
+                    const snapAdmin = await getDocs(qAdmin);
+                    if (!snapAdmin.empty) {
+                        isAdmin = true;
                     }
+                } catch (err) {
+                    console.warn("Kon Firestore admins collectie niet controleren:", err);
                 }
-            } catch (err) {
-                console.warn("Fout bij check beheerder-rechten:", err);
             }
 
-            if (isClientAccount) {
-                console.warn("Onbevoegde poging tot admin toegang door klant-account:", userEmail);
+            // Strikt toegangsbeleid (Default Deny): Alleen expliciete beheerders krijgen toegang
+            if (!isAdmin) {
+                console.warn("Onbevoegde poging tot admin toegang door niet-beheerder account:", userEmail);
                 await signOut(auth);
-                alert("Toegang geweigerd: Klantaccounts hebben geen toegang tot het beheerdersdashboard.");
+                alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
                 window.location.href = "../index.html";
                 return;
             }
@@ -298,12 +288,18 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const btn = e.target.querySelector('button');
+    const errDiv = document.getElementById('login-error');
     
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+    if (errDiv) errDiv.classList.add('hidden');
     
     const success = await API.login(email, password);
     if (!success) {
         btn.innerHTML = 'Inloggen';
+        if (errDiv) {
+            errDiv.innerText = 'Ongeldig e-mailadres of wachtwoord. Controleer je gegevens.';
+            errDiv.classList.remove('hidden');
+        }
     }
 });
 
@@ -339,16 +335,25 @@ function renderTablesData(projectsToRender) {
     const createRow = (p) => {
         const row = document.createElement('tr');
         const phaseTag = getPhaseTag(p.status);
+        const safeClient = escapeHtml(p.client || p.companyName || 'Onbekend');
+        const safeService = escapeHtml(p.service || 'Onbekend');
+        const safeStatus = escapeHtml(p.status);
+        const safeDate = escapeHtml(p.date || 'Onbekend');
+        const safeId = escapeHtml(p.id);
+        const safeStatusClass = escapeHtml(p.statusClass);
         row.innerHTML = `
-            <td><strong>${p.client || p.companyName || 'Onbekend'}</strong></td>
-            <td>${p.service || 'Onbekend'}</td>
-            <td><span class="badge badge-${p.statusClass}">${p.status} (${phaseTag})</span></td>
-            <td>${p.date || 'Onbekend'}</td>
+            <td><strong>${safeClient}</strong></td>
+            <td>${safeService}</td>
+            <td><span class="badge badge-${safeStatusClass}">${safeStatus} (${phaseTag})</span></td>
+            <td>${safeDate}</td>
             <td>
-                <button class="btn btn-secondary btn-sm" onclick="openProjectDetails('${p.id}')"><i class="fas fa-eye"></i> Klantkaart</button>
-                <button class="btn btn-sm" onclick="deleteProject('${p.id}')" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-secondary btn-sm" data-action="details" data-id="${safeId}"><i class="fas fa-eye"></i> Klantkaart</button>
+                <button class="btn btn-sm" data-action="delete" data-id="${safeId}" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
             </td>
         `;
+        // Use event delegation instead of inline onclick to prevent injection
+        row.querySelector('[data-action="details"]').addEventListener('click', () => window.openProjectDetails(p.id));
+        row.querySelector('[data-action="delete"]').addEventListener('click', () => window.deleteProject(p.id));
         return row;
     };
 
@@ -454,20 +459,7 @@ window.saveNewLead = async () => {
     loadDashboardData();
 };
 
-window.deleteProject = async (id) => {
-    if (confirm('Weet je zeker dat je deze klant/dit project wilt verwijderen?')) {
-        if (db) {
-            try {
-                await deleteDoc(doc(db, "projects", id));
-            } catch(e) {
-                console.error("Error deleting", e);
-            }
-        } else {
-            alert("Verwijderen gesimuleerd (mock data)");
-        }
-        loadDashboardData();
-    }
-};
+// Eerste (verouderde) deleteProject definitie verwijderd — zie L908+ voor de actuele versie
 
 window.openProjectDetails = (id) => {
     const p = cachedProjects.find(item => item.id == id) || { id, client: "Onbekende Klant", service: "Onbekend", status: "Nieuwe Lead", statusClass: "waiting", date: "Zojuist" };
@@ -481,6 +473,23 @@ window.openProjectDetails = (id) => {
     const design = p.design || p.designPreferences || "";
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
+    const originalEmail = p.email || ""; // Track original email for change detection
+
+    // XSS-safe versions for innerHTML injection
+    const s = {
+        clientName: escapeHtml(clientName),
+        contact: escapeHtml(contact),
+        email: escapeHtml(email),
+        domain: escapeHtml(domain),
+        service: escapeHtml(service),
+        goals: escapeHtml(goals),
+        design: escapeHtml(design),
+        dateSubmitted: escapeHtml(dateSubmitted),
+        status: escapeHtml(status),
+        statusClass: escapeHtml(p.statusClass || 'primary'),
+        designUrl: escapeHtml(p.designUrl || p.figmaUrl || ''),
+        safeId: escapeHtml(id)
+    };
 
     let currentPhase = 1;
     if (status === "Nieuwe Lead" || status === "Intake Voltooid") currentPhase = 1;
@@ -494,11 +503,11 @@ window.openProjectDetails = (id) => {
         <div class="klantkaart-container">
             <div class="klantkaart-header">
                 <div>
-                    <strong style="font-size: 1.1rem; color: #fff;">${clientName}</strong>
-                    <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${dateSubmitted}</span>
+                    <strong style="font-size: 1.1rem; color: #fff;">${s.clientName}</strong>
+                    <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${s.dateSubmitted}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="badge badge-${p.statusClass || 'primary'}" style="font-size: 0.85rem; padding: 6px 12px; font-weight: 600;">Fase ${currentPhase}: ${status}</span>
+                    <span class="badge badge-${s.statusClass}" style="font-size: 0.85rem; padding: 6px 12px; font-weight: 600;">Fase ${currentPhase}: ${s.status}</span>
                 </div>
             </div>
 
@@ -521,40 +530,46 @@ window.openProjectDetails = (id) => {
                 </div>
             </div>
 
-            <form id="edit-klantkaart-form" onsubmit="saveKlantkaartChanges(event, '${id}')">
+            <form id="edit-klantkaart-form">
                 <h4 class="actions-title" style="margin-top: 0;"><i class="fas fa-edit"></i> Klantgegevens & Intake Bewerken</h4>
                 
                 <div class="klantkaart-meta-grid">
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-building"></i> Bedrijfsnaam</div>
-                        <input type="text" id="edit-client" class="admin-input" value="${clientName}" required style="margin: 4px 0 0 0;">
+                        <input type="text" id="edit-client" class="admin-input" value="${s.clientName}" required style="margin: 4px 0 0 0;">
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-user"></i> Contactpersoon</div>
-                        <input type="text" id="edit-contact" class="admin-input" value="${contact}" style="margin: 4px 0 0 0;" placeholder="Volledige naam">
+                        <input type="text" id="edit-contact" class="admin-input" value="${s.contact}" style="margin: 4px 0 0 0;" placeholder="Volledige naam">
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
-                        <input type="email" id="edit-email" class="admin-input" value="${email}" style="margin: 4px 0 0 0;" placeholder="info@bedrijf.nl">
+                        <input type="email" id="edit-email" class="admin-input" value="${s.email}" style="margin: 4px 0 0 0;" placeholder="info@bedrijf.nl" data-original-email="${s.email}">
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-globe"></i> Gewenste Domeinnaam</div>
-                        <input type="text" id="edit-domain" class="admin-input" value="${domain}" style="margin: 4px 0 0 0;" placeholder="www.bedrijf.nl">
+                        <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="www.bedrijf.nl">
                     </div>
                     <div class="meta-box" style="grid-column: 1 / -1;">
                         <div class="meta-label"><i class="fas fa-concierge-bell"></i> Dienst</div>
-                        <input type="text" id="edit-service" class="admin-input" value="${service}" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop">
+                        <input type="text" id="edit-service" class="admin-input" value="${s.service}" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop">
                     </div>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px;">
                     <h4><i class="fas fa-bullseye"></i> Projectdoelen & Omschrijving</h4>
-                    <textarea id="edit-goals" class="admin-input" rows="4" style="margin: 4px 0 0 0;" placeholder="Omschrijving van het project en de doelen...">${goals}</textarea>
+                    <textarea id="edit-goals" class="admin-input" rows="4" style="margin: 4px 0 0 0;" placeholder="Omschrijving van het project en de doelen...">${s.goals}</textarea>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px;">
                     <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
-                    <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${design}</textarea>
+                    <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${s.design}</textarea>
+                </div>
+
+                <div class="intake-box" style="margin-top: 15px;">
+                    <h4><i class="fas fa-drafting-compass"></i> Ontwerp / Figma Link (Fase 3)</h4>
+                    <input type="url" id="edit-designUrl" class="admin-input" value="${s.designUrl}" style="margin: 4px 0 0 0;" placeholder="https://www.figma.com/design/... of preview URL">
+                    <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;"><i class="fas fa-info-circle"></i> Vul hier de link naar het ontwerp in. Gebruik de snelactie hieronder om het naar de klant te sturen.</p>
                 </div>
 
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
@@ -564,28 +579,16 @@ window.openProjectDetails = (id) => {
 
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties per Fase</h4>
-                <div class="action-buttons-grid">
-                    <button class="btn btn-secondary btn-sm" onclick="generateAiEmail('${id}')">
-                        <i class="fas fa-robot"></i> AI Concept Mail (Fase 1)
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="generateProposal('${id}')">
-                        <i class="fas fa-file-contract"></i> Genereer Offerte (Fase 2)
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="generateInvoiceMollieLink('${id}', '${clientName}')">
-                        <i class="fas fa-euro-sign"></i> Factuur + Mollie (Fase 5)
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="triggerCheckIn('${id}', '${clientName}')">
-                        <i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)
-                    </button>
+                <div class="action-buttons-grid" id="action-buttons-container">
+                    <!-- Buttons bound via event listeners below -->
                 </div>
             </div>
 
             <div id="ai-email-container" class="hidden" style="padding: 15px; background: rgba(34, 211, 238, 0.08); border-radius: 8px; border: 1px solid rgba(34, 211, 238, 0.3);">
                 <p style="margin-bottom: 10px; font-weight: 600; color: var(--color-accent);"><i class="fas fa-magic"></i> AI Concept E-mail (Gepersonaliseerd op basis van intake):</p>
                 <textarea id="ai-email-body" class="admin-input" rows="7" style="font-family: var(--font-body);"></textarea>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button class="btn btn-primary btn-sm" onclick="sendMailToClient('${email}')"><i class="fas fa-paper-plane"></i> Open in E-mail Client</button>
-                    <button class="btn btn-secondary btn-sm" onclick="copyAiEmail()"><i class="fas fa-copy"></i> Kopiëren</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px;" id="ai-email-actions">
+                    <!-- Bound below -->
                 </div>
             </div>
 
@@ -596,16 +599,59 @@ window.openProjectDetails = (id) => {
             </div>
         </div>
     `;
+
+    // Bind form submit via event listener (not inline onsubmit) to avoid XSS via id injection
+    document.getElementById('edit-klantkaart-form')?.addEventListener('submit', (e) => saveKlantkaartChanges(e, id));
+
+    // Bind action buttons via event listeners instead of inline onclick
+    const actionContainer = document.getElementById('action-buttons-container');
+    actionContainer.innerHTML = `
+        <button class="btn btn-secondary btn-sm" data-action="ai-email"><i class="fas fa-robot"></i> AI Concept Mail (Fase 1)</button>
+        <button class="btn btn-secondary btn-sm" data-action="proposal"><i class="fas fa-file-contract"></i> Genereer Offerte (Fase 2)</button>
+        <button class="btn btn-secondary btn-sm" data-action="design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
+        <button class="btn btn-secondary btn-sm" data-action="mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie (Fase 5)</button>
+        <button class="btn btn-secondary btn-sm" data-action="checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)</button>
+    `;
+    actionContainer.querySelector('[data-action="ai-email"]').addEventListener('click', () => generateAiEmail(id));
+    actionContainer.querySelector('[data-action="proposal"]').addEventListener('click', () => generateProposal(id));
+    actionContainer.querySelector('[data-action="design"]').addEventListener('click', () => sendDesignToClient(id));
+    actionContainer.querySelector('[data-action="mollie"]').addEventListener('click', () => generateInvoiceMollieLink(id, clientName));
+    actionContainer.querySelector('[data-action="checkin"]').addEventListener('click', () => triggerCheckIn(id, clientName));
+
+    // Bind AI email action buttons
+    const aiActions = document.getElementById('ai-email-actions');
+    aiActions.innerHTML = `
+        <button class="btn btn-primary btn-sm" data-action="send-mail"><i class="fas fa-paper-plane"></i> Open in E-mail Client</button>
+        <button class="btn btn-secondary btn-sm" data-action="copy-mail"><i class="fas fa-copy"></i> Kopiëren</button>
+    `;
+    aiActions.querySelector('[data-action="send-mail"]').addEventListener('click', () => sendMailToClient(email));
+    aiActions.querySelector('[data-action="copy-mail"]').addEventListener('click', () => copyAiEmail());
+
     document.getElementById('project-modal').classList.remove('hidden');
 };
 
 window.saveKlantkaartChanges = async (e, id) => {
     e.preventDefault();
+
+    const newEmail = document.getElementById('edit-email').value.trim().toLowerCase();
+    const originalEmail = document.getElementById('edit-email')?.dataset?.originalEmail || '';
+
+    // Waarschuwing bij e-mailadres wijziging
+    if (originalEmail && newEmail !== originalEmail.toLowerCase()) {
+        const confirmed = confirm(
+            `⚠️ Let op: je wijzigt het e-mailadres van "${originalEmail}" naar "${newEmail}".\n\n` +
+            `Het Firebase Auth account van de klant is nog gekoppeld aan het originele e-mailadres.\n` +
+            `Na het opslaan moet je mogelijk 'Activeer Klantaccount' opnieuw uitvoeren voor het nieuwe adres.\n\n` +
+            `Wil je doorgaan?`
+        );
+        if (!confirmed) return;
+    }
+
     const updatedData = {
         client: document.getElementById('edit-client').value,
         companyName: document.getElementById('edit-client').value,
         contactName: document.getElementById('edit-contact').value,
-        email: document.getElementById('edit-email').value,
+        email: newEmail,
         domainName: document.getElementById('edit-domain').value,
         domain: document.getElementById('edit-domain').value,
         service: document.getElementById('edit-service').value,
@@ -613,6 +659,8 @@ window.saveKlantkaartChanges = async (e, id) => {
         projectGoals: document.getElementById('edit-goals').value,
         design: document.getElementById('edit-design').value,
         designPreferences: document.getElementById('edit-design').value,
+        designUrl: document.getElementById('edit-designUrl')?.value || '',
+        figmaUrl: document.getElementById('edit-designUrl')?.value || '',
     };
 
     const itemIndex = cachedProjects.findIndex(p => p.id == id);
@@ -626,10 +674,12 @@ window.saveKlantkaartChanges = async (e, id) => {
             await updateDoc(docRef, updatedData);
         } catch(err) {
             console.error("Fout bij opslaan in Firestore:", err);
+            alert("Fout bij opslaan: " + err.message);
+            return;
         }
     }
 
-    alert("Klantkaart gegevens (inclusief domeinnaam) succesvol bijgewerkt!");
+    alert("Klantkaart gegevens succesvol bijgewerkt!");
     closeModal('project-modal');
     loadDashboardData();
 };
@@ -691,6 +741,54 @@ window.generateProposal = async (id) => {
     } catch (e) {
         console.error("Fout bij updaten offerte:", e);
         alert("Fout bij genereren offerte.");
+    }
+};
+
+window.sendDesignToClient = async (id) => {
+    if (!db) {
+        alert("Firestore is niet verbonden (in mock-modus).");
+        return;
+    }
+
+    // Read designUrl from the Klantkaart input if it's open, or from cached data
+    let designUrl = document.getElementById('edit-designUrl')?.value || '';
+    if (!designUrl) {
+        const p = cachedProjects.find(item => item.id == id);
+        designUrl = p?.designUrl || p?.figmaUrl || '';
+    }
+
+    if (!designUrl || !designUrl.trim()) {
+        alert("Vul eerst de Design / Figma URL in op de Klantkaart voordat je deze naar de klant stuurt.");
+        return;
+    }
+
+    if (!confirm(`Wil je het ontwerp versturen naar de klant?\n\nDesign URL: ${designUrl}\n\nDe status wordt gewijzigd naar "Design Gereed voor Review" en de klant kan het ontwerp beoordelen in zijn portaal.`)) return;
+
+    try {
+        const docRef = doc(db, "projects", id);
+        await updateDoc(docRef, {
+            designUrl: designUrl.trim(),
+            figmaUrl: designUrl.trim(),
+            status: "Design Gereed voor Review",
+            statusClass: "active",
+            designSentAt: new Date().toISOString()
+        });
+
+        // Update in-memory cache
+        const pIdx = cachedProjects.findIndex(p => p.id == id);
+        if (pIdx !== -1) {
+            cachedProjects[pIdx].designUrl = designUrl.trim();
+            cachedProjects[pIdx].figmaUrl = designUrl.trim();
+            cachedProjects[pIdx].status = "Design Gereed voor Review";
+            cachedProjects[pIdx].statusClass = "active";
+        }
+
+        alert(`Design is verstuurd!\n\nDe klant kan het ontwerp nu bekijken in het klantenportaal en digitaal goedkeuring geven.\n\nDesign URL: ${designUrl}`);
+        closeModal('project-modal');
+        loadDashboardData();
+    } catch (error) {
+        console.error("Fout bij versturen design:", error);
+        alert("Fout bij het versturen van het design naar de klant.");
     }
 };
 

@@ -259,18 +259,9 @@
     <!-- Firebase Auth Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAj2_cXCL6fs9qjp2q89F3ezLbErDp4wI8",
-            authDomain: "mythical-cider-475118-e5.firebaseapp.com",
-            projectId: "mythical-cider-475118-e5",
-            storageBucket: "mythical-cider-475118-e5.firebasestorage.app",
-            messagingSenderId: "755599901945",
-            appId: "1:755599901945:web:589450049c785dacfcce28"
-        };
-
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { firebaseConfig, isAdminEmail } from "./js/firebase-config.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -278,11 +269,16 @@
 
         async function isClient(email, uid) {
             try {
-                const q = query(collection(db, "projects"), where("email", "==", (email || '').toLowerCase()));
+                const cleanEmail = (email || '').toLowerCase();
+                const q = query(collection(db, "projects"), where("email", "==", cleanEmail));
                 const snap = await getDocs(q);
                 if (!snap.empty) {
-                    const data = snap.docs[0].data();
-                    if (data.isClientAccount || data.clientUid === uid) return true;
+                    return true;
+                }
+                const qUid = query(collection(db, "projects"), where("clientUid", "==", uid));
+                const snapUid = await getDocs(qUid);
+                if (!snapUid.empty) {
+                    return true;
                 }
             } catch (err) {
                 console.warn("Fout bij isClient check:", err);
@@ -293,7 +289,12 @@
         // Automatisch doorsturen als de gebruiker al ingelogd is
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userIsClient = await isClient(user.email, user.uid);
+                const email = (user.email || '').toLowerCase();
+                if (isAdminEmail(email)) {
+                    window.location.href = "admin/";
+                    return;
+                }
+                const userIsClient = await isClient(email, user.uid);
                 if (userIsClient) {
                     window.location.href = "status/";
                 }
@@ -313,11 +314,22 @@
 
             try {
                 const userCred = await signInWithEmailAndPassword(auth, email, password);
-                const userIsClient = await isClient(userCred.user.email, userCred.user.uid);
+                const userEmail = (userCred.user.email || '').toLowerCase();
+
+                if (isAdminEmail(userEmail)) {
+                    window.location.href = "admin/";
+                    return;
+                }
+
+                const userIsClient = await isClient(userEmail, userCred.user.uid);
                 if (userIsClient) {
                     window.location.href = "status/";
                 } else {
-                    window.location.href = "admin/";
+                    await signOut(auth);
+                    errDiv.innerText = "Geen actief project of beheerdersaccount gevonden voor dit e-mailadres.";
+                    errDiv.classList.remove('hidden');
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Inloggen op Klantenportaal';
+                    btn.disabled = false;
                 }
             } catch (error) {
                 console.error("Login mislukt:", error);
