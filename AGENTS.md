@@ -90,3 +90,5 @@
 
 
 - **[2026-08-13] CRM Customer Journey UX Improvements**: Polished the client experience across the CRM funnel. 1) Updated /intake success message to actively direct clients to their email and the login portal. 2) Replaced the native prompt() for 'Wachtwoord vergeten' in the /crm portal login with a sleek inline Dark AI styled form for better UI/UX. 3) Added an explicit 'Ik heb feedback' button in the Design Review step of the /status portal, allowing clients to easily email feedback instead of feeling forced to click 'Akkoord'.
+
+- **[2026-08-13] Integrated Firebase Storage for Client Document Management**: Implemented secure file uploads in the Client Status Portal (Fase 1). Clients can now upload logos and copy directly to their project via \irebase-storage.js\. The files are saved in the bucket as \projects/{projectId}/{timestamp}_{filename}\ and their URLs are appended to the Firestore project document. Updated the Admin Dashboard Klantkaart modal to parse and display these uploaded assets, allowing administrators to easily download client files without relying on external file-sharing tools. Added future advanced CRM tasks to \TODO.md\ (EPIC-06).

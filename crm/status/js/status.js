@@ -8,13 +8,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml } from "../../js/firebase-config.js";
 
-let app, auth, db;
+let app, auth, db, storage;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    storage = getStorage(app);
 } catch (err) {
     console.error("Fout bij initialiseren Firebase in status.js:", err);
 }
@@ -75,6 +77,58 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loader')?.classList.add('hidden');
         document.getElementById('no-project-view')?.classList.remove('hidden');
     }
+
+    // File Upload Handler
+    document.getElementById('file-upload-input')?.addEventListener('change', async (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0 || !currentProjectDocId || !storage) return;
+
+        const statusDiv = document.getElementById('upload-status');
+        statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met uploaden... Even geduld.';
+        statusDiv.style.color = '#3b82f6';
+        
+        let projectRef = doc(db, "projects", currentProjectDocId);
+        
+        const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+        let existingFiles = activeProject.data.files || [];
+
+        let uploadCount = 0;
+        
+        try {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                const filePath = `projects/${currentProjectDocId}/${Date.now()}_${safeName}`;
+                const storageRef = ref(storage, filePath);
+                
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                
+                existingFiles.push({
+                    name: file.name,
+                    url: downloadURL,
+                    uploadedAt: new Date().toISOString()
+                });
+                uploadCount++;
+            }
+            
+            await updateDoc(projectRef, { files: existingFiles });
+            activeProject.data.files = existingFiles; 
+            
+            statusDiv.style.color = '#10b981';
+            statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${uploadCount} bestand(en) succesvol geüpload!`;
+            setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+            
+            renderFilesSection(activeProject.data);
+
+        } catch (err) {
+            console.error("Upload error:", err);
+            statusDiv.style.color = '#fca5a5';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Fout bij uploaden. Probeer het opnieuw.`;
+        }
+        
+        e.target.value = ''; 
+    });
 });
 
 async function loadClientProjects(email, uid) {
@@ -201,6 +255,9 @@ function renderDashboard(data) {
 
     // Render Design Review Card (Fase 3)
     renderDesignSection(data);
+
+    // Render Project Bestanden
+    renderFilesSection(data);
 
     // Render Snelle Links (Demo / Mollie)
     if (data.demoUrl) {
@@ -525,4 +582,36 @@ function setupDesignAcceptButton() {
             btn.disabled = false;
         }
     };
+}
+
+function renderFilesSection(data) {
+    const filesListContainer = document.getElementById('uploaded-files-list');
+    if (!filesListContainer) return;
+
+    const files = data.files || [];
+    
+    if (files.length === 0) {
+        filesListContainer.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Nog geen bestanden geüpload.</p>`;
+        return;
+    }
+
+    filesListContainer.innerHTML = files.map(f => {
+        const dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('nl-NL') : 'eerder';
+        const safeUrl = escapeHtml(f.url);
+        const safeName = escapeHtml(f.name);
+        return `
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
+                    <i class="fas fa-file-alt" style="color: #6366f1; font-size: 1.2rem;"></i>
+                    <div style="overflow: hidden;">
+                        <div style="font-size: 0.9rem; font-weight: 500; color: #f8fafc; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${safeName}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Toegevoegd op ${dateStr}</div>
+                    </div>
+                </div>
+                <a href="${safeUrl}" target="_blank" style="color: #22d3ee; background: rgba(34, 211, 238, 0.1); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; flex-shrink: 0; transition: all 0.2s;">
+                    <i class="fas fa-download"></i> Bekijk
+                </a>
+            </div>
+        `;
+    }).join('');
 }

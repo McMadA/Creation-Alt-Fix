@@ -498,6 +498,25 @@ window.openProjectDetails = (id) => {
     else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
     else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
 
+    const files = p.files || [];
+    let filesHtml = '';
+    if (files.length === 0) {
+        filesHtml = '<p style="font-size: 0.85rem; color: var(--color-text-secondary); font-style: italic;">Nog geen bestanden geüpload.</p>';
+    } else {
+        filesHtml = files.map(f => `
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 8px 12px; margin-bottom: 6px; border-radius: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                    <i class="fas fa-file-alt" style="color: #6366f1;"></i>
+                    <div style="overflow: hidden;">
+                        <div style="font-size: 0.85rem; color: #fff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${escapeHtml(f.name)}</div>
+                        <div style="font-size: 0.7rem; color: var(--color-text-secondary);">Toegevoegd op: ${f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('nl-NL') : 'eerder'}</div>
+                    </div>
+                </div>
+                <a href="${escapeHtml(f.url)}" target="_blank" class="btn btn-sm" style="background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: none; padding: 4px 8px; text-decoration: none; font-size: 0.8rem;"><i class="fas fa-download"></i> Download</a>
+            </div>
+        `).join('');
+    }
+
     document.getElementById('modal-title').innerText = `Klantkaart: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
         <div class="klantkaart-container">
@@ -576,6 +595,13 @@ window.openProjectDetails = (id) => {
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan</button>
                 </div>
             </form>
+
+            <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
+                <h4 class="actions-title"><i class="fas fa-folder-open"></i> Project Bestanden & Uploads</h4>
+                <div style="margin-top: 10px;">
+                    ${filesHtml}
+                </div>
+            </div>
 
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties per Fase</h4>

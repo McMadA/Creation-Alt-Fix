@@ -135,3 +135,25 @@
 
 - **Admin Access Security**: Strict client account isolation in Firebase Auth + IP restriction / Tailscale exit node protection on `crm/admin/.htaccess`.
 - **Client Access Security**: In-memory secondary Firebase Auth instance prevents admin session contamination during client intake account generation.
+
+---
+
+### ??? EPIC-06: Advanced CRM Features (Expansion)
+**Domain**: CRM Portal & Admin Hub | **Stack**: Firestore, Cloud Functions
+
+- [ ] `[TASK-601]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Internal Notes & Audit Trail (Logboek)**
+  - **Scope**: `crm/admin/js/admin.js`
+  - **Acceptance Criteria**: Add a hidden subcollection to track timeline events and allow admin to leave private internal notes on projects.
+
+- [ ] `[TASK-602]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Task & Deadline Management (Kanban)**
+  - **Scope**: `crm/admin/`
+  - **Acceptance Criteria**: Add a simple To-Do/Kanban board connected to active projects to track personal deliverables.
+
+- [ ] `[TASK-603]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated PDF Generation for Quotes & Invoices**
+  - **Scope**: Cloud Functions / Backend
+  - **Acceptance Criteria**: Convert digitally signed quotes to physical PDF documents stored in Firebase Storage and emailed to the client.
+
+- [ ] `[TASK-604]` `[P4-LOW]` `[STATUS: BACKLOG]` **In-App Messaging / Ticketing**
+  - **Scope**: `crm/status/` & `crm/admin/`
+  - **Acceptance Criteria**: Replace standard mailto feedback buttons with a centralized Firestore-based chat/ticket thread per project.
+

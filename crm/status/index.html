@@ -192,6 +192,26 @@
                 </div>
             </section>
 
+            <!-- Project Bestanden & Uploads -->
+            <section class="card" id="files-card">
+                <h2 class="section-title"><i class="fas fa-folder-open"></i> Project Bestanden</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                    Upload hier je logo's, teksten of andere benodigde bestanden voor dit project.
+                </p>
+
+                <div class="file-upload-box" style="border: 2px dashed rgba(99, 102, 241, 0.3); background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                    <input type="file" id="file-upload-input" multiple style="display: none;">
+                    <label for="file-upload-input" class="btn-akkoord" style="display: inline-block; cursor: pointer; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; width: auto; padding: 10px 20px;">
+                        <i class="fas fa-cloud-upload-alt"></i> Selecteer Bestanden...
+                    </label>
+                    <div id="upload-status" style="margin-top: 10px; font-size: 0.85rem; color: #34d399; font-weight: 600;"></div>
+                </div>
+
+                <div id="uploaded-files-list" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Dynamisch gevuld met bestanden -->
+                </div>
+            </section>
+
             <!-- Demo & Factuur Links & Direct Contact -->
             <section class="card">
                 <h2 class="section-title"><i class="fas fa-link"></i> Snelle Acties & Contact</h2>
