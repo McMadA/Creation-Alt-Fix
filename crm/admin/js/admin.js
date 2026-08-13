@@ -326,23 +326,23 @@ async function loadDashboardData() {
 }
 
 function renderTablesData(projectsToRender) {
-    const getTaskNr = (status) => {
-        if (!status) return "";
-        if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Taak 01/02";
-        if (status.includes("Wacht op Akkoord")) return "Taak 03";
-        if (status.includes("Ontwikkeling")) return "Fase 3";
-        if (status.includes("Mollie")) return "Taak 05";
-        if (status.includes("Aftercare")) return "Taak 06";
-        return "";
+    const getPhaseTag = (status) => {
+        if (!status) return "Fase 1";
+        if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Fase 1";
+        if (status.includes("Wacht op Akkoord") || status.includes("Offerte")) return "Fase 2";
+        if (status.includes("Design")) return "Fase 3";
+        if (status.includes("Ontwikkeling")) return "Fase 4";
+        if (status.includes("Mollie") || status.includes("Opgeleverd") || status.includes("Afgerond") || status.includes("Livegang")) return "Fase 5";
+        return "Fase 1";
     };
 
     const createRow = (p) => {
         const row = document.createElement('tr');
-        const taskNr = getTaskNr(p.status);
+        const phaseTag = getPhaseTag(p.status);
         row.innerHTML = `
             <td><strong>${p.client || p.companyName || 'Onbekend'}</strong></td>
             <td>${p.service || 'Onbekend'}</td>
-            <td><span class="badge badge-${p.statusClass}">${p.status} ${taskNr ? `(${taskNr})` : ''}</span></td>
+            <td><span class="badge badge-${p.statusClass}">${p.status} (${phaseTag})</span></td>
             <td>${p.date || 'Onbekend'}</td>
             <td>
                 <button class="btn btn-secondary btn-sm" onclick="openProjectDetails('${p.id}')"><i class="fas fa-eye"></i> Klantkaart</button>
@@ -483,6 +483,13 @@ window.openProjectDetails = (id) => {
     const status = p.status || "Nieuwe Lead";
     const isAuthActivated = Boolean(p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2');
 
+    let currentPhase = 1;
+    if (status === "Nieuwe Lead" || status === "Intake Voltooid") currentPhase = 1;
+    else if (status === "Wacht op Akkoord" || status.includes("Offerte")) currentPhase = 2;
+    else if (status.includes("Design")) currentPhase = 3;
+    else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
+    else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
+
     document.getElementById('modal-title').innerText = `Klantkaart & Status: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
         <div class="klantkaart-container">
@@ -494,13 +501,32 @@ window.openProjectDetails = (id) => {
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <label style="font-size: 0.8rem; color: var(--color-text-secondary);">Status:</label>
                     <select id="edit-project-status" class="admin-input" style="margin: 0; padding: 6px 12px; width: auto; font-weight: 600; cursor: pointer;" onchange="updateProjectStatusDirect('${id}', this.value)">
-                        <option value="Nieuwe Lead" ${status === "Nieuwe Lead" ? "selected" : ""}>Nieuwe Lead</option>
-                        <option value="Intake Voltooid" ${status === "Intake Voltooid" ? "selected" : ""}>Intake Voltooid</option>
-                        <option value="Wacht op Akkoord" ${status === "Wacht op Akkoord" ? "selected" : ""}>Wacht op Akkoord</option>
-                        <option value="In Ontwikkeling" ${status === "In Ontwikkeling" ? "selected" : ""}>In Ontwikkeling (Lopend)</option>
-                        <option value="Opgeleverd (Betaling via Mollie)" ${status.includes("Mollie") || status === "Opgeleverd" ? "selected" : ""}>Opgeleverd (Mollie)</option>
-                        <option value="Afgerond" ${status === "Afgerond" ? "selected" : ""}>Afgerond</option>
+                        <option value="Intake Voltooid" ${status === "Intake Voltooid" || status === "Nieuwe Lead" ? "selected" : ""}>Fase 1: Intake Voltooid</option>
+                        <option value="Wacht op Akkoord" ${status === "Wacht op Akkoord" ? "selected" : ""}>Fase 2: Offerte & Akkoord (Wacht op Klant)</option>
+                        <option value="Design & Ontwerp" ${status === "Design & Ontwerp" ? "selected" : ""}>Fase 3: Design & Ontwerp</option>
+                        <option value="In Ontwikkeling" ${status === "In Ontwikkeling" || status === "Wacht op Ontwikkeling" ? "selected" : ""}>Fase 4: Ontwikkeling (Lopend)</option>
+                        <option value="Opgeleverd (Betaling via Mollie)" ${status.includes("Mollie") || status === "Opgeleverd" ? "selected" : ""}>Fase 5: Livegang & Mollie Factuur</option>
+                        <option value="Afgerond" ${status === "Afgerond" ? "selected" : ""}>Fase 5: Afgerond</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Visual 5-Stage Phase Tracker -->
+            <div class="admin-phase-tracker" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0 16px 0; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 1 ? 'background: rgba(34, 211, 238, 0.2); border: 1px solid #22d3ee; color: #22d3ee; font-weight: 700;' : 'color: #94a3b8;'}">
+                    <i class="fas fa-clipboard-check"></i><br>Fase 1: Intake
+                </div>
+                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 2 ? 'background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fbbf24; font-weight: 700;' : 'color: #94a3b8;'}">
+                    <i class="fas fa-file-signature"></i><br>Fase 2: Offerte
+                </div>
+                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 3 ? 'background: rgba(168, 85, 247, 0.2); border: 1px solid #c084fc; color: #c084fc; font-weight: 700;' : 'color: #94a3b8;'}">
+                    <i class="fas fa-palette"></i><br>Fase 3: Design
+                </div>
+                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 4 ? 'background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; color: #818cf8; font-weight: 700;' : 'color: #94a3b8;'}">
+                    <i class="fas fa-code"></i><br>Fase 4: Code
+                </div>
+                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 5 ? 'background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; color: #34d399; font-weight: 700;' : 'color: #94a3b8;'}">
+                    <i class="fas fa-rocket"></i><br>Fase 5: Livegang
                 </div>
             </div>
 
@@ -564,19 +590,19 @@ window.openProjectDetails = (id) => {
             </form>
 
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
-                <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties</h4>
+                <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties per Fase</h4>
                 <div class="action-buttons-grid">
                     <button class="btn btn-secondary btn-sm" onclick="generateAiEmail('${id}')">
-                        <i class="fas fa-robot"></i> AI Concept E-mail (Taak 04)
+                        <i class="fas fa-robot"></i> AI Concept Mail (Fase 1)
                     </button>
                     <button class="btn btn-secondary btn-sm" onclick="generateProposal('${id}')">
-                        <i class="fas fa-file-contract"></i> Genereer Offerte (Taak 03)
+                        <i class="fas fa-file-contract"></i> Genereer Offerte (Fase 2)
                     </button>
                     <button class="btn btn-secondary btn-sm" onclick="generateInvoiceMollieLink('${id}', '${clientName}')">
-                        <i class="fas fa-euro-sign"></i> Factuur + Mollie Link (Taak 05)
+                        <i class="fas fa-euro-sign"></i> Factuur + Mollie (Fase 5)
                     </button>
                     <button class="btn btn-secondary btn-sm" onclick="triggerCheckIn('${id}', '${clientName}')">
-                        <i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Taak 06)
+                        <i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)
                     </button>
                 </div>
             </div>
@@ -637,8 +663,9 @@ window.saveKlantkaartChanges = async (e, id) => {
 
 window.updateProjectStatusDirect = async (id, newStatus) => {
     let statusClass = "active";
-    if (newStatus === "Nieuwe Lead" || newStatus === "Wacht op Akkoord") statusClass = "waiting";
-    if (newStatus.includes("Mollie")) statusClass = "concept";
+    if (newStatus === "Wacht op Akkoord") statusClass = "waiting";
+    else if (newStatus.includes("Mollie") || newStatus === "Afgerond") statusClass = "concept";
+    else statusClass = "active";
 
     const itemIndex = cachedProjects.findIndex(p => p.id == id);
     if (itemIndex !== -1) {

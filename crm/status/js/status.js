@@ -123,31 +123,35 @@ function renderDashboard(data) {
     const badge = document.getElementById('status-badge');
     badge.innerText = statusText;
 
-    let progress = 25;
-    let stepNumber = 1;
+    let progress = 20;
+    let stepNumber = 2; // Step 2 (Offerte & Akkoord) is active default after intake
 
     if (statusText === "Nieuwe Lead" || statusText === "Intake Voltooid") {
-        progress = 25;
-        stepNumber = 1;
+        progress = 20;
+        stepNumber = 2;
         badge.className = "badge badge-active";
     } else if (statusText === "Wacht op Akkoord") {
-        progress = 35;
-        stepNumber = 1;
+        progress = 40;
+        stepNumber = 2;
         badge.className = "badge badge-waiting";
     } else if (statusText === "Wacht op Ontwikkeling" || statusText === "In Ontwikkeling") {
-        progress = 65;
-        stepNumber = 3;
+        progress = 75;
+        stepNumber = 4;
         badge.className = "badge badge-active";
     } else if (statusText.includes("Mollie") || statusText.includes("Opgeleverd") || statusText === "Afgerond") {
         progress = 100;
-        stepNumber = 4;
+        stepNumber = 5;
         badge.className = "badge badge-success";
+    } else {
+        progress = 50;
+        stepNumber = 3;
+        badge.className = "badge badge-active";
     }
 
     document.getElementById('progress-bar-fill').style.width = `${progress}%`;
     document.getElementById('progress-percent-display').innerText = `${progress}% Complete`;
 
-    // Render 4-Stage Timeline highlights
+    // Render 5-Stage Timeline highlights
     updateTimeline(stepNumber);
 
     // Render Proposal / Offerte (Taak 03)
@@ -167,7 +171,7 @@ function renderDashboard(data) {
 }
 
 function updateTimeline(activeStep) {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
         const stepEl = document.getElementById(`step-${i}`);
         if (!stepEl) continue;
 
@@ -182,50 +186,99 @@ function updateTimeline(activeStep) {
 
 function renderProposalSection(data) {
     const offerteCard = document.getElementById('offerte-card');
-    
-    // Als er een prijs of scope is ingesteld door Allard, toon dan de offerte
-    if (data.proposalPrice || data.proposalScope || data.status === "Wacht op Akkoord") {
-        offerteCard.classList.remove('hidden');
+    offerteCard.classList.remove('hidden');
 
-        const price = data.proposalPrice || "Op aanvraag";
-        const scope = data.proposalScope || `Op basis van de intake gaan we aan de slag met:\n\n${data.goals || "Nader te bepalen."}`;
+    const statusPill = document.getElementById('offerte-status-pill');
+    const priceEl = document.getElementById('offerte-price');
+    const scopeEl = document.getElementById('offerte-scope');
+    const actionContainer = document.getElementById('offerte-action-container');
+    const successMsg = document.getElementById('offerte-success-msg');
 
-        document.getElementById('offerte-price').innerText = `€ ${price}`;
-        document.getElementById('offerte-scope').innerText = scope;
+    const isAccepted = Boolean(
+        data.proposalAcceptedAt || 
+        data.status === "Wacht op Ontwikkeling" || 
+        data.status === "In Ontwikkeling" || 
+        data.status.includes("Opgeleverd") || 
+        data.status === "Afgerond"
+    );
 
-        const actionContainer = document.getElementById('offerte-action-container');
-        const successMsg = document.getElementById('offerte-success-msg');
+    const isReadyForAcceptance = Boolean(
+        !isAccepted && 
+        (data.proposalPrice || data.status === "Wacht op Akkoord")
+    );
 
-        // Als al geaccepteerd of in ontwikkeling
-        if (data.status === "Wacht op Ontwikkeling" || data.status === "In Ontwikkeling" || data.status.includes("Opgeleverd")) {
-            actionContainer.classList.add('hidden');
-            successMsg.classList.remove('hidden');
-            if (data.proposalAcceptedAt) {
-                document.getElementById('accepted-date').innerText = new Date(data.proposalAcceptedAt).toLocaleDateString('nl-NL');
-            }
+    if (isAccepted) {
+        // STATE C: Offerte Geaccepteerd
+        statusPill.className = "offerte-status-pill accepted";
+        statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Offerte Geaccepteerd';
+
+        priceEl.innerText = data.proposalPrice ? `€ ${data.proposalPrice}` : "Prijs overeengekomen";
+        scopeEl.innerText = data.proposalScope || `Op basis van de intake:\n\n${data.goals || data.projectGoals || "Specificaties afgestemd."}`;
+
+        actionContainer.classList.add('hidden');
+        successMsg.classList.remove('hidden');
+        if (data.proposalAcceptedAt) {
+            document.getElementById('accepted-date').innerText = new Date(data.proposalAcceptedAt).toLocaleDateString('nl-NL');
         } else {
-            actionContainer.classList.remove('hidden');
-            successMsg.classList.add('hidden');
-
-            // Setup Akkoord knop
-            setupAgreeButton();
+            document.getElementById('accepted-date').innerText = "eerder";
         }
+    } else if (isReadyForAcceptance) {
+        // STATE B: Offerte Gereed voor Akkoord
+        statusPill.className = "offerte-status-pill action-required";
+        statusPill.innerHTML = '<i class="fas fa-exclamation-circle"></i> Actie Vereist: Digitaal Akkoord';
+
+        const priceVal = data.proposalPrice || "In overleg";
+        priceEl.innerText = priceVal.startsWith("€") ? priceVal : `€ ${priceVal}`;
+        
+        scopeEl.innerText = data.proposalScope || `Op basis van de door jou ingevulde intake gaan we de volgende scope realiseren:\n\n${data.goals || data.projectGoals || "Volledige software & website realisatie zoals besproken."}`;
+
+        successMsg.classList.add('hidden');
+        actionContainer.classList.remove('hidden');
+        actionContainer.innerHTML = `
+            <button id="btn-akkoord" class="btn-akkoord">
+                <i class="fas fa-signature"></i> Digitaal Akkoord Geven & Starten
+            </button>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                <i class="fas fa-shield-alt"></i> Door te klikken ga je digitaal akkoord met de voorgestelde scope en prijsopgave.
+            </p>
+        `;
+
+        setupAgreeButton();
     } else {
-        offerteCard.classList.add('hidden');
+        // STATE A: Offerte in Voorbereiding (Intake ontvangen)
+        statusPill.className = "offerte-status-pill pending";
+        statusPill.innerHTML = '<i class="fas fa-clock"></i> Offerte in Voorbereiding';
+
+        priceEl.innerText = "Wordt berekend...";
+        scopeEl.innerText = `Bedankt voor het invullen van de intake!\n\nCreation+Alt+Fix is momenteel jouw projectwensen aan het analyseren om een passend investeringsvoorstel op te stellen.\n\nZodra Allard de offerte heeft klaargezet, verschijnt de definitieve prijs en scope hier direct en kun je deze met één klik digitaal accepteren.`;
+
+        successMsg.classList.add('hidden');
+        actionContainer.classList.remove('hidden');
+        actionContainer.innerHTML = `
+            <button class="btn-akkoord-disabled" disabled>
+                <i class="fas fa-hourglass-half"></i> Offerte wordt opgesteld door Creation+Alt+Fix...
+            </button>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                <i class="fas fa-info-circle"></i> Vragen of spoed? Neem gerust direct contact op via WhatsApp of E-mail hieronder.
+            </p>
+        `;
     }
 }
 
 function setupAgreeButton() {
     const btn = document.getElementById('btn-akkoord');
+    if (!btn) return;
+
     btn.onclick = async () => {
         if (!currentProjectDocId) {
             alert("Kan akkoord niet opslaan: project ID niet gevonden.");
             return;
         }
 
-        if (!confirm("Weet je zeker dat je digitaal akkoord wilt geven op deze offerte?")) return;
+        const priceText = document.getElementById('offerte-price')?.innerText || '';
+        if (!confirm(`Weet je zeker dat je digitaal akkoord wilt geven op deze offerte (${priceText})?`)) return;
 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met verwerken...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met digitaal ondertekenen...';
         btn.disabled = true;
 
         try {
@@ -238,23 +291,26 @@ function setupAgreeButton() {
                 proposalAcceptedAt: nowIso
             });
 
-            // Update UI direct
+            // Update UI direct naar State C (Geaccepteerd)
+            document.getElementById('offerte-status-pill').className = "offerte-status-pill accepted";
+            document.getElementById('offerte-status-pill').innerHTML = '<i class="fas fa-check-circle"></i> Offerte Geaccepteerd';
+
             document.getElementById('offerte-action-container').classList.add('hidden');
             document.getElementById('offerte-success-msg').classList.remove('hidden');
             document.getElementById('accepted-date').innerText = new Date(nowIso).toLocaleDateString('nl-NL');
 
             document.getElementById('status-badge').innerText = "Wacht op Ontwikkeling";
             document.getElementById('status-badge').className = "badge badge-active";
-            document.getElementById('progress-bar-fill').style.width = "65%";
-            document.getElementById('progress-percent-display').innerText = "65% Complete";
-            updateTimeline(3);
+            document.getElementById('progress-bar-fill').style.width = "75%";
+            document.getElementById('progress-percent-display').innerText = "75% Complete";
+            updateTimeline(4);
 
-            alert("Gefeliciteerd! Je akkoord is digitaal ondertekend. We gaan direct aan de slag.");
+            alert("Gefeliciteerd! Je akkoord is digitaal ondertekend. We gaan direct voor je aan de slag.");
 
         } catch (error) {
             console.error("Fout bij digitaal akkoord:", error);
             alert("Er is een fout opgetreden bij het verwerken van je akkoord.");
-            btn.innerHTML = '<i class="fas fa-signature"></i> Digitaal Akkoord Geven';
+            btn.innerHTML = '<i class="fas fa-signature"></i> Digitaal Akkoord Geven & Starten';
             btn.disabled = false;
         }
     };
