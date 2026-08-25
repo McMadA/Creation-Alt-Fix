@@ -91,9 +91,9 @@ const API = {
             // Ensure our own website & CRM test projects exist in Firestore for testing
             const hasOwnSite = projectsList.some(p => (p.client && p.client.includes("Hoofdwebsite")) || (p.domainName && p.domainName.includes("creationaltfix.nl") && !p.client?.includes("CRM")));
             const hasOwnCrm = projectsList.some(p => (p.client && p.client.includes("CRM")) || (p.domainName && p.domainName.includes("portal.creationaltfix.nl")));
+            const mockList = this.getMockProjects();
 
             if (!hasOwnSite || !hasOwnCrm) {
-                const mockList = this.getMockProjects();
                 if (!hasOwnSite) {
                     const siteObj = mockList.find(m => m.id === 6);
                     if (siteObj) {
@@ -116,6 +116,28 @@ const API = {
                 }
             }
 
+            // Sync tasks if existing Firestore project has outdated/partial task list
+            for (const p of projectsList) {
+                if (p.client?.includes("Hoofdwebsite") && (!p.tasks || p.tasks.length < 5)) {
+                    const siteMock = mockList.find(m => m.id === 6);
+                    if (siteMock && siteMock.tasks) {
+                        p.tasks = siteMock.tasks;
+                        if (p.id && String(p.id).length > 5) {
+                            updateDoc(doc(db, "projects", p.id), { tasks: siteMock.tasks }).catch(console.warn);
+                        }
+                    }
+                }
+                if (p.client?.includes("CRM") && (!p.tasks || p.tasks.length < 15)) {
+                    const crmMock = mockList.find(m => m.id === 7);
+                    if (crmMock && crmMock.tasks) {
+                        p.tasks = crmMock.tasks;
+                        if (p.id && String(p.id).length > 5) {
+                            updateDoc(doc(db, "projects", p.id), { tasks: crmMock.tasks }).catch(console.warn);
+                        }
+                    }
+                }
+            }
+
             if (projectsList.length > 0) return projectsList;
             throw new Error("No projects found");
         } catch (e) {
@@ -128,72 +150,100 @@ const API = {
             {
                 id: 1,
                 client: "Bakkerij de Vries",
+                companyName: "Bakkerij de Vries",
                 contactName: "Jan de Vries",
                 email: "jan@bakkerijdevries.nl",
                 domainName: "www.bakkerijdevries.nl",
-                service: "Slimme Automatisering (AI)",
-                goals: "Automatisch dagelijkse bestellingen scannen uit e-mails en doorzetten naar de bakkerij-planning.",
-                design: "Ambachtelijk maar modern, warm oranje en donkerblauw.",
+                domain: "www.bakkerijdevries.nl",
+                service: "Webshop Laten Maken",
+                goals: "Online bestelsysteem voor ambachtelijk brood & gebak.",
+                design: "Modern, warm, ambachtelijk met oranje tinten.",
                 status: "In Ontwikkeling",
                 statusClass: "active",
-                date: "Vandaag"
+                date: "12-08-2026",
+                tasks: [
+                    { id: 't1_1', title: 'iDEAL & Mollie betaalkoppeling testen', status: 'inprogress', priority: 'high', dueDate: '2026-08-28' },
+                    { id: 't1_2', title: 'Productcategorieën en allergenen invoeren', status: 'todo', priority: 'medium', dueDate: '2026-08-30' }
+                ]
             },
             {
                 id: 2,
-                client: "Jansen IT",
+                client: "Jansen IT Consulting",
+                companyName: "Jansen IT Consulting",
                 contactName: "Mark Jansen",
-                email: "info@jansenit.nl",
-                domainName: "www.jansenit.nl",
-                service: "Data Dashboard",
-                goals: "Centraal inzicht in alle server-statussen en klanttickets via PowerBI / custom dashboard.",
-                design: "Strak tech design, donkere modus met cyaan accenten.",
+                email: "mark@jansen-it.nl",
+                domainName: "www.jansen-it.nl",
+                domain: "www.jansen-it.nl",
+                service: "Slimme Automatisering & AI",
+                goals: "Lead intake automatiseren met AI e-mail drafts.",
+                design: "Zakelijk, minimalistisch, strak blauw.",
                 status: "Wacht op Akkoord",
                 statusClass: "waiting",
-                date: "Gisteren"
+                date: "11-08-2026",
+                tasks: [
+                    { id: 't2_1', title: 'AI prompt tuning & webhook testen', status: 'review', priority: 'high', dueDate: '2026-08-27' }
+                ]
             },
             {
                 id: 3,
-                client: "Stenekes Riool",
-                contactName: "Angela Stenekes",
-                email: "angela@stenekes.nl",
-                domainName: "www.stenekesriool.nl",
-                service: "Website & Hosting",
-                goals: "Nieuwe one-pager met directe belknop en offerte-intake voor rioolreiniging.",
-                design: "Schoon en betrouwbaar, groen en wit.",
-                status: "Opgeleverd (Betaling via Mollie)",
-                statusClass: "concept",
-                date: "3 Dagen Geleden"
+                client: "Stenekes Riool & Grondwerk",
+                companyName: "Stenekes Riool & Grondwerk",
+                contactName: "Klaas Stenekes",
+                email: "info@stenekes-riool.nl",
+                domainName: "www.stenekes-riool.nl",
+                domain: "www.stenekes-riool.nl",
+                service: "Website Laten Maken",
+                goals: "Lokale vindbaarheid en spoedklus formulier.",
+                design: "Donker thema met fel gele accenten.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "08-08-2026",
+                tasks: [
+                    { id: 't3_1', title: 'Livegang en Google Bedrijfsprofiel koppeling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' }
+                ]
             },
             {
                 id: 4,
-                client: "Nieuwe Aanvraag",
-                contactName: "Karel Visser",
-                email: "karel@visserlogistics.com",
-                domainName: "Nog geen domein",
-                service: "Website & Webshop",
-                goals: "Wil een online portal waar transportklanten vrachtaanvragen kunnen indienen en rechtstreeks kunnen inloggen.",
-                design: "Zakelijk, snelle laadtijd, mobiel geoptimaliseerd.",
+                client: "Kapsalon Bella",
+                companyName: "Kapsalon Bella",
+                contactName: "Bella Visser",
+                email: "afspraken@kapsalonbella.nl",
+                domainName: "www.kapsalonbella.nl",
+                domain: "www.kapsalonbella.nl",
+                service: "Website & Afsprakensysteem",
+                goals: "Online agenda koppeling voor knipafspraken.",
+                design: "Pastel roze, goud, elegant.",
                 status: "Nieuwe Lead",
-                statusClass: "waiting",
-                date: "Zojuist"
+                statusClass: "concept",
+                date: "13-08-2026",
+                tasks: [
+                    { id: 't4_1', title: 'Intakegesprek inplannen & wensen inventariseren', status: 'todo', priority: 'high', dueDate: '2026-08-29' }
+                ]
             },
             {
                 id: 5,
                 client: "Arnold Doornbos (Arnold Design)",
+                companyName: "Arnold Doornbos (Arnold Design)",
                 contactName: "Arnold Doornbos",
                 email: "arnolddesign2024@gmail.com",
                 domainName: "www.arnolddesign.nl",
+                domain: "www.arnolddesign.nl",
                 service: "Kunstenaarsportfolio & Webapplicatie",
-                goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap (Academie Minerva afstudeerproject). Inclusief categoriegallerijen en directe WhatsApp-contactflow.",
-                design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie en kunstzinnige uitstraling.",
+                goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
+                design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
                 status: "Opgeleverd (Livegang)",
                 statusClass: "success",
                 date: "25-08-2026",
                 tasks: [
-                    { id: 'ad_t1', title: 'Intake afronden en wensen inventariseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
-                    { id: 'ad_t2', title: 'Ontwerp inrichten in React + Vite + Tailwind', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
-                    { id: 'ad_t3', title: 'Glas-in-lood galerij optimaliseren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-24' },
-                    { id: 'ad_t4', title: 'Livegang & SEO configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                    { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' },
+                    { id: 't5_3', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                ],
+                internalNotes: [
+                    { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
+                ],
+                auditLog: [
+                    { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang)', actor: 'Allard' }
                 ]
             },
             {
@@ -205,8 +255,8 @@ const API = {
                 domainName: "www.creationaltfix.nl",
                 domain: "www.creationaltfix.nl",
                 service: "Website & Portfolio Platform (Dark AI)",
-                goals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
-                projectGoals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
+                goals: "Hoofdwebsite voor software support & AI-diensten.",
+                projectGoals: "Hoofdwebsite voor software support & AI-diensten.",
                 design: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
                 designPreferences: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
                 status: "Opgeleverd (Livegang)",
@@ -214,10 +264,12 @@ const API = {
                 date: "25-08-2026",
                 proposalPrice: "0,00",
                 tasks: [
-                    { id: 'web_t1', title: 'Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
-                    { id: 'web_t2', title: 'Showcase projectenpagina met interactieve filters bouwen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'web_t3', title: 'Google Ads landingspagina optimalisatie (€400 credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
-                    { id: 'web_t4', title: 'SEO sitemap & structured data indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                    { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                    { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t4', title: '[TASK-501] Google Ads Campagne Activeren & Landingspagina (€400 Credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
+                    { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
+                    { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
                 ],
                 internalNotes: [
                     { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
@@ -235,20 +287,33 @@ const API = {
                 domainName: "portal.creationaltfix.nl",
                 domain: "portal.creationaltfix.nl",
                 service: "Custom CRM & Klantenportaal Applicatie",
-                goals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
-                projectGoals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
-                design: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
-                designPreferences: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
+                goals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database.",
+                projectGoals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database.",
+                design: "Full-screen dark workspace, responsive stat cards, Kanban kolommen.",
+                designPreferences: "Full-screen dark workspace, responsive stat cards, Kanban kolommen.",
                 status: "In Ontwikkeling",
                 statusClass: "active",
                 date: "25-08-2026",
                 proposalPrice: "0,00",
                 tasks: [
-                    { id: 'crm_t1', title: 'Dedicated full-screen project workspace bouwen (TASK-605)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'crm_t2', title: 'Audit trail & interne notities implementeren (TASK-601)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'crm_t3', title: '4-Kolommen Kanban bord voor deliverables (TASK-602)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'crm_t4', title: 'Mollie API webhook listener via Tailscale (TASK-201)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
-                    { id: 'crm_t5', title: 'Firebase Auth custom sender domain & DKIM (TASK-106)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' }
+                    { id: 'task_101', title: '[TASK-101] Intake Alert & Push Notificatie Dispatcher', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                    { id: 'task_102', title: '[TASK-102] Admin Klantkaart & Lead Inspector Modal', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                    { id: 'task_103', title: '[TASK-103] Digitale Offerte-Ondertekening in Klantenportaal', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                    { id: 'task_104', title: '[TASK-104] Live Klanten Voortgangstracker (/status)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                    { id: 'task_105', title: '[TASK-105] Admin Tabel Zoeken, Filteren & CSV Export', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                    { id: 'task_107', title: '[TASK-107] Branded HTML Welkomstmail Dispatcher (EmailJS)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                    { id: 'task_108', title: '[TASK-108] Admin Tabelkolom Uitbreiding & Directe Links', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'task_605', title: '[TASK-605] Full-Screen Dedicated Project Werkplek (project.html)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'task_601', title: '[TASK-601] Interne Notities & Automatische Audit Trail', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'task_602', title: '[TASK-602] 4-Kolommen Kanban Bord voor Deliverables', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
+                    { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
+                    { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
+                    { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
+                    { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-20' },
+                    { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
+                    { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
+                    { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
                 ],
                 internalNotes: [
                     { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }
