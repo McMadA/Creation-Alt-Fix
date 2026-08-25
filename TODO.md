@@ -118,18 +118,23 @@
   - **Acceptance Criteria**:
     - Formalize €25/year .nl domain & hosting structure + prepaid hourly maintenance packages for recurring revenue.
 
-- [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure**
+- [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)**
   - **Scope**: Microsoft Azure Cloud (Azure Static Web Apps, Azure App Services, Azure DNS Zones, Custom SSL, Azure Resource Groups, GitHub Actions CI/CD)
-  - **Domeinen & Portfolio**:
-    - `creationaltfix.nl` & `portal.creationaltfix.nl` (Hoofdwebsite, CRM & Klantenportaal)
-    - `besselinginstallatietechniek.nl` (Besseling Installatietechniek)
-    - `arnolddesign.nl` (Arnold Doornbos / Arnold Design)
-    - `angelastenekes.nl` (Angela Stenekes)
-    - `bakkertjesieg.nl` (BakkertjeSieg)
-    - `stenekes-riool.nl` (Stenekes Riool & Grondwerk)
-    - `hbi.creationaltfix.nl` (Home Buyer Intelligence PropTech AI)
+  - **Vimexx Domeinen Portfolio (12 Domeinen)**:
+    1. `creationaltfix.nl` (Hoofdwebsite, inclusief `portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)
+    2. `angelastenekes.nl` (Angela Stenekes)
+    3. `bakkertjesieg.nl` (BakkertjeSieg)
+    4. `capybaraculture.com` (Capybara Culture)
+    5. `ftruckstore.nl` (Foodtruck Store NL)
+    6. `ftruckstore.com` (Foodtruck Store COM)
+    7. `naaiatelier-willa.nl` (Naaiatelier Willa)
+    8. `pomppop.nl` (PompPop Festival)
+    9. `qolipa.nl` (Qolipa NL)
+    10. `qolipa.com` (Qolipa COM)
+    11. `scholte-elektrotechniek.nl` (Scholte Elektrotechniek)
+    12. `stenekesrioolspecialist.nl` (Stenekes Rioolspecialist)
   - **Acceptance Criteria**:
-    - Volledige verhuizing van alle domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
+    - Volledige verhuizing van alle 12 domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
     - Cloud architectuur inrichten met geautomatiseerde GitHub Actions deployments per repository, gratis beheerde Azure SSL certificaten en gecentraliseerd Azure DNS zonebeheer.
 
 ---

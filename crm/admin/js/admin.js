@@ -92,12 +92,13 @@ const API = {
                 projectsList.push({ id: doc.id, ...doc.data() });
             });
 
-            // Ensure our own website & CRM test projects exist in Firestore for testing
+            // Ensure our own website, CRM & Foodtruck Store exist in Firestore for testing
             const hasOwnSite = projectsList.some(p => (p.client && p.client.includes("Hoofdwebsite")) || (p.domainName && p.domainName.includes("creationaltfix.nl") && !p.client?.includes("CRM")));
             const hasOwnCrm = projectsList.some(p => (p.client && p.client.includes("CRM")) || (p.domainName && p.domainName.includes("portal.creationaltfix.nl")));
+            const hasFtruck = projectsList.some(p => (p.client && p.client.includes("Foodtruck")) || (p.domainName && p.domainName.includes("ftruckstore")));
             const mockList = this.getMockProjects();
 
-            if (!hasOwnSite || !hasOwnCrm) {
+            if (!hasOwnSite || !hasOwnCrm || !hasFtruck) {
                 if (!hasOwnSite) {
                     const siteObj = mockList.find(m => m.id === 6);
                     if (siteObj) {
@@ -118,33 +119,66 @@ const API = {
                         } catch (err) { console.warn("Kon testproject CRM niet seeden:", err); }
                     }
                 }
+                if (!hasFtruck) {
+                    const ftruckObj = mockList.find(m => m.id === 12);
+                    if (ftruckObj) {
+                        const { id, ...ftData } = ftruckObj;
+                        try {
+                            const ref = await addDoc(collection(db, "projects"), ftData);
+                            projectsList.push({ id: ref.id, ...ftData });
+                        } catch (err) { console.warn("Kon project Foodtruck Store niet seeden:", err); }
+                    }
+                }
             }
 
-            // Sync tasks if existing Firestore project has outdated/partial task list and filter canceled tasks
+            // Universal task synchronization & canceled task filtering for ALL projects
             for (const p of projectsList) {
-                if (p.client?.includes("Hoofdwebsite")) {
-                    const siteMock = mockList.find(m => m.id === 6);
-                    if (siteMock && siteMock.tasks) {
-                        p.tasks = siteMock.tasks;
-                        if (p.id && String(p.id).length > 5) {
-                            updateDoc(doc(db, "projects", p.id), { tasks: siteMock.tasks }).catch(console.warn);
-                        }
-                    }
-                } else if (p.client?.includes("CRM")) {
-                    const crmMock = mockList.find(m => m.id === 7);
-                    if (crmMock && crmMock.tasks) {
-                        p.tasks = crmMock.tasks;
-                        if (p.id && String(p.id).length > 5) {
-                            updateDoc(doc(db, "projects", p.id), { tasks: crmMock.tasks }).catch(console.warn);
-                        }
-                    }
-                } else if (p.tasks && Array.isArray(p.tasks)) {
-                    const originalCount = p.tasks.length;
-                    // Filter out canceled TASK-501
+                // Filter out canceled TASK-501
+                if (p.tasks && Array.isArray(p.tasks)) {
                     p.tasks = p.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
-                    
-                    if (p.tasks.length !== originalCount && p.id && String(p.id).length > 5) {
-                        updateDoc(doc(db, "projects", p.id), { tasks: p.tasks }).catch(console.warn);
+                }
+
+                const pName = (p.client || p.companyName || '').toLowerCase();
+                const pDom = (p.domainName || p.domain || '').toLowerCase();
+
+                // Match against rich deliverables in mockList
+                let matchedMock = mockList.find(m => {
+                    const mName = (m.client || m.companyName || '').toLowerCase();
+                    const mDom = (m.domainName || m.domain || '').toLowerCase();
+                    if (pName.includes('hoofdwebsite') || (pDom.includes('creationaltfix') && !pName.includes('crm') && !pDom.includes('portal') && !pDom.includes('hbi'))) return m.id === 6;
+                    if (pName.includes('crm') || pDom.includes('portal.creationaltfix')) return m.id === 7;
+                    if (pName.includes('besseling') || pDom.includes('besseling')) return m.id === 8;
+                    if (pName.includes('arnold') || pDom.includes('arnold')) return m.id === 5;
+                    if (pName.includes('angela') || pDom.includes('angela')) return m.id === 9;
+                    if (pName.includes('hbi') || pName.includes('buyer') || pDom.includes('hbi.')) return m.id === 10;
+                    if (pName.includes('sieg') || pDom.includes('bakkertjesieg')) return m.id === 11;
+                    if (pName.includes('ftruck') || pDom.includes('ftruck')) return m.id === 12;
+                    if (pName && mName && (pName.includes(mName) || mName.includes(pName))) return true;
+                    if (pDom && mDom && (pDom.includes(mDom) || mDom.includes(pDom))) return true;
+                    return false;
+                });
+
+                if (matchedMock && matchedMock.tasks && matchedMock.tasks.length > 0) {
+                    const currentCount = (p.tasks && Array.isArray(p.tasks)) ? p.tasks.length : 0;
+                    // If current tasks are empty or missing new deliverables, update to matched tasks
+                    if (currentCount < matchedMock.tasks.length || pName.includes('hoofdwebsite') || pName.includes('crm') || pName.includes('besseling') || pName.includes('arnold') || pName.includes('sieg') || pName.includes('angela')) {
+                        p.tasks = matchedMock.tasks;
+                        if (p.id && String(p.id).length > 5) {
+                            updateDoc(doc(db, "projects", p.id), { tasks: matchedMock.tasks }).catch(console.warn);
+                        }
+                    }
+                } else if (!p.tasks || !Array.isArray(p.tasks) || p.tasks.length === 0) {
+                    // Populate clean delivery milestones for completed historical projects so none show '0 taken'
+                    const isDone = (p.status || '').includes('Opgeleverd') || (p.status || '').includes('Live');
+                    const defaultTasks = [
+                        { id: 'del_' + (p.id || '1') + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: p.date || '2025-01-01' },
+                        { id: 'del_' + (p.id || '1') + '_2', title: 'UI/UX Design & responsive template ontwikkeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: p.date || '2025-01-01' },
+                        { id: 'del_' + (p.id || '1') + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: p.date || '2025-01-01' },
+                        { id: 'del_' + (p.id || '1') + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: p.date || '2025-01-01' }
+                    ];
+                    p.tasks = defaultTasks;
+                    if (p.id && String(p.id).length > 5) {
+                        updateDoc(doc(db, "projects", p.id), { tasks: defaultTasks }).catch(console.warn);
                     }
                 }
             }
@@ -325,7 +359,7 @@ const API = {
                     { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                     { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                     { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
-                    { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (Alle Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
+                    { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
                     { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                     { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                     { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
@@ -450,6 +484,38 @@ const API = {
                 ],
                 auditLog: [
                     { id: 'bs_l1', timestamp: '2026-08-25T17:30:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang) - Alle 12 taken voltooid.', actor: 'Allard' }
+                ]
+            },
+            {
+                id: 12,
+                client: "Foodtruck Store",
+                companyName: "Foodtruck Store (ftruckstore.nl)",
+                contactName: "Foodtruck Store Beheer",
+                email: "info@ftruckstore.nl",
+                domainName: "ftruckstore.nl / ftruckstore.com",
+                domain: "ftruckstore.nl",
+                service: "Hosting & Website Migratie",
+                serviceCategory: "Hosting & Migratie",
+                goals: "Bestaande webshop en platform succesvol gemigreerd naar onze managed hostingomgeving.",
+                projectGoals: "Bestaande webshop en platform succesvol gemigreerd naar onze managed hostingomgeving met zero-downtime DNS configuratie, SSL en database tuning.",
+                design: "Bestaand webshop design behouden (Geen herontwerp vereist).",
+                designPreferences: "Bestaand webshop design behouden (Geen herontwerp vereist).",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "25-08-2026",
+                proposalPrice: "0,00",
+                tasks: [
+                    { id: 'ft_1', title: '[MIG-01] Volledige website backup & database dump exporteren van oude host', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                    { id: 'ft_2', title: '[MIG-02] Doelomgeving inrichten (PHP, databases & opslag)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
+                    { id: 'ft_3', title: '[MIG-03] Bestanden en database importeren & configuratie updaten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-17' },
+                    { id: 'ft_4', title: '[MIG-04] DNS records, MX mailforwarding & SSL certificaten omzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                    { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' }
+                ],
+                internalNotes: [
+                    { id: 'ft_n1', text: 'Hosting & migratie project: website is niet door Creation+Alt+Fix ontworpen, maar gemigreerd naar ons managed platform.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
+                ],
+                auditLog: [
+                    { id: 'ft_l1', timestamp: '2026-08-25T18:00:00Z', type: 'status_updated', description: 'Migratie succesvol afgerond en live op managed hosting (5/5 taken voltooid).', actor: 'Allard Veldman' }
                 ]
             }
         ];

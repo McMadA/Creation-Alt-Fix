@@ -155,9 +155,32 @@ async function loadProjectData(projectId) {
             // Filter out canceled TASK-501 if present in Firestore
             if (currentProjectData.tasks && Array.isArray(currentProjectData.tasks)) {
                 const origLen = currentProjectData.tasks.length;
-                currentProjectData.tasks = currentProjectData.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads Campagne') && !t.title?.includes('400'));
+                currentProjectData.tasks = currentProjectData.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
                 if (currentProjectData.tasks.length !== origLen && db && projectId) {
                     updateDoc(doc(db, "projects", projectId), { tasks: currentProjectData.tasks }).catch(console.warn);
+                }
+            }
+
+            // If tasks are missing or empty, match against mock definition or set clean delivery milestones
+            if (!currentProjectData.tasks || !Array.isArray(currentProjectData.tasks) || currentProjectData.tasks.length === 0) {
+                const mock = getMockProject(projectId);
+                if (mock && mock.tasks && mock.tasks.length > 0) {
+                    currentProjectData.tasks = mock.tasks;
+                    if (db && projectId) {
+                        updateDoc(doc(db, "projects", projectId), { tasks: mock.tasks }).catch(console.warn);
+                    }
+                } else {
+                    const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live');
+                    const defaultTasks = [
+                        { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
+                        { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template ontwikkeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
+                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: currentProjectData.date || '2025-01-01' },
+                        { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' }
+                    ];
+                    currentProjectData.tasks = defaultTasks;
+                    if (db && projectId) {
+                        updateDoc(doc(db, "projects", projectId), { tasks: defaultTasks }).catch(console.warn);
+                    }
                 }
             }
             renderProjectWorkspace(currentProjectData);
@@ -1034,7 +1057,7 @@ function getMockProject(id) {
                 { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                 { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                 { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
-                { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (Alle Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
+                { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
                 { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                 { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                 { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
@@ -1132,6 +1155,41 @@ function getMockProject(id) {
             ],
             auditLog: [
                 { id: 'hbi_l1', timestamp: '2026-08-25T17:00:00Z', type: 'data_updated', description: 'Project deliverables gesynchroniseerd.', actor: 'Allard' }
+            ]
+        };
+    }
+
+    if (String(id) === '12' || (typeof id === 'string' && id.toLowerCase().includes('ftruck'))) {
+        return {
+            id: id,
+            client: "Foodtruck Store",
+            companyName: "Foodtruck Store (ftruckstore.nl)",
+            contactName: "Foodtruck Store Beheer",
+            email: "info@ftruckstore.nl",
+            domainName: "ftruckstore.nl / ftruckstore.com",
+            domain: "ftruckstore.nl",
+            service: "Hosting & Website Migratie",
+            serviceCategory: "Hosting & Migratie",
+            goals: "Bestaande webshop en platform succesvol gemigreerd naar onze managed hostingomgeving.",
+            projectGoals: "Bestaande webshop en platform succesvol gemigreerd naar onze managed hostingomgeving met zero-downtime DNS configuratie, SSL en database tuning.",
+            design: "Bestaand webshop design behouden (Geen herontwerp vereist).",
+            designPreferences: "Bestaand webshop design behouden (Geen herontwerp vereist).",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "25-08-2026",
+            proposalPrice: "0,00",
+            tasks: [
+                { id: 'ft_1', title: '[MIG-01] Volledige website backup & database dump exporteren van oude host', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                { id: 'ft_2', title: '[MIG-02] Doelomgeving inrichten (PHP, databases & opslag)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
+                { id: 'ft_3', title: '[MIG-03] Bestanden en database importeren & configuratie updaten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-17' },
+                { id: 'ft_4', title: '[MIG-04] DNS records, MX mailforwarding & SSL certificaten omzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' }
+            ],
+            internalNotes: [
+                { id: 'ft_n1', text: 'Hosting & migratie project: website is niet door Creation+Alt+Fix ontworpen, maar gemigreerd naar ons managed platform.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 'ft_l1', timestamp: '2026-08-25T18:00:00Z', type: 'status_updated', description: 'Migratie succesvol afgerond en live op managed hosting (5/5 taken voltooid).', actor: 'Allard Veldman' }
             ]
         };
     }
