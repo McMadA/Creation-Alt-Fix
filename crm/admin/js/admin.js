@@ -16,6 +16,7 @@ import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
 let app, auth, db, storage, secondaryAuth;
+let cachedProjects = [];
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
@@ -234,19 +235,19 @@ const API = {
                 service: "Kunstenaarsportfolio & Webapplicatie",
                 goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
                 design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
-                status: "Opgeleverd (Livegang)",
-                statusClass: "success",
+                status: "Design & Ontwerp (Fase 3)",
+                statusClass: "active",
                 date: "25-08-2026",
                 tasks: [
                     { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
-                    { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' },
-                    { id: 't5_3', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                    { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
+                    { id: 't5_3', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
                 ],
                 internalNotes: [
                     { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
                 ],
                 auditLog: [
-                    { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang)', actor: 'Allard' }
+                    { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Design & Ontwerp (Fase 3)', actor: 'Allard' }
                 ]
             },
             {
@@ -327,99 +328,6 @@ const API = {
         ];
     }
 };
-
-let cachedProjects = [];
-
-
-// --- UI Logic ---
-document.addEventListener('DOMContentLoaded', () => {
-    setupNavigation();
-    setupSearchAndFilters();
-    setupKanbanListeners();
-});
-
-// --- Search, Filter & CSV Export ---
-function setupSearchAndFilters() {
-    const searchInput = document.getElementById('admin-search-input');
-    const statusFilter = document.getElementById('admin-status-filter');
-
-    searchInput?.addEventListener('input', () => filterAndRenderTables());
-    statusFilter?.addEventListener('change', () => filterAndRenderTables());
-}
-
-function filterAndRenderTables() {
-    const searchVal = (document.getElementById('admin-search-input')?.value || '').toLowerCase().trim();
-    const statusVal = document.getElementById('admin-status-filter')?.value || 'all';
-
-    const filtered = cachedProjects.filter(p => {
-        const clientName = (p.client || p.companyName || '').toLowerCase();
-        const contactName = (p.contactName || '').toLowerCase();
-        const email = (p.email || '').toLowerCase();
-        const domain = (p.domainName || '').toLowerCase();
-        const service = (p.service || '').toLowerCase();
-        const goals = (p.goals || p.projectGoals || '').toLowerCase();
-        const status = (p.status || '').toLowerCase();
-
-        // Search match
-        const matchesSearch = !searchVal || 
-            clientName.includes(searchVal) || 
-            contactName.includes(searchVal) || 
-            email.includes(searchVal) || 
-            domain.includes(searchVal) || 
-            service.includes(searchVal) || 
-            goals.includes(searchVal);
-
-        // Status match
-        let matchesStatus = true;
-        if (statusVal !== 'all') {
-            matchesStatus = status.includes(statusVal.toLowerCase());
-        }
-
-        return matchesSearch && matchesStatus;
-    });
-
-    renderTablesData(filtered);
-}
-
-window.exportProjectsToCSV = () => {
-    if (!cachedProjects || cachedProjects.length === 0) {
-        alert("Geen projecten/leads om te exporteren.");
-        return;
-    }
-
-    const headers = ["Bedrijfsnaam", "Contactpersoon", "E-mailadres", "Dienst", "Gewenste Domeinnaam", "Status", "Datum", "Projectdoelen"];
-    
-    const rows = cachedProjects.map(p => {
-        const escapeCsv = (val) => {
-            if (!val) return '""';
-            const clean = String(val).replace(/"/g, '""');
-            return `"${clean}"`;
-        };
-        return [
-            escapeCsv(p.client || p.companyName),
-            escapeCsv(p.contactName),
-            escapeCsv(p.email),
-            escapeCsv(p.service),
-            escapeCsv(p.domainName),
-            escapeCsv(p.status),
-            escapeCsv(p.date),
-            escapeCsv(p.goals || p.projectGoals)
-        ].join(',');
-    });
-
-    const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `creation_alt_fix_leads_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-};
-
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -840,25 +748,31 @@ window.openProjectDetails = (id) => {
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <a href="project.html?id=${s.safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;"><i class="fas fa-external-link-alt"></i> Open Werkplek</a>
-                    <span class="badge badge-${s.statusClass}" style="font-size: 0.85rem; padding: 6px 12px; font-weight: 600;">Fase ${currentPhase}: ${s.status}</span>
+                    <select onchange="window.updateProjectPhaseFromModal('${s.safeId}', this.value)" class="admin-input" style="padding: 4px 8px; font-size: 0.8rem; margin: 0; width: auto; cursor: pointer; background: rgba(15,23,42,0.9); border: 1px solid var(--color-primary-light); color: #fff; border-radius: 6px;" title="Wijzig status/fase direct">
+                        <option value="1" ${currentPhase === 1 ? 'selected' : ''}>Fase 1: Intake</option>
+                        <option value="2" ${currentPhase === 2 ? 'selected' : ''}>Fase 2: Offerte</option>
+                        <option value="3" ${currentPhase === 3 ? 'selected' : ''}>Fase 3: Design</option>
+                        <option value="4" ${currentPhase === 4 ? 'selected' : ''}>Fase 4: Code</option>
+                        <option value="5" ${currentPhase === 5 ? 'selected' : ''}>Fase 5: Livegang</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Visual 5-Stage Phase Tracker -->
+            <!-- Visual 5-Stage Phase Tracker (Clickable) -->
             <div class="admin-phase-tracker" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0 16px 0; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 1 ? 'background: rgba(34, 211, 238, 0.2); border: 1px solid #22d3ee; color: #22d3ee; font-weight: 700;' : 'color: #94a3b8;'}">
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 1)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 1 ? 'background: rgba(34, 211, 238, 0.2); border: 1px solid #22d3ee; color: #22d3ee; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 1 (Intake) te schakelen">
                     <i class="fas fa-clipboard-check"></i><br>Fase 1: Intake
                 </div>
-                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 2 ? 'background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fbbf24; font-weight: 700;' : 'color: #94a3b8;'}">
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 2)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 2 ? 'background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fbbf24; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 2 (Offerte) te schakelen">
                     <i class="fas fa-file-signature"></i><br>Fase 2: Offerte
                 </div>
-                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 3 ? 'background: rgba(168, 85, 247, 0.2); border: 1px solid #c084fc; color: #c084fc; font-weight: 700;' : 'color: #94a3b8;'}">
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 3)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 3 ? 'background: rgba(168, 85, 247, 0.2); border: 1px solid #c084fc; color: #c084fc; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 3 (Design) te schakelen">
                     <i class="fas fa-palette"></i><br>Fase 3: Design
                 </div>
-                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 4 ? 'background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; color: #818cf8; font-weight: 700;' : 'color: #94a3b8;'}">
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 4)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 4 ? 'background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; color: #818cf8; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 4 (Code) te schakelen">
                     <i class="fas fa-code"></i><br>Fase 4: Code
                 </div>
-                <div style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; ${currentPhase === 5 ? 'background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; color: #34d399; font-weight: 700;' : 'color: #94a3b8;'}">
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 5)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 5 ? 'background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; color: #34d399; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 5 (Livegang) te schakelen">
                     <i class="fas fa-rocket"></i><br>Fase 5: Livegang
                 </div>
             </div>
@@ -1077,6 +991,50 @@ window.updateProjectStatusDirect = async (id, newStatus) => {
     alert(`Status gewijzigd naar: "${newStatus}"!\nHet project staat nu ook op het juiste tabblad.`);
     closeModal('project-modal');
     loadDashboardData();
+};
+
+window.updateProjectPhaseFromModal = async (id, phaseNum) => {
+    const phase = parseInt(phaseNum, 10);
+    if (!phase) return;
+
+    let targetStatus = "Intake Voltooid";
+    let targetStatusClass = "waiting";
+
+    if (phase === 1) {
+        targetStatus = "Intake Voltooid";
+        targetStatusClass = "waiting";
+    } else if (phase === 2) {
+        targetStatus = "Wacht op Akkoord";
+        targetStatusClass = "waiting";
+    } else if (phase === 3) {
+        targetStatus = "Design & Ontwerp (Fase 3)";
+        targetStatusClass = "active";
+    } else if (phase === 4) {
+        targetStatus = "In Ontwikkeling";
+        targetStatusClass = "active";
+    } else if (phase === 5) {
+        targetStatus = "Opgeleverd (Livegang)";
+        targetStatusClass = "success";
+    }
+
+    const itemIndex = cachedProjects.findIndex(p => p.id == id);
+    if (itemIndex > -1) {
+        cachedProjects[itemIndex].status = targetStatus;
+        cachedProjects[itemIndex].statusClass = targetStatusClass;
+    }
+
+    if (db) {
+        try {
+            const docRef = doc(db, "projects", String(id));
+            await updateDoc(docRef, { status: targetStatus, statusClass: targetStatusClass });
+        } catch (err) {
+            console.error("Fout bij updaten status in Firestore:", err);
+        }
+    }
+
+    alert(`Projectfase gewijzigd naar: "Fase ${phase}: ${targetStatus}"!`);
+    loadDashboardData();
+    window.openProjectDetails(id);
 };
 
 

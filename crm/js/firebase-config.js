@@ -20,7 +20,8 @@ export const firebaseConfig = {
  * Wordt gebruikt door admin.js, index.html login routing, en status.js
  */
 export const ADMIN_EMAILS = [
-    "allardv03@gmail.com"
+    "allardv03@gmail.com",
+    "info@creationaltfix.nl"
 ];
 
 /**

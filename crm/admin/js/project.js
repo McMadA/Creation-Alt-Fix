@@ -191,10 +191,15 @@ function renderProjectWorkspace(p) {
     else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
     else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
 
-    // Update Phase Badge
+    // Update Phase Badge & Quick Selector
     const badgeElem = document.getElementById('project-phase-badge');
     badgeElem.innerText = `Fase ${currentPhase}: ${status}`;
     badgeElem.className = `badge badge-${escapeHtml(p.statusClass || 'waiting')}`;
+
+    const phaseChanger = document.getElementById('quick-phase-changer');
+    if (phaseChanger) {
+        phaseChanger.value = String(currentPhase);
+    }
 
     // Update Visual 5-Stage Phase Tracker
     document.querySelectorAll('.phase-step').forEach(step => {
@@ -562,8 +567,67 @@ function renderFilesList(files) {
     `).join('');
 }
 
+// --- Change Project Phase & Workflow Status ---
+async function changeProjectPhase(phaseNumber) {
+    if (!currentProjectData) return;
+
+    let targetStatus = "Intake Voltooid";
+    let targetStatusClass = "waiting";
+
+    if (phaseNumber === 1) {
+        targetStatus = "Intake Voltooid";
+        targetStatusClass = "waiting";
+    } else if (phaseNumber === 2) {
+        targetStatus = "Wacht op Akkoord";
+        targetStatusClass = "waiting";
+    } else if (phaseNumber === 3) {
+        targetStatus = "Design & Ontwerp (Fase 3)";
+        targetStatusClass = "active";
+    } else if (phaseNumber === 4) {
+        targetStatus = "In Ontwikkeling";
+        targetStatusClass = "active";
+    } else if (phaseNumber === 5) {
+        targetStatus = "Opgeleverd (Livegang)";
+        targetStatusClass = "success";
+    }
+
+    const updated = {
+        status: targetStatus,
+        statusClass: targetStatusClass
+    };
+
+    currentProjectData = { ...currentProjectData, ...updated };
+    renderProjectWorkspace(currentProjectData);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), updated);
+            await logAuditEvent('status_updated', `Projectfase gewijzigd naar Fase ${phaseNumber}: ${targetStatus}`);
+            alert(`Projectfase succesvol bijgewerkt naar "Fase ${phaseNumber}: ${targetStatus}"!`);
+        } catch (err) {
+            console.error("Fout bij updaten fase:", err);
+            alert("Fout bij updaten fase: " + err.message);
+        }
+    } else {
+        alert(`Projectfase gewijzigd naar "Fase ${phaseNumber}: ${targetStatus}"!`);
+    }
+}
+
 // --- Setup Form Handlers & Workflow Buttons ---
 function setupFormHandlers() {
+    // 0. Quick Phase Selector & Interactive Pipeline Tracker
+    document.getElementById('quick-phase-changer')?.addEventListener('change', (e) => {
+        const phaseNum = parseInt(e.target.value, 10);
+        if (phaseNum) changeProjectPhase(phaseNum);
+    });
+
+    document.querySelectorAll('.phase-step').forEach(step => {
+        step.addEventListener('click', () => {
+            const phaseNum = parseInt(step.getAttribute('data-phase'), 10);
+            if (phaseNum) changeProjectPhase(phaseNum);
+        });
+    });
+
     // 1. Save Intake Changes Form
     document.getElementById('project-edit-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();

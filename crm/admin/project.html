@@ -47,8 +47,17 @@
                     </div>
                 </div>
                 <div class="project-top-actions">
-                    <span id="project-phase-badge" class="badge badge-concept" style="font-size: 0.85rem; padding: 6px 14px;">Fase 1: Intake</span>
-                    <a id="btn-open-client-portal" href="/crm/status/index.html" target="_blank" class="btn btn-secondary btn-sm">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="project-phase-badge" class="badge badge-concept" style="font-size: 0.85rem; padding: 6px 14px;">Fase 1: Intake</span>
+                        <select id="quick-phase-changer" class="admin-input" style="padding: 5px 10px; font-size: 0.82rem; margin: 0; width: auto; cursor: pointer; background: rgba(15,23,42,0.9); border: 1px solid var(--color-primary-light); color: #fff; border-radius: 6px;" title="Wijzig projectfase direct">
+                            <option value="1">Fase 1: Intake Voltooid</option>
+                            <option value="2">Fase 2: Wacht op Akkoord (Offerte)</option>
+                            <option value="3">Fase 3: Design & Ontwerp</option>
+                            <option value="4">Fase 4: In Ontwikkeling</option>
+                            <option value="5">Fase 5: Opgeleverd (Livegang)</option>
+                        </select>
+                    </div>
+                    <a id="btn-open-client-portal" href="../status/index.html" target="_blank" class="btn btn-secondary btn-sm">
                         <i class="fas fa-external-link-alt"></i> Klantenportaal
                     </a>
                     <button id="logout-btn" class="btn btn-secondary btn-sm" title="Uitloggen">
@@ -57,21 +66,21 @@
                 </div>
             </header>
 
-            <!-- Visual 5-Stage Phase Pipeline -->
+            <!-- Visual 5-Stage Phase Pipeline (Clickable) -->
             <div id="project-phase-tracker" class="admin-phase-tracker" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.25); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
-                <div class="phase-step" data-phase="1" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                <div class="phase-step" data-phase="1" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 1 (Intake) te schakelen">
                     <i class="fas fa-clipboard-check" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 1</strong><br>Intake
                 </div>
-                <div class="phase-step" data-phase="2" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                <div class="phase-step" data-phase="2" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 2 (Offerte & Akkoord) te schakelen">
                     <i class="fas fa-file-signature" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 2</strong><br>Offerte & Akkoord
                 </div>
-                <div class="phase-step" data-phase="3" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                <div class="phase-step" data-phase="3" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 3 (Design & Ontwerp) te schakelen">
                     <i class="fas fa-palette" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 3</strong><br>Design & Ontwerp
                 </div>
-                <div class="phase-step" data-phase="4" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                <div class="phase-step" data-phase="4" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 4 (Ontwikkeling) te schakelen">
                     <i class="fas fa-code" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 4</strong><br>Ontwikkeling
                 </div>
-                <div class="phase-step" data-phase="5" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                <div class="phase-step" data-phase="5" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 5 (Livegang & Mollie) te schakelen">
                     <i class="fas fa-rocket" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 5</strong><br>Livegang & Mollie
                 </div>
             </div>
