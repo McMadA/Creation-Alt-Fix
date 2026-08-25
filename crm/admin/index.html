@@ -39,6 +39,7 @@
                 <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-home"></i> Overzicht</a>
                 <a href="#" class="nav-item" data-view="leads"><i class="fas fa-user-plus"></i> Leads & Intake</a>
                 <a href="#" class="nav-item" data-view="projects"><i class="fas fa-project-diagram"></i> Projecten</a>
+                <a href="#" class="nav-item" data-view="kanban"><i class="fas fa-columns"></i> Taken & Kanban</a>
                 <a href="#" class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Instellingen</a>
             </nav>
             <div class="sidebar-footer">
@@ -128,6 +129,67 @@
                 </div>
             </div>
 
+            <!-- TAB: Kanban & Taken Bord -->
+            <div class="content-area hidden" id="view-kanban">
+                <div class="kanban-toolbar">
+                    <div>
+                        <h2 style="font-size: 1.3rem; color: #fff; margin-bottom: 4px;"><i class="fas fa-columns text-accent"></i> Project Taken & Deliverables</h2>
+                        <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Beheer deliverables, deadlines en statussen over alle actieve klantprojecten.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn btn-primary" id="btn-open-kanban-task-modal">
+                            <i class="fas fa-plus"></i> Nieuwe Taak Toevoegen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kanban-board">
+                    <!-- Column 1: To Do -->
+                    <div class="kanban-column" id="kanban-col-todo">
+                        <div class="kanban-column-header">
+                            <h3><i class="fas fa-inbox text-accent"></i> To Do / Backlog</h3>
+                            <span class="kanban-count-badge" id="count-kanban-todo">0</span>
+                        </div>
+                        <div class="kanban-cards-list" id="list-kanban-todo">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Column 2: In Behandeling -->
+                    <div class="kanban-column" id="kanban-col-inprogress">
+                        <div class="kanban-column-header">
+                            <h3><i class="fas fa-spinner" style="color: #fbbf24;"></i> In Behandeling</h3>
+                            <span class="kanban-count-badge" id="count-kanban-inprogress">0</span>
+                        </div>
+                        <div class="kanban-cards-list" id="list-kanban-inprogress">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Review & Testen -->
+                    <div class="kanban-column" id="kanban-col-review">
+                        <div class="kanban-column-header">
+                            <h3><i class="fas fa-search" style="color: #c084fc;"></i> Review & Feedback</h3>
+                            <span class="kanban-count-badge" id="count-kanban-review">0</span>
+                        </div>
+                        <div class="kanban-cards-list" id="list-kanban-review">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Column 4: Voltooid -->
+                    <div class="kanban-column" id="kanban-col-done">
+                        <div class="kanban-column-header">
+                            <h3><i class="fas fa-check-circle" style="color: #34d399;"></i> Voltooid</h3>
+                            <span class="kanban-count-badge" id="count-kanban-done">0</span>
+                        </div>
+                        <div class="kanban-cards-list" id="list-kanban-done">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-area hidden" id="view-settings">
                 <div class="admin-card" style="padding: 24px;">
                     <h2><i class="fas fa-cog" style="color: var(--color-accent-alt); margin-right: 8px;"></i> Instellingen</h2>
@@ -182,6 +244,48 @@
             </div>
         </main>
     </div>
+
+    <!-- Modal: Nieuwe Taak Toevoegen -->
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-tasks text-accent"></i> Nieuwe Taak Toevoegen</h2>
+                <button class="close-btn" onclick="closeModal('task-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="global-add-task-form">
+                    <label style="font-size: 0.82rem; color: var(--color-text-secondary); text-transform: uppercase;">Koppel aan Project</label>
+                    <select id="global-task-project" class="admin-input" required style="margin-top: 4px; cursor: pointer;">
+                        <!-- Injected with project options -->
+                    </select>
+
+                    <label style="font-size: 0.82rem; color: var(--color-text-secondary); text-transform: uppercase; margin-top: 8px; display: block;">Taaktitel / Deliverable</label>
+                    <input type="text" id="global-task-title" class="admin-input" placeholder="Bijv. Concept wireframe afronden..." required style="margin-top: 4px;">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+                        <div>
+                            <label style="font-size: 0.82rem; color: var(--color-text-secondary); text-transform: uppercase;">Deadline</label>
+                            <input type="date" id="global-task-date" class="admin-input" style="margin-top: 4px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.82rem; color: var(--color-text-secondary); text-transform: uppercase;">Prioriteit</label>
+                            <select id="global-task-priority" class="admin-input" style="margin-top: 4px; cursor: pointer;">
+                                <option value="medium">Gemiddeld (P3)</option>
+                                <option value="high">Hoog (P2 / P1)</option>
+                                <option value="low">Laag (P4)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('task-modal')">Annuleren</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Taak Opslaan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modals -->
     <div id="project-modal" class="modal hidden">

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Creation+Alt+Fix Admin</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Auth Overlay -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card">
+            <img src="/images/logo.png" alt="Logo" class="auth-logo">
+            <h2>Admin Login</h2>
+            <p>Log in om toegang te krijgen tot het projectbeheer.</p>
+            <form id="login-form">
+                <div id="login-error" class="hidden" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 12px;"></div>
+                <input type="email" id="email" placeholder="E-mailadres" required class="admin-input">
+                <input type="password" id="password" placeholder="Wachtwoord" required class="admin-input">
+                <button type="submit" class="btn btn-primary">Inloggen</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dedicated Project Workspace Layout -->
+    <div id="admin-app" class="admin-layout hidden">
+        <div class="project-page-layout" style="width: 100%;">
+            
+            <!-- Top Sticky Navigation & Header -->
+            <header class="project-top-header">
+                <div class="project-title-area">
+                    <a href="index.html" class="btn btn-secondary btn-sm" title="Terug naar Dashboard">
+                        <i class="fas fa-arrow-left"></i> Terug naar Dashboard
+                    </a>
+                    <div>
+                        <h1 id="project-title-display">Laden...</h1>
+                        <span style="font-size: 0.85rem; color: var(--color-text-secondary);" id="project-meta-subtitle">
+                            Ingediend op: <strong id="project-date-display">—</strong>
+                        </span>
+                    </div>
+                </div>
+                <div class="project-top-actions">
+                    <span id="project-phase-badge" class="badge badge-concept" style="font-size: 0.85rem; padding: 6px 14px;">Fase 1: Intake</span>
+                    <a id="btn-open-client-portal" href="/crm/status/index.html" target="_blank" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Klantenportaal
+                    </a>
+                    <button id="logout-btn" class="btn btn-secondary btn-sm" title="Uitloggen">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Visual 5-Stage Phase Pipeline -->
+            <div id="project-phase-tracker" class="admin-phase-tracker" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.25); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="phase-step" data-phase="1" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                    <i class="fas fa-clipboard-check" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 1</strong><br>Intake
+                </div>
+                <div class="phase-step" data-phase="2" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                    <i class="fas fa-file-signature" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 2</strong><br>Offerte & Akkoord
+                </div>
+                <div class="phase-step" data-phase="3" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                    <i class="fas fa-palette" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 3</strong><br>Design & Ontwerp
+                </div>
+                <div class="phase-step" data-phase="4" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                    <i class="fas fa-code" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 4</strong><br>Ontwikkeling
+                </div>
+                <div class="phase-step" data-phase="5" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s;">
+                    <i class="fas fa-rocket" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 5</strong><br>Livegang & Mollie
+                </div>
+            </div>
+
+            <!-- Tab Navigation Header -->
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="tab-intake">
+                    <i class="fas fa-clipboard-list"></i> Intake & Gegevens
+                </button>
+                <button class="tab-btn" data-tab="tab-actions">
+                    <i class="fas fa-bolt"></i> Offerte & Snelacties
+                </button>
+                <button class="tab-btn" data-tab="tab-tasks">
+                    <i class="fas fa-tasks"></i> Taken & Deadlines (<span id="tab-tasks-count">0</span>)
+                </button>
+                <button class="tab-btn" data-tab="tab-notes">
+                    <i class="fas fa-sticky-note"></i> Interne Notities & Logboek (<span id="tab-notes-count">0</span>)
+                </button>
+                <button class="tab-btn" data-tab="tab-files">
+                    <i class="fas fa-folder-open"></i> Bestanden (<span id="tab-files-count">0</span>)
+                </button>
+            </nav>
+
+            <!-- Workspace Grid Layout: Content on Left, Quick Summary Card on Right -->
+            <div class="project-workspace-grid">
+                
+                <!-- Left Main Content Column -->
+                <div class="project-main-column">
+                    
+                    <!-- TAB 1: Intake & Klantgegevens -->
+                    <div id="tab-intake" class="tab-pane active">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header">
+                                <h3><i class="fas fa-edit text-accent"></i> Klantgegevens & Intakeformulier</h3>
+                            </div>
+                            
+                            <form id="project-edit-form">
+                                <div class="klantkaart-meta-grid">
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-building"></i> Bedrijfsnaam / Klant</div>
+                                        <input type="text" id="edit-client" class="admin-input" required style="margin: 4px 0 0 0;">
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-user"></i> Contactpersoon</div>
+                                        <input type="text" id="edit-contact" class="admin-input" style="margin: 4px 0 0 0;" placeholder="Volledige naam">
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
+                                        <input type="email" id="edit-email" class="admin-input" style="margin: 4px 0 0 0;" placeholder="info@bedrijf.nl">
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-globe"></i> Gewenste Domeinnaam</div>
+                                        <input type="text" id="edit-domain" class="admin-input" style="margin: 4px 0 0 0;" placeholder="www.bedrijf.nl">
+                                    </div>
+                                    <div class="meta-box" style="grid-column: 1 / -1;">
+                                        <div class="meta-label"><i class="fas fa-concierge-bell"></i> Gevraagde Dienst</div>
+                                        <input type="text" id="edit-service" class="admin-input" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop of AI Automatisering">
+                                    </div>
+                                </div>
+
+                                <div class="intake-box" style="margin-top: 18px;">
+                                    <h4><i class="fas fa-bullseye"></i> Projectdoelen & Uitgebreide Omschrijving</h4>
+                                    <textarea id="edit-goals" class="admin-input" rows="4" style="margin: 4px 0 0 0;" placeholder="Omschrijving van het project, functionaliteiten en doelen..."></textarea>
+                                </div>
+
+                                <div class="intake-box" style="margin-top: 18px;">
+                                    <h4><i class="fas fa-palette"></i> Design- & Stijlvoorkeuren</h4>
+                                    <textarea id="edit-design" class="admin-input" rows="3" style="margin: 4px 0 0 0;" placeholder="Kleuren, typografie, inspiratiewebsites of sfeeromschrijving..."></textarea>
+                                </div>
+
+                                <div class="intake-box" style="margin-top: 18px;">
+                                    <h4><i class="fas fa-drafting-compass"></i> Ontwerp / Figma Prototype Link (Fase 3)</h4>
+                                    <input type="url" id="edit-designUrl" class="admin-input" style="margin: 4px 0 0 0;" placeholder="https://www.figma.com/design/... of staging preview URL">
+                                    <p style="font-size: 0.78rem; color: var(--color-text-secondary); margin-top: 6px;">
+                                        <i class="fas fa-info-circle"></i> Deze link wordt getoond in het klantenportaal zodra het ontwerp gereed is voor review.
+                                    </p>
+                                </div>
+
+                                <!-- Firebase Auth Management Box -->
+                                <div id="auth-management-box" class="intake-box" style="margin-top: 18px; background: rgba(99, 102, 241, 0.06); border: 1px solid rgba(99, 102, 241, 0.25);">
+                                    <h4 style="margin-top: 0;"><i class="fas fa-key"></i> Klantenportaal Authenticatie (Firebase Auth)</h4>
+                                    <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 10px;">
+                                        Gekoppeld account: <strong id="auth-email-display" style="color: #fff;">—</strong>
+                                        <span id="auth-status-badge" style="margin-left: 10px;"></span>
+                                    </p>
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                        <button type="button" class="btn btn-primary btn-sm" id="btn-activate-auth">
+                                            <i class="fas fa-user-plus"></i> <span id="btn-activate-auth-text">Activeer Klantaccount & Stuur Inlog-Mail</span>
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-auth">
+                                            <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan in Firestore</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Offerte & Snelacties -->
+                    <div id="tab-actions" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header">
+                                <h3><i class="fas fa-bolt text-accent"></i> Werkstroom & Snelacties per Fase</h3>
+                            </div>
+                            
+                            <div class="action-buttons-grid" style="margin-bottom: 25px;">
+                                <button class="btn btn-secondary" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
+                                <button class="btn btn-secondary" id="btn-action-proposal"><i class="fas fa-file-contract"></i> Offerte Genereren (Fase 2)</button>
+                                <button class="btn btn-secondary" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
+                                <button class="btn btn-secondary" id="btn-action-mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie Link (Fase 5)</button>
+                                <button class="btn btn-secondary" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)</button>
+                            </div>
+
+                            <!-- Proposal Link Display -->
+                            <div id="proposal-link-box" class="hidden" style="padding: 18px; background: rgba(99,102,241,0.08); border-radius: 10px; border: 1px solid rgba(99,102,241,0.3); margin-bottom: 20px;">
+                                <h4 style="color: #818cf8; margin-bottom: 8px;"><i class="fas fa-link"></i> Gegenereerde Online Offerte Link</h4>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <input type="text" id="proposal-link-input" class="admin-input" readonly style="flex: 1; min-width: 260px; margin: 0;">
+                                    <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Bekijk Offerte</a>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-proposal-link"><i class="fas fa-copy"></i> Kopiëren</button>
+                                </div>
+                            </div>
+
+                            <!-- AI Email Drafting Box -->
+                            <div id="ai-email-box" class="hidden" style="padding: 18px; background: rgba(34, 211, 238, 0.08); border-radius: 10px; border: 1px solid rgba(34, 211, 238, 0.3);">
+                                <h4 style="color: var(--color-accent); margin-bottom: 10px;"><i class="fas fa-magic"></i> AI Concept E-mail (Gepersonaliseerd op basis van intake):</h4>
+                                <textarea id="ai-email-content" class="admin-input" rows="9" style="font-family: var(--font-body);"></textarea>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button class="btn btn-primary btn-sm" id="btn-open-email-client"><i class="fas fa-paper-plane"></i> Open in E-mail Client</button>
+                                    <button class="btn btn-secondary btn-sm" id="btn-copy-ai-email"><i class="fas fa-copy"></i> Kopiëren naar Klembord</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Taken & Deadlines -->
+                    <div id="tab-tasks" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header">
+                                <h3><i class="fas fa-tasks text-accent"></i> Project Taken & Deadlines</h3>
+                                <span id="task-progress-text" style="font-size: 0.85rem; color: var(--color-text-secondary); font-weight: 600;">0 van 0 voltooid</span>
+                            </div>
+
+                            <div class="task-progress-wrap">
+                                <div id="project-task-progress-bar" class="task-progress-bar" style="width: 0%;"></div>
+                            </div>
+
+                            <!-- Add New Task Form -->
+                            <form id="add-task-form" style="background: rgba(0,0,0,0.25); border: 1px solid var(--color-border); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: #fff;"><i class="fas fa-plus-circle text-accent"></i> Nieuwe Taak Toevoegen</h4>
+                                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
+                                    <input type="text" id="task-input-title" class="admin-input" placeholder="Taakomschrijving / Deliverable..." required style="margin: 0;">
+                                    <input type="date" id="task-input-date" class="admin-input" style="margin: 0;">
+                                    <select id="task-input-priority" class="admin-input" style="margin: 0; cursor: pointer;">
+                                        <option value="medium">Gemiddeld (P3)</option>
+                                        <option value="high">Hoog (P2 / P1)</option>
+                                        <option value="low">Laag (P4)</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary" style="padding: 10px 16px;"><i class="fas fa-plus"></i> Taak Toevoegen</button>
+                                </div>
+                            </form>
+
+                            <!-- Task Checklist -->
+                            <div id="project-tasks-list" class="task-checklist">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Interne Notities & Logboek (Audit Trail) -->
+                    <div id="tab-notes" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header">
+                                <h3><i class="fas fa-sticky-note text-accent"></i> Interne Notities & Audit Trail Logboek</h3>
+                            </div>
+
+                            <!-- Add Internal Note Box -->
+                            <form id="add-internal-note-form" class="note-input-box">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 8px; color: var(--color-accent);"><i class="fas fa-lock"></i> Vertrouwelijke Notitie Toevoegen</h4>
+                                <textarea id="internal-note-input" class="admin-input" rows="3" placeholder="Schrijf hier een privé notitie over deze klant (gespreksverslag, wensen, deadlines, afspraken)..." required></textarea>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Notitie Opslaan</button>
+                                </div>
+                            </form>
+
+                            <!-- Timeline of System Logs & Internal Notes -->
+                            <div class="timeline-container" id="project-timeline-list">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: Bestanden -->
+                    <div id="tab-files" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header">
+                                <h3><i class="fas fa-folder-open text-accent"></i> Geüploade Project Bestanden</h3>
+                            </div>
+                            <div id="project-files-list">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar Column: Summary & Quick Actions -->
+                <aside class="project-sidebar-column">
+                    <div class="workspace-card" style="padding: 20px;">
+                        <h4 style="font-size: 1rem; color: #fff; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                            <i class="fas fa-info-circle text-accent"></i> Snelle Info
+                        </h4>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem;">
+                            <div>
+                                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">Contactpersoon</span>
+                                <div id="quick-contact-display" style="font-weight: 600; color: #fff; margin-top: 2px;">—</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">E-mail</span>
+                                <div id="quick-email-display" style="margin-top: 2px;">—</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">Domeinnaam</span>
+                                <div id="quick-domain-display" style="margin-top: 2px;">—</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">Offerte Investering</span>
+                                <div id="quick-price-display" style="font-weight: 700; color: #4ade80; margin-top: 2px;">Nog geen offerte</div>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px; margin-top: 20px;">
+                            <button id="btn-delete-project" class="btn btn-sm" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); width: 100%; justify-content: center;">
+                                <i class="fas fa-trash"></i> Project Verwijderen
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="js/project.js" type="module"></script>
+</body>
+</html>

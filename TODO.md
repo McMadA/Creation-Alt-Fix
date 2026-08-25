@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **16 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **13 Tasks (75%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (25%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **19 Epics & Tasks** |
+| **Completed Work Items** | ✅ Done | **16 Tasks (84%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (16%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[███████████████████████░░] 75% Complete`
+`[████████████████████░░░░] 84% Complete`
 
 ---
 
@@ -151,13 +151,13 @@
 ### 🗃️ EPIC-06: Advanced CRM Features (Expansion)
 **Domain**: CRM Portal & Admin Hub | **Stack**: Firestore, Cloud Functions
 
-- [ ] `[TASK-601]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Internal Notes & Audit Trail (Logboek)**
-  - **Scope**: `crm/admin/js/admin.js`
-  - **Acceptance Criteria**: Add a hidden subcollection to track timeline events and allow admin to leave private internal notes on projects.
+- [x] `[TASK-601]` `[P2-HIGH]` `[STATUS: DONE]` **Internal Notes & Audit Trail (Logboek)**
+  - **Scope**: `crm/admin/js/project.js`, `crm/admin/project.html`, `crm/admin/css/admin.css`
+  - **Details**: Built a dedicated private notes engine and automatic audit trail timeline on Firestore (`internalNotes` & `auditLog` arrays). System automatically logs status changes, quote generation, client auth activation, password resets, and file uploads chronologically with author badges.
 
-- [ ] `[TASK-602]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Task & Deadline Management (Kanban)**
-  - **Scope**: `crm/admin/`
-  - **Acceptance Criteria**: Add a simple To-Do/Kanban board connected to active projects to track personal deliverables.
+- [x] `[TASK-602]` `[P2-HIGH]` `[STATUS: DONE]` **Task & Deadline Management (Kanban)**
+  - **Scope**: `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`
+  - **Details**: Built a full 4-column interactive Kanban board (To Do, In Behandeling, Review & Testen, Voltooid) in the main Admin Dashboard with 1-click status transitions, deadline warnings (overdue tags), priority pills (High/Med/Low), global task creation modal, and per-project task checklist with progress bars.
 
 - [ ] `[TASK-603]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated PDF Generation for Quotes & Invoices**
   - **Scope**: Cloud Functions / Backend
@@ -167,9 +167,9 @@
   - **Scope**: `crm/status/` & `crm/admin/`
   - **Acceptance Criteria**: Replace standard mailto feedback buttons with a centralized Firestore-based chat/ticket thread per project.
 
-- [ ] `[TASK-605]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
-  - **Scope**: `crm/admin/`
-  - **Acceptance Criteria**: Redesign the Klantkaart modal to be full-width/fullscreen, or convert it into a dedicated project page view (`crm/admin/project.html?id=...`) to comfortably display intake details, project assets, timeline actions, and notes without cramped popup scrolling.
+- [x] `[TASK-605]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
+  - **Scope**: `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`, `crm/admin/index.html`, `crm/admin/js/admin.js`
+  - **Details**: Replaced the cramped popup with a spacious dedicated full-screen project workspace (`crm/admin/project.html?id=...`). Features a sticky top bar, 5-stage visual phase pipeline tracker, 5 organized tabs (Intake & Gegevens, Offerte & Snelacties, Taken & Deadlines, Interne Notities & Logboek, Bestanden), and a quick info sidebar.
 
 ---
 
