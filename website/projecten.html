@@ -276,7 +276,7 @@
 
                     <!-- Project: Livian Design (No Screenshot) -->
                     <div class="project-card fade-in" data-category="website">
-                        <a href="https://www.liviandesign.nl/" target="_blank" rel="noopener noreferrer">
+                        <a href="https://www.liviandesign.nl/" target="_blank" rel="noopener noreferrer" class="project-card-image">
                             <div class="project-card-placeholder">
                                 <i class="fas fa-paint-brush"></i>
                                 <span>liviandesign.nl</span>
@@ -299,7 +299,7 @@
 
                     <!-- Project: Besseling Installatietechniek (No Screenshot) -->
                     <div class="project-card fade-in" data-category="website">
-                        <a href="https://www.besselinginstallatietechniek.nl/" target="_blank" rel="noopener noreferrer">
+                        <a href="https://www.besselinginstallatietechniek.nl/" target="_blank" rel="noopener noreferrer" class="project-card-image">
                             <div class="project-card-placeholder">
                                 <i class="fas fa-wrench"></i>
                                 <span>besselinginstallatietechniek.nl</span>
@@ -322,7 +322,7 @@
 
                     <!-- Project: Qolipa (No Screenshot) -->
                     <div class="project-card fade-in" data-category="website">
-                        <a href="https://www.qolipa.nl/" target="_blank" rel="noopener noreferrer">
+                        <a href="https://www.qolipa.nl/" target="_blank" rel="noopener noreferrer" class="project-card-image">
                             <div class="project-card-placeholder">
                                 <i class="fas fa-globe"></i>
                                 <span>qolipa.nl</span>
@@ -409,46 +409,5 @@
     <div id="footer-placeholder"></div>
 
     <script src="/js/subpage.js" defer></script>
-    <script>
-        // Category filter logic
-        document.addEventListener('DOMContentLoaded', function() {
-            var filterBar = document.getElementById('filter-bar');
-            var grid = document.getElementById('projects-grid');
-            var countEl = document.getElementById('visible-count');
-
-            if (!filterBar || !grid) return;
-
-            function updateCount() {
-                var visible = grid.querySelectorAll('.project-card:not(.hidden)').length;
-                if (countEl) countEl.textContent = visible;
-            }
-
-            filterBar.addEventListener('click', function(e) {
-                var btn = e.target.closest('.filter-btn');
-                if (!btn) return;
-
-                // Update active button
-                filterBar.querySelectorAll('.filter-btn').forEach(function(b) {
-                    b.classList.remove('active');
-                });
-                btn.classList.add('active');
-
-                var filter = btn.getAttribute('data-filter');
-                var cards = grid.querySelectorAll('.project-card');
-
-                cards.forEach(function(card) {
-                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
-
-                updateCount();
-            });
-
-            updateCount();
-        });
-    </script>
 </body>
 </html>

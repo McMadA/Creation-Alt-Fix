@@ -797,4 +797,61 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
+
+    // Fade-in on scroll for subpages
+    var fadeInElements = document.querySelectorAll('.fade-in');
+    if (fadeInElements.length > 0) {
+        if ('IntersectionObserver' in window) {
+            var observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            fadeInElements.forEach(function(el) { observer.observe(el); });
+        } else {
+            fadeInElements.forEach(function(el) { el.classList.add('visible'); });
+        }
+    }
+
+    // Category filter logic (for projecten.html)
+    var filterBar = document.getElementById('filter-bar');
+    var grid = document.getElementById('projects-grid');
+    var countEl = document.getElementById('visible-count');
+
+    if (filterBar && grid) {
+        function updateCount() {
+            var visible = grid.querySelectorAll('.project-card:not(.hidden)').length;
+            if (countEl) countEl.textContent = visible;
+        }
+
+        filterBar.addEventListener('click', function(e) {
+            var btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+
+            filterBar.querySelectorAll('.filter-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+
+            var filter = btn.getAttribute('data-filter');
+            var cards = grid.querySelectorAll('.project-card');
+
+            cards.forEach(function(card) {
+                if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                    card.classList.remove('hidden');
+                    card.classList.add('visible');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            updateCount();
+        });
+
+        updateCount();
+    }
 });
