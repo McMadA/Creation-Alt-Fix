@@ -3,6 +3,13 @@
 ## Overview
 This plan details how to completely remove the Admin Dashboard (`crm/admin/`) from public web hosting (Vimexx) and serve it exclusively over your private **Tailscale** network (`100.x.y.z`).
 
+> [!NOTE]
+> **Impact & Scope Summary:**
+> - **Public Website & Client Portal (Vimexx)**: Remains **100% unchanged**. `https://creationaltfix.nl` (Marketing site) and `https://creationaltfix.nl/portal/` (`/intake`, `/offerte`, `/status`) stay fully accessible to clients on the public internet.
+> - **Admin Dashboard**: Completely deleted from Vimexx (`/public_html/portal/admin/` returns `404`) and excluded from GitHub Actions FTP deployments.
+> - **Private Hosting Target (Raspberry Pi 2B Co-hosting)**: The Admin Dashboard can run on a **Raspberry Pi 2 Model B** alongside the existing **`Boekhouding`** (Flask) service. Total combined memory footprint is ~160–200 MB (out of 1 GB RAM).
+> - **Data Synchronization**: Remains identical via Google Firebase Firestore; client intake submissions live-sync instantly to your private Tailscale admin view.
+
 ---
 
 ## Architectural Changes
@@ -80,6 +87,28 @@ python -m http.server 8080
 #### Option B: Node / npx serve
 ```bash
 npx serve crm/admin -l 8080
+```
+
+#### Option C: Raspberry Pi 2B (Co-hosting with Boekhouding via Nginx)
+```nginx
+# /etc/nginx/sites-available/services
+server {
+    listen 80;
+    server_name _;
+
+    # 1. Python Boekhouding Flask backend
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+    }
+
+    # 2. CRM Admin Dashboard (statische bestanden)
+    location /crm/ {
+        alias /home/pi/services/Creation-Alt-Fix/crm/;
+        index index.html;
+        try_files $uri $uri/ =404;
+    }
+}
 ```
 
 ### 3.2 Expose via Tailscale Serve

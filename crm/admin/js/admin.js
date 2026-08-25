@@ -474,6 +474,7 @@ window.openProjectDetails = (id) => {
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
     const originalEmail = p.email || ""; // Track original email for change detection
+    const isAuthActivated = Boolean((p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2') || p.isClientAccount);
 
     // XSS-safe versions for innerHTML injection
     const s = {
@@ -591,6 +592,27 @@ window.openProjectDetails = (id) => {
                     <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;"><i class="fas fa-info-circle"></i> Vul hier de link naar het ontwerp in. Gebruik de snelactie hieronder om het naar de klant te sturen.</p>
                 </div>
 
+                <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
+                    <h4 style="margin-top: 0;"><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
+                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
+                        Gekoppeld account e-mailadres: <strong>${s.email || 'Nog geen e-mail ingevuld'}</strong>
+                        ${isAuthActivated 
+                            ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
+                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`}
+                    </p>
+                    <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-bottom: 10px;">
+                        <i class="fas fa-info-circle"></i> Hiermee logt de klant in op <code>https://creationaltfix.nl/portal/</code> om live de projectstatus en bestanden in te zien.
+                    </p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-primary btn-sm" id="btn-activate-auth">
+                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Koppel Account in Auth' : 'Activeer Klantaccount & Stuur Inlog-Mail'}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-auth">
+                            <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
+                        </button>
+                    </div>
+                </div>
+
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan</button>
                 </div>
@@ -628,6 +650,10 @@ window.openProjectDetails = (id) => {
 
     // Bind form submit via event listener (not inline onsubmit) to avoid XSS via id injection
     document.getElementById('edit-klantkaart-form')?.addEventListener('submit', (e) => saveKlantkaartChanges(e, id));
+
+    // Bind Auth buttons
+    document.getElementById('btn-activate-auth')?.addEventListener('click', () => createClientAuthAccount(id, document.getElementById('edit-email')?.value || email, contact));
+    document.getElementById('btn-reset-auth')?.addEventListener('click', () => triggerAdminPasswordReset(document.getElementById('edit-email')?.value || email));
 
     // Bind action buttons via event listeners instead of inline onclick
     const actionContainer = document.getElementById('action-buttons-container');
