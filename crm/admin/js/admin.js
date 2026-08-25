@@ -332,21 +332,51 @@ function renderTablesData(projectsToRender) {
         return "Fase 1";
     };
 
+    const formatContact = (contactName, clientName) => {
+        const name = contactName || clientName || '—';
+        if (!name || name === '—') return `<span style="color: var(--color-text-secondary); font-size: 0.85rem;">—</span>`;
+        return `<span class="table-contact-name"><i class="fas fa-user text-accent" style="font-size: 0.75rem; margin-right: 5px; opacity: 0.8;"></i>${escapeHtml(name)}</span>`;
+    };
+
+    const formatEmail = (email) => {
+        if (!email || email.trim() === '' || email === '—') {
+            return `<span style="color: var(--color-text-secondary); font-style: italic; font-size: 0.85rem;">Geen e-mail</span>`;
+        }
+        const safeEmail = escapeHtml(email.trim());
+        return `<a href="mailto:${safeEmail}" class="table-email-link" title="Stuur e-mail naar ${safeEmail}"><i class="fas fa-envelope"></i> ${safeEmail}</a>`;
+    };
+
+    const formatDomain = (domain) => {
+        if (!domain || domain.trim() === '' || domain.toLowerCase() === 'nog geen domein' || domain.toLowerCase() === 'geen' || domain.toLowerCase() === 'n.v.t.') {
+            return `<span style="color: var(--color-text-secondary); font-style: italic; font-size: 0.85rem;">Geen domein</span>`;
+        }
+        const cleanDomain = escapeHtml(domain.trim());
+        const href = (cleanDomain.startsWith('http://') || cleanDomain.startsWith('https://')) ? cleanDomain : 'https://' + cleanDomain;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="table-domain-link" title="Open ${cleanDomain}"><i class="fas fa-globe"></i> ${cleanDomain}</a>`;
+    };
+
     const createRow = (p) => {
         const row = document.createElement('tr');
         const phaseTag = getPhaseTag(p.status);
         const safeClient = escapeHtml(p.client || p.companyName || 'Onbekend');
+        const contactHtml = formatContact(p.contactName, p.client || p.companyName);
+        const emailHtml = formatEmail(p.email);
+        const domainHtml = formatDomain(p.domainName || p.domain);
         const safeService = escapeHtml(p.service || 'Onbekend');
-        const safeStatus = escapeHtml(p.status);
+        const safeStatus = escapeHtml(p.status || 'Nieuwe Lead');
         const safeDate = escapeHtml(p.date || 'Onbekend');
         const safeId = escapeHtml(p.id);
-        const safeStatusClass = escapeHtml(p.statusClass);
+        const safeStatusClass = escapeHtml(p.statusClass || 'waiting');
+
         row.innerHTML = `
-            <td><strong>${safeClient}</strong></td>
-            <td>${safeService}</td>
+            <td><strong style="color: #fff;">${safeClient}</strong></td>
+            <td>${contactHtml}</td>
+            <td>${emailHtml}</td>
+            <td>${domainHtml}</td>
+            <td><span style="color: var(--color-text-primary);">${safeService}</span></td>
             <td><span class="badge badge-${safeStatusClass}">${safeStatus} (${phaseTag})</span></td>
-            <td>${safeDate}</td>
-            <td>
+            <td><span style="color: var(--color-text-secondary); font-size: 0.85rem;">${safeDate}</span></td>
+            <td style="white-space: nowrap;">
                 <button class="btn btn-secondary btn-sm" data-action="details" data-id="${safeId}"><i class="fas fa-eye"></i> Klantkaart</button>
                 <button class="btn btn-sm" data-action="delete" data-id="${safeId}" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
             </td>
@@ -362,7 +392,7 @@ function renderTablesData(projectsToRender) {
     if (overviewBody) {
         overviewBody.innerHTML = '';
         if (projectsToRender.length === 0) {
-            overviewBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen resultaten gevonden voor deze zoekopdracht/filter.</td></tr>`;
+            overviewBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen resultaten gevonden voor deze zoekopdracht/filter.</td></tr>`;
         } else {
             projectsToRender.forEach(p => overviewBody.appendChild(createRow(p)));
         }
@@ -374,7 +404,7 @@ function renderTablesData(projectsToRender) {
         leadsBody.innerHTML = '';
         const leads = projectsToRender.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
         if (leads.length === 0) {
-            leadsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
+            leadsBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
         } else {
             leads.forEach(p => leadsBody.appendChild(createRow(p)));
         }
@@ -386,7 +416,7 @@ function renderTablesData(projectsToRender) {
         activeProjectsBody.innerHTML = '';
         const activeProjects = projectsToRender.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
         if (activeProjects.length === 0) {
-            activeProjectsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
+            activeProjectsBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
         } else {
             activeProjects.forEach(p => activeProjectsBody.appendChild(createRow(p)));
         }

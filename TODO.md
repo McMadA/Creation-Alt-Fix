@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **14 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **9 Tasks (64%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (36%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **16 Epics & Tasks** |
+| **Completed Work Items** | ✅ Done | **11 Tasks (69%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (31%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░░] 64% Complete`
+`[████████████████████░░░░░] 69% Complete`
 
 ---
 
@@ -47,6 +47,14 @@
 - [x] `[TASK-107]` `[P2-HIGH]` `[STATUS: DONE]` **Dedicated Branded Client Welcome Email Dispatcher**
   - **Scope**: `crm/intake/js/notifications.js`
   - **Details**: Clean Dark AI HTML client welcome email (with onboarding instructions and direct portal link `https://creationaltfix.nl/portal/`) dispatched via EmailJS REST API upon intake submission.
+
+- [x] `[TASK-108]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Data Table Column Expansion & Quick Links**
+  - **Scope**: `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/css/admin.css`
+  - **Details**: Expanded data tables across all dashboard tabs (Overview, Leads, Active Projects) to include Contactpersoon, interactive E-mailadres (1-click `mailto:`), and live Domeinnaam links alongside responsive touch scrolling and Dark AI UI typography.
+
+- [x] `[TASK-109]` `[P2-HIGH]` `[STATUS: DONE]` **Site-Wide Intake Funnel & CTA Button Integration**
+  - **Scope**: `website/diensten/`, `website/index.html`, `website/components/navbar.html`, `website/components/footer.html`, `website/projects/`, `website/js/`
+  - **Details**: Added high-converting Intake CTA buttons across all service pages (`website-laten-maken`, `slimme-automatisering-ai`, `data-dashboards`, `it-support-beheer`, `diensten/`), homepage Hero & Contact sections, sticky Navbar header cluster, footer quick links, and case study pages with full bilingual (NL/EN) translation support.
 
 - [ ] `[TASK-106]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Auth Custom Sender Domain & SMTP Integration**
   - **Scope**: Firebase Console, DNS Settings (`creationaltfix.nl`)

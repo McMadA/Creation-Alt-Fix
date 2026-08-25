@@ -279,7 +279,22 @@ document.addEventListener('DOMContentLoaded', async function() {
             "windCtaTitle": "Interesse in cloud-synchronisatie?",
             "windCtaText": "Wilt u een vergelijkbare integratietool voor uw organisatie? Of heeft u een custom sync-oplossing nodig? Neem vrijblijvend contact op.",
             "windCtaMail": "Neem Contact Op",
-            "windCtaCall": "Bel Ons"
+            "windCtaCall": "Bel Ons",
+
+            // Global CTA & Intake Keys
+            "ctaTitle": "Klaar om te beginnen?",
+            "ctaText": "Neem vandaag nog contact op voor een vrijblijvend gesprek. Wij denken graag mee over de beste oplossing voor uw situatie.",
+            "ctaIntake": "Start Intake Formulier",
+            "ctaCall": "Bel ons",
+            "ctaMail": "Mail ons",
+            "navIntake": "Intake",
+            "webHeroCta": "Start Jouw Website Intake",
+            "aiHeroCta": "Start AI Intake & Aanvraag",
+            "dashHeroCta": "Vraag een Dashboard Aan",
+            "itHeroCta": "Start Aanvraag / Intake",
+            "dienstenHeroCta": "Direct Project Aanvragen",
+            "footerIntake": "Direct Project Aanvragen (Intake)",
+            "footerPortal": "Klantenportaal Inloggen"
         },
         'en': {
             // Nav
@@ -544,7 +559,22 @@ document.addEventListener('DOMContentLoaded', async function() {
             "windCtaTitle": "Interested in cloud synchronisation?",
             "windCtaText": "Want a similar integration tool for your organisation? Or need a custom sync solution? Get in touch, no obligation.",
             "windCtaMail": "Get in Touch",
-            "windCtaCall": "Call Us"
+            "windCtaCall": "Call Us",
+
+            // Global CTA & Intake Keys
+            "ctaTitle": "Ready to get started?",
+            "ctaText": "Contact us today for a non-binding consultation. We are happy to think along about the best solution for your situation.",
+            "ctaIntake": "Start Intake Form",
+            "ctaCall": "Call us",
+            "ctaMail": "Email us",
+            "navIntake": "Intake",
+            "webHeroCta": "Start Your Website Intake",
+            "aiHeroCta": "Start AI Intake & Request",
+            "dashHeroCta": "Request a Dashboard",
+            "itHeroCta": "Start Request / Intake",
+            "dienstenHeroCta": "Start Project Intake",
+            "footerIntake": "Start Project Intake",
+            "footerPortal": "Client Portal Login"
         }
     };
 

@@ -69,13 +69,20 @@ h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--color-text-headi
 .stat-icon { position: absolute; top: 20px; right: 20px; font-size: 2.5rem; opacity: 0.1; color: var(--color-primary); }
 
 /* Table */
+.table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .admin-card { background: var(--color-bg-card); border-radius: var(--radius-md); border: 1px solid var(--color-border); overflow: hidden; }
 .card-header { padding: 20px; border-bottom: 1px solid var(--color-border); }
-.data-table { width: 100%; border-collapse: collapse; text-align: left; }
-.data-table th { padding: 15px 20px; background: rgba(0,0,0,0.2); color: var(--color-text-secondary); font-size: 0.85rem; text-transform: uppercase; font-family: var(--font-heading); }
-.data-table td { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 950px; }
+.data-table th { padding: 14px 18px; background: rgba(0,0,0,0.25); color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; font-family: var(--font-heading); letter-spacing: 0.5px; white-space: nowrap; }
+.data-table td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; vertical-align: middle; }
 .data-table tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover { background: rgba(99,102,241,0.05); }
+.data-table tbody tr:hover { background: rgba(99,102,241,0.06); }
+
+.table-contact-name { display: inline-flex; align-items: center; gap: 6px; color: var(--color-text-primary); font-weight: 500; }
+.table-email-link { color: var(--color-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; transition: var(--transition-base); }
+.table-email-link:hover { color: #fff; text-decoration: underline; }
+.table-domain-link { color: var(--color-primary-light); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; transition: var(--transition-base); }
+.table-domain-link:hover { color: #fff; text-decoration: underline; }
 
 /* Badges */
 .badge { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: inline-block; margin-top: 8px; }

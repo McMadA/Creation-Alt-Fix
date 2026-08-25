@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navProjects": "Projecten",
             "navAbout": "Over mij",
             "navContact": "Contact",
+            "navIntake": "Intake",
             "ariaInstagram": "Instagram CreationAltFix",
             "ariaLinkedIn": "LinkedIn CreationAltFix",
             "ariaToggleNav": "Navigatie in-/uitklappen",
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "heroSubtitle": "Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.",
             "heroCtaPrimary": "Ontdek AI Services",
             "heroCtaSecondary": "Gratis AI Consult",
+            "heroCtaIntake": "Start Intake Formulier",
 
             // --- AI SERVICES SECTIE ---
             "aiServicesTitle": "AI-Gedreven <span>Oplossingen</span>",
@@ -130,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "aboutP1": "Hoi, ik ben Allard Veldman, de drijvende kracht achter Creation+Alt+Fix. Met een diepe passie voor technologie en een scherp oog voor detail help ik ondernemers en particulieren om hun digitale uitdagingen om te zetten in kansen.",
             "aboutP2": "Mijn missie is simpel: complexe technologie toegankelijk en bruikbaar maken. Of het nu gaat om het bouwen van een bliksemsnelle website, het automatiseren van tijdrovende processen met AI, of het bieden van betrouwbare IT-support – ik sta voor een persoonlijke aanpak en resultaatgerichte oplossingen.",
             "aboutP3": "Laten we samen kijken hoe we technologie in jouw voordeel kunnen laten werken!",
+            "aboutReadMore": "Lees meer over mij & achtergrond",
 
             // --- GITHUB ---
             "githubTitle": "Technische Projecten & <span>Open Source Bijdragen</span>",
@@ -153,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "contactTitle": "Klaar voor <span>AI-Transformatie?</span>",
             "contactIntro": "Heeft u een idee voor een slimme tool of software-oplossing? Neem contact op voor een vrijblijvend gesprek. We denken graag mee hoe we uw wens snel en betaalbaar kunnen realiseren.",
             "contactCtaBtn": "Contact voor AI Strategie",
+            "contactIntakeBtn": "Start Direct Je Intake",
             "contactLocation": "Groningen e.o.",
             "formThanks": "Bedankt voor je bericht! (Dit is een demo, er is geen e-mail verstuurd)",
             "formErrorFillAll": "Vul alstublieft alle velden in.",
@@ -160,7 +164,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             // --- FOOTER ---
             "footerRights": "Alle rechten voorbehouden.",
             "footerPrivacy": "Privacybeleid",
-            "footerTerms": "Algemene Voorwaarden"
+            "footerTerms": "Algemene Voorwaarden",
+            "footerIntake": "Direct Project Aanvragen (Intake)",
+            "footerPortal": "Klantenportaal Inloggen"
         },
         'en': {
             // --- GENERAL & NAVIGATION ---
@@ -171,6 +177,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "navProjects": "Projects",
             "navAbout": "About me",
             "navContact": "Contact",
+            "navIntake": "Intake",
             "ariaInstagram": "Instagram CreationAltFix",
             "ariaLinkedIn": "LinkedIn CreationAltFix",
             "ariaToggleNav": "Toggle navigation",
@@ -181,6 +188,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "heroSubtitle": "We translate your idea into working software at lightning speed. From smart automation to complete websites, powered by AI.",
             "heroCtaPrimary": "Discover AI Services",
             "heroCtaSecondary": "Free AI Consult",
+            "heroCtaIntake": "Start Intake Form",
 
             // --- AI SERVICES SECTION ---
             "aiServicesTitle": "AI-Driven <span>Solutions</span>",
@@ -276,6 +284,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "aboutP1": "Hi, I'm Allard Veldman, the driving force behind Creation+Alt+Fix. With a deep passion for technology and a keen eye for detail, I help entrepreneurs and individuals turn their digital challenges into opportunities.",
             "aboutP2": "My mission is simple: making complex technology accessible and usable. Whether it's building a lightning-fast website, automating time-consuming processes with AI, or providing reliable IT support – I stand for a personal approach and result-oriented solutions.",
             "aboutP3": "Let's see how we can make technology work to your advantage together!",
+            "aboutReadMore": "Read more about me & background",
 
             // --- GITHUB ---
             "githubTitle": "Technical Projects & <span>Open Source Contributions</span>",
@@ -299,6 +308,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             "contactTitle": "Ready for <span>AI Transformation?</span>",
             "contactIntro": "Have an idea for a smart tool or software solution? Contact us for a no-obligation chat. We're happy to brainstorm how we can realize your wish quickly and affordably.",
             "contactCtaBtn": "Contact for AI Strategy",
+            "contactIntakeBtn": "Start Your Intake Directly",
             "contactLocation": "Groningen area",
             "formThanks": "Thank you for your message! (This is a demo, no email was sent)",
             "formErrorFillAll": "Please fill in all fields.",
@@ -306,7 +316,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             // --- FOOTER ---
             "footerRights": "All rights reserved.",
             "footerPrivacy": "Privacy Policy",
-            "footerTerms": "Terms and Conditions"
+            "footerTerms": "Terms and Conditions",
+            "footerIntake": "Start Project Intake",
+            "footerPortal": "Client Portal Login"
         }
     };
 
