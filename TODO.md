@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **16 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **11 Tasks (69%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **5 Tasks (31%)** |
+| **Completed Work Items** | ✅ Done | **13 Tasks (75%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (25%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████████░░░░░] 69% Complete`
+`[███████████████████████░░] 75% Complete`
 
 ---
 
@@ -176,13 +176,13 @@
 ### 🎨 EPIC-07: Public Portfolio & Project Showcase (Website)
 **Domain**: `website/` | **Stack**: Vanilla JS Component Architecture, HTML5, CSS3 Token System
 
-- [ ] `[TASK-701]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Portfolio & Project Showcase Subpage (`website/projecten.html`)**
-  - **Scope**: `website/projecten.html`, `website/js/`, `website/components/`
-  - **Acceptance Criteria**: Build a dedicated Dark AI showcase page featuring completed web development, custom software, and system optimization projects with interactive previews, tech stack badges, and client results.
+- [x] `[TASK-701]` `[P2-HIGH]` `[STATUS: DONE]` **Portfolio & Project Showcase Subpage (`website/projecten.html`)**
+  - **Scope**: `website/projecten.html`, `website/css/projecten.css`, `website/js/subpage.js`, `website/components/navbar.html`
+  - **Details**: Built a dedicated Dark AI showcase page featuring 12 project cards with interactive category filtering (Websites/Webshops/AI & Tools/Landing Pages), tech stack badges, gradient placeholders for projects without screenshots, and responsive grid layout. Updated navbar to link directly to portfolio page.
 
-- [ ] `[TASK-702]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
+- [x] `[TASK-702]` `[P2-HIGH]` `[STATUS: DONE]` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
   - **Scope**: `website/projecten.html`
-  - **Acceptance Criteria**: Feature the custom Creation+Alt+Fix CRM & Client Portal as a flagship case study on the portfolio page, highlighting real-time Firebase tracking, digital signatures, automated onboarding, and client portals to build high authority with potential clients.
+  - **Details**: Featured the custom Creation+Alt+Fix CRM & Client Portal as a flagship full-width case study card at the top of the portfolio page, highlighting real-time Firebase tracking, digital signatures, automated onboarding, 5-phase pipeline, client portal, and email notifications with tech stack badges.
 
 
 
