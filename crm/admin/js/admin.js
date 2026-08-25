@@ -48,26 +48,32 @@ const API = {
     },
 
     async getDashboardStats() {
-        if (!db) return { leads: 3, projects: 5, waiting: 2 }; // Mock fallback
+        const projects = (cachedProjects && cachedProjects.length > 0) ? cachedProjects : await this.getProjects();
+        let leads = 0, active = 0, waiting = 0, delivered = 0, openTasks = 0;
 
-        try {
-            const querySnapshot = await getDocs(collection(db, "projects"));
-            let leads = 0, projects = 0, waiting = 0;
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const s = data.status || '';
-                // Fase 1: Leads & Intakes
-                if (s === "Nieuwe Lead" || s === "Intake Voltooid") leads++;
-                // Fase 2-4: Lopende Projecten
-                if (s === "In Ontwikkeling" || s === "Wacht op Ontwikkeling" || s === "Wacht op Design & Ontwerp" || s === "Design Gereed voor Review") projects++;
-                // Wacht op akkoord (offerte of design)
-                if (s === "Wacht op Akkoord") waiting++;
+        projects.forEach(p => {
+            const s = (p.status || '').toLowerCase();
+
+            // Fase 1: Leads & Intakes
+            if (s.includes('lead') || s.includes('intake')) leads++;
+
+            // Wachten op actie / akkoord / review
+            if (s.includes('akkoord') || s.includes('review') || s.includes('wacht op')) waiting++;
+
+            // Fase 2-4: Lopende Projecten
+            if (s.includes('ontwikkeling') || s.includes('design') || s.includes('concept') || s.includes('bezig')) active++;
+
+            // Fase 5: Opgeleverd / Livegang / Afgerond
+            if (s.includes('opgeleverd') || s.includes('livegang') || s.includes('mollie') || s.includes('afgerond')) delivered++;
+
+            // Count open tasks
+            const tasks = p.tasks || [];
+            tasks.forEach(t => {
+                if (!t.completed && t.status !== 'done') openTasks++;
             });
-            return { leads, projects, waiting };
-        } catch (e) {
-            console.warn("Kon Firestore niet uitlezen, val terug op mock data.");
-            return { leads: 3, projects: 5, waiting: 2 };
-        }
+        });
+
+        return { leads, projects: active, waiting, delivered, openTasks };
     },
 
     async getProjects() {
@@ -418,16 +424,25 @@ document.getElementById('logout-btn')?.addEventListener('click', () => {
 });
 
 async function loadDashboardData() {
-    // 1. Load Stats
-    const stats = await API.getDashboardStats();
-    document.getElementById('stat-leads').innerText = stats.leads;
-    document.getElementById('stat-projects').innerText = stats.projects;
-    document.getElementById('stat-waiting').innerText = stats.waiting;
-
-    // 2. Load Projects Table
+    // 1. Load Projects Table & sync state
     cachedProjects = await API.getProjects();
+
+    // 2. Compute dynamic stats from cached projects
+    const stats = await API.getDashboardStats();
     
-    // Initial Render
+    const elLeads = document.getElementById('stat-leads');
+    const elProjects = document.getElementById('stat-projects');
+    const elWaiting = document.getElementById('stat-waiting');
+    const elDelivered = document.getElementById('stat-delivered');
+    const elTasks = document.getElementById('stat-tasks');
+
+    if (elLeads) elLeads.innerText = stats.leads;
+    if (elProjects) elProjects.innerText = stats.projects;
+    if (elWaiting) elWaiting.innerText = stats.waiting;
+    if (elDelivered) elDelivered.innerText = stats.delivered;
+    if (elTasks) elTasks.innerText = stats.openTasks;
+    
+    // 3. Initial Render
     filterAndRenderTables();
     renderKanbanBoard();
 }
