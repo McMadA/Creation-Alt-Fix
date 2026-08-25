@@ -1,0 +1,21 @@
+{
+  "name": "Creation+Alt+Fix",
+  "short_name": "Creation+Alt+Fix",
+  "description": "AI-gedreven software support, automatisering, webdesign en data dashboards in Groningen.",
+  "icons": [
+    {
+      "src": "/images/logo.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/images/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0b10",
+  "theme_color": "#6366f1"
+}

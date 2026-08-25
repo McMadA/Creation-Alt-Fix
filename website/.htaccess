@@ -1,1 +1,28 @@
+﻿# Creation+Alt+Fix Production Configuration
+RewriteEngine On
+
+# Custom 404 Error Page
 ErrorDocument 404 /404.html
+
+# Portal URL Rewrites
+RewriteRule ^portal/intake/?$ /crm/intake/index.html [L,QSA]
+RewriteRule ^portal/offerte/?$ /crm/offerte/index.html [L,QSA]
+RewriteRule ^portal/status/?$ /crm/status/index.html [L,QSA]
+RewriteRule ^portal/admin/?$ /crm/admin/index.html [L,QSA]
+RewriteRule ^portal/?$ /crm/index.html [L,QSA]
+
+# Enable Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# Browser Caching Headers
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
