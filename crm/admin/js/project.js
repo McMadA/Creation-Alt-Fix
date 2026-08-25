@@ -916,7 +916,6 @@ function getMockProject(id) {
                 { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
                 { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                { id: 'web_t4', title: '[TASK-501] Google Ads Campagne Activeren & Landingspagina (€400 Credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
                 { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
                 { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
             ],

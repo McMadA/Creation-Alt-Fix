@@ -270,7 +270,6 @@ const API = {
                     { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
                     { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'web_t4', title: '[TASK-501] Google Ads Campagne Activeren & Landingspagina (€400 Credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
                     { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
                     { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
                 ],
@@ -528,10 +527,22 @@ function renderTablesData(projectsToRender) {
         return "Fase 1";
     };
 
-    const formatContact = (contactName, clientName) => {
-        const name = contactName || clientName || '—';
-        if (!name || name === '—') return `<span style="color: var(--color-text-secondary); font-size: 0.85rem;">—</span>`;
-        return `<span class="table-contact-name"><i class="fas fa-user text-accent" style="font-size: 0.75rem; margin-right: 5px; opacity: 0.8;"></i>${escapeHtml(name)}</span>`;
+    const formatTaskCounter = (p) => {
+        const tasks = p.tasks || [];
+        const total = tasks.length;
+        if (total === 0) {
+            return `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: var(--color-text-secondary);"><i class="fas fa-minus" style="font-size: 0.65rem; opacity: 0.5;"></i> 0 taken</span>`;
+        }
+        const done = tasks.filter(t => t.completed || t.status === 'done').length;
+        const isAllDone = done === total && total > 0;
+        const color = isAllDone ? '#34d399' : done > 0 ? '#818cf8' : '#fbbf24';
+        const bg = isAllDone ? 'rgba(16, 185, 129, 0.12)' : done > 0 ? 'rgba(99, 102, 241, 0.12)' : 'rgba(251, 191, 36, 0.12)';
+        const border = isAllDone ? 'rgba(16, 185, 129, 0.3)' : done > 0 ? 'rgba(99, 102, 241, 0.3)' : 'rgba(251, 191, 36, 0.3)';
+        const icon = isAllDone ? 'fa-check-circle' : 'fa-tasks';
+
+        return `<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: ${bg}; border: 1px solid ${border}; font-size: 0.82rem; font-weight: 600; color: ${color}; white-space: nowrap;" title="${done} van de ${total} taken voltooid">
+            <i class="fas ${icon}"></i> ${done}/${total} af
+        </span>`;
     };
 
     const formatEmail = (email) => {
@@ -555,7 +566,7 @@ function renderTablesData(projectsToRender) {
         const row = document.createElement('tr');
         const phaseTag = getPhaseTag(p.status);
         const safeClient = escapeHtml(p.client || p.companyName || 'Onbekend');
-        const contactHtml = formatContact(p.contactName, p.client || p.companyName);
+        const taskCounterHtml = formatTaskCounter(p);
         const emailHtml = formatEmail(p.email);
         const domainHtml = formatDomain(p.domainName || p.domain);
         const safeService = escapeHtml(p.service || 'Onbekend');
@@ -566,7 +577,7 @@ function renderTablesData(projectsToRender) {
 
         row.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
-            <td>${contactHtml}</td>
+            <td>${taskCounterHtml}</td>
             <td>${emailHtml}</td>
             <td>${domainHtml}</td>
             <td><span style="color: var(--color-text-primary);">${safeService}</span></td>
@@ -619,6 +630,80 @@ function renderTablesData(projectsToRender) {
         }
     }
 }
+
+function filterAndRenderTables() {
+    const searchInput = document.getElementById('admin-search-input');
+    const filterSelect = document.getElementById('admin-status-filter');
+
+    const query = (searchInput?.value || '').trim().toLowerCase();
+    const filterVal = filterSelect?.value || 'all';
+
+    let filtered = cachedProjects.filter(p => {
+        // Status filter
+        if (filterVal !== 'all') {
+            const st = (p.status || '').toLowerCase();
+            if (filterVal === 'Intake' && !st.includes('intake') && !st.includes('lead')) return false;
+            if (filterVal === 'Akkoord' && !st.includes('akkoord') && !st.includes('offerte')) return false;
+            if (filterVal === 'Design' && !st.includes('design')) return false;
+            if (filterVal === 'Ontwikkeling' && !st.includes('ontwikkeling')) return false;
+            if (filterVal === 'Opgeleverd' && !st.includes('mollie') && !st.includes('opgeleverd') && !st.includes('afgerond') && !st.includes('livegang')) return false;
+        }
+
+        // Search query filter
+        if (query) {
+            const client = (p.client || p.companyName || '').toLowerCase();
+            const contact = (p.contactName || '').toLowerCase();
+            const email = (p.email || '').toLowerCase();
+            const domain = (p.domainName || p.domain || '').toLowerCase();
+            const service = (p.service || '').toLowerCase();
+            const goals = (p.goals || p.projectGoals || '').toLowerCase();
+
+            return client.includes(query) || contact.includes(query) || email.includes(query) || domain.includes(query) || service.includes(query) || goals.includes(query);
+        }
+
+        return true;
+    });
+
+    renderTablesData(filtered);
+}
+
+function setupSearchAndFilters() {
+    document.getElementById('admin-search-input')?.addEventListener('input', () => filterAndRenderTables());
+    document.getElementById('admin-status-filter')?.addEventListener('change', () => filterAndRenderTables());
+}
+
+window.exportProjectsToCSV = () => {
+    if (cachedProjects.length === 0) return alert("Geen projectgegevens om te exporteren.");
+
+    const headers = ["ID", "Klant / Bedrijf", "Contactpersoon", "E-mailadres", "Domeinnaam", "Dienst", "Status", "Offertebedrag (EUR)", "Voltooide Taken", "Totale Taken", "Datum"];
+    const rows = cachedProjects.map(p => {
+        const tasks = p.tasks || [];
+        const doneTasks = tasks.filter(t => t.completed || t.status === 'done').length;
+        return [
+            `"${p.id || ''}"`,
+            `"${(p.client || p.companyName || '').replace(/"/g, '""')}"`,
+            `"${(p.contactName || '').replace(/"/g, '""')}"`,
+            `"${(p.email || '').replace(/"/g, '""')}"`,
+            `"${(p.domainName || p.domain || '').replace(/"/g, '""')}"`,
+            `"${(p.service || '').replace(/"/g, '""')}"`,
+            `"${(p.status || '').replace(/"/g, '""')}"`,
+            `"${(p.proposalPrice || '0').replace(/"/g, '""')}"`,
+            doneTasks,
+            tasks.length,
+            `"${(p.date || '').replace(/"/g, '""')}"`
+        ].join(";");
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(";"), ...rows].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `CreationAltFix_Projecten_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -1528,4 +1613,12 @@ async function saveGlobalTask(e) {
         }
     }
 }
+
+// Initialisatie bij pagina-laad event
+document.addEventListener('DOMContentLoaded', () => {
+    setupNavigation();
+    setupSearchAndFilters();
+    document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
+    document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
+});
 
