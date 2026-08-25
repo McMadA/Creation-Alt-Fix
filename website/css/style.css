@@ -90,9 +90,9 @@ body::before {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1280px;
     margin: auto;
-    padding: 0 20px;
+    padding: 0 24px;
     position: relative;
     z-index: 1;
 }
@@ -568,21 +568,26 @@ a:hover {
 /* ============ SERVICE CARDS (Glassmorphism) ============ */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }
 
 .service-card {
     background: rgba(26, 31, 53, 0.6);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 30px;
+    padding: 28px 20px;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     text-align: center;
     transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.service-card p {
+    flex-grow: 1;
 }
 
 /* Gradient top-border accent on hover */
@@ -677,23 +682,36 @@ a:hover {
 
 .usp-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     text-align: left;
 }
 
 .usp-item {
-    padding: 20px;
+    padding: 24px 20px;
+    background: rgba(26, 31, 53, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.usp-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-glow);
 }
 .usp-item h4 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: var(--color-primary-light);
     margin-bottom: 0.5rem;
     font-family: var(--font-heading);
 }
 .usp-item p {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0;
 }
 .usp-icon {
     font-size: 2rem;
@@ -773,7 +791,7 @@ a:hover {
 
 .showcase-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-top: 30px;
 }
@@ -1286,8 +1304,10 @@ footer .footer-links {
     .nav-menu-items .nav-right-cluster .nav-social-icons a {
         font-size: 1.6rem;
     }
-    .nav-menu-items .nav-right-cluster #language-switcher {
-        margin-left: 0;
+    /* Grids on tablets */
+    .services-grid, .usp-grid, .showcase-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 }
 
@@ -1323,12 +1343,10 @@ footer .footer-links {
         justify-content: center;
     }
 
-    /* Grids */
-    .services-grid, .usp-grid, .testimonials-grid {
+    /* Grids on mobile phones */
+    .services-grid, .usp-grid, .showcase-grid, .testimonials-grid {
         grid-template-columns: 1fr;
-    }
-    .showcase-grid {
-        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     #hero {
