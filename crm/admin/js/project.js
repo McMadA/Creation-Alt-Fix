@@ -825,8 +825,75 @@ function setupFormHandlers() {
     });
 }
 
-// Fallback Mock Project
+// Fallback Mock Projects
 function getMockProject(id) {
+    if (String(id) === "6" || String(id).includes("Hoofdwebsite") || String(id).includes("website")) {
+        return {
+            id: 6,
+            client: "Creation+Alt+Fix (Hoofdwebsite)",
+            companyName: "Creation+Alt+Fix (Hoofdwebsite)",
+            contactName: "Allard Veldman",
+            email: "info@creationaltfix.nl",
+            domainName: "www.creationaltfix.nl",
+            domain: "www.creationaltfix.nl",
+            service: "Website & Portfolio Platform (Dark AI)",
+            goals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
+            projectGoals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
+            design: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
+            designPreferences: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "25-08-2026",
+            proposalPrice: "0,00",
+            tasks: [
+                { id: 'web_t1', title: 'Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                { id: 'web_t2', title: 'Showcase projectenpagina met interactieve filters bouwen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'web_t3', title: 'Google Ads landingspagina optimalisatie (€400 credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
+                { id: 'web_t4', title: 'SEO sitemap & structured data indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+            ],
+            internalNotes: [
+                { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 'web_l1', timestamp: '2026-08-25T18:30:00Z', type: 'status_updated', description: 'Hoofdwebsite succesvol live gezet op Vimexx public_html/', actor: 'Allard Veldman' }
+            ]
+        };
+    }
+
+    if (String(id) === "7" || String(id).includes("CRM") || String(id).includes("portal")) {
+        return {
+            id: 7,
+            client: "Creation+Alt+Fix (CRM & Portaal)",
+            companyName: "Creation+Alt+Fix (CRM & Portaal)",
+            contactName: "Allard Veldman",
+            email: "info@creationaltfix.nl",
+            domainName: "portal.creationaltfix.nl",
+            domain: "portal.creationaltfix.nl",
+            service: "Custom CRM & Klantenportaal Applicatie",
+            goals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
+            projectGoals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
+            design: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
+            designPreferences: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
+            status: "In Ontwikkeling",
+            statusClass: "active",
+            date: "25-08-2026",
+            proposalPrice: "0,00",
+            tasks: [
+                { id: 'crm_t1', title: 'Dedicated full-screen project workspace bouwen (TASK-605)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'crm_t2', title: 'Audit trail & interne notities implementeren (TASK-601)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'crm_t3', title: '4-Kolommen Kanban bord voor deliverables (TASK-602)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'crm_t4', title: 'Mollie API webhook listener via Tailscale (TASK-201)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
+                { id: 'crm_t5', title: 'Firebase Auth custom sender domain & DKIM (TASK-106)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' }
+            ],
+            internalNotes: [
+                { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 'crm_l1', timestamp: '2026-08-25T20:30:00Z', type: 'data_updated', description: 'CRM systeem bijgewerkt met Sprint 1 Roadmap features.', actor: 'Allard Veldman' }
+            ]
+        };
+    }
+
     return {
         id: id,
         client: "Arnold Doornbos (Arnold Design)",
@@ -840,10 +907,10 @@ function getMockProject(id) {
         statusClass: "success",
         date: "25-08-2026",
         tasks: [
-            { id: 't1', title: 'Intake afronden en wensen inventariseren', completed: true, priority: 'high', dueDate: '2026-08-20' },
-            { id: 't2', title: 'Ontwerp inrichten in React + Vite + Tailwind', completed: true, priority: 'high', dueDate: '2026-08-22' },
-            { id: 't3', title: 'Glas-in-lood galerij optimaliseren', completed: true, priority: 'medium', dueDate: '2026-08-24' },
-            { id: 't4', title: 'Livegang & SEO configuratie', completed: true, priority: 'high', dueDate: '2026-08-25' }
+            { id: 't1', title: 'Intake afronden en wensen inventariseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+            { id: 't2', title: 'Ontwerp inrichten in React + Vite + Tailwind', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
+            { id: 't3', title: 'Glas-in-lood galerij optimaliseren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-24' },
+            { id: 't4', title: 'Livegang & SEO configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
         ],
         internalNotes: [
             { id: 'n1', text: 'Klant was zeer tevreden over de snelle opzet van de categorie filtering en de dark studio esthetiek.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }

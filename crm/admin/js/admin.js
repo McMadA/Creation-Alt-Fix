@@ -79,6 +79,35 @@ const API = {
             querySnapshot.forEach((doc) => {
                 projectsList.push({ id: doc.id, ...doc.data() });
             });
+
+            // Ensure our own website & CRM test projects exist in Firestore for testing
+            const hasOwnSite = projectsList.some(p => (p.client && p.client.includes("Hoofdwebsite")) || (p.domainName && p.domainName.includes("creationaltfix.nl") && !p.client?.includes("CRM")));
+            const hasOwnCrm = projectsList.some(p => (p.client && p.client.includes("CRM")) || (p.domainName && p.domainName.includes("portal.creationaltfix.nl")));
+
+            if (!hasOwnSite || !hasOwnCrm) {
+                const mockList = this.getMockProjects();
+                if (!hasOwnSite) {
+                    const siteObj = mockList.find(m => m.id === 6);
+                    if (siteObj) {
+                        const { id, ...siteData } = siteObj;
+                        try {
+                            const ref = await addDoc(collection(db, "projects"), siteData);
+                            projectsList.push({ id: ref.id, ...siteData });
+                        } catch (err) { console.warn("Kon testproject website niet seeden:", err); }
+                    }
+                }
+                if (!hasOwnCrm) {
+                    const crmObj = mockList.find(m => m.id === 7);
+                    if (crmObj) {
+                        const { id, ...crmData } = crmObj;
+                        try {
+                            const ref = await addDoc(collection(db, "projects"), crmData);
+                            projectsList.push({ id: ref.id, ...crmData });
+                        } catch (err) { console.warn("Kon testproject CRM niet seeden:", err); }
+                    }
+                }
+            }
+
             if (projectsList.length > 0) return projectsList;
             throw new Error("No projects found");
         } catch (e) {
@@ -151,7 +180,74 @@ const API = {
                 design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie en kunstzinnige uitstraling.",
                 status: "Opgeleverd (Livegang)",
                 statusClass: "success",
-                date: "25-08-2026"
+                date: "25-08-2026",
+                tasks: [
+                    { id: 'ad_t1', title: 'Intake afronden en wensen inventariseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 'ad_t2', title: 'Ontwerp inrichten in React + Vite + Tailwind', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
+                    { id: 'ad_t3', title: 'Glas-in-lood galerij optimaliseren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-24' },
+                    { id: 'ad_t4', title: 'Livegang & SEO configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                ]
+            },
+            {
+                id: 6,
+                client: "Creation+Alt+Fix (Hoofdwebsite)",
+                companyName: "Creation+Alt+Fix (Hoofdwebsite)",
+                contactName: "Allard Veldman",
+                email: "info@creationaltfix.nl",
+                domainName: "www.creationaltfix.nl",
+                domain: "www.creationaltfix.nl",
+                service: "Website & Portfolio Platform (Dark AI)",
+                goals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
+                projectGoals: "Hoofdwebsite voor software support & AI-diensten. Voorzien van meertaligheid (NL/EN), intake funnels, interactieve portfolio showcase met 13 projecten en Dark AI design token architectuur.",
+                design: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
+                designPreferences: "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie, indigo & cyan gradients.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "25-08-2026",
+                proposalPrice: "0,00",
+                tasks: [
+                    { id: 'web_t1', title: 'Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                    { id: 'web_t2', title: 'Showcase projectenpagina met interactieve filters bouwen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t3', title: 'Google Ads landingspagina optimalisatie (€400 credit)', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-30' },
+                    { id: 'web_t4', title: 'SEO sitemap & structured data indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                ],
+                internalNotes: [
+                    { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
+                ],
+                auditLog: [
+                    { id: 'web_l1', timestamp: '2026-08-25T18:30:00Z', type: 'status_updated', description: 'Hoofdwebsite succesvol live gezet op Vimexx public_html/', actor: 'Allard Veldman' }
+                ]
+            },
+            {
+                id: 7,
+                client: "Creation+Alt+Fix (CRM & Portaal)",
+                companyName: "Creation+Alt+Fix (CRM & Portaal)",
+                contactName: "Allard Veldman",
+                email: "info@creationaltfix.nl",
+                domainName: "portal.creationaltfix.nl",
+                domain: "portal.creationaltfix.nl",
+                service: "Custom CRM & Klantenportaal Applicatie",
+                goals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
+                projectGoals: "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker (/status), dedicated full-screen projectpagina's, Kanban bord, audit trail logboek en digitale offerte-ondertekening.",
+                design: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
+                designPreferences: "Full-screen dark workspace, responsive stat cards, Kanban kolommen, realtime filters en CSV export.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "25-08-2026",
+                proposalPrice: "0,00",
+                tasks: [
+                    { id: 'crm_t1', title: 'Dedicated full-screen project workspace bouwen (TASK-605)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'crm_t2', title: 'Audit trail & interne notities implementeren (TASK-601)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'crm_t3', title: '4-Kolommen Kanban bord voor deliverables (TASK-602)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'crm_t4', title: 'Mollie API webhook listener via Tailscale (TASK-201)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
+                    { id: 'crm_t5', title: 'Firebase Auth custom sender domain & DKIM (TASK-106)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' }
+                ],
+                internalNotes: [
+                    { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }
+                ],
+                auditLog: [
+                    { id: 'crm_l1', timestamp: '2026-08-25T20:30:00Z', type: 'data_updated', description: 'CRM systeem bijgewerkt met Sprint 1 Roadmap features.', actor: 'Allard Veldman' }
+                ]
             }
         ];
     }
