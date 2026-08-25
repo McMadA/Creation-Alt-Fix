@@ -120,9 +120,9 @@ const API = {
                 }
             }
 
-            // Sync tasks if existing Firestore project has outdated/partial task list
+            // Sync tasks if existing Firestore project has outdated/partial task list and filter canceled tasks
             for (const p of projectsList) {
-                if (p.client?.includes("Hoofdwebsite") && (!p.tasks || p.tasks.length < 5)) {
+                if (p.client?.includes("Hoofdwebsite")) {
                     const siteMock = mockList.find(m => m.id === 6);
                     if (siteMock && siteMock.tasks) {
                         p.tasks = siteMock.tasks;
@@ -130,14 +130,21 @@ const API = {
                             updateDoc(doc(db, "projects", p.id), { tasks: siteMock.tasks }).catch(console.warn);
                         }
                     }
-                }
-                if (p.client?.includes("CRM") && (!p.tasks || p.tasks.length < 15)) {
+                } else if (p.client?.includes("CRM")) {
                     const crmMock = mockList.find(m => m.id === 7);
                     if (crmMock && crmMock.tasks) {
                         p.tasks = crmMock.tasks;
                         if (p.id && String(p.id).length > 5) {
                             updateDoc(doc(db, "projects", p.id), { tasks: crmMock.tasks }).catch(console.warn);
                         }
+                    }
+                } else if (p.tasks && Array.isArray(p.tasks)) {
+                    const originalCount = p.tasks.length;
+                    // Filter out canceled TASK-501
+                    p.tasks = p.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
+                    
+                    if (p.tasks.length !== originalCount && p.id && String(p.id).length > 5) {
+                        updateDoc(doc(db, "projects", p.id), { tasks: p.tasks }).catch(console.warn);
                     }
                 }
             }

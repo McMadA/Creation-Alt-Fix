@@ -152,6 +152,14 @@ async function loadProjectData(projectId) {
 
         if (docSnap.exists()) {
             currentProjectData = { id: docSnap.id, ...docSnap.data() };
+            // Filter out canceled TASK-501 if present in Firestore
+            if (currentProjectData.tasks && Array.isArray(currentProjectData.tasks)) {
+                const origLen = currentProjectData.tasks.length;
+                currentProjectData.tasks = currentProjectData.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads Campagne') && !t.title?.includes('400'));
+                if (currentProjectData.tasks.length !== origLen && db && projectId) {
+                    updateDoc(doc(db, "projects", projectId), { tasks: currentProjectData.tasks }).catch(console.warn);
+                }
+            }
             renderProjectWorkspace(currentProjectData);
         } else {
             alert("Project niet gevonden in Firestore.");
