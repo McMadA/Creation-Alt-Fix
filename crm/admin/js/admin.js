@@ -139,6 +139,19 @@ const API = {
                 status: "Nieuwe Lead",
                 statusClass: "waiting",
                 date: "Zojuist"
+            },
+            {
+                id: 5,
+                client: "Arnold Doornbos (Arnold Design)",
+                contactName: "Arnold Doornbos",
+                email: "arnolddesign2024@gmail.com",
+                domainName: "www.arnolddesign.nl",
+                service: "Kunstenaarsportfolio & Webapplicatie",
+                goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap (Academie Minerva afstudeerproject). Inclusief categoriegallerijen en directe WhatsApp-contactflow.",
+                design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie en kunstzinnige uitstraling.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "25-08-2026"
             }
         ];
     }
