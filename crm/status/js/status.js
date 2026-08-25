@@ -10,6 +10,7 @@ import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "ht
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml } from "../../js/firebase-config.js";
+import { generateProposalPDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 
 let app, auth, db, storage;
 try {
@@ -327,6 +328,29 @@ function renderProposalSection(data) {
         } else {
             document.getElementById('accepted-date').innerText = "eerder";
         }
+
+        // Wire up PDF download button on existing accepted proposal
+        const dlBtn = document.getElementById('btn-download-proposal-pdf');
+        if (dlBtn) {
+            dlBtn.onclick = async () => {
+                if (data.proposalPdfUrl) {
+                    window.open(data.proposalPdfUrl, '_blank');
+                } else {
+                    const originalText = dlBtn.innerHTML;
+                    dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF Genereren...';
+                    try {
+                        const projData = { ...data, id: currentProjectDocId };
+                        const { doc: pDoc, filename } = await generateProposalPDF(projData, true);
+                        pDoc.save(filename);
+                    } catch (err) {
+                        console.error("PDF download fout:", err);
+                        alert("Kon de offerte PDF niet downloaden. Probeer het opnieuw.");
+                    } finally {
+                        dlBtn.innerHTML = originalText;
+                    }
+                }
+            };
+        }
     } else if (isReadyForAcceptance) {
         // STATE B: Offerte Gereed voor Akkoord
         statusPill.className = "offerte-status-pill action-required";
@@ -383,18 +407,58 @@ function setupAgreeButton() {
         const priceText = document.getElementById('offerte-price')?.innerText || '';
         if (!confirm(`Weet je zeker dat je digitaal akkoord wilt geven op deze offerte (${priceText})?`)) return;
 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met digitaal ondertekenen...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met digitaal ondertekenen & PDF genereren...';
         btn.disabled = true;
 
         try {
             const projectRef = doc(db, "projects", currentProjectDocId);
             const nowIso = new Date().toISOString();
 
-            await updateDoc(projectRef, {
+            // Find current project data
+            const activeProjectObj = clientProjectsList.find(p => p.id === currentProjectDocId);
+            const projData = activeProjectObj ? { ...activeProjectObj.data } : {};
+            projData.proposalAcceptedAt = nowIso;
+            projData.id = currentProjectDocId;
+
+            // 1. Generate Signed Proposal PDF
+            let pdfDownloadUrl = null;
+            let pdfFileName = null;
+            try {
+                const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(projData, true);
+                pdfFileName = filename;
+
+                // 2. Upload to Firebase Storage
+                if (storage) {
+                    const uploadRes = await uploadPdfToStorage(storage, pdfBlob, currentProjectDocId, filename);
+                    if (uploadRes) {
+                        pdfDownloadUrl = uploadRes.downloadUrl;
+                    }
+                }
+
+                // Direct download trigger for the client
+                pdfDoc.save(filename);
+            } catch (pdfErr) {
+                console.warn("PDF generatie / upload waarschuwing:", pdfErr);
+            }
+
+            const updatePayload = {
                 status: "Wacht op Design & Ontwerp",
                 statusClass: "active",
                 proposalAcceptedAt: nowIso
-            });
+            };
+            if (pdfDownloadUrl) {
+                updatePayload.proposalPdfUrl = pdfDownloadUrl;
+                updatePayload.proposalPdfName = pdfFileName;
+            }
+
+            await updateDoc(projectRef, updatePayload);
+
+            // Update in-memory project cache
+            if (activeProjectObj) {
+                activeProjectObj.data.status = "Wacht op Design & Ontwerp";
+                activeProjectObj.data.proposalAcceptedAt = nowIso;
+                if (pdfDownloadUrl) activeProjectObj.data.proposalPdfUrl = pdfDownloadUrl;
+            }
 
             // Update UI direct naar State C (Geaccepteerd)
             document.getElementById('offerte-status-pill').className = "offerte-status-pill accepted";
@@ -403,6 +467,19 @@ function setupAgreeButton() {
             document.getElementById('offerte-action-container').classList.add('hidden');
             document.getElementById('offerte-success-msg').classList.remove('hidden');
             document.getElementById('accepted-date').innerText = new Date(nowIso).toLocaleDateString('nl-NL');
+
+            // Wire up download button
+            const dlBtn = document.getElementById('btn-download-proposal-pdf');
+            if (dlBtn) {
+                dlBtn.onclick = async () => {
+                    if (pdfDownloadUrl) {
+                        window.open(pdfDownloadUrl, '_blank');
+                    } else {
+                        const { doc: pDoc, filename } = await generateProposalPDF(projData, true);
+                        pDoc.save(filename);
+                    }
+                };
+            }
 
             document.getElementById('status-badge').innerText = "Wacht op Design & Ontwerp";
             document.getElementById('status-badge').className = "badge badge-active";
@@ -413,7 +490,7 @@ function setupAgreeButton() {
             // Show Design Review card in State A (in voorbereiding)
             renderDesignSection({ status: "Wacht op Design & Ontwerp" });
 
-            alert("Gefeliciteerd! Je akkoord is digitaal ondertekend. We gaan nu het visueel ontwerp voor je opstellen.");
+            alert("Gefeliciteerd! Je akkoord is digitaal ondertekend en de officiële offerte PDF is gegenereerd en gedownload.");
 
         } catch (error) {
             console.error("Fout bij digitaal akkoord:", error);

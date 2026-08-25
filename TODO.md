@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **19 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **13 Tasks (68%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **6 Tasks (32%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **18 Active Epics & Tasks (1 Canceled)** |
+| **Completed Work Items** | ✅ Done | **15 Tasks (83%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (17%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░] 68% Complete`
+`[████████████████████░░░░] 83% Complete`
 
 ---
 
@@ -44,6 +44,10 @@
   - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
   - **Details**: Real-time multi-field search bar (client, contact person, email, domain, goals), status filter dropdown, and 1-click UTF-8 BOM CSV export for accounting & CRM reporting.
 
+- [x] `[TASK-106]` `[P2-HIGH]` `[STATUS: DONE]` **Firebase Auth Custom Sender Domain & SMTP Integration**
+  - **Scope**: Firebase Console, Vimexx DNS (`creationaltfix.nl`)
+  - **Details**: Configured custom domain verification in Firebase Console, updated Public-Facing Project Name to `Creation+Alt+Fix`, verified DMARC TXT record in DirectAdmin (`v=DMARC1; p=none; rua=mailto:info@creationaltfix.nl`), and set `auth.languageCode = 'nl'` across all CRM client modules for 100% inbox deliverability.
+
 - [x] `[TASK-107]` `[P2-HIGH]` `[STATUS: DONE]` **Dedicated Branded Client Welcome Email Dispatcher**
   - **Scope**: `crm/intake/js/notifications.js`
   - **Details**: Clean Dark AI HTML client welcome email (with onboarding instructions and direct portal link `https://creationaltfix.nl/portal/`) dispatched via EmailJS REST API upon intake submission.
@@ -55,13 +59,6 @@
 - [x] `[TASK-109]` `[P2-HIGH]` `[STATUS: DONE]` **Site-Wide Intake Funnel & CTA Button Integration**
   - **Scope**: `website/diensten/`, `website/index.html`, `website/components/navbar.html`, `website/components/footer.html`, `website/projects/`, `website/js/`
   - **Details**: Added high-converting Intake CTA buttons across all service pages (`website-laten-maken`, `slimme-automatisering-ai`, `data-dashboards`, `it-support-beheer`, `diensten/`), homepage Hero & Contact sections, sticky Navbar header cluster, footer quick links, and case study pages with full bilingual (NL/EN) translation support.
-
-- [ ] `[TASK-106]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Auth Custom Sender Domain & SMTP Integration**
-  - **Scope**: Firebase Console, DNS Settings (`creationaltfix.nl`)
-  - **Acceptance Criteria**:
-    - Configure custom domain verification in Firebase Console (e.g. `auth.creationaltfix.nl` or custom SMTP server `noreply@creationaltfix.nl`).
-    - Add required DNS records (DKIM, SPF, CNAME) to Vimexx/DirectAdmin DNS settings to prevent authentication and password reset emails from landing in spam folders.
-    - Ensure all automated transactional emails originate from official `creationaltfix.nl` identity.
 
 ---
 
@@ -112,10 +109,9 @@
 ### 📈 EPIC-05: Growth, Marketing & Infra Pipelines
 **Domain**: `website/` & `.github/workflows/` | **Stack**: GitHub Actions, DirectAdmin FTP, Google Ads
 
-- [ ] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Google Ads Campaign Activation (€400 Credit)**
+- [~] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: CANCELLED]` **Google Ads Campaign Activation (€400 Credit)**
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
-  - **Acceptance Criteria**:
-    - Launch targeted search ads targeting "website laten maken", "AI automatisering", "software support" driving traffic to high-converting landing page.
+  - **Details**: Canceled by administrator in favor of direct organic and referral client acquisition.
 
 - [ ] `[TASK-502]` `[P4-LOW]` `[STATUS: BACKLOG]` **Hosting Management & Recurring Service Structure**
   - **Scope**: DirectAdmin / Vimexx Management
@@ -159,9 +155,9 @@
   - **Scope**: `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`
   - **Details**: Built a full 4-column interactive Kanban board (To Do, In Behandeling, Review & Testen, Voltooid) in the main Admin Dashboard with 1-click status transitions, deadline warnings (overdue tags), priority pills (High/Med/Low), global task creation modal, and per-project task checklist with progress bars.
 
-- [ ] `[TASK-603]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated PDF Generation for Quotes & Invoices**
-  - **Scope**: Cloud Functions / Backend
-  - **Acceptance Criteria**: Convert digitally signed quotes to physical PDF documents stored in Firebase Storage and emailed to the client.
+- [x] `[TASK-603]` `[P3-MEDIUM]` `[STATUS: DONE]` **Automated PDF Generation for Quotes & Invoices**
+  - **Scope**: `crm/js/pdf-generator.js`, `crm/status/`, `crm/admin/`
+  - **Details**: Implemented high-quality PDF generation engine (`pdf-generator.js`) using `jsPDF`. Converts digitally signed proposals and invoices into official A4 PDFs containing Creation+Alt+Fix branding, legal KVK/BTW numbers, itemized deliverables, VAT calculations, and digital signature stamps. Automatically uploads PDF binaries to Firebase Storage (`projects/{id}/documents/`) and provides 1-click download buttons in the Client Portal (`/status`) and Admin Workstation (`project.html`).
 
 - [ ] `[TASK-604]` `[P4-LOW]` `[STATUS: BACKLOG]` **In-App Messaging / Ticketing**
   - **Scope**: `crm/status/` & `crm/admin/`

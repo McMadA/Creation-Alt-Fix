@@ -9,16 +9,19 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
+import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
-let app, auth, db, secondaryAuth;
+let app, auth, db, storage, secondaryAuth;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     auth.languageCode = 'nl';
     db = getFirestore(app);
+    storage = getStorage(app);
 
     const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
     secondaryAuth = getAuth(secondaryApp);
@@ -306,11 +309,11 @@ const API = {
                     { id: 'task_605', title: '[TASK-605] Full-Screen Dedicated Project Werkplek (project.html)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_601', title: '[TASK-601] Interne Notities & Automatische Audit Trail', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_602', title: '[TASK-602] 4-Kolommen Kanban Bord voor Deliverables', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
+                    { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
                     { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                     { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
-                    { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-20' },
+                    { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
                     { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                     { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                     { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
@@ -885,14 +888,18 @@ window.openProjectDetails = (id) => {
     actionContainer.innerHTML = `
         <button class="btn btn-secondary btn-sm" data-action="ai-email"><i class="fas fa-robot"></i> AI Concept Mail (Fase 1)</button>
         <button class="btn btn-secondary btn-sm" data-action="proposal"><i class="fas fa-file-contract"></i> Genereer Offerte (Fase 2)</button>
+        <button class="btn btn-secondary btn-sm" data-action="download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
         <button class="btn btn-secondary btn-sm" data-action="design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
         <button class="btn btn-secondary btn-sm" data-action="mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie (Fase 5)</button>
+        <button class="btn btn-secondary btn-sm" data-action="download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
         <button class="btn btn-secondary btn-sm" data-action="checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)</button>
     `;
     actionContainer.querySelector('[data-action="ai-email"]').addEventListener('click', () => generateAiEmail(id));
     actionContainer.querySelector('[data-action="proposal"]').addEventListener('click', () => generateProposal(id));
+    actionContainer.querySelector('[data-action="download-offerte"]').addEventListener('click', () => downloadProjectProposalPdf(id));
     actionContainer.querySelector('[data-action="design"]').addEventListener('click', () => sendDesignToClient(id));
     actionContainer.querySelector('[data-action="mollie"]').addEventListener('click', () => generateInvoiceMollieLink(id, clientName));
+    actionContainer.querySelector('[data-action="download-factuur"]').addEventListener('click', () => downloadProjectInvoicePdf(id));
     actionContainer.querySelector('[data-action="checkin"]').addEventListener('click', () => triggerCheckIn(id, clientName));
 
     // Bind AI email action buttons
@@ -1231,6 +1238,53 @@ window.deleteProject = async (id) => {
             console.error("Fout bij verwijderen project:", err);
             alert("Fout bij verwijderen: " + err.message);
         }
+    }
+};
+
+window.downloadProjectProposalPdf = async (id) => {
+    const p = cachedProjects.find(item => item.id == id);
+    if (!p) return alert("Project niet gevonden.");
+
+    const isSigned = Boolean(p.proposalAcceptedAt || p.status?.includes('Design') || p.status?.includes('Ontwikkeling') || p.status?.includes('Opgeleverd'));
+    try {
+        const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(p, isSigned);
+        if (storage && db && !p.proposalPdfUrl) {
+            const uploadRes = await uploadPdfToStorage(storage, pdfBlob, id, filename);
+            if (uploadRes) {
+                await updateDoc(doc(db, "projects", String(id)), {
+                    proposalPdfUrl: uploadRes.downloadUrl,
+                    proposalPdfName: filename
+                });
+                p.proposalPdfUrl = uploadRes.downloadUrl;
+            }
+        }
+        pdfDoc.save(filename);
+    } catch (err) {
+        console.error("Fout bij genereren offerte PDF:", err);
+        alert("Kon offerte PDF niet genereren: " + err.message);
+    }
+};
+
+window.downloadProjectInvoicePdf = async (id) => {
+    const p = cachedProjects.find(item => item.id == id);
+    if (!p) return alert("Project niet gevonden.");
+
+    try {
+        const { doc: pdfDoc, blob: pdfBlob, filename, invoiceNumber } = await generateInvoicePDF(p);
+        if (storage && db) {
+            const uploadRes = await uploadPdfToStorage(storage, pdfBlob, id, filename);
+            if (uploadRes) {
+                await updateDoc(doc(db, "projects", String(id)), {
+                    invoicePdfUrl: uploadRes.downloadUrl,
+                    invoicePdfName: filename,
+                    invoiceNumber: invoiceNumber
+                });
+            }
+        }
+        pdfDoc.save(filename);
+    } catch (err) {
+        console.error("Fout bij genereren factuur PDF:", err);
+        alert("Kon factuur PDF niet genereren: " + err.message);
     }
 };
 

@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/status.css">
+    <!-- jsPDF Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -157,8 +159,15 @@
                         <!-- Wordt dynamisch gevuld (knop of in-afwachting status) -->
                     </div>
 
-                    <div id="offerte-success-msg" class="hidden" style="margin-top: 15px; padding: 14px 20px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; color: #34d399;">
-                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong>Offerte Geaccepteerd!</strong> Je hebt op <span id="accepted-date">vandaag</span> akkoord gegeven op deze offerte. We zijn volop aan de slag met jouw project.
+                    <div id="offerte-success-msg" class="hidden" style="margin-top: 15px; padding: 18px 20px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; color: #34d399;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong>Offerte Geaccepteerd!</strong> Je hebt op <span id="accepted-date">vandaag</span> akkoord gegeven op deze offerte.
+                            </div>
+                            <button id="btn-download-proposal-pdf" type="button" class="btn-akkoord" style="background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-file-pdf"></i> Download Officiële Offerte (PDF)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>

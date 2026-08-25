@@ -12,14 +12,17 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
+import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 
-let app, auth, db, secondaryAuth;
+let app, auth, db, storage, secondaryAuth;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     auth.languageCode = 'nl';
     db = getFirestore(app);
+    storage = getStorage(app);
 
     const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
     secondaryAuth = getAuth(secondaryApp);
@@ -736,6 +739,68 @@ function setupFormHandlers() {
         alert("Offerte link gekopieerd naar klembord!");
     });
 
+    // Action: Download Offerte PDF
+    document.getElementById('btn-action-download-offerte')?.addEventListener('click', async () => {
+        const btn = document.getElementById('btn-action-download-offerte');
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF Genereren...';
+        try {
+            const projData = { ...(currentProjectData || {}), id: currentProjectId };
+            const isSigned = Boolean(projData.proposalAcceptedAt || projData.status?.includes('Design') || projData.status?.includes('Ontwikkeling') || projData.status?.includes('Opgeleverd'));
+            const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(projData, isSigned);
+            
+            // Upload to storage if not yet uploaded
+            if (storage && currentProjectId && !projData.proposalPdfUrl) {
+                const uploadRes = await uploadPdfToStorage(storage, pdfBlob, currentProjectId, filename);
+                if (uploadRes && db) {
+                    await updateDoc(doc(db, "projects", currentProjectId), {
+                        proposalPdfUrl: uploadRes.downloadUrl,
+                        proposalPdfName: filename
+                    });
+                    projData.proposalPdfUrl = uploadRes.downloadUrl;
+                }
+            }
+
+            pdfDoc.save(filename);
+            await logAuditEvent('pdf_generated', `Officiële offerte PDF gegenereerd & gedownload (${filename}).`);
+        } catch (err) {
+            console.error("Fout bij genereren offerte PDF:", err);
+            alert("Kon offerte PDF niet genereren: " + err.message);
+        } finally {
+            btn.innerHTML = origText;
+        }
+    });
+
+    // Action: Download Factuur PDF
+    document.getElementById('btn-action-download-factuur')?.addEventListener('click', async () => {
+        const btn = document.getElementById('btn-action-download-factuur');
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Factuur Genereren...';
+        try {
+            const projData = { ...(currentProjectData || {}), id: currentProjectId };
+            const { doc: pdfDoc, blob: pdfBlob, filename, invoiceNumber } = await generateInvoicePDF(projData);
+
+            if (storage && currentProjectId && db) {
+                const uploadRes = await uploadPdfToStorage(storage, pdfBlob, currentProjectId, filename);
+                if (uploadRes) {
+                    await updateDoc(doc(db, "projects", currentProjectId), {
+                        invoicePdfUrl: uploadRes.downloadUrl,
+                        invoicePdfName: filename,
+                        invoiceNumber: invoiceNumber
+                    });
+                }
+            }
+
+            pdfDoc.save(filename);
+            await logAuditEvent('pdf_generated', `Officiële factuur PDF gegenereerd & gedownload (${filename}).`);
+        } catch (err) {
+            console.error("Fout bij genereren factuur PDF:", err);
+            alert("Kon factuur PDF niet genereren: " + err.message);
+        } finally {
+            btn.innerHTML = origText;
+        }
+    });
+
     // 8. Action: Send Design to Client
     document.getElementById('btn-action-design')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
@@ -893,11 +958,11 @@ function getMockProject(id) {
                 { id: 'task_605', title: '[TASK-605] Full-Screen Dedicated Project Werkplek (project.html)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_601', title: '[TASK-601] Interne Notities & Automatische Audit Trail', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_602', title: '[TASK-602] 4-Kolommen Kanban Bord voor Deliverables', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
+                { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
                 { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                 { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
-                { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-20' },
+                { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
                 { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                 { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                 { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
