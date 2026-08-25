@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
 
-        navMenuItems.querySelectorAll('a[href^="#"]').forEach(function(link) {
+        navMenuItems.querySelectorAll('a').forEach(function(link) {
             link.addEventListener('click', function() {
                 if (navMenuItems.classList.contains('active')) {
                     navMenuItems.classList.remove('active');
