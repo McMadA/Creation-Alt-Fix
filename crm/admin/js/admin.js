@@ -17,10 +17,12 @@ let app, auth, db, secondaryAuth;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    auth.languageCode = 'nl';
     db = getFirestore(app);
 
     const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
     secondaryAuth = getAuth(secondaryApp);
+    secondaryAuth.languageCode = 'nl';
     setPersistence(secondaryAuth, inMemoryPersistence).catch(console.warn);
 } catch (error) {
     console.warn("Firebase is nog niet (juist) geconfigureerd. Gebruik dummy config.");

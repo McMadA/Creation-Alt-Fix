@@ -10,6 +10,7 @@ const db = getFirestore(app);
 // Secondaire app instantie om klantaccounts aan te maken zonder admin inlog te muteren
 const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
 const secondaryAuth = getAuth(secondaryApp);
+secondaryAuth.languageCode = 'nl';
 setPersistence(secondaryAuth, inMemoryPersistence).catch(console.warn);
 
 function generateTempPassword() {

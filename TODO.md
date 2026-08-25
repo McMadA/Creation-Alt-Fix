@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **19 Epics & Tasks** |
-| **Completed Work Items** | ✅ Done | **16 Tasks (84%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (16%)** |
+| **Completed Work Items** | ✅ Done | **13 Tasks (68%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **6 Tasks (32%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████████░░░░] 84% Complete`
+`[████████████████░░░░░░░░] 68% Complete`
 
 ---
 

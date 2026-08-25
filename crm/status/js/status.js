@@ -15,6 +15,7 @@ let app, auth, db, storage;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    auth.languageCode = 'nl';
     db = getFirestore(app);
     storage = getStorage(app);
 } catch (err) {
