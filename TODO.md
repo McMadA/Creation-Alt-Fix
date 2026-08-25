@@ -113,10 +113,24 @@
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
   - **Details**: Canceled by administrator in favor of direct organic and referral client acquisition.
 
-- [ ] `[TASK-502]` `[P4-LOW]` `[STATUS: BACKLOG]` **Hosting Management & Recurring Service Structure**
+- [ ] `[TASK-502]` `[P4-LOW]` `[STATUS: BACKLOG]` **Hosting Management & Terugkerende Onderhoudsdiensten**
   - **Scope**: DirectAdmin / Vimexx Management
   - **Acceptance Criteria**:
     - Formalize €25/year .nl domain & hosting structure + prepaid hourly maintenance packages for recurring revenue.
+
+- [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure**
+  - **Scope**: Microsoft Azure Cloud (Azure Static Web Apps, Azure App Services, Azure DNS Zones, Custom SSL, Azure Resource Groups, GitHub Actions CI/CD)
+  - **Domeinen & Portfolio**:
+    - `creationaltfix.nl` & `portal.creationaltfix.nl` (Hoofdwebsite, CRM & Klantenportaal)
+    - `besselinginstallatietechniek.nl` (Besseling Installatietechniek)
+    - `arnolddesign.nl` (Arnold Doornbos / Arnold Design)
+    - `angelastenekes.nl` (Angela Stenekes)
+    - `bakkertjesieg.nl` (BakkertjeSieg)
+    - `stenekes-riool.nl` (Stenekes Riool & Grondwerk)
+    - `hbi.creationaltfix.nl` (Home Buyer Intelligence PropTech AI)
+  - **Acceptance Criteria**:
+    - Volledige verhuizing van alle domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
+    - Cloud architectuur inrichten met geautomatiseerde GitHub Actions deployments per repository, gratis beheerde Azure SSL certificaten en gecentraliseerd Azure DNS zonebeheer.
 
 ---
 
@@ -179,6 +193,30 @@
 - [x] `[TASK-702]` `[P2-HIGH]` `[STATUS: DONE]` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
   - **Scope**: `website/projecten.html`
   - **Details**: Featured the custom Creation+Alt+Fix CRM & Client Portal as a flagship full-width case study card at the top of the portfolio page, highlighting real-time Firebase tracking, digital signatures, automated onboarding, 5-phase pipeline, client portal, and email notifications with tech stack badges.
+
+---
+
+### 📋 EPIC-08: Client Project Deliverables & Systems Backlog (Microsoft To Do Sync)
+**Domain**: Project Management & Client Portfolios | **Stack**: CRM Kanban, GitHub, Tailscale
+
+- [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek Projectafronding**
+  - **Tasks**: Vervang decoratieve placeholders door echte projectfoto's van Maico, voeg Google Analytics tracking toe, integreer Google Reviews widget/link (Formulier backend, deployment, favicon en Over Mij e-mailadres reeds voltooid).
+
+- [ ] `[TASK-802]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Arnold Design AI Scrape Protection & Showcase**
+  - **Tasks**: Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect), glas-in-lood galerij & dynamische filter categorieën afronden, showcase op Creation+Alt+Fix integreren.
+
+- [ ] `[TASK-803]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Website Prototype**
+  - **Tasks**: `angelastenekes.nl` vibecoden en interactief prototype ontwerpen.
+
+- [ ] `[TASK-804]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Home Buyer Intelligence (PropTech AI) Afronding**
+  - **Tasks**: AI Revisor agent en local mode architectuur finaliseren.
+
+- [ ] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Creation+Alt+Fix Continuïteitsplan & Noodprotocol**
+  - **Tasks**: Noodprotocol documenteren voor beheer en continuïteit van klantwebsites en hosting infrastructuren.
+
+- [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Marketing, Stories & Personal Branding**
+  - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken.
+
 
 
 

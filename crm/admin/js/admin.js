@@ -241,7 +241,8 @@ const API = {
                 tasks: [
                     { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
                     { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
-                    { id: 't5_3', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
+                    { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-02' },
+                    { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-05' }
                 ],
                 internalNotes: [
                     { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
@@ -271,8 +272,11 @@ const API = {
                     { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
                     { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t4', title: 'Wat gebeurt er als ik overlijd met de websites? (Noodprotocol & Continuïteitsplan)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-08' },
                     { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
-                    { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                    { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t7', title: 'Stories waarin ik bezig ben posten & Instagram branding', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-28' },
+                    { id: 'web_t8', title: 'Personal branding & profielversterking op LinkedIn/Instagram', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' }
                 ],
                 internalNotes: [
                     { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
@@ -314,6 +318,7 @@ const API = {
                     { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                     { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                     { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
+                    { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (Alle Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
                     { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                     { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                     { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
@@ -323,6 +328,121 @@ const API = {
                 ],
                 auditLog: [
                     { id: 'crm_l1', timestamp: '2026-08-25T20:30:00Z', type: 'data_updated', description: 'CRM systeem bijgewerkt met Sprint 1 Roadmap features.', actor: 'Allard Veldman' }
+                ]
+            },
+            {
+                id: 8,
+                client: "Besseling Installatietechniek",
+                companyName: "Besseling Installatietechniek",
+                contactName: "Maico Besseling",
+                email: "info@besselinginstallatietechniek.nl",
+                domainName: "www.besselinginstallatietechniek.nl",
+                domain: "www.besselinginstallatietechniek.nl",
+                service: "Installatie & Elektra Website",
+                goals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
+                design: "Modern, fris wit met blauw/oranje accenten.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "25-08-2026",
+                proposalPrice: "650,00",
+                tasks: [
+                    { id: 'bes_1', title: "Echte foto's — Vervang decoratieve placeholders door foto's van Maico & projecten", completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
+                    { id: 'bes_2', title: 'Formulier backend koppelen aan Formspree / Netlify / API', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 'bes_3', title: 'Deployment — Push naar GitHub en deploy via hosting', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
+                    { id: 'bes_4', title: 'Google Analytics tracking toevoegen', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-04' },
+                    { id: 'bes_5', title: 'Favicon & logo toevoegen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-23' },
+                    { id: 'bes_6', title: 'E-mailadres unificeren op Over Mij pagina (info@besselinginstallatietechniek.nl)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' },
+                    { id: 'bes_7', title: 'Google Reviews widget / feedback link integreren', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-06' }
+                ],
+                internalNotes: [
+                    { id: 'bes_n1', text: 'Website structuur staat gereed. Wachten op definitieve projectfoto’s van Maico.', createdAt: '2026-08-25T15:00:00Z', author: 'Allard' }
+                ],
+                auditLog: [
+                    { id: 'bes_l1', timestamp: '2026-08-25T15:00:00Z', type: 'data_updated', description: 'Besseling taken gesynchroniseerd vanuit Microsoft To Do.', actor: 'Allard' }
+                ]
+            },
+            {
+                id: 9,
+                client: "Angela Stenekes",
+                companyName: "Angela Stenekes",
+                contactName: "Angela Stenekes",
+                email: "contact@angelastenekes.nl",
+                domainName: "www.angelastenekes.nl",
+                domain: "www.angelastenekes.nl",
+                service: "Website Laten Maken & Vibecoding",
+                goals: "Persoonlijke website en showcase portfolio.",
+                design: "Stijlvol, minimalistisch, modern.",
+                status: "Nieuwe Lead",
+                statusClass: "concept",
+                date: "25-08-2026",
+                tasks: [
+                    { id: 'ang_1', title: 'angelastenekes.nl vibecoden & interactief prototype bouwen', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
+                ],
+                internalNotes: [
+                    { id: 'ang_n1', text: 'Toegevoegd via Microsoft To Do backlog.', createdAt: '2026-08-25T16:00:00Z', author: 'Allard' }
+                ],
+                auditLog: [
+                    { id: 'ang_l1', timestamp: '2026-08-25T16:00:00Z', type: 'lead_created', description: 'Lead aangemaakt vanuit Microsoft To Do.', actor: 'Allard' }
+                ]
+            },
+            {
+                id: 10,
+                client: "Home Buyer Intelligence",
+                companyName: "Home Buyer Intelligence (PropTech AI)",
+                contactName: "Allard Veldman",
+                email: "info@creationaltfix.nl",
+                domainName: "hbi.creationaltfix.nl",
+                domain: "hbi.creationaltfix.nl",
+                service: "PropTech AI Webapplicatie",
+                goals: "Intelligente vastgoeddata analyse en geautomatiseerde aankoopadviezen met AI Revisor agent in local mode.",
+                design: "Modern dashboard, 3D architectuur visualisatie, real-time filters.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "25-08-2026",
+                tasks: [
+                    { id: 'hbi_1', title: 'Home Buyer Intelligence afmaken (AI Revisor & Local Mode)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
+                ],
+                internalNotes: [
+                    { id: 'hbi_n1', text: 'Local mode architectuur diagram is al opgenomen in de showcase portfolio.', createdAt: '2026-08-25T17:00:00Z', author: 'Allard' }
+                ],
+                auditLog: [
+                    { id: 'hbi_l1', timestamp: '2026-08-25T17:00:00Z', type: 'data_updated', description: 'Project deliverables gesynchroniseerd.', actor: 'Allard' }
+                ]
+            },
+            {
+                id: 11,
+                client: "BakkertjeSieg",
+                companyName: "BakkertjeSieg",
+                contactName: "Siegert",
+                email: "bakkertjesieg@gmail.com",
+                domainName: "www.bakkertjesieg.nl",
+                domain: "www.bakkertjesieg.nl",
+                service: "Webshop & Digitaal Bestelsysteem",
+                goals: "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen en nieuwsbriefintegratie.",
+                design: "Warm, gastvrij, ambachtelijk.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "25-08-2026",
+                proposalPrice: "750,00",
+                tasks: [
+                    { id: 'bs_1', title: 'Downloads klaarzetten na betaling in klantaccounts', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                    { id: 'bs_2', title: 'Betalingen & iDEAL koppeling regelen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                    { id: 'bs_3', title: 'Instagram plugin werkend maken ipv statische afbeeldingen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-14' },
+                    { id: 'bs_4', title: 'Contactformulier routeren naar bakkertjesieg@gmail.com', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                    { id: 'bs_5', title: 'Nieuwsbrief formulier API check uitvoeren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-16' },
+                    { id: 'bs_6', title: 'Factuur sturen & administratieve afronding', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                    { id: 'bs_7', title: 'Beoordelingen checken en placeholders verwijderen', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-19' },
+                    { id: 'bs_8', title: 'Verzendkosten configuratie toevoegen aan checkout', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 'bs_9', title: 'Password reset custom email fixen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-21' },
+                    { id: 'bs_10', title: 'Nieuwsbrief MailerLite integratie migreren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-22' },
+                    { id: 'bs_11', title: 'Offertes laten genereren met bestelling in de mail', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-23' },
+                    { id: 'bs_12', title: 'Admin portal updaten met nieuwe functies', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' }
+                ],
+                internalNotes: [
+                    { id: 'bs_n1', text: 'Alle 12 projectdeliverables zijn succesvol opgeleverd (12/12 af).', createdAt: '2026-08-25T17:30:00Z', author: 'Allard' }
+                ],
+                auditLog: [
+                    { id: 'bs_l1', timestamp: '2026-08-25T17:30:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang) - Alle 12 taken voltooid.', actor: 'Allard' }
                 ]
             }
         ];

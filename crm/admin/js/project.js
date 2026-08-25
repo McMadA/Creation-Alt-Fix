@@ -1026,6 +1026,7 @@ function getMockProject(id) {
                 { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
                 { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                 { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
+                { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (Alle Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
                 { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
                 { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
                 { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
@@ -1039,6 +1040,94 @@ function getMockProject(id) {
         };
     }
 
+    if (String(id) === "8" || String(id).includes("Besseling") || String(id).includes("besseling")) {
+        return {
+            id: 8,
+            client: "Besseling Installatietechniek",
+            companyName: "Besseling Installatietechniek",
+            contactName: "Maico Besseling",
+            email: "info@besselinginstallatietechniek.nl",
+            domainName: "www.besselinginstallatietechniek.nl",
+            domain: "www.besselinginstallatietechniek.nl",
+            service: "Installatie & Elektra Website",
+            goals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
+            design: "Modern, fris wit met blauw/oranje accenten.",
+            status: "In Ontwikkeling",
+            statusClass: "active",
+            date: "25-08-2026",
+            proposalPrice: "650,00",
+            tasks: [
+                { id: 'bes_1', title: "Echte foto's — Vervang decoratieve placeholders door foto's van Maico & projecten", completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
+                { id: 'bes_2', title: 'Formulier backend koppelen aan Formspree / Netlify / API', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                { id: 'bes_3', title: 'Deployment — Push naar GitHub en deploy via hosting', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
+                { id: 'bes_4', title: 'Google Analytics tracking toevoegen', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-04' },
+                { id: 'bes_5', title: 'Favicon & logo toevoegen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-23' },
+                { id: 'bes_6', title: 'E-mailadres unificeren op Over Mij pagina (info@besselinginstallatietechniek.nl)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' },
+                { id: 'bes_7', title: 'Google Reviews widget / feedback link integreren', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-06' }
+            ],
+            internalNotes: [
+                { id: 'bes_n1', text: 'Website structuur staat gereed. Wachten op definitieve projectfoto’s van Maico.', createdAt: '2026-08-25T15:00:00Z', author: 'Allard' }
+            ],
+            auditLog: [
+                { id: 'bes_l1', timestamp: '2026-08-25T15:00:00Z', type: 'data_updated', description: 'Besseling taken gesynchroniseerd vanuit Microsoft To Do.', actor: 'Allard' }
+            ]
+        };
+    }
+
+    if (String(id) === "9" || String(id).includes("Angela") || String(id).includes("angelastenekes")) {
+        return {
+            id: 9,
+            client: "Angela Stenekes",
+            companyName: "Angela Stenekes",
+            contactName: "Angela Stenekes",
+            email: "contact@angelastenekes.nl",
+            domainName: "www.angelastenekes.nl",
+            domain: "www.angelastenekes.nl",
+            service: "Website Laten Maken & Vibecoding",
+            goals: "Persoonlijke website en showcase portfolio.",
+            design: "Stijlvol, minimalistisch, modern.",
+            status: "Nieuwe Lead",
+            statusClass: "concept",
+            date: "25-08-2026",
+            tasks: [
+                { id: 'ang_1', title: 'angelastenekes.nl vibecoden & interactief prototype bouwen', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
+            ],
+            internalNotes: [
+                { id: 'ang_n1', text: 'Toegevoegd via Microsoft To Do backlog.', createdAt: '2026-08-25T16:00:00Z', author: 'Allard' }
+            ],
+            auditLog: [
+                { id: 'ang_l1', timestamp: '2026-08-25T16:00:00Z', type: 'lead_created', description: 'Lead aangemaakt vanuit Microsoft To Do.', actor: 'Allard' }
+            ]
+        };
+    }
+
+    if (String(id) === "10" || String(id).includes("Home Buyer") || String(id).includes("hbi")) {
+        return {
+            id: 10,
+            client: "Home Buyer Intelligence",
+            companyName: "Home Buyer Intelligence (PropTech AI)",
+            contactName: "Allard Veldman",
+            email: "info@creationaltfix.nl",
+            domainName: "hbi.creationaltfix.nl",
+            domain: "hbi.creationaltfix.nl",
+            service: "PropTech AI Webapplicatie",
+            goals: "Intelligente vastgoeddata analyse en geautomatiseerde aankoopadviezen met AI Revisor agent in local mode.",
+            design: "Modern dashboard, 3D architectuur visualisatie, real-time filters.",
+            status: "In Ontwikkeling",
+            statusClass: "active",
+            date: "25-08-2026",
+            tasks: [
+                { id: 'hbi_1', title: 'Home Buyer Intelligence afmaken (AI Revisor & Local Mode)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
+            ],
+            internalNotes: [
+                { id: 'hbi_n1', text: 'Local mode architectuur diagram is al opgenomen in de showcase portfolio.', createdAt: '2026-08-25T17:00:00Z', author: 'Allard' }
+            ],
+            auditLog: [
+                { id: 'hbi_l1', timestamp: '2026-08-25T17:00:00Z', type: 'data_updated', description: 'Project deliverables gesynchroniseerd.', actor: 'Allard' }
+            ]
+        };
+    }
+
     return {
         id: id,
         client: "Arnold Doornbos (Arnold Design)",
@@ -1048,20 +1137,20 @@ function getMockProject(id) {
         service: "Kunstenaarsportfolio & Webapplicatie",
         goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
         design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
-        status: "Opgeleverd (Livegang)",
-        statusClass: "success",
+        status: "Design & Ontwerp (Fase 3)",
+        statusClass: "active",
         date: "25-08-2026",
         tasks: [
-            { id: 't1', title: 'Intake afronden en wensen inventariseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
-            { id: 't2', title: 'Ontwerp inrichten in React + Vite + Tailwind', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
-            { id: 't3', title: 'Glas-in-lood galerij optimaliseren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-24' },
-            { id: 't4', title: 'Livegang & SEO configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+            { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+            { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
+            { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-02' },
+            { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-05' }
         ],
         internalNotes: [
-            { id: 'n1', text: 'Klant was zeer tevreden over de snelle opzet van de categorie filtering en de dark studio esthetiek.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
+            { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
         ],
         auditLog: [
-            { id: 'l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang)', actor: 'Allard' }
+            { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Design & Ontwerp (Fase 3)', actor: 'Allard' }
         ]
     };
 }
