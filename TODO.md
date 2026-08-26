@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **18 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **15 Tasks (83%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **3 Tasks (17%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
+| **Completed Work Items** | ✅ Done | **15 Tasks (50%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **15 Tasks (50%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████████░░░░] 83% Complete`
+`[████████████░░░░░░░░░░░░] 50% Complete`
 
 ---
 
@@ -198,6 +198,13 @@
 - [x] `[TASK-702]` `[P2-HIGH]` `[STATUS: DONE]` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
   - **Scope**: `website/projecten.html`
   - **Details**: Featured the custom Creation+Alt+Fix CRM & Client Portal as a flagship full-width case study card at the top of the portfolio page, highlighting real-time Firebase tracking, digital signatures, automated onboarding, 5-phase pipeline, client portal, and email notifications with tech stack badges.
+
+- [ ] `[TASK-703]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Volledige Site-Wide & Portal EN-NL Vertaling (Bilingual Localization)**
+  - **Scope**: `website/js/script.js`, `website/js/subpage.js`, `website/projecten.html`, `website/over-mij.html`, `website/contact.html`, `website/legal/`, `crm/intake/`, `crm/status/`
+  - **Acceptance Criteria**:
+    - Complete tweetalige vertalingsdictionary (NL / EN) synchroniseren voor alle nieuw toegevoegde pagina's, componenten en showcase cards (`projecten.html`, portfolio tags, filters, legal footers).
+    - Lokalisatie-ondersteuning en taalswitcher (NL 🇳🇱 / EN 🇬🇧) uitbreiden naar het Intake Formulier (`crm/intake/`) en Klantenportaal (`crm/status/`).
+    - Automatische taaldetectie op basis van browsertaal (`navigator.language`), persistente `localStorage` opslag en naadloze dynamische DOM-vertaling zonder pagina reload.
 
 ---
 
