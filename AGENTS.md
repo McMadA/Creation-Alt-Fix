@@ -126,26 +126,5 @@
 
 - **[2026-08-25] Universal Project Task Synchronizer & '0 taken' Elimination**: Upgraded `API.getProjects()` in `crm/admin/js/admin.js` and `loadProjectData()` in `crm/admin/js/project.js` with universal matching across ALL Firestore project records. Synced full deliverables for Besseling (7 tasks), Arnold Design (4 tasks), Angela Stenekes, BakkertjeSieg (12 tasks), Foodtruck Store (5 tasks), and generated structured delivery milestones (`[DEL-01]` t/m `[DEL-04]`) for historical live projects (Livian, Stenekes Riool, PompPop, Willa, Qolipa, Scholte, Capybara) so that no project displays `0 taken` and all deliverables populate the Kanban board.
 - **[2026-08-25] Project Portfolio Visual Assets Upgrade (`projecten.html`)**: Replaced all remaining CSS placeholder boxes on `website/projecten.html` with real high-resolution screenshots for `Livian Design` (`liviandesign.png`), `Besseling Installatietechniek` (`besseling.png`), `Qolipa` (`qolipa.png`), and `Foodtruck Store` (`ftruckstore.png`). All 14 projects across the portfolio now feature genuine visual screenshots with responsive lazy-loading.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- **[2026-08-26] Apache 500 Internal Server Error (.htaccess BOM & Rules)**: Fixed HTTP 500 server crash on creationaltfix.nl caused by a UTF-8 Byte Order Mark (BOM:  xEF, 0xBB, 0xBF) at byte 0 of website/.htaccess. Apache failed to recognize # comments and threw a syntax error. Also removed invalid /crm/ rewrites (since CRM is deployed directly to /portal/) and wrapped AddOutputFilterByType with <IfModule mod_filter.c>.
 
