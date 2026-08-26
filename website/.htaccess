@@ -1,19 +1,17 @@
-﻿# Creation+Alt+Fix Production Configuration
-RewriteEngine On
+# Creation+Alt+Fix Production Configuration
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>
 
 # Custom 404 Error Page
 ErrorDocument 404 /404.html
 
-# Portal URL Rewrites
-RewriteRule ^portal/intake/?$ /crm/intake/index.html [L,QSA]
-RewriteRule ^portal/offerte/?$ /crm/offerte/index.html [L,QSA]
-RewriteRule ^portal/status/?$ /crm/status/index.html [L,QSA]
-RewriteRule ^portal/admin/?$ /crm/admin/index.html [L,QSA]
-RewriteRule ^portal/?$ /crm/index.html [L,QSA]
-
 # Enable Compression
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
+    <IfModule mod_filter.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
+    </IfModule>
 </IfModule>
 
 # Browser Caching Headers
