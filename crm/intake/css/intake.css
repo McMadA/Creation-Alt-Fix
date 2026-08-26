@@ -89,7 +89,7 @@ h1, h2, h3, h4 {
     color: #22d3ee;
     border: 1px solid rgba(34, 211, 238, 0.4);
     text-decoration: none;
-    padding: 10px 18px;
+    padding: 10px 20px;
     border-radius: 999px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -105,14 +105,23 @@ h1, h2, h3, h4 {
     transform: translateY(-2px);
 }
 
+/* Language Switcher */
 .intake-lang-switcher {
     display: inline-flex;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 4px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 22, 41, 0.85);
+    padding: 5px 8px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(34, 211, 238, 0.3);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.intake-lang-switcher .lang-icon {
+    color: var(--color-accent);
+    font-size: 0.95rem;
+    margin: 0 4px 0 6px;
 }
 
 .intake-lang-switcher .lang-btn {
@@ -120,17 +129,23 @@ h1, h2, h3, h4 {
     border: none;
     color: #cbd5e1;
     padding: 6px 14px;
-    border-radius: 6px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
     transition: var(--transition-base);
+    font-family: var(--font-heading);
+}
+
+.intake-lang-switcher .lang-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .intake-lang-switcher .lang-btn.active {
     background: var(--color-primary);
-    color: #fff;
-    box-shadow: 0 2px 10px rgba(99,102,241,0.4);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.5);
 }
 
 /* Header & Branding */
@@ -146,7 +161,7 @@ h1, h2, h3, h4 {
     filter: drop-shadow(0 4px 12px rgba(99,102,241,0.3));
 }
 
-/* Progress Tracker Bar */
+/* Progress Tracker Card */
 .wizard-progress-card {
     background: rgba(26, 31, 53, 0.6);
     backdrop-filter: blur(12px);
@@ -712,6 +727,27 @@ textarea.form-control {
 @media (max-width: 768px) {
     body {
         padding: 20px 14px 40px;
+    }
+
+    .intake-top-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .direct-call-btn {
+        padding: 8px 14px;
+        font-size: 0.82rem;
+    }
+
+    .intake-lang-switcher {
+        padding: 4px 6px;
+    }
+
+    .intake-lang-switcher .lang-btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
     }
 
     .wizard-card {

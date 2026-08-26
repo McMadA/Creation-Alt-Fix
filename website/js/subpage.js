@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "landingSocialProofTitle": "Wereldwijd, altijd dichtbij",
     "landingSocialProofDesc": "Hoewel we vanuit Nederland werken, bedienen we klanten wereldwijd via veilige, snelle remote oplossingen. Onze communicatie is helder, direct en zonder onnodige technische jargon.",
     "landingSocialProofCta": "Bespaar tijd, stuur je intake direct in"
-};,
+        },
         'en': {
     // --- GENERAL & NAVIGATION ---
     "pageTitle": "Creation+Alt+Fix - Intelligent AI Solutions & IT Services Groningen",
@@ -1215,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "landingSocialProofTitle": "Worldwide, Always Accessible",
     "landingSocialProofDesc": "Operating from the Netherlands, we serve clients globally through secure, fast remote workflows. Our communication is clear, direct, and free of unnecessary technical jargon.",
     "landingSocialProofCta": "Save time, submit your project intake now"
-};
+        }
     };
 
     var currentLanguage = 'nl';
