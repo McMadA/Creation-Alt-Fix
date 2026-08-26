@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software Support & AI Automatisering - Creation+Alt+Fix</title>
-    <meta name="description" content="Klaar voor de volgende stap? Creation+Alt+Fix helpt jouw bedrijf met webontwikkeling, software support en slimme AI-automatisering. Vraag nu een gratis consult aan.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <title data-translate-key="landingPageTitle">Software Support & AI Automatisering - Creation+Alt+Fix</title>
+    <meta name="description" content="Klaar voor de volgende stap? Creation+Alt+Fix helpt jouw bedrijf met webontwikkeling, software support en slimme AI-automatisering. Vraag nu een gratis consult aan." data-translate-key="landingMetaDesc">
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -24,7 +28,15 @@
         h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--accent-alt), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .hero { padding: 100px 20px; text-align: center; max-width: 900px; margin: 0 auto; position: relative; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; max-width: 1100px; margin: 0 auto; }
+        .back-link { color: var(--text-muted); text-decoration: none; font-weight: 500; font-family: 'Space Grotesk', sans-serif; transition: color 0.3s; }
+        .back-link:hover { color: var(--primary); }
+
+        .landing-lang-switcher { display: flex; gap: 5px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .landing-lang-switcher .lang-btn { background: none; border: none; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .landing-lang-switcher .lang-btn.active { background: var(--primary); color: #fff; }
+
+        .hero { padding: 80px 20px; text-align: center; max-width: 900px; margin: 0 auto; position: relative; }
         .hero h1 { font-size: 3.5rem; margin-bottom: 20px; line-height: 1.1; }
         .hero p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px; }
         
@@ -53,44 +65,122 @@
 </head>
 <body>
 
-    <header style="padding: 20px; text-align: left; max-width: 1100px; margin: 0 auto;">
-        <a href="/" style="color: var(--text-muted); text-decoration: none; font-weight: 500; font-family: 'Space Grotesk', sans-serif; transition: color 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
-            <i class="fas fa-arrow-left"></i> Terug naar hoofdwebsite
+    <header class="header-bar">
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> <span data-translate-key="landingBackBtn">Terug naar hoofdwebsite</span>
         </a>
+        <div class="landing-lang-switcher" id="language-switcher">
+            <button type="button" data-lang="nl" class="lang-btn">NL</button>
+            <button type="button" data-lang="en" class="lang-btn">EN</button>
+        </div>
     </header>
 
     <section class="hero">
-        <div class="badge">Nieuwe Klant Actie</div>
-        <h1>Slimme Webontwikkeling & <br><span class="gradient-text">AI Automatisering</span></h1>
-        <p>Ben je te veel tijd kwijt aan randzaken? Laat Creation+Alt+Fix jouw processen stroomlijnen. Wij bouwen razendsnelle websites, veilige webshops en koppelen AI-systemen die het zware werk voor je doen.</p>
-        <a href="https://creationaltfix.nl/portal/intake/" class="cta-btn"><i class="fas fa-rocket"></i> Start Jouw Project Vandaag</a>
-        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);"><i class="fas fa-check"></i> Vrijblijvende Intake &nbsp;&bull;&nbsp; <i class="fas fa-check"></i> Remote Worldwide &nbsp;&bull;&nbsp; <i class="fas fa-check"></i> Persoonlijk Contact</p>
+        <div class="badge" data-translate-key="landingBadge">Nieuwe Klant Actie</div>
+        <h1 data-translate-key="landingH1">Slimme Webontwikkeling & <br><span class="gradient-text">AI Automatisering</span></h1>
+        <p data-translate-key="landingSubtitle">Ben je te veel tijd kwijt aan randzaken? Laat Creation+Alt+Fix jouw processen stroomlijnen. Wij bouwen razendsnelle websites, veilige webshops en koppelen AI-systemen die het zware werk voor je doen.</p>
+        <a href="/portal/intake/" class="cta-btn"><i class="fas fa-rocket"></i> <span data-translate-key="landingCtaBtn">Start Jouw Project Vandaag</span></a>
+        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);"><i class="fas fa-check" style="color: var(--accent);"></i> <span data-translate-key="landingTrustPoints">Vrijblijvende Intake &nbsp;&bull;&nbsp; Remote Worldwide &nbsp;&bull;&nbsp; Persoonlijk Contact</span></p>
     </section>
 
     <section class="features">
         <div class="feature-card">
             <i class="fas fa-laptop-code feature-icon"></i>
-            <h2>Websites & Portals</h2>
-            <p>Van een converterende landingspagina tot complexe, beveiligde klantportalen op maat. Gebouwd voor snelheid, veiligheid en SEO.</p>
+            <h2 data-translate-key="landingFeat1Title">Websites & Portals</h2>
+            <p data-translate-key="landingFeat1Desc">Van een converterende landingspagina tot complexe, beveiligde klantportalen op maat. Gebouwd voor snelheid, veiligheid en SEO.</p>
         </div>
         <div class="feature-card">
             <i class="fas fa-brain feature-icon"></i>
-            <h2>Slimme AI Integraties</h2>
-            <p>Laat AI je e-mails conceptueel opstellen of documenten scannen. Wij koppelen de slimste modellen direct aan jouw bedrijfssoftware.</p>
+            <h2 data-translate-key="landingFeat2Title">Slimme AI Integraties</h2>
+            <p data-translate-key="landingFeat2Desc">Laat AI je e-mails conceptueel opstellen of documenten scannen. Wij koppelen de slimste modellen direct aan jouw bedrijfssoftware.</p>
         </div>
         <div class="feature-card">
             <i class="fas fa-server feature-icon"></i>
-            <h2>Software Support</h2>
-            <p>Problemen met je huidige systemen? Wij bieden robuuste software support en oplossingen (zoals Tailscale en cloud-omgevingen) om je online infrastructuur te fixen.</p>
+            <h2 data-translate-key="landingFeat3Title">Software Support</h2>
+            <p data-translate-key="landingFeat3Desc">Problemen met je huidige systemen? Wij bieden robuuste software support en oplossingen (zoals Tailscale en cloud-omgevingen) om je online infrastructuur te fixen.</p>
         </div>
     </section>
 
     <section class="social-proof">
-        <h2>Wereldwijd, altijd dichtbij</h2>
-        <p style="max-width: 600px; margin: 20px auto; color: var(--text-muted);">Hoewel we vanuit Nederland werken, bedienen we klanten wereldwijd via veilige, snelle remote oplossingen. Onze communicatie is helder, direct en zonder onnodige technische jargon.</p>
-        <a href="https://creationaltfix.nl/portal/intake/" class="cta-btn" style="margin-top: 20px; font-size: 1rem; padding: 12px 24px;">Bespaar tijd, stuur je intake direct in</a>
+        <h2 data-translate-key="landingSocialProofTitle">Wereldwijd, altijd dichtbij</h2>
+        <p style="max-width: 600px; margin: 20px auto; color: var(--text-muted);" data-translate-key="landingSocialProofDesc">Hoewel we vanuit Nederland werken, bedienen we klanten wereldwijd via veilige, snelle remote oplossingen. Onze communicatie is helder, direct en zonder onnodige technische jargon.</p>
+        <a href="/portal/intake/" class="cta-btn" style="margin-top: 20px; font-size: 1rem; padding: 12px 24px;"><span data-translate-key="landingSocialProofCta">Bespaar tijd, stuur je intake direct in</span></a>
     </section>
 
+    <script>
+        const translations = {
+            nl: {
+                landingPageTitle: "Software Support & AI Automatisering - Creation+Alt+Fix",
+                landingMetaDesc: "Klaar voor de volgende stap? Creation+Alt+Fix helpt jouw bedrijf met webontwikkeling, software support en slimme AI-automatisering. Vraag nu een gratis consult aan.",
+                landingBackBtn: "Terug naar hoofdwebsite",
+                landingBadge: "Nieuwe Klant Actie",
+                landingH1: 'Slimme Webontwikkeling & <br><span class="gradient-text">AI Automatisering</span>',
+                landingSubtitle: "Ben je te veel tijd kwijt aan randzaken? Laat Creation+Alt+Fix jouw processen stroomlijnen. Wij bouwen razendsnelle websites, veilige webshops en koppelen AI-systemen die het zware werk voor je doen.",
+                landingCtaBtn: "Start Jouw Project Vandaag",
+                landingTrustPoints: "Vrijblijvende Intake &nbsp;&bull;&nbsp; Remote Worldwide &nbsp;&bull;&nbsp; Persoonlijk Contact",
+                landingFeat1Title: "Websites & Portals",
+                landingFeat1Desc: "Van een converterende landingspagina tot complexe, beveiligde klantportalen op maat. Gebouwd voor snelheid, veiligheid en SEO.",
+                landingFeat2Title: "Slimme AI Integraties",
+                landingFeat2Desc: "Laat AI je e-mails conceptueel opstellen of documenten scannen. Wij koppelen de slimste modellen direct aan jouw bedrijfssoftware.",
+                landingFeat3Title: "Software Support",
+                landingFeat3Desc: "Problemen met je huidige systemen? Wij bieden robuuste software support en oplossingen (zoals Tailscale en cloud-omgevingen) om je online infrastructuur te fixen.",
+                landingSocialProofTitle: "Wereldwijd, altijd dichtbij",
+                landingSocialProofDesc: "Hoewel we vanuit Nederland werken, bedienen we klanten wereldwijd via veilige, snelle remote oplossingen. Onze communicatie is helder, direct en zonder onnodige technische jargon.",
+                landingSocialProofCta: "Bespaar tijd, stuur je intake direct in"
+            },
+            en: {
+                landingPageTitle: "Software Support & AI Automation - Creation+Alt+Fix",
+                landingMetaDesc: "Ready for the next step? Creation+Alt+Fix helps your business with web development, software support and smart AI automation. Request a free consultation now.",
+                landingBackBtn: "Back to main website",
+                landingBadge: "New Client Offer",
+                landingH1: 'Smart Web Development & <br><span class="gradient-text">AI Automation</span>',
+                landingSubtitle: "Spending too much time on administrative overhead? Let Creation+Alt+Fix streamline your processes. We build lightning-fast websites, secure webshops, and connect AI systems to do the heavy lifting.",
+                landingCtaBtn: "Start Your Project Today",
+                landingTrustPoints: "Free Intake &nbsp;&bull;&nbsp; Remote Worldwide &nbsp;&bull;&nbsp; Direct Contact",
+                landingFeat1Title: "Websites & Portals",
+                landingFeat1Desc: "From high-converting landing pages to complex, secure custom client portals. Built for speed, security, and search engine ranking.",
+                landingFeat2Title: "Smart AI Integrations",
+                landingFeat2Desc: "Have AI draft email proposals or parse incoming documents. We connect smart LLM models directly to your workflow tools.",
+                landingFeat3Title: "Software Support",
+                landingFeat3Desc: "Experiencing issues with current systems? We provide robust software support and cloud solutions (like Tailscale and Azure) to optimize your online stack.",
+                landingSocialProofTitle: "Worldwide, Always Accessible",
+                landingSocialProofDesc: "Operating from the Netherlands, we serve clients globally through secure, fast remote workflows. Our communication is clear, direct, and free of unnecessary technical jargon.",
+                landingSocialProofCta: "Save time, submit your project intake now"
+            }
+        };
+
+        function applyTranslations(lang) {
+            if (!translations[lang]) lang = 'nl';
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (translations[lang][key]) {
+                    if (key === 'landingH1' || key === 'landingTrustPoints') {
+                        el.innerHTML = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+            if (translations[lang].landingPageTitle) document.title = translations[lang].landingPageTitle;
+        }
+
+        document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                if (lang) {
+                    applyTranslations(lang);
+                    localStorage.setItem('preferredLanguage', lang);
+                }
+            });
+        });
+
+        const initialLang = localStorage.getItem('preferredLanguage') || ((navigator.language || 'nl').split('-')[0] === 'en' ? 'en' : 'nl');
+        applyTranslations(initialLang);
+    </script>
     <script src="/js/cookie-consent.js"></script>
 </body>
 </html>

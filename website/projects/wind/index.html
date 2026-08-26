@@ -47,7 +47,7 @@
         "@type": "BreadcrumbList",
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.creationaltfix.nl/" },
-            { "@type": "ListItem", "position": 2, "name": "Projecten", "item": "https://www.creationaltfix.nl/#projects" },
+            { "@type": "ListItem", "position": 2, "name": "Projecten", "item": "https://www.creationaltfix.nl/projecten.html" },
             { "@type": "ListItem", "position": 3, "name": "Wind", "item": "https://www.creationaltfix.nl/projects/wind/" }
         ]
     }
@@ -59,7 +59,7 @@
     <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
+    <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
 
     <div id="navbar-placeholder"></div>
 
@@ -67,8 +67,8 @@
         <nav class="breadcrumbs" aria-label="Breadcrumb">
             <ol>
                 <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
-                <li><a href="/#projects" data-translate-key="breadcrumbProjecten">Projecten</a></li>
-                <li aria-current="page"><span class="current">Wind</span></li>
+                <li><a href="/projecten.html" data-translate-key="breadcrumbProjecten">Projecten</a></li>
+                <li aria-current="page"><span class="current" data-translate-key="breadcrumbWind">Wind Cloud Sync</span></li>
             </ol>
         </nav>
     </div>
@@ -187,7 +187,7 @@
                         </ul>
                     </div>
                     <div class="tech-category">
-                        <h4>Web Interface</h4>
+                        <h4 data-translate-key="windTechWeb">Web Interface</h4>
                         <ul class="keywords">
                             <li>FastAPI</li>
                             <li>Server-Sent Events</li>
@@ -196,7 +196,7 @@
                         </ul>
                     </div>
                     <div class="tech-category">
-                        <h4>Cloud API's</h4>
+                        <h4 data-translate-key="windTechCloudAPIs">Cloud API's</h4>
                         <ul class="keywords">
                             <li>Microsoft Graph</li>
                             <li>Google Drive API</li>

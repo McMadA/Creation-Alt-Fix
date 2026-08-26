@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offerte - Creation+Alt+Fix Portaal</title>
-    <meta http-equiv="refresh" content="3;url=../status/index.html">
+    <title data-translate-key="offerteRedirectTitle">Offerte - Creation+Alt+Fix Portaal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -42,11 +43,33 @@
 <body>
     <div class="box">
         <i class="fas fa-user-shield" style="font-size: 2.5rem; color: #6366f1; margin-bottom: 15px;"></i>
-        <h1>Naar het Klantenportaal</h1>
-        <p>Offertes en projectvoorstellen worden voortaan veilig weergegeven in je persoonlijke Creation+Alt+Fix Klantenportaal.</p>
-        <a href="../status/index.html" class="btn"><i class="fas fa-sign-in-alt"></i> Direct inloggen op Klantenportaal</a>
+        <h1 data-translate-key="offerteRedirectH1">Naar het Klantenportaal</h1>
+        <p data-translate-key="offerteRedirectP">Offertes en projectvoorstellen worden voortaan veilig weergegeven in je persoonlijke Creation+Alt+Fix Klantenportaal.</p>
+        <a href="../status/index.html" class="btn"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="offerteRedirectBtn">Direct inloggen op Klantenportaal</span></a>
     </div>
     <script>
+        const translations = {
+            nl: {
+                offerteRedirectTitle: "Offerte - Creation+Alt+Fix Portaal",
+                offerteRedirectH1: "Naar het Klantenportaal",
+                offerteRedirectP: "Offertes en projectvoorstellen worden voortaan veilig weergegeven in je persoonlijke Creation+Alt+Fix Klantenportaal.",
+                offerteRedirectBtn: "Direct inloggen op Klantenportaal"
+            },
+            en: {
+                offerteRedirectTitle: "Proposal - Creation+Alt+Fix Portal",
+                offerteRedirectH1: "To the Client Portal",
+                offerteRedirectP: "Proposals and project quotes are now securely displayed inside your personal Creation+Alt+Fix Client Portal.",
+                offerteRedirectBtn: "Directly log into Client Portal"
+            }
+        };
+        const lang = localStorage.getItem('preferredLanguage') || ((navigator.language || 'nl').split('-')[0] === 'en' ? 'en' : 'nl');
+        if (translations[lang]) {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
+        }
         setTimeout(() => {
             window.location.href = "../status/index.html";
         }, 1500);

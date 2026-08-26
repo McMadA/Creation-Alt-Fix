@@ -3,93 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klant Intake - Creation+Alt+Fix</title>
+    <title data-translate-key="intakePageTitle">Klant Intake - Creation+Alt+Fix</title>
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Styles -->
     <link rel="stylesheet" href="css/intake.css">
+    <style>
+        .intake-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .intake-lang-switcher {
+            display: inline-flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .intake-lang-switcher .lang-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .intake-lang-switcher .lang-btn.active {
+            background: var(--color-primary, #6366f1);
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
     <div class="intake-container">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <a href="tel:+31619135453" style="display: inline-flex; align-items: center; gap: 10px; background: rgba(99,102,241,0.1); color: #22d3ee; border: 1px solid #22d3ee; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; transition: all 0.3s;" onmouseover="this.style.background='#22d3ee'; this.style.color='#0a0e1a'" onmouseout="this.style.background='rgba(99,102,241,0.1)'; this.style.color='#22d3ee'">
-                <i class="fas fa-phone-alt"></i> Liever direct ff bellen, bel hier ...
+        <div class="intake-top-bar">
+            <a href="tel:+31619135453" style="display: inline-flex; align-items: center; gap: 10px; background: rgba(99,102,241,0.1); color: #22d3ee; border: 1px solid #22d3ee; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; transition: all 0.3s;" onmouseover="this.style.background='#22d3ee'; this.style.color='#0a0e1a'" onmouseout="this.style.background='rgba(99,102,241,0.1)'; this.style.color='#22d3ee'">
+                <i class="fas fa-phone-alt"></i> <span data-translate-key="intakeCallBtn">Liever direct ff bellen, bel hier ...</span>
             </a>
+            <div class="intake-lang-switcher" id="language-switcher">
+                <button type="button" data-lang="nl" class="lang-btn">NL</button>
+                <button type="button" data-lang="en" class="lang-btn">EN</button>
+            </div>
         </div>
+
         <header class="intake-header">
-            <img src="/images/logo.png" alt="Creation+Alt+Fix Logo" class="intake-logo">
-            <h1>Welkom bij <span class="accent">Creation+Alt+Fix</span></h1>
-            <p>Leuk dat we gaan samenwerken! Vul hieronder je wensen en gegevens in, dan kunnen we direct aan de slag met jouw project.</p>
+            <img src="/images/logo.webp" alt="Creation+Alt+Fix Logo" class="intake-logo">
+            <h1 data-translate-key="intakeH1">Welkom bij <span class="accent">Creation+Alt+Fix</span></h1>
+            <p data-translate-key="intakeSubtitle">Leuk dat we gaan samenwerken! Vul hieronder je wensen en gegevens in, dan kunnen we direct aan de slag met jouw project.</p>
         </header>
 
         <form id="intake-form" class="intake-form">
             
             <div class="form-section">
-                <h2>1. Bedrijfsgegevens</h2>
+                <h2 data-translate-key="intakeSec1Title">1. Bedrijfsgegevens</h2>
                 <div class="form-group">
-                    <label for="companyName">Bedrijfsnaam *</label>
-                    <input type="text" id="companyName" class="form-control" required placeholder="Bijv. Jansen IT">
+                    <label for="companyName" data-translate-key="intakeLblCompany">Bedrijfsnaam *</label>
+                    <input type="text" id="companyName" class="form-control" required placeholder="Bijv. Jansen IT" data-translate-key-placeholder="intakePlhCompany">
                 </div>
                 <div class="form-group">
-                    <label for="contactName">Contactpersoon *</label>
-                    <input type="text" id="contactName" class="form-control" required placeholder="Jouw volledige naam">
+                    <label for="contactName" data-translate-key="intakeLblContact">Contactpersoon *</label>
+                    <input type="text" id="contactName" class="form-control" required placeholder="Jouw volledige naam" data-translate-key-placeholder="intakePlhContact">
                 </div>
                 <div class="form-group">
-                    <label for="email">E-mailadres *</label>
-                    <input type="email" id="email" class="form-control" required placeholder="info@bedrijf.nl">
+                    <label for="email" data-translate-key="intakeLblEmail">E-mailadres *</label>
+                    <input type="email" id="email" class="form-control" required placeholder="info@bedrijf.nl" data-translate-key-placeholder="intakePlhEmail">
                 </div>
             </div>
 
             <div class="form-section">
-                <h2>2. Project Details</h2>
+                <h2 data-translate-key="intakeSec2Title">2. Project Details</h2>
                 <div class="form-group">
-                    <label for="serviceType">Welke dienst nemen we af? *</label>
+                    <label for="serviceType" data-translate-key="intakeLblService">Welke dienst nemen we af? *</label>
                     <select id="serviceType" class="form-control" required>
-                        <option value="" disabled selected>Kies een dienst...</option>
-                        <option value="Website & Webshop">Website & Webshop (vanaf €99)</option>
-                        <option value="Slimme Automatisering (AI)">Slimme Automatisering (AI)</option>
-                        <option value="Data Dashboard">Data Dashboard</option>
-                        <option value="Anders">Anders...</option>
+                        <option value="" disabled selected data-translate-key="intakeOptServiceChoose">Kies een dienst...</option>
+                        <option value="Website & Webshop" data-translate-key="intakeOptServiceWeb">Website & Webshop (vanaf €99)</option>
+                        <option value="Slimme Automatisering (AI)" data-translate-key="intakeOptServiceAI">Slimme Automatisering (AI)</option>
+                        <option value="Data Dashboard" data-translate-key="intakeOptServiceDash">Data Dashboard</option>
+                        <option value="Anders" data-translate-key="intakeOptServiceOther">Anders...</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="domainName">Heb je al een domeinnaam?</label>
-                    <input type="text" id="domainName" class="form-control" placeholder="Bijv. www.mijnbedrijf.nl of 'Nee, ik heb er nog geen'">
+                    <label for="domainName" data-translate-key="intakeLblDomain">Heb je al een domeinnaam?</label>
+                    <input type="text" id="domainName" class="form-control" placeholder="Bijv. www.mijnbedrijf.nl of 'Nee, ik heb er nog geen'" data-translate-key-placeholder="intakePlhDomain">
                 </div>
                 <div class="form-group">
-                    <label for="projectGoals">Wat is het belangrijkste doel van dit project? *</label>
-                    <textarea id="projectGoals" class="form-control" required rows="4" placeholder="Bijv. Meer aanvragen via de website, of handmatig werk automatiseren..."></textarea>
+                    <label for="projectGoals" data-translate-key="intakeLblGoals">Wat is het belangrijkste doel van dit project? *</label>
+                    <textarea id="projectGoals" class="form-control" required rows="4" placeholder="Bijv. Meer aanvragen via de website, of handmatig werk automatiseren..." data-translate-key-placeholder="intakePlhGoals"></textarea>
                 </div>
             </div>
 
             <div class="form-section">
-                <h2>3. Design & Bestanden</h2>
+                <h2 data-translate-key="intakeSec3Title">3. Design & Bestanden</h2>
                 <div class="form-group">
-                    <label for="designPreferences">Heb je voorkeur voor bepaalde kleuren of een stijl?</label>
-                    <input type="text" id="designPreferences" class="form-control" placeholder="Bijv. Blauw en strak, of zie bijlage">
+                    <label for="designPreferences" data-translate-key="intakeLblDesign">Heb je voorkeur voor bepaalde kleuren of een stijl?</label>
+                    <input type="text" id="designPreferences" class="form-control" placeholder="Bijv. Blauw en strak, of zie bijlage" data-translate-key-placeholder="intakePlhDesign">
                 </div>
-                <!-- Simpele bestandsopmerking voor nu, later kan dit aan Firebase Storage -->
                 <div class="form-group">
-                    <label>Logo's & Teksten (Later uploaden)</label>
-                    <p class="help-text">Zodra we deze intake hebben ontvangen, sturen we je een veilige link om je logo's en bestanden te uploaden.</p>
+                    <label data-translate-key="intakeLblFiles">Logo's & Teksten (Later uploaden)</label>
+                    <p class="help-text" data-translate-key="intakeHelpFiles">Zodra we deze intake hebben ontvangen, sturen we je een veilige link om je logo's en bestanden te uploaden.</p>
                 </div>
             </div>
 
             <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
-                <i class="fas fa-paper-plane"></i> Intake Versturen
+                <i class="fas fa-paper-plane"></i> <span data-translate-key="intakeSubmitBtn">Intake Versturen</span>
             </button>
             <div id="success-msg" class="success-msg hidden" style="display: flex; flex-direction: column; align-items: center; gap: 15px; text-align: center; padding: 25px;">
                 <div><i class="fas fa-check-circle" style="font-size: 2.5rem; color: #10b981;"></i></div>
-                <strong style="font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif;">Bedankt! Je account is succesvol aangemaakt.</strong>
-                <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 5px;">We hebben je zojuist een e-mail gestuurd (check ook je spambox) met een link om je wachtwoord in te stellen. Daarna kun je direct inloggen op het klantenportaal om de status van je project te volgen.</p>
-                <a href="../index.html" class="btn btn-primary" style="width: auto; padding: 12px 25px; margin-top: 10px;"><i class="fas fa-sign-in-alt"></i> Naar Klantenportaal</a>
+                <strong style="font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif;" data-translate-key="intakeSuccessTitle">Bedankt! Je account is succesvol aangemaakt.</strong>
+                <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 5px;" data-translate-key="intakeSuccessDesc">We hebben je zojuist een e-mail gestuurd (check ook je spambox) met een link om je wachtwoord in te stellen. Daarna kun je direct inloggen op het klantenportaal om de status van je project te volgen.</p>
+                <a href="../index.html" class="btn btn-primary" style="width: auto; padding: 12px 25px; margin-top: 10px;"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="intakePortalBtn">Naar Klantenportaal</span></a>
             </div>
         </form>
     </div>
 
     <!-- Scripts -->
     <script src="js/intake.js" type="module"></script>
+    <script src="/js/cookie-consent.js"></script>
 </body>
 </html>

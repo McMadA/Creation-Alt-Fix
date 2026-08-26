@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title>Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix</title>
-    <meta name="description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
+    <title data-translate-key="liveDemoPageTitle">Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix</title>
+    <meta name="description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript." data-translate-key="liveDemoMetaDesc">
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- Font Awesome (voor iconen) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
 
     <!-- Onze eigen CSS -->
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/live-demo.css">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -25,15 +26,56 @@
     <meta name="twitter:description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
     <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
     <link rel="canonical" href="https://www.creationaltfix.nl/live-demo.html">
+
+    <style>
+        .demo-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .demo-lang-switcher {
+            display: flex;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .demo-lang-switcher .lang-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .demo-lang-switcher .lang-btn.active {
+            background: var(--color-accent, #6366f1);
+            color: #fff;
+        }
+    </style>
 </head>
-<body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
+<body class="theme-dark">
+    <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
+
+    <div class="demo-top-bar">
+        <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> <span data-translate-key="liveDemoBackBtn">Terug naar de hoofdpagina</span></a>
+        <div class="demo-lang-switcher" id="language-switcher">
+            <button type="button" data-lang="nl" class="lang-btn">NL</button>
+            <button type="button" data-lang="en" class="lang-btn">EN</button>
+        </div>
+    </div>
 
     <header class="demo-header">
         <div class="container">
-            <h1>De Geboorte van een Website</h1>
-            <p>Scroll naar beneden om te zien hoe een simpele tekst transformeert in een interactieve webpagina.</p>
-            <a href="/index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Terug naar de hoofdpagina</a>
+            <h1 data-translate-key="liveDemoH1">De Geboorte van een <span>Website</span></h1>
+            <p data-translate-key="liveDemoSubtitle">Scroll naar beneden om te zien hoe een simpele tekst transformeert in een interactieve webpagina.</p>
         </div>
     </header>
 
@@ -42,18 +84,17 @@
         <section id="step-html" class="timeline-step">
             <div class="timeline-content">
                 <div class="timeline-milestone">1</div>
-                <h2>De Blauwdruk: Pure HTML</h2>
-                <p>Alles begint met HTML (HyperText Markup Language). Dit is het skelet van de pagina. Het definieert de structuur en de inhoud, zoals koppen, paragrafen en knoppen, maar zonder enige opmaak.</p>
+                <h2 data-translate-key="liveDemoStep1Title">De Blauwdruk: Pure HTML</h2>
+                <p data-translate-key="liveDemoStep1Desc">Alles begint met HTML (HyperText Markup Language). Dit is het skelet van de pagina. Het definieert de structuur en de inhoud, zoals koppen, paragrafen en knoppen, maar zonder enige opmaak.</p>
                 <pre><code class="language-html">&lt;h1&gt;Mijn Product&lt;/h1&gt;
 &lt;p&gt;Dit is een geweldig product.&lt;/p&gt;
 &lt;button&gt;Koop nu&lt;/button&gt;</code></pre>
             </div>
             <div class="timeline-preview">
                 <div class="preview-box" id="preview-box-html">
-                    <!-- Dit is de content die we gaan stylen -->
-                    <h1>Mijn Product</h1>
-                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button>Koop nu</button>
+                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
+                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
                 </div>
             </div>
         </section>
@@ -62,8 +103,8 @@
         <section id="step-css1" class="timeline-step">
             <div class="timeline-content">
                 <div class="timeline-milestone">2</div>
-                <h2>De Eerste Verflaag: Basis CSS</h2>
-                <p>Met CSS (Cascading Style Sheets) voegen we stijl toe. We beginnen met de basis: lettertypes, kleuren en wat opvulling (padding) om de tekst leesbaarder te maken en het er netter uit te laten zien.</p>
+                <h2 data-translate-key="liveDemoStep2Title">De Eerste Verflaag: Basis CSS</h2>
+                <p data-translate-key="liveDemoStep2Desc">Met CSS (Cascading Style Sheets) voegen we stijl toe. We beginnen met de basis: lettertypes, kleuren en wat opvulling (padding) om de tekst leesbaarder te maken en het er netter uit te laten zien.</p>
                 <pre><code class="language-css">body {
   font-family: 'Inter', sans-serif;
   background-color: #f0f0f0;
@@ -74,9 +115,9 @@
             </div>
             <div class="timeline-preview">
                 <div class="preview-box" id="preview-box-css-1">
-                    <h1>Mijn Product</h1>
-                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button>Koop nu</button>
+                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
+                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
                 </div>
             </div>
         </section>
@@ -85,8 +126,8 @@
         <section id="step-css2" class="timeline-step">
             <div class="timeline-content">
                 <div class="timeline-milestone">3</div>
-                <h2>Design & Layout: Meer CSS</h2>
-                <p>Nu maken we het visueel aantrekkelijk. We centreren de inhoud, geven de "box" een mooie schaduw en stijlen de knop zodat hij uitnodigend is om op te klikken. Dit is waar het design echt tot leven komt.</p>
+                <h2 data-translate-key="liveDemoStep3Title">Design & Layout: Meer CSS</h2>
+                <p data-translate-key="liveDemoStep3Desc">Nu maken we het visueel aantrekkelijk. We centreren de inhoud, geven de "box" een mooie schaduw en stijlen de knop zodat hij uitnodigend is om op te klikken. Dit is waar het design echt tot leven komt.</p>
                 <pre><code class="language-css">.preview-box {
   background: white;
   border-radius: 8px;
@@ -102,9 +143,9 @@ button {
             </div>
             <div class="timeline-preview">
                 <div class="preview-box" id="preview-box-css-2">
-                    <h1>Mijn Product</h1>
-                    <p>Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button>Koop nu</button>
+                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
+                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
                 </div>
             </div>
         </section>
@@ -113,8 +154,8 @@ button {
         <section id="step-js" class="timeline-step">
             <div class="timeline-content">
                 <div class="timeline-milestone">4</div>
-                <h2>De Magie: JavaScript</h2>
-                <p>JavaScript voegt interactiviteit toe. Het is het brein van de pagina. Hier maken we de knop functioneel. Klik op de "Koop nu" knop in het voorbeeld om te zien wat er gebeurt!</p>
+                <h2 data-translate-key="liveDemoStep4Title">De Magie: JavaScript</h2>
+                <p data-translate-key="liveDemoStep4Desc">JavaScript voegt interactiviteit toe. Het is het brein van de pagina. Hier maken we de knop functioneel. Klik op de "Koop nu" knop in het voorbeeld om te zien wat er gebeurt!</p>
                 <pre><code class="language-js">const button = document.getElementById('js-button');
 const text = document.getElementById('js-text');
 
@@ -124,23 +165,23 @@ button.addEventListener('click', () => {
             </div>
             <div class="timeline-preview">
                 <div class="preview-box" id="preview-box-js">
-                    <h1 id="js-title">Mijn Product</h1>
-                    <p id="js-text">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button id="js-button">Koop nu</button>
+                    <h1 id="js-title" data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
+                    <p id="js-text" data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
+                    <button id="js-button" data-translate-key="liveDemoPreviewBtn">Koop nu</button>
                 </div>
             </div>
         </section>
     </main>
 
     <footer class="demo-footer">
-        <p>Dit is het eindresultaat: een gestileerde en interactieve webcomponent.</p>
+        <p data-translate-key="liveDemoFooterText">Dit is het eindresultaat: een gestileerde en interactieve webcomponent.</p>
         <p class="footer-legal" style="font-size: 0.85em; margin-top: 10px; color: #ccc;">
-            KVK: 99986191 | BTW: NL005423147B16
+            <span data-translate-key="footerKvk">KVK: 99986191</span> | <span data-translate-key="footerBtw">BTW: NL005423147B16</span>
         </p>
-        <a href="/index.html" class="btn-back" style="margin-top: 10px; display: inline-block;">Terug naar Creation+Alt+Fix</a>
+        <a href="/" class="btn-back" style="margin-top: 10px; display: inline-block;"><i class="fas fa-arrow-left"></i> <span data-translate-key="liveDemoFooterBack">Terug naar Creation+Alt+Fix</span></a>
     </footer>
 
-    <script src="js/live-demo.js" defer></script>
-    <script src="/js/cookie-consent.js"></script>
+    <script src="js/live-demo.js"></script>
+    <script src="js/cookie-consent.js"></script>
 </body>
 </html>

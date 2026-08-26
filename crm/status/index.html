@@ -3,11 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mijn Project Dashboard - Creation+Alt+Fix</title>
+    <title data-translate-key="statusPageTitle">Mijn Project Dashboard - Creation+Alt+Fix</title>
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/status.css">
+    <style>
+        .portal-lang-switcher {
+            display: inline-flex;
+            gap: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .portal-lang-switcher .lang-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .portal-lang-switcher .lang-btn.active {
+            background: var(--color-primary, #6366f1);
+            color: #fff;
+        }
+    </style>
     <!-- jsPDF Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -16,13 +43,17 @@
     <!-- Top Navigation Bar -->
     <header class="navbar">
         <a href="../index.html" class="nav-brand">
-            <img src="../images/logo.png" alt="Creation+Alt+Fix Logo">
+            <img src="/images/logo.webp" alt="Creation+Alt+Fix Logo">
             <span>Creation+Alt+Fix</span>
         </a>
         <div class="nav-user">
-            <span class="user-badge" id="user-email-display"><i class="fas fa-spinner fa-spin"></i> Laden...</span>
-            <button id="reset-password-btn" class="btn-logout" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);"><i class="fas fa-key"></i> Wachtwoord Resetten</button>
-            <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Uitloggen</button>
+            <div class="portal-lang-switcher" id="language-switcher">
+                <button type="button" data-lang="nl" class="lang-btn">NL</button>
+                <button type="button" data-lang="en" class="lang-btn">EN</button>
+            </div>
+            <span class="user-badge" id="user-email-display"><i class="fas fa-spinner fa-spin"></i> <span data-translate-key="statusLoadingUser">Laden...</span></span>
+            <button id="reset-password-btn" class="btn-logout" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);"><i class="fas fa-key"></i> <span data-translate-key="statusResetPassBtn">Wachtwoord Resetten</span></button>
+            <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> <span data-translate-key="statusLogoutBtn">Uitloggen</span></button>
         </div>
     </header>
 
@@ -32,22 +63,22 @@
         <!-- Loading Spinner -->
         <div id="loader" class="card" style="text-align: center; padding: 50px;">
             <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--color-accent); margin-bottom: 15px;"></i>
-            <p style="color: var(--text-muted);">Je project-dashboard wordt geladen...</p>
+            <p style="color: var(--text-muted);" data-translate-key="statusLoadingText">Je project-dashboard wordt geladen...</p>
         </div>
 
         <!-- No Project View (hidden by default) -->
         <div id="no-project-view" class="card hidden" style="text-align: center; padding: 50px;">
             <i class="fas fa-folder-open" style="font-size: 3rem; color: #fbbf24; margin-bottom: 15px;"></i>
-            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 10px;">Geen actief project gevonden</h2>
-            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 25px auto;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 10px;" data-translate-key="statusNoProjectTitle">Geen actief project gevonden</h2>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 25px auto;" data-translate-key="statusNoProjectDesc">
                 Er is momenteel geen actief project gekoppeld aan dit e-mailadres. Heb je recent een intake ingevuld of wil je een nieuw project starten?
             </p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="../intake/" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                    <i class="fas fa-file-signature"></i> Nieuwe Intake Invoeren
+                    <i class="fas fa-file-signature"></i> <span data-translate-key="statusNewIntakeBtn">Nieuwe Intake Invoeren</span>
                 </a>
                 <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20account." target="_blank" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.05); color: white; border-radius: 8px; text-decoration: none;">
-                    <i class="fab fa-whatsapp" style="color: #25D366;"></i> Neem contact op via WhatsApp
+                    <i class="fab fa-whatsapp" style="color: #25D366;"></i> <span data-translate-key="statusWhatsAppBtn">Neem contact op via WhatsApp</span>
                 </a>
             </div>
         </div>
@@ -59,7 +90,7 @@
             <div id="multi-project-selector" class="card hidden" style="padding: 15px 25px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3);">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <i class="fas fa-layer-group" style="color: var(--color-accent); font-size: 1.2rem;"></i>
-                    <span style="font-size: 0.9rem; font-weight: 600;">Je hebt meerdere projecten:</span>
+                    <span style="font-size: 0.9rem; font-weight: 600;" data-translate-key="statusMultipleProjectsLabel">Je hebt meerdere projecten:</span>
                 </div>
                 <select id="project-dropdown" style="padding: 8px 14px; background: #0f1629; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: inherit; font-size: 0.9rem; cursor: pointer;">
                     <!-- Populated dynamically -->
@@ -80,7 +111,7 @@
 
                 <div class="progress-container">
                     <div class="progress-info">
-                        <span>Projectvoortgang</span>
+                        <span data-translate-key="statusProgressLabel">Projectvoortgang</span>
                         <strong id="progress-percent-display">25% Complete</strong>
                     </div>
                     <div class="progress-bar-bg">
@@ -91,61 +122,61 @@
 
             <!-- 5-Stage Visual Timeline -->
             <section class="card">
-                <h2 class="section-title"><i class="fas fa-tasks"></i> Project Timeline & Fasen</h2>
+                <h2 class="section-title"><i class="fas fa-tasks"></i> <span data-translate-key="statusTimelineTitle">Project Timeline & Fasen</span></h2>
                 
                 <div class="timeline">
                     <!-- Step 1 -->
                     <div id="step-1" class="step-card active">
                         <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
-                        <div class="step-number">Fase 1</div>
-                        <div class="step-title">Intake Voltooid</div>
-                        <div class="step-desc">Aanvraag ontvangen en wensen in kaart gebracht.</div>
+                        <div class="step-number" data-translate-key="stage1Number">Fase 1</div>
+                        <div class="step-title" data-translate-key="stage1Title">Intake Voltooid</div>
+                        <div class="step-desc" data-translate-key="stage1Desc">Aanvraag ontvangen en wensen in kaart gebracht.</div>
                     </div>
 
                     <!-- Step 2 -->
                     <div id="step-2" class="step-card">
                         <div class="step-icon"><i class="fas fa-file-signature"></i></div>
-                        <div class="step-number">Fase 2</div>
-                        <div class="step-title">Offerte & Akkoord</div>
-                        <div class="step-desc">Investeringsvoorstel en digitaal akkoord.</div>
+                        <div class="step-number" data-translate-key="stage2Number">Fase 2</div>
+                        <div class="step-title" data-translate-key="stage2Title">Offerte & Akkoord</div>
+                        <div class="step-desc" data-translate-key="stage2Desc">Investeringsvoorstel en digitaal akkoord.</div>
                     </div>
 
                     <!-- Step 3 -->
                     <div id="step-3" class="step-card">
                         <div class="step-icon"><i class="fas fa-palette"></i></div>
-                        <div class="step-number">Fase 3</div>
-                        <div class="step-title">Design & Ontwerp</div>
-                        <div class="step-desc">Visuele stijl en kleurenschema afstemmen.</div>
+                        <div class="step-number" data-translate-key="stage3Number">Fase 3</div>
+                        <div class="step-title" data-translate-key="stage3Title">Design & Ontwerp</div>
+                        <div class="step-desc" data-translate-key="stage3Desc">Visuele stijl en kleurenschema afstemmen.</div>
                     </div>
 
                     <!-- Step 4 -->
                     <div id="step-4" class="step-card">
                         <div class="step-icon"><i class="fas fa-code"></i></div>
-                        <div class="step-number">Fase 4</div>
-                        <div class="step-title">Ontwikkeling</div>
-                        <div class="step-desc">Code realiseren en grondig testen.</div>
+                        <div class="step-number" data-translate-key="stage4Number">Fase 4</div>
+                        <div class="step-title" data-translate-key="stage4Title">Ontwikkeling</div>
+                        <div class="step-desc" data-translate-key="stage4Desc">Code realiseren en grondig testen.</div>
                     </div>
 
                     <!-- Step 5 -->
                     <div id="step-5" class="step-card">
                         <div class="step-icon"><i class="fas fa-rocket"></i></div>
-                        <div class="step-number">Fase 5</div>
-                        <div class="step-title">Livegang</div>
-                        <div class="step-desc">Eindcontrole en domein overdracht.</div>
+                        <div class="step-number" data-translate-key="stage5Number">Fase 5</div>
+                        <div class="step-title" data-translate-key="stage5Title">Livegang</div>
+                        <div class="step-desc" data-translate-key="stage5Desc">Eindcontrole en domein overdracht.</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Offerte & Digitaal Akkoord Sectie (Taak 03) -->
+            <!-- Offerte & Digitaal Akkoord Sectie -->
             <section id="offerte-card" class="card">
-                <h2 class="section-title"><i class="fas fa-file-contract"></i> Project Offerte & Investeringsvoorstel</h2>
+                <h2 class="section-title"><i class="fas fa-file-contract"></i> <span data-translate-key="statusOfferteTitle">Project Offerte & Investeringsvoorstel</span></h2>
                 
                 <div class="offerte-box">
                     <div class="offerte-header">
                         <div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Investeringsvoorstel</h3>
+                            <h3 style="font-size: 1.1rem; color: #fff;" data-translate-key="statusProposalSub">Investeringsvoorstel</h3>
                             <span id="offerte-status-pill" class="offerte-status-pill pending">
-                                <i class="fas fa-clock"></i> In behandeling
+                                <i class="fas fa-clock"></i> <span data-translate-key="statusOffertePending">In behandeling</span>
                             </span>
                         </div>
                         <div class="offerte-price" id="offerte-price">Wordt berekend...</div>
@@ -162,10 +193,10 @@
                     <div id="offerte-success-msg" class="hidden" style="margin-top: 15px; padding: 18px 20px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; color: #34d399;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div>
-                                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong>Offerte Geaccepteerd!</strong> Je hebt op <span id="accepted-date">vandaag</span> akkoord gegeven op deze offerte.
+                                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusOfferteAcceptedTitle">Offerte Geaccepteerd!</strong> <span data-translate-key="statusOfferteAcceptedOn">Je hebt op</span> <span id="accepted-date">vandaag</span> <span data-translate-key="statusOfferteAcceptedNotice">akkoord gegeven op deze offerte.</span>
                             </div>
                             <button id="btn-download-proposal-pdf" type="button" class="btn-akkoord" style="background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
-                                <i class="fas fa-file-pdf"></i> Download Officiële Offerte (PDF)
+                                <i class="fas fa-file-pdf"></i> <span data-translate-key="statusDownloadPdfBtn">Download Officiële Offerte (PDF)</span>
                             </button>
                         </div>
                     </div>
@@ -174,14 +205,14 @@
 
             <!-- Fase 3: Design & Ontwerp Review Sectie -->
             <section id="design-card" class="card hidden">
-                <h2 class="section-title"><i class="fas fa-palette"></i> Design & Ontwerp Review</h2>
+                <h2 class="section-title"><i class="fas fa-palette"></i> <span data-translate-key="statusDesignTitle">Design & Ontwerp Review</span></h2>
                 
                 <div class="design-box">
                     <div class="offerte-header" style="border-color: rgba(168, 85, 247, 0.2);">
                         <div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Visueel Ontwerp & Wireframe</h3>
+                            <h3 style="font-size: 1.1rem; color: #fff;" data-translate-key="statusDesignSub">Visueel Ontwerp & Wireframe</h3>
                             <span id="design-status-pill" class="offerte-status-pill pending">
-                                <i class="fas fa-clock"></i> In behandeling
+                                <i class="fas fa-clock"></i> <span data-translate-key="statusOffertePending">In behandeling</span>
                             </span>
                         </div>
                         <div style="font-size: 2rem; color: #c084fc;"><i class="fas fa-drafting-compass"></i></div>
@@ -196,22 +227,22 @@
                     </div>
 
                     <div id="design-success-msg" class="hidden" style="margin-top: 15px; padding: 14px 20px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; color: #c084fc;">
-                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong>Design Goedgekeurd!</strong> Je hebt op <span id="design-accepted-date">vandaag</span> akkoord gegeven op het ontwerp. De ontwikkeling is gestart.
+                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusDesignApprovedTitle">Design Goedgekeurd!</strong> <span data-translate-key="statusDesignApprovedOn">Je hebt op</span> <span id="design-accepted-date">vandaag</span> <span data-translate-key="statusDesignApprovedNotice">akkoord gegeven op het ontwerp. De ontwikkeling is gestart.</span>
                     </div>
                 </div>
             </section>
 
             <!-- Project Bestanden & Uploads -->
             <section class="card" id="files-card">
-                <h2 class="section-title"><i class="fas fa-folder-open"></i> Project Bestanden</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                <h2 class="section-title"><i class="fas fa-folder-open"></i> <span data-translate-key="statusFilesTitle">Project Bestanden</span></h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;" data-translate-key="statusFilesDesc">
                     Upload hier je logo's, teksten of andere benodigde bestanden voor dit project.
                 </p>
 
                 <div class="file-upload-box" style="border: 2px dashed rgba(99, 102, 241, 0.3); background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
                     <input type="file" id="file-upload-input" multiple style="display: none;">
                     <label for="file-upload-input" class="btn-akkoord" style="display: inline-block; cursor: pointer; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; width: auto; padding: 10px 20px;">
-                        <i class="fas fa-cloud-upload-alt"></i> Selecteer Bestanden...
+                        <i class="fas fa-cloud-upload-alt"></i> <span data-translate-key="statusSelectFilesBtn">Selecteer Bestanden...</span>
                     </label>
                     <div id="upload-status" style="margin-top: 10px; font-size: 0.85rem; color: #34d399; font-weight: 600;"></div>
                 </div>
@@ -223,15 +254,15 @@
 
             <!-- Demo & Factuur Links & Direct Contact -->
             <section class="card">
-                <h2 class="section-title"><i class="fas fa-link"></i> Snelle Acties & Contact</h2>
+                <h2 class="section-title"><i class="fas fa-link"></i> <span data-translate-key="statusActionsTitle">Snelle Acties & Contact</span></h2>
 
                 <div class="actions-grid">
                     <!-- Live Demo (indien beschikbaar) -->
                     <a id="demo-link" href="#" target="_blank" class="action-card hidden">
                         <i class="fas fa-desktop"></i>
                         <div>
-                            <h4>Bekijk Live Demo</h4>
-                            <p>Probeer je nieuwe site/software in de test-omgeving</p>
+                            <h4 data-translate-key="statusLiveDemoTitle">Bekijk Live Demo</h4>
+                            <p data-translate-key="statusLiveDemoDesc">Probeer je nieuwe site/software in de test-omgeving</p>
                         </div>
                     </a>
 
@@ -239,8 +270,8 @@
                     <a id="mollie-link" href="#" target="_blank" class="action-card hidden">
                         <i class="fas fa-credit-card"></i>
                         <div>
-                            <h4>Factuur Betalen (Mollie)</h4>
-                            <p>Betaal veilig en snel online via iDEAL / Creditcard</p>
+                            <h4 data-translate-key="statusPayMollieTitle">Factuur Betalen (Mollie)</h4>
+                            <p data-translate-key="statusPayMollieDesc">Betaal veilig en snel online via iDEAL / Creditcard</p>
                         </div>
                     </a>
 
@@ -248,8 +279,8 @@
                     <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" class="action-card">
                         <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                         <div>
-                            <h4>WhatsApp met Allard</h4>
-                            <p>Stuur direct een bericht voor snelle vragen</p>
+                            <h4 data-translate-key="statusWhatsAppAllardTitle">WhatsApp met Allard</h4>
+                            <p data-translate-key="statusWhatsAppAllardDesc">Stuur direct een bericht voor snelle vragen</p>
                         </div>
                     </a>
 
@@ -257,7 +288,7 @@
                     <a href="mailto:info@creationaltfix.nl?subject=Vraag%20over%20mijn%20project" class="action-card">
                         <i class="fas fa-envelope" style="color: var(--color-accent);"></i>
                         <div>
-                            <h4>Stuur een E-mail</h4>
+                            <h4 data-translate-key="statusSendEmailTitle">Stuur een E-mail</h4>
                             <p>info@creationaltfix.nl</p>
                         </div>
                     </a>
@@ -269,5 +300,6 @@
 
     <!-- JS Logic Script -->
     <script type="module" src="js/status.js"></script>
+    <script src="/js/cookie-consent.js"></script>
 </body>
 </html>

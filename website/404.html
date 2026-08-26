@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title>404 - Pagina niet gevonden | Creation+Alt+Fix</title>
+    <title data-translate-key="error404PageTitle">404 - Pagina niet gevonden | Creation+Alt+Fix</title>
 
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
 
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/subpage.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="404 - Pagina niet gevonden | Creation+Alt+Fix">
@@ -21,16 +23,25 @@
     <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
     <link rel="canonical" href="https://www.creationaltfix.nl/404.html">
 </head>
-<body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
+<body class="theme-dark">
+    <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
 
-    <main id="main-content" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
-        <h1 class="section-title">404 - <span>Pagina niet gevonden</span></h1>
-        <p style="margin-bottom: 2rem; color: var(--color-text-secondary); max-width: 500px;">
+    <div id="navbar-placeholder"></div>
+
+    <main id="main-content" style="min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 20px;">
+        <div style="font-size: 4rem; color: var(--color-accent); margin-bottom: 20px;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1 class="section-title" data-translate-key="error404Title">404 - <span>Pagina niet gevonden</span></h1>
+        <p style="margin-bottom: 2rem; color: var(--color-text-secondary); max-width: 500px; font-size: 1.1rem;" data-translate-key="error404Desc">
             De pagina die u zoekt bestaat niet of is verplaatst.
         </p>
-        <a href="/" class="btn btn-primary">Terug naar Home</a>
+        <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> <span data-translate-key="error404HomeBtn">Terug naar Home</span></a>
     </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/subpage.js" defer></script>
     <script src="/js/cookie-consent.js"></script>
 </body>
 </html>

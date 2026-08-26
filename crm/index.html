@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klantenportaal & Inlog - Creation+Alt+Fix</title>
+    <title data-translate-key="portalLoginTitle">Klantenportaal & Inlog - Creation+Alt+Fix</title>
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -42,6 +44,33 @@
             text-align: center;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(12px);
+            position: relative;
+        }
+        .portal-lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .portal-lang-switcher .lang-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .portal-lang-switcher .lang-btn.active {
+            background: var(--color-primary);
+            color: #fff;
         }
         .logo {
             max-width: 130px;
@@ -212,69 +241,74 @@
 <body>
 
     <div class="portal-card">
-        <img src="images/logo.png" alt="Creation+Alt+Fix Logo" class="logo">
-        <h1>Creation+Alt+Fix <span class="accent">Portal</span></h1>
-        <p class="subtitle">Log in om de live status van je project te volgen en je offerte in te zien.</p>
+        <div class="portal-lang-switcher" id="language-switcher">
+            <button type="button" data-lang="nl" class="lang-btn">NL</button>
+            <button type="button" data-lang="en" class="lang-btn">EN</button>
+        </div>
+
+        <img src="/images/logo.webp" alt="Creation+Alt+Fix Logo" class="logo">
+        <h1 data-translate-key="portalH1">Creation+Alt+Fix <span class="accent">Portal</span></h1>
+        <p class="subtitle" data-translate-key="portalSubtitle">Log in om de live status van je project te volgen en je offerte in te zien.</p>
 
         <!-- Klant Inlog Formulier -->
         <div id="login-box-container" class="login-box">
-            <h2><i class="fas fa-user-lock"></i> Klant Inloggen</h2>
+            <h2><i class="fas fa-user-lock"></i> <span data-translate-key="portalLoginBoxTitle">Klant Inloggen</span></h2>
             
             <div id="login-error" class="error-msg hidden"></div>
 
             <form id="client-login-form">
                 <div class="form-group">
-                    <label for="client-email"><i class="fas fa-envelope"></i> E-mailadres</label>
-                    <input type="email" id="client-email" class="input-field" placeholder="je-naam@bedrijf.nl" required>
+                    <label for="client-email"><i class="fas fa-envelope"></i> <span data-translate-key="portalLblEmail">E-mailadres</span></label>
+                    <input type="email" id="client-email" class="input-field" placeholder="je-naam@bedrijf.nl" data-translate-key-placeholder="portalPlhEmail" required>
                 </div>
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <label for="client-password" style="margin: 0;"><i class="fas fa-lock"></i> Wachtwoord</label>
-                        <a href="#" id="forgot-password-link" style="font-size: 0.8rem; color: var(--color-accent); text-decoration: none;">Wachtwoord vergeten?</a>
+                        <label for="client-password" style="margin: 0;"><i class="fas fa-lock"></i> <span data-translate-key="portalLblPassword">Wachtwoord</span></label>
+                        <a href="#" id="forgot-password-link" style="font-size: 0.8rem; color: var(--color-accent); text-decoration: none;" data-translate-key="portalForgotPassLink">Wachtwoord vergeten?</a>
                     </div>
-                    <input type="password" id="client-password" class="input-field" placeholder="Ontvangen wachtwoord" required>
+                    <input type="password" id="client-password" class="input-field" placeholder="Ontvangen wachtwoord" data-translate-key-placeholder="portalPlhPassword" required>
                 </div>
                 <button type="submit" id="btn-client-login" class="btn-submit">
-                    <i class="fas fa-sign-in-alt"></i> Inloggen op Klantenportaal
+                    <i class="fas fa-sign-in-alt"></i> <span data-translate-key="portalBtnLogin">Inloggen op Klantenportaal</span>
                 </button>
             </form>
         </div>
 
         <!-- Wachtwoord Vergeten Box -->
         <div id="forgot-password-box" class="login-box hidden">
-            <h2><i class="fas fa-key"></i> Wachtwoord Resetten</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Vul je e-mailadres in om een veilige reset-link te ontvangen.</p>
+            <h2><i class="fas fa-key"></i> <span data-translate-key="portalForgotBoxTitle">Wachtwoord Resetten</span></h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;" data-translate-key="portalForgotBoxDesc">Vul je e-mailadres in om een veilige reset-link te ontvangen.</p>
             <form id="forgot-password-form">
                 <div class="form-group">
-                    <label for="reset-email"><i class="fas fa-envelope"></i> E-mailadres</label>
-                    <input type="email" id="reset-email" class="input-field" placeholder="je-naam@bedrijf.nl" required>
+                    <label for="reset-email"><i class="fas fa-envelope"></i> <span data-translate-key="portalLblEmail">E-mailadres</span></label>
+                    <input type="email" id="reset-email" class="input-field" placeholder="je-naam@bedrijf.nl" data-translate-key-placeholder="portalPlhEmail" required>
                 </div>
                 <button type="submit" id="btn-reset-password" class="btn-submit" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
-                    <i class="fas fa-paper-plane"></i> Reset Link Versturen
+                    <i class="fas fa-paper-plane"></i> <span data-translate-key="portalBtnSendReset">Reset Link Versturen</span>
                 </button>
             </form>
             <a href="#" id="back-to-login-link" style="display: block; text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--color-accent); text-decoration: none;">
-                <i class="fas fa-arrow-left"></i> Terug naar inloggen
+                <i class="fas fa-arrow-left"></i> <span data-translate-key="portalBtnBackToLogin">Terug naar inloggen</span>
             </a>
         </div>
 
-        <div class="divider"><span>Nog geen lopend project?</span></div>
+        <div class="divider"><span data-translate-key="portalDivider">Nog geen lopend project?</span></div>
 
         <!-- Intake Link -->
         <a href="intake/" class="nav-card">
             <i class="fas fa-file-signature"></i>
             <div>
-                <h3>Project Intake Formulier</h3>
-                <span>Start een nieuw project en ontvang direct je inloggegevens</span>
+                <h3 data-translate-key="portalIntakeCardTitle">Project Intake Formulier</h3>
+                <span data-translate-key="portalIntakeCardDesc">Start een nieuw project en ontvang direct je inloggegevens</span>
             </div>
         </a>
 
         <a href="https://creationaltfix.nl" class="back-link">
-            <i class="fas fa-arrow-left"></i> Terug naar hoofdwebsite (creationaltfix.nl)
+            <i class="fas fa-arrow-left"></i> <span data-translate-key="portalBackToWebsite">Terug naar hoofdwebsite (creationaltfix.nl)</span>
         </a>
     </div>
 
-    <!-- Firebase Auth Script -->
+    <!-- Firebase Auth Script & Language Switcher -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -283,8 +317,114 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        auth.languageCode = 'nl';
         const db = getFirestore(app);
+
+        // Translations dictionary
+        const translations = {
+            nl: {
+                portalLoginTitle: "Klantenportaal & Inlog - Creation+Alt+Fix",
+                portalH1: 'Creation+Alt+Fix <span class="accent">Portal</span>',
+                portalSubtitle: "Log in om de live status van je project te volgen en je offerte in te zien.",
+                portalLoginBoxTitle: "Klant Inloggen",
+                portalLblEmail: "E-mailadres",
+                portalPlhEmail: "je-naam@bedrijf.nl",
+                portalLblPassword: "Wachtwoord",
+                portalPlhPassword: "Ontvangen wachtwoord",
+                portalForgotPassLink: "Wachtwoord vergeten?",
+                portalBtnLogin: "Inloggen op Klantenportaal",
+                portalBtnLoggingIn: "Bezig met inloggen...",
+                portalForgotBoxTitle: "Wachtwoord Resetten",
+                portalForgotBoxDesc: "Vul je e-mailadres in om een veilige reset-link te ontvangen.",
+                portalBtnSendReset: "Reset Link Versturen",
+                portalBtnSendingReset: "Bezig met versturen...",
+                portalBtnBackToLogin: "Terug naar inloggen",
+                portalResetSentTitle: "E-mail Verstuurd",
+                portalResetSentDesc: "Er is een e-mail verstuurd met instructies om je wachtwoord opnieuw in te stellen. Check ook je spambox.",
+                portalDivider: "Nog geen lopend project?",
+                portalIntakeCardTitle: "Project Intake Formulier",
+                portalIntakeCardDesc: "Start een nieuw project en ontvang direct je inloggegevens",
+                portalBackToWebsite: "Terug naar hoofdwebsite (creationaltfix.nl)",
+                portalErrInvalid: "Ongeldig e-mailadres of wachtwoord. Controleer je gegevens of de ontvangen e-mail.",
+                portalErrNoProject: "Geen actief project of beheerdersaccount gevonden voor dit e-mailadres.",
+                portalErrReset: "Kon de reset-mail niet versturen. Controleer of het e-mailadres juist is."
+            },
+            en: {
+                portalLoginTitle: "Client Portal & Login - Creation+Alt+Fix",
+                portalH1: 'Creation+Alt+Fix <span class="accent">Portal</span>',
+                portalSubtitle: "Log in to track your live project progress and review your digital proposal.",
+                portalLoginBoxTitle: "Client Login",
+                portalLblEmail: "Email Address",
+                portalPlhEmail: "name@company.com",
+                portalLblPassword: "Password",
+                portalPlhPassword: "Received password",
+                portalForgotPassLink: "Forgot password?",
+                portalBtnLogin: "Log in to Client Portal",
+                portalBtnLoggingIn: "Logging in...",
+                portalForgotBoxTitle: "Reset Password",
+                portalForgotBoxDesc: "Enter your email address to receive a secure password reset link.",
+                portalBtnSendReset: "Send Reset Link",
+                portalBtnSendingReset: "Sending reset link...",
+                portalBtnBackToLogin: "Back to login",
+                portalResetSentTitle: "Email Sent",
+                portalResetSentDesc: "An email has been dispatched with instructions to reset your password. Please check your spam folder too.",
+                portalDivider: "No active project yet?",
+                portalIntakeCardTitle: "Project Intake Form",
+                portalIntakeCardDesc: "Start a new project and receive your login credentials immediately",
+                portalBackToWebsite: "Back to main website (creationaltfix.nl)",
+                portalErrInvalid: "Invalid email or password. Please verify your credentials or the email you received.",
+                portalErrNoProject: "No active project or administrator account found for this email address.",
+                portalErrReset: "Could not dispatch reset email. Please verify that the email address is correct."
+            }
+        };
+
+        let currentLang = localStorage.getItem('preferredLanguage') || ((navigator.language || 'nl').split('-')[0] === 'en' ? 'en' : 'nl');
+
+        function applyTranslations(lang) {
+            if (!translations[lang]) lang = 'nl';
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            auth.languageCode = lang;
+
+            const htmlKeys = new Set(['portalH1']);
+
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (translations[lang][key]) {
+                    if (htmlKeys.has(key)) {
+                        el.innerHTML = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-key-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-key-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+
+            if (translations[lang].portalLoginTitle) {
+                document.title = translations[lang].portalLoginTitle;
+            }
+        }
+
+        applyTranslations(currentLang);
+
+        document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                if (lang) {
+                    applyTranslations(lang);
+                    localStorage.setItem('preferredLanguage', lang);
+                }
+            });
+        });
 
         async function isClient(email, uid) {
             try {
@@ -322,12 +462,13 @@
 
         document.getElementById('client-login-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const t = translations[currentLang] || translations.nl;
             const email = document.getElementById('client-email').value;
             const password = document.getElementById('client-password').value;
             const btn = document.getElementById('btn-client-login');
             const errDiv = document.getElementById('login-error');
 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met inloggen...';
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.portalBtnLoggingIn}`;
             btn.disabled = true;
             errDiv.classList.add('hidden');
 
@@ -345,16 +486,16 @@
                     window.location.href = "status/";
                 } else {
                     await signOut(auth);
-                    errDiv.innerText = "Geen actief project of beheerdersaccount gevonden voor dit e-mailadres.";
+                    errDiv.innerText = t.portalErrNoProject;
                     errDiv.classList.remove('hidden');
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Inloggen op Klantenportaal';
+                    btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.portalBtnLogin}`;
                     btn.disabled = false;
                 }
             } catch (error) {
                 console.error("Login mislukt:", error);
-                errDiv.innerText = "Ongeldig e-mailadres of wachtwoord. Controleer je gegevens of de ontvangen e-mail.";
+                errDiv.innerText = t.portalErrInvalid;
                 errDiv.classList.remove('hidden');
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Inloggen op Klantenportaal';
+                btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.portalBtnLogin}`;
                 btn.disabled = false;
             }
         });
@@ -375,11 +516,12 @@
 
         document.getElementById('forgot-password-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const t = translations[currentLang] || translations.nl;
             const email = document.getElementById('reset-email').value.trim();
             const btn = document.getElementById('btn-reset-password');
             const originalBtn = btn.innerHTML;
 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met versturen...';
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.portalBtnSendingReset}`;
             btn.disabled = true;
             
             if (email) {
@@ -388,19 +530,19 @@
                     
                     const box = document.getElementById('forgot-password-box');
                     box.innerHTML = `
-                        <h2><i class="fas fa-check-circle" style="color: #10b981;"></i> E-mail Verstuurd</h2>
-                        <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 15px;">Er is een e-mail verstuurd met instructies om je wachtwoord opnieuw in te stellen. Check ook je spambox.</p>
-                        <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> Terug naar inloggen</button>
+                        <h2><i class="fas fa-check-circle" style="color: #10b981;"></i> ${t.portalResetSentTitle}</h2>
+                        <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 15px;">${t.portalResetSentDesc}</p>
+                        <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> ${t.portalBtnBackToLogin}</button>
                     `;
                 } catch (err) {
                     console.error("Reset error:", err);
-                    alert("Kon de reset-mail niet versturen. Controleer of het e-mailadres juist is.");
+                    alert(t.portalErrReset);
                     btn.innerHTML = originalBtn;
                     btn.disabled = false;
                 }
             }
         });
     </script>
-
+    <script src="/js/cookie-consent.js"></script>
 </body>
 </html>
