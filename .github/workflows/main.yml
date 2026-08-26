@@ -42,6 +42,12 @@ jobs:
           security: loose
           local-dir: ./website/
           server-dir: domains/creationaltfix.nl/public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/moroccothingie/**
+            **/*.prisma
 
       - name: 📂 Sync CRM & Portaal via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -54,3 +60,7 @@ jobs:
           security: loose
           local-dir: ./crm/
           server-dir: domains/creationaltfix.nl/public_html/portal/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
