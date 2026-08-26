@@ -4,10 +4,11 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.g
 import { sendIntakeNotification } from "./notifications.js";
 import { firebaseConfig } from "../../js/firebase-config.js";
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Secondaire app instantie om klantaccounts aan te maken zonder admin inlog te muteren
+// Secondary Auth instance for client onboarding without mutating active admin session
 const secondaryApp = getApps().find(a => a.name === 'SecondaryAuth') || initializeApp(firebaseConfig, 'SecondaryAuth');
 const secondaryAuth = getAuth(secondaryApp);
 secondaryAuth.languageCode = 'nl';
@@ -27,72 +28,216 @@ const translations = {
     nl: {
         intakePageTitle: "Klant Intake - Creation+Alt+Fix",
         intakeCallBtn: "Liever direct ff bellen, bel hier ...",
-        intakeH1: 'Welkom bij <span class="accent">Creation+Alt+Fix</span>',
-        intakeSubtitle: "Leuk dat we gaan samenwerken! Vul hieronder je wensen en gegevens in, dan kunnen we direct aan de slag met jouw project.",
-        intakeSec1Title: "1. Bedrijfsgegevens",
+        intakeStep1Badge: "Stap 1 van 5",
+        intakeStep2Badge: "Stap 2 van 5",
+        intakeStep3Badge: "Stap 3 van 5",
+        intakeStep4Badge: "Stap 4 van 5",
+        intakeStep5Badge: "Stap 5 van 5",
+        intakeStep1BadgeTitle: "Dienst Keuze",
+        intakeStep2BadgeTitle: "Domein Status",
+        intakeStep3BadgeTitle: "Doelen & Wensen",
+        intakeStep4BadgeTitle: "Stijl & Vibe",
+        intakeStep5BadgeTitle: "Contact & Start",
+        
+        // Step 1
+        intakeStep1Title: "Wat wil je samen met ons realiseren?",
+        intakeStep1Subtitle: "Kies de hoofdrichting voor jouw project. We stemmen alle specifieke details later persoonlijk af.",
+        intakeBadgePopular: "Meest Gekozen",
+        intakeBadgeAI: "AI Powered",
+        intakeCardWebTitle: "Website & Webshop",
+        intakeCardWebDesc: "Moderne, razendsnelle website of converterende webshop op maat (vanaf €99).",
+        intakeCardAITitle: "Slimme AI Automatisering",
+        intakeCardAIDesc: "Bespaar uren per week door processen, e-mails en workflows slim te automatiseren.",
+        intakeCardDashTitle: "Data Dashboard",
+        intakeCardDashDesc: "Real-time KPI's, financiële rapportages en realtime business overzichten.",
+        intakeCardOtherTitle: "Maatwerk Software",
+        intakeCardOtherDesc: "Complexe webapplicaties, API koppelingen of unieke maatwerk software-ideeën.",
+        
+        // Step 2
+        intakeStep2Title: "Heb je al een domeinnaam of website?",
+        intakeStep2Subtitle: "Zo weten we of we kunnen bouwen op een bestaand domein of een nieuwe registratie moeten verzorgen.",
+        intakeCardDomainYesTitle: "Ja, ik heb een domein",
+        intakeCardDomainYesDesc: "Ik heb al een geregistreerde URL of bestaande website.",
+        intakeCardDomainNoTitle: "Nee, nog geen domein",
+        intakeCardDomainNoDesc: "Help mij met het bedenken en registreren van een passend domein.",
+        intakeCardDomainNoneTitle: "Niet van toepassing",
+        intakeCardDomainNoneDesc: "Het project vereist geen openbaar domein (bijv. intern dashboard).",
+        intakeLblDomain: "Wat is jouw huidige domeinnaam of website URL?",
+        intakePlhDomain: "Bijv. www.mijnbedrijf.nl",
+        
+        // Step 3
+        intakeStep3Title: "Wat is het belangrijkste doel van dit project?",
+        intakeStep3Subtitle: "Selecteer één of meerdere kerndoelen en licht eventuele specifieke wensen kort toe.",
+        intakeGoalLeads: "Meer leads & klanten werven",
+        intakeGoalTime: "Tijd & kosten besparen via automatisering",
+        intakeGoalBrand: "Moderne, professionele uitstraling",
+        intakeGoalSales: "Online verkoop & conversie stimuleren",
+        intakeGoalData: "Beter overzicht & realtime data-inzicht",
+        intakeGoalCustom: "Maatwerk innovatie & software",
+        intakeLblGoalsDetails: "Aanvullende toelichting of specifieke functies *",
+        intakePlhGoals: "Bijv. We willen een online afsprakensysteem en een modern donker design...",
+        
+        // Step 4
+        intakeStep4Title: "Welke stijl & vibe past bij jouw onderneming?",
+        intakeStep4Subtitle: "Kies een visuele richting. Geen zorgen, we sluiten altijd perfect aan op jouw merkidentiteit.",
+        intakeBadgeRecommended: "Aanbevolen",
+        intakeCardStyleDarkTitle: "Dark AI & Futuristic",
+        intakeCardStyleDarkDesc: "Donkere interface, neon accenten, glassmorphism en high-tech uitstraling.",
+        intakeCardStyleCleanTitle: "Strak & Zakelijk",
+        intakeCardStyleCleanDesc: "Minimalistisch, overzichtelijk, veel witruimte en betrouwbaar zakelijk karakter.",
+        intakeCardStyleCreativeTitle: "Creatief & Kleurrijk",
+        intakeCardStyleCreativeDesc: "Opvallende kleurencombinaties, dynamische vormen en unieke merkidentiteit.",
+        intakeCardStyleSurpriseTitle: "Verras mij!",
+        intakeCardStyleSurpriseDesc: "Laat de ontwerpers van Creation+Alt+Fix een passend voorstel op maat ontwerpen.",
+        intakeLblDesignExtra: "Specifieke kleuren, logo of huisstijl wensen? (Optioneel)",
+        intakePlhDesign: "Bijv. Gebruik onze huiskleuren #22d3ee, of zie bijlage later",
+        
+        // Step 5
+        intakeStep5Title: "Laatste stap: Waar mogen we het voorstel naartoe sturen?",
+        intakeStep5Subtitle: "We maken direct jouw project aan en sturen een inloglink voor het realtime Klantenportaal.",
         intakeLblCompany: "Bedrijfsnaam *",
-        intakePlhCompany: "Bijv. Jansen IT",
+        intakePlhCompany: "Bijv. Jansen Media BV",
         intakeLblContact: "Contactpersoon *",
         intakePlhContact: "Jouw volledige naam",
         intakeLblEmail: "E-mailadres *",
         intakePlhEmail: "info@bedrijf.nl",
-        intakeSec2Title: "2. Project Details",
-        intakeLblService: "Welke dienst nemen we af? *",
-        intakeOptServiceChoose: "Kies een dienst...",
-        intakeOptServiceWeb: "Website & Webshop (vanaf €99)",
-        intakeOptServiceAI: "Slimme Automatisering (AI)",
-        intakeOptServiceDash: "Data Dashboard",
-        intakeOptServiceOther: "Anders...",
-        intakeLblDomain: "Heb je al een domeinnaam?",
-        intakePlhDomain: "Bijv. www.mijnbedrijf.nl of 'Nee, ik heb er nog geen'",
-        intakeLblGoals: "Wat is het belangrijkste doel van dit project? *",
-        intakePlhGoals: "Bijv. Meer aanvragen via de website, of handmatig werk automatiseren...",
-        intakeSec3Title: "3. Design & Bestanden",
-        intakeLblDesign: "Heb je voorkeur voor bepaalde kleuren of een stijl?",
-        intakePlhDesign: "Bijv. Blauw en strak, of zie bijlage",
-        intakeLblFiles: "Logo's & Teksten (Later uploaden)",
-        intakeHelpFiles: "Zodra we deze intake hebben ontvangen, sturen we je een veilige link om je logo's en bestanden te uploaden.",
-        intakeSubmitBtn: "Intake Versturen",
-        intakeSubmitting: "Bezig met versturen...",
-        intakeSuccessTitle: "Bedankt! Je account is succesvol aangemaakt.",
-        intakeSuccessDesc: "We hebben je zojuist een e-mail gestuurd (check ook je spambox) met een link om je wachtwoord in te stellen. Daarna kun je direct inloggen op het klantenportaal om de status van je project te volgen.",
+        intakeSummaryTitle: "Jouw Project Samenvatting",
+        intakeSummLblService: "Gekozen Dienst",
+        intakeSummLblDomain: "Domein Status",
+        intakeSummLblGoals: "Belangrijkste Doel",
+        intakeSummLblStyle: "Stijl & Vibe",
+        intakeTrust1: "100% Vrijblijvend & Geen verplichtingen",
+        intakeTrust2: "Binnen 24 uur een helder voorstel",
+        intakeTrust3: "Direct toegang tot Klantenportaal",
+        
+        // Navigation & Actions
+        intakeBtnPrev: "Vorige",
+        intakeEnterHint: "om door te gaan",
+        intakeBtnNext: "Volgende stap",
+        intakeSubmitBtn: "Aanvraag Versturen & Direct Starten",
+        intakeSubmitting: "Bezig met registreren...",
+        
+        // Success
+        intakeSuccessTitle: "Bedankt! Je project is succesvol aangemeld.",
+        intakeSuccessDesc: "We hebben jouw intake ontvangen en direct een beveiligd klantaccount voor je klaargezet in ons portaal.",
+        intakeSuccessStep1Title: "Wachtwoord E-mail verstuurd:",
+        intakeSuccessStep1Desc: "Check je inbox (en spambox) voor de link om je wachtwoord in te stellen.",
+        intakeSuccessStep2Title: "Live Status Volgen:",
+        intakeSuccessStep2Desc: "In het klantenportaal zie je live de voortgang van jouw offerte, ontwerp en ontwikkeling.",
+        intakeSuccessStep3Title: "Persoonlijk Contact:",
+        intakeSuccessStep3Desc: "Allard neemt binnen 24 uur contact met je op om de specificaties door te spreken.",
         intakePortalBtn: "Naar Klantenportaal",
-        intakeSubmitError: "Er is iets misgegaan bij het versturen. Probeer het later opnieuw."
+        intakeSubmitError: "Er is iets misgegaan bij het versturen. Probeer het opnieuw.",
+        intakeValidationRequired: "Vul alsjeblieft alle verplichte velden in om verder te gaan.",
+        intakeDomainHelpNew: "Nieuw domein vereist (helpen met registratie)",
+        intakeDomainHelpNone: "Niet van toepassing"
     },
     en: {
         intakePageTitle: "Client Intake - Creation+Alt+Fix",
         intakeCallBtn: "Prefer to call directly? Call here ...",
-        intakeH1: 'Welcome to <span class="accent">Creation+Alt+Fix</span>',
-        intakeSubtitle: "Great to work together! Fill in your details and requirements below, and we'll get started with your project right away.",
-        intakeSec1Title: "1. Company Details",
+        intakeStep1Badge: "Step 1 of 5",
+        intakeStep2Badge: "Step 2 of 5",
+        intakeStep3Badge: "Step 3 of 5",
+        intakeStep4Badge: "Step 4 of 5",
+        intakeStep5Badge: "Step 5 of 5",
+        intakeStep1BadgeTitle: "Service Selection",
+        intakeStep2BadgeTitle: "Domain Status",
+        intakeStep3BadgeTitle: "Goals & Scope",
+        intakeStep4BadgeTitle: "Style & Vibe",
+        intakeStep5BadgeTitle: "Contact & Launch",
+        
+        // Step 1
+        intakeStep1Title: "What would you like to build with us?",
+        intakeStep1Subtitle: "Choose the main direction for your project. We'll fine-tune all specific details together personally.",
+        intakeBadgePopular: "Most Popular",
+        intakeBadgeAI: "AI Powered",
+        intakeCardWebTitle: "Website & Webshop",
+        intakeCardWebDesc: "Modern, ultra-fast website or high-converting custom webshop (from €99).",
+        intakeCardAITitle: "Smart AI Automation",
+        intakeCardAIDesc: "Save hours every week by automating processes, emails, and business workflows.",
+        intakeCardDashTitle: "Data Dashboard",
+        intakeCardDashDesc: "Real-time KPIs, financial reporting, and live business analytics overview.",
+        intakeCardOtherTitle: "Custom Software",
+        intakeCardOtherDesc: "Complex web applications, custom API integrations, or bespoke software ideas.",
+        
+        // Step 2
+        intakeStep2Title: "Do you already have a domain or website?",
+        intakeStep2Subtitle: "This helps us know whether to build on an existing domain or assist with a fresh registration.",
+        intakeCardDomainYesTitle: "Yes, I have a domain",
+        intakeCardDomainYesDesc: "I already own a registered domain or existing website URL.",
+        intakeCardDomainNoTitle: "No domain yet",
+        intakeCardDomainNoDesc: "Help me brainstorm and register an optimal new domain name.",
+        intakeCardDomainNoneTitle: "Not applicable",
+        intakeCardDomainNoneDesc: "The project does not require a public domain (e.g. internal tool).",
+        intakeLblDomain: "What is your current domain name or website URL?",
+        intakePlhDomain: "e.g. www.mycompany.com",
+        
+        // Step 3
+        intakeStep3Title: "What is the primary goal of this project?",
+        intakeStep3Subtitle: "Select one or more key objectives and describe any specific feature requirements.",
+        intakeGoalLeads: "Generate more leads & clients",
+        intakeGoalTime: "Save time & costs via automation",
+        intakeGoalBrand: "Modern, professional brand presence",
+        intakeGoalSales: "Boost online sales & conversion",
+        intakeGoalData: "Better overview & real-time data metrics",
+        intakeGoalCustom: "Custom innovation & software",
+        intakeLblGoalsDetails: "Additional details or specific features *",
+        intakePlhGoals: "e.g. We need an automated scheduling system and a sleek dark theme...",
+        
+        // Step 4
+        intakeStep4Title: "Which visual style & vibe fits your brand?",
+        intakeStep4Subtitle: "Pick a visual direction. No worries, we always tailor the final design to your exact identity.",
+        intakeBadgeRecommended: "Recommended",
+        intakeCardStyleDarkTitle: "Dark AI & Futuristic",
+        intakeCardStyleDarkDesc: "Dark mode UI, glowing neon accents, glassmorphism, and high-tech feel.",
+        intakeCardStyleCleanTitle: "Clean & Corporate",
+        intakeCardStyleCleanDesc: "Minimalist, uncluttered, generous whitespace, and trustworthy corporate look.",
+        intakeCardStyleCreativeTitle: "Creative & Colorful",
+        intakeCardStyleCreativeDesc: "Bold color combinations, dynamic layouts, and distinctive branding.",
+        intakeCardStyleSurpriseTitle: "Surprise me!",
+        intakeCardStyleSurpriseDesc: "Let the Creation+Alt+Fix designers craft a bespoke visual proposal.",
+        intakeLblDesignExtra: "Specific colors, logo, or brand guidelines? (Optional)",
+        intakePlhDesign: "e.g. Use our brand color #22d3ee, or see attachments later",
+        
+        // Step 5
+        intakeStep5Title: "Final step: Where should we send your proposal?",
+        intakeStep5Subtitle: "We will create your project record immediately and send a login link for the Client Portal.",
         intakeLblCompany: "Company Name *",
-        intakePlhCompany: "e.g. Acme Corp",
+        intakePlhCompany: "e.g. Acme Media Corp",
         intakeLblContact: "Contact Person *",
         intakePlhContact: "Your full name",
         intakeLblEmail: "Email Address *",
-        intakePlhEmail: "name@company.com",
-        intakeSec2Title: "2. Project Details",
-        intakeLblService: "Which service are you interested in? *",
-        intakeOptServiceChoose: "Choose a service...",
-        intakeOptServiceWeb: "Website & Webshop (from €99)",
-        intakeOptServiceAI: "Smart Automation (AI)",
-        intakeOptServiceDash: "Data Dashboard",
-        intakeOptServiceOther: "Other...",
-        intakeLblDomain: "Do you already have a domain name?",
-        intakePlhDomain: "e.g. www.mycompany.com or 'No, not yet'",
-        intakeLblGoals: "What is the main goal of this project? *",
-        intakePlhGoals: "e.g. More leads via the website, or automating repetitive tasks...",
-        intakeSec3Title: "3. Design & Files",
-        intakeLblDesign: "Do you have preferences for colors or visual style?",
-        intakePlhDesign: "e.g. Modern dark theme, minimal, see attachment",
-        intakeLblFiles: "Logos & Content (Upload later)",
-        intakeHelpFiles: "Once we receive this intake, we will send you a secure link to upload your assets and branding files.",
-        intakeSubmitBtn: "Submit Intake",
-        intakeSubmitting: "Submitting intake...",
-        intakeSuccessTitle: "Thank you! Your account has been created successfully.",
-        intakeSuccessDesc: "We have sent you an email (please check your spam folder too) with a link to set up your password. You can then log into the client status portal to track your project in real time.",
+        intakePlhEmail: "info@company.com",
+        intakeSummaryTitle: "Your Project Summary",
+        intakeSummLblService: "Selected Service",
+        intakeSummLblDomain: "Domain Status",
+        intakeSummLblGoals: "Primary Goal",
+        intakeSummLblStyle: "Style & Vibe",
+        intakeTrust1: "100% Free & No obligations",
+        intakeTrust2: "Clear proposal within 24 hours",
+        intakeTrust3: "Instant access to Client Portal",
+        
+        // Navigation & Actions
+        intakeBtnPrev: "Back",
+        intakeEnterHint: "to continue",
+        intakeBtnNext: "Next step",
+        intakeSubmitBtn: "Submit Intake & Get Started",
+        intakeSubmitting: "Registering project...",
+        
+        // Success
+        intakeSuccessTitle: "Thank you! Your project has been registered.",
+        intakeSuccessDesc: "We received your intake and set up a secure client account for you in our live portal.",
+        intakeSuccessStep1Title: "Password Email Sent:",
+        intakeSuccessStep1Desc: "Check your inbox (and spam folder) for the link to set your password.",
+        intakeSuccessStep2Title: "Track Real-Time Status:",
+        intakeSuccessStep2Desc: "In the client portal you can track the live progress of your proposal, design, and build.",
+        intakeSuccessStep3Title: "Personal Contact:",
+        intakeSuccessStep3Desc: "Allard will reach out within 24 hours to discuss the specifications.",
         intakePortalBtn: "Go to Client Portal",
-        intakeSubmitError: "Something went wrong while submitting. Please try again later."
+        intakeSubmitError: "Something went wrong while submitting. Please try again.",
+        intakeValidationRequired: "Please complete all required fields to continue.",
+        intakeDomainHelpNew: "New domain requested (assistance with registration)",
+        intakeDomainHelpNone: "Not applicable"
     }
 };
 
@@ -104,16 +249,10 @@ function applyTranslations(lang) {
     document.documentElement.lang = lang;
     secondaryAuth.languageCode = lang;
 
-    const htmlKeys = new Set(['intakeH1']);
-
     document.querySelectorAll('[data-translate-key]').forEach(el => {
         const key = el.getAttribute('data-translate-key');
         if (translations[lang][key]) {
-            if (htmlKeys.has(key)) {
-                el.innerHTML = translations[lang][key];
-            } else {
-                el.textContent = translations[lang][key];
-            }
+            el.textContent = translations[lang][key];
         }
     });
 
@@ -132,12 +271,187 @@ function applyTranslations(lang) {
         document.title = translations[lang].intakePageTitle;
     }
 
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    updateStepUI();
 }
 
+// --- Multi-Step Wizard State Machine ---
+let currentStep = 1;
+const totalSteps = 5;
+
+const stepBadgeTitles = {
+    1: 'intakeStep1BadgeTitle',
+    2: 'intakeStep2BadgeTitle',
+    3: 'intakeStep3BadgeTitle',
+    4: 'intakeStep4BadgeTitle',
+    5: 'intakeStep5BadgeTitle'
+};
+
+const stepBadgeKeys = {
+    1: 'intakeStep1Badge',
+    2: 'intakeStep2Badge',
+    3: 'intakeStep3Badge',
+    4: 'intakeStep4Badge',
+    5: 'intakeStep5Badge'
+};
+
+function updateStepUI() {
+    const t = translations[currentLang] || translations.nl;
+
+    // 1. Show/hide active step
+    for (let i = 1; i <= totalSteps; i++) {
+        const stepEl = document.getElementById(`step-${i}`);
+        if (stepEl) {
+            if (i === currentStep) {
+                stepEl.classList.add('active');
+            } else {
+                stepEl.classList.remove('active');
+            }
+        }
+    }
+
+    // 2. Update Progress Bar & Badge
+    const percent = Math.round((currentStep / totalSteps) * 100);
+    const progressFill = document.getElementById('progress-fill');
+    const progressPercent = document.getElementById('progress-percent');
+    const stepBadge = document.getElementById('step-badge');
+    const stepTitleText = document.getElementById('step-title-text');
+
+    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (progressPercent) progressPercent.textContent = `${percent}%`;
+    if (stepBadge && stepBadgeKeys[currentStep]) {
+        stepBadge.textContent = t[stepBadgeKeys[currentStep]] || `Stap ${currentStep} van 5`;
+    }
+    if (stepTitleText && stepBadgeTitles[currentStep]) {
+        stepTitleText.textContent = t[stepBadgeTitles[currentStep]] || '';
+    }
+
+    // 3. Update Footer Buttons
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+
+    if (prevBtn) {
+        if (currentStep > 1) {
+            prevBtn.classList.remove('hidden');
+        } else {
+            prevBtn.classList.add('hidden');
+        }
+    }
+
+    if (currentStep < totalSteps) {
+        if (nextBtn) nextBtn.classList.remove('hidden');
+        if (submitBtn) submitBtn.classList.add('hidden');
+    } else {
+        if (nextBtn) nextBtn.classList.add('hidden');
+        if (submitBtn) submitBtn.classList.remove('hidden');
+        updateLiveSummary();
+    }
+}
+
+function validateCurrentStep() {
+    const t = translations[currentLang] || translations.nl;
+
+    if (currentStep === 1) {
+        const service = document.getElementById('serviceType').value;
+        if (!service) {
+            alert(t.intakeValidationRequired);
+            return false;
+        }
+    } else if (currentStep === 2) {
+        // Step 2 is always valid, defaults cleanly
+        return true;
+    } else if (currentStep === 3) {
+        const goalsText = document.getElementById('projectGoals').value.trim();
+        const selectedTags = document.querySelectorAll('#goal-tags .goal-tag-btn.selected');
+        if (!goalsText && selectedTags.length === 0) {
+            alert(t.intakeValidationRequired);
+            document.getElementById('projectGoals').focus();
+            return false;
+        }
+    } else if (currentStep === 4) {
+        // Step 4 has defaults selected
+        return true;
+    } else if (currentStep === 5) {
+        const company = document.getElementById('companyName').value.trim();
+        const contact = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!company || !contact || !email || !emailRegex.test(email)) {
+            alert(t.intakeValidationRequired);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function goToNextStep() {
+    if (validateCurrentStep()) {
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+}
+
+function goToPrevStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        updateStepUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function updateLiveSummary() {
+    const t = translations[currentLang] || translations.nl;
+
+    // Service
+    const serviceVal = document.getElementById('serviceType').value || 'Website & Webshop';
+    const summaryService = document.getElementById('summary-service');
+    if (summaryService) summaryService.textContent = serviceVal;
+
+    // Domain
+    const selectedDomainCard = document.querySelector('#domain-grid .choice-card.selected');
+    const domainChoice = selectedDomainCard ? selectedDomainCard.getAttribute('data-value') : 'existing';
+    const domainInput = document.getElementById('domainName').value.trim();
+    const summaryDomain = document.getElementById('summary-domain');
+    if (summaryDomain) {
+        if (domainChoice === 'existing') {
+            summaryDomain.textContent = domainInput || (currentLang === 'en' ? 'Existing domain' : 'Bestaand domein');
+        } else if (domainChoice === 'new') {
+            summaryDomain.textContent = t.intakeDomainHelpNew || 'Nieuw domein registreren';
+        } else {
+            summaryDomain.textContent = t.intakeDomainHelpNone || 'Niet van toepassing';
+        }
+    }
+
+    // Goals
+    const selectedTags = Array.from(document.querySelectorAll('#goal-tags .goal-tag-btn.selected')).map(b => b.getAttribute('data-goal'));
+    const goalsText = document.getElementById('projectGoals').value.trim();
+    const summaryGoals = document.getElementById('summary-goals');
+    if (summaryGoals) {
+        if (selectedTags.length > 0) {
+            summaryGoals.textContent = selectedTags.join(', ');
+        } else if (goalsText) {
+            summaryGoals.textContent = goalsText.length > 40 ? goalsText.substring(0, 40) + '...' : goalsText;
+        } else {
+            summaryGoals.textContent = 'Project realisatie';
+        }
+    }
+
+    // Style
+    const styleVal = document.getElementById('designStyleChoice').value || 'Dark AI & Futuristic';
+    const summaryStyle = document.getElementById('summary-style');
+    if (summaryStyle) summaryStyle.textContent = styleVal;
+}
+
+// --- DOM Initializations & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
     applyTranslations(currentLang);
 
+    // Language Switcher Buttons
     document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const lang = this.getAttribute('data-lang');
@@ -148,33 +462,174 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Step 1: Service Cards Selection
+    const serviceCards = document.querySelectorAll('#service-grid .choice-card');
+    const serviceInput = document.getElementById('serviceType');
+    serviceCards.forEach(card => {
+        card.addEventListener('click', () => {
+            serviceCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            const val = card.getAttribute('data-value');
+            if (serviceInput) serviceInput.value = val;
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
+
+    // Step 2: Domain Cards Selection
+    const domainCards = document.querySelectorAll('#domain-grid .choice-card');
+    const domainInputWrapper = document.getElementById('domain-input-wrapper');
+    const domainNameInput = document.getElementById('domainName');
+
+    domainCards.forEach(card => {
+        card.addEventListener('click', () => {
+            domainCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            const val = card.getAttribute('data-value');
+
+            if (val === 'existing') {
+                domainInputWrapper.classList.remove('hidden');
+                domainNameInput.focus();
+            } else {
+                domainInputWrapper.classList.add('hidden');
+            }
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
+
+    // Step 3: Goal Tag Buttons
+    const goalBtns = document.querySelectorAll('#goal-tags .goal-tag-btn');
+    const projectGoalsTextarea = document.getElementById('projectGoals');
+    goalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('selected');
+            
+            // Helpful sync: if textarea is blank, draft selected tags as initial text
+            const selectedGoals = Array.from(document.querySelectorAll('#goal-tags .goal-tag-btn.selected'))
+                .map(b => b.getAttribute('data-goal'));
+            if (projectGoalsTextarea.value.trim() === '' && selectedGoals.length > 0) {
+                projectGoalsTextarea.value = `${currentLang === 'en' ? 'Main goals:' : 'Belangrijkste doelen:'} ${selectedGoals.join(', ')}.`;
+            }
+        });
+    });
+
+    // Step 4: Style Cards Selection
+    const styleCards = document.querySelectorAll('#style-grid .choice-card');
+    const styleInput = document.getElementById('designStyleChoice');
+    styleCards.forEach(card => {
+        card.addEventListener('click', () => {
+            styleCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            const val = card.getAttribute('data-value');
+            if (styleInput) styleInput.value = val;
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
+
+    // Next and Prev Buttons
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+
+    if (nextBtn) nextBtn.addEventListener('click', goToNextStep);
+    if (prevBtn) prevBtn.addEventListener('click', goToPrevStep);
+
+    // Keyboard Navigation (Enter to advance unless typing in textarea)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.tagName === 'TEXTAREA') {
+                return; // allow newline in textarea
+            }
+            if (currentStep < totalSteps) {
+                e.preventDefault();
+                goToNextStep();
+            }
+        }
+    });
+
+    // Live update summary on input change in Step 5
+    ['companyName', 'contactName', 'email'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateLiveSummary);
+    });
+
+    // --- Form Submission ---
     const form = document.getElementById('intake-form');
     const submitBtn = document.getElementById('submit-btn');
-    const successMsg = document.getElementById('success-msg');
+    const successScreen = document.getElementById('success-screen');
+    const progressCard = document.getElementById('wizard-progress-card');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
+        if (!validateCurrentStep()) return;
+
         const t = translations[currentLang] || translations.nl;
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.intakeSubmitting}`;
         submitBtn.disabled = true;
 
         const emailInput = document.getElementById('email').value.trim().toLowerCase();
+        const companyInput = document.getElementById('companyName').value.trim();
+        const contactInput = document.getElementById('contactName').value.trim();
+        const serviceInputVal = document.getElementById('serviceType').value.trim();
+        
+        // Domain calculation
+        const selectedDomainCard = document.querySelector('#domain-grid .choice-card.selected');
+        const domainChoice = selectedDomainCard ? selectedDomainCard.getAttribute('data-value') : 'existing';
+        let finalDomain = document.getElementById('domainName').value.trim();
+        if (domainChoice === 'new') {
+            finalDomain = 'Nieuw domein vereist (helpen met registratie)';
+        } else if (domainChoice === 'none') {
+            finalDomain = 'Niet van toepassing';
+        } else if (!finalDomain) {
+            finalDomain = 'Bestaand domein (URL nog door te geven)';
+        }
+
+        // Goals compilation
+        const selectedGoalTags = Array.from(document.querySelectorAll('#goal-tags .goal-tag-btn.selected'))
+            .map(b => b.getAttribute('data-goal'));
+        const goalDetails = document.getElementById('projectGoals').value.trim();
+        const finalGoals = selectedGoalTags.length > 0
+            ? `${selectedGoalTags.join(', ')}${goalDetails ? ` | Details: ${goalDetails}` : ''}`
+            : (goalDetails || 'Nieuwe projectaanvraag via intake wizard');
+
+        // Design compilation
+        const styleChoice = document.getElementById('designStyleChoice').value.trim();
+        const extraDesign = document.getElementById('designPreferences').value.trim();
+        const finalDesign = `${styleChoice}${extraDesign ? ` | Extra wensen: ${extraDesign}` : ''}`;
+
         const tempPassword = generateTempPassword();
         let clientUid = null;
 
-        // Probeer een Firebase Auth account voor de klant aan te maken
+        // Provision Firebase Auth Client Account
         try {
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, emailInput, tempPassword);
             clientUid = userCred.user.uid;
-            console.log("Klantaccount succesvol aangemaakt in Firebase Auth:", clientUid);
+            console.log("✅ Client account successfully created in Firebase Auth:", clientUid);
 
-            // Stuur direct de Firebase Auth wachtwoord-instel e-mail naar de klant
+            // Trigger password setup email
             await sendPasswordResetEmail(secondaryAuth, emailInput);
-            console.log("✅ Firebase Auth wachtwoord-instel e-mail verstuurd naar:", emailInput);
+            console.log("✅ Password setup email dispatched to:", emailInput);
         } catch (authErr) {
-            console.warn("Klant Auth account kon niet (of opnieuw) worden aangemaakt:", authErr.message);
+            console.warn("Client Auth account provision note:", authErr.message);
             try {
                 await sendPasswordResetEmail(secondaryAuth, emailInput);
             } catch (rErr) {
@@ -182,41 +637,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Gather Data
+        // Gather Data Payload
         const formData = {
-            client: document.getElementById('companyName').value,
-            contactName: document.getElementById('contactName').value,
+            client: companyInput,
+            contactName: contactInput,
             email: emailInput,
             clientUid: clientUid,
             isClientAccount: true,
-            service: document.getElementById('serviceType').value,
-            domainName: document.getElementById('domainName').value,
-            goals: document.getElementById('projectGoals').value,
-            design: document.getElementById('designPreferences').value,
-            status: "Intake Voltooid", 
+            service: serviceInputVal,
+            domainName: finalDomain,
+            goals: finalGoals,
+            design: finalDesign,
+            status: "Intake Voltooid",
             statusClass: "active",
             date: new Date().toLocaleDateString('nl-NL'),
             createdAt: serverTimestamp()
         };
 
         try {
-            // Write to Firestore (Collection 'projects')
+            // Write to Firestore ('projects' collection)
             const docRef = await addDoc(collection(db, "projects"), formData);
-            
-            // Dispatch active push / email notifications (non-blocking)
+
+            // Dispatch active FormSubmit / EmailJS push notifications
             sendIntakeNotification(formData, docRef ? docRef.id : null).catch(err => {
-                console.warn("Error sending intake notification:", err);
+                console.warn("Notification dispatch warning:", err);
             });
 
-            // Success UI
+            // Transition to Success State (State 6)
             form.reset();
-            submitBtn.classList.add('hidden');
-            successMsg.classList.remove('hidden');
+            form.classList.add('hidden');
+            if (progressCard) progressCard.classList.add('hidden');
+            if (successScreen) successScreen.classList.remove('hidden');
 
-            console.log("Intake verstuurd! Dashboard en notificatie geactiveerd.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log("🎉 Intake wizard successfully completed and saved!");
 
         } catch (error) {
-            console.error("Fout bij het versturen:", error);
+            console.error("Error submitting intake wizard:", error);
             alert(t.intakeSubmitError);
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
