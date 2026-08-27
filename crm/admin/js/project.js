@@ -15,7 +15,7 @@ import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, q
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
-import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail } from "../../js/ai-engine.js";
+import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 
 let app, auth, db, storage, secondaryAuth;
 try {
@@ -1623,36 +1623,171 @@ function setupFormHandlers() {
         }
     });
 
-    // 8. Action: Send Design to Client
-    document.getElementById('btn-action-design')?.addEventListener('click', async () => {
+    // 8. Action: Send Design to Client (Opens Phase 3 Design Studio Modal)
+    const openPhase3Modal = () => {
+        const modal = document.getElementById('phase3-design-modal');
+        if (!modal) return;
+
+        const p = currentProjectData || {};
+        const clientDomain = p.domainName || p.domain || '';
+        const defaultStagingUrl = p.stagingUrl || p.demoUrl || (clientDomain ? `https://${clientDomain}` : 'https://creationaltfix.nl');
+
+        const designUrlInput = document.getElementById('edit-designUrl')?.value.trim() || p.designUrl || p.figmaUrl || defaultStagingUrl;
+        
+        document.getElementById('modal-design-title').value = p.designTitle || `Visueel Ontwerp & Concept • ${p.client || 'Klant'}`;
+        document.getElementById('modal-design-url').value = designUrlInput;
+        document.getElementById('modal-design-notes').value = p.designNotes || (p.design ? `Ontwerp afgestemd op de stijlvoorkeuren: "${p.design}".` : '');
+        document.getElementById('modal-ai-image-prompt').value = p.designAiPrompt || '';
+
+        modal.classList.remove('hidden');
+    };
+
+    document.getElementById('btn-action-design')?.addEventListener('click', openPhase3Modal);
+
+    // Modal Close Triggers
+    document.getElementById('btn-close-design-modal-x')?.addEventListener('click', () => {
+        document.getElementById('phase3-design-modal')?.classList.add('hidden');
+    });
+    document.getElementById('btn-cancel-design-modal')?.addEventListener('click', () => {
+        document.getElementById('phase3-design-modal')?.classList.add('hidden');
+    });
+
+    // Preset: Live Staging Prototype
+    document.getElementById('btn-modal-use-staging')?.addEventListener('click', () => {
+        const p = currentProjectData || {};
+        const clientDomain = p.domainName || p.domain || '';
+        const stagingUrl = p.stagingUrl || p.demoUrl || (clientDomain ? `https://${clientDomain}` : 'https://creationaltfix.nl');
+        document.getElementById('modal-design-url').value = stagingUrl;
+    });
+
+    // Preset: Generate AI Concept & Google Imagen / Banana Prompt
+    document.getElementById('btn-modal-gen-ai-concept')?.addEventListener('click', async () => {
+        const genBtn = document.getElementById('btn-modal-gen-ai-concept');
+        const origText = genBtn.innerHTML;
+        genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI Concept Genereren...';
+        genBtn.disabled = true;
+
+        try {
+            const p = currentProjectData || {};
+            const concept = await generateVisualDesignConcept(p);
+
+            document.getElementById('modal-design-title').value = concept.conceptTitle || '';
+            document.getElementById('modal-ai-image-prompt').value = concept.aiImagePrompt || '';
+            document.getElementById('modal-design-notes').value = concept.designRationale || '';
+            if (concept.suggestedPrototypeUrl && !document.getElementById('modal-design-url').value) {
+                document.getElementById('modal-design-url').value = concept.suggestedPrototypeUrl;
+            }
+        } catch (err) {
+            console.error("Fout bij genereren AI design concept:", err);
+            alert("Kon AI concept niet genereren: " + err.message);
+        } finally {
+            genBtn.innerHTML = origText;
+            genBtn.disabled = false;
+        }
+    });
+
+    // Copy AI Image Generator Prompt
+    document.getElementById('btn-copy-ai-image-prompt')?.addEventListener('click', () => {
+        const promptVal = document.getElementById('modal-ai-image-prompt')?.value || '';
+        if (!promptVal) {
+            alert("Genereer eerst een AI prompt via de knop hierboven.");
+            return;
+        }
+        navigator.clipboard.writeText(promptVal);
+        alert("Google Imagen / Banana prompt gekopieerd naar klembord!");
+    });
+
+    // Confirm Send Design (Fase 3 Activeren)
+    document.getElementById('btn-confirm-send-design')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
-        const designUrl = document.getElementById('edit-designUrl').value.trim();
+        const designUrl = document.getElementById('modal-design-url')?.value.trim();
+        const designTitle = document.getElementById('modal-design-title')?.value.trim() || 'Visueel Ontwerp & Wireframe';
+        const designNotes = document.getElementById('modal-design-notes')?.value.trim() || '';
+        const designAiPrompt = document.getElementById('modal-ai-image-prompt')?.value.trim() || '';
 
         if (!designUrl) {
-            alert("Vul eerst de Design / Figma Prototype URL in bij het tabblad 'Intake & Gegevens'.");
+            alert("Vul een geldige prototype, Google Imagen/Banana mockup URL of staging link in.");
             return;
         }
 
-        if (!confirm(`Wil je het ontwerp versturen naar de klant?\n\nURL: ${designUrl}\n\nDe status wordt gewijzigd naar 'Design Gereed voor Review'.`)) return;
+        const confirmBtn = document.getElementById('btn-confirm-send-design');
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opleveren...';
+        confirmBtn.disabled = true;
 
         try {
             const updated = {
                 designUrl: designUrl,
                 figmaUrl: designUrl,
+                designTitle: designTitle,
+                designNotes: designNotes,
+                designAiPrompt: designAiPrompt,
                 status: "Design Gereed voor Review",
                 statusClass: "active",
                 designSentAt: new Date().toISOString()
             };
+
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             currentProjectData = { ...currentProjectData, ...updated };
 
-            await logAuditEvent('design_sent', `Design prototype link verstuurd naar klant: ${designUrl}`);
-            alert("Design is klaargezet in het klantenportaal!");
+            // Update edit input on tab-intake as well
+            const intakeInput = document.getElementById('edit-designUrl');
+            if (intakeInput) intakeInput.value = designUrl;
+
+            await logAuditEvent('design_sent', `Design concept opgeleverd naar klantportaal: ${designTitle} (${designUrl})`);
+            
+            document.getElementById('phase3-design-modal')?.classList.add('hidden');
+            alert("🎉 Design concept is succesvol klaargezet in het klantenportaal!");
             renderProjectWorkspace(currentProjectData);
         } catch (err) {
             console.error("Fout bij versturen design:", err);
             alert("Fout: " + err.message);
+        } finally {
+            confirmBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 🚀 Design Opleveren (Fase 3 Activeren)';
+            confirmBtn.disabled = false;
         }
+    });
+
+    // Phase Tracker Click Listeners (Fase 1 t/m Fase 5)
+    document.querySelectorAll('.phase-step').forEach(step => {
+        step.addEventListener('click', async () => {
+            if (!currentProjectId || !currentProjectData) return;
+            const phaseNum = parseInt(step.getAttribute('data-phase'), 10);
+            
+            const phaseStatusMap = {
+                1: { status: "Intake Voltooid", statusClass: "waiting", label: "Fase 1 (Intake)" },
+                2: { status: "Wacht op Akkoord", statusClass: "waiting", label: "Fase 2 (Offerte & Akkoord)" },
+                3: { status: "Design Gereed voor Review", statusClass: "active", label: "Fase 3 (Design & Ontwerp)" },
+                4: { status: "In Ontwikkeling", statusClass: "active", label: "Fase 4 (Ontwikkeling)" },
+                5: { status: "Opgeleverd (Betaling via Mollie)", statusClass: "concept", label: "Fase 5 (Livegang & Mollie)" }
+            };
+
+            const target = phaseStatusMap[phaseNum];
+            if (!target) return;
+
+            // If switching to phase 3 and no designUrl, open the design modal instead
+            if (phaseNum === 3 && !(currentProjectData.designUrl || currentProjectData.figmaUrl)) {
+                openPhase3Modal();
+                return;
+            }
+
+            if (!confirm(`Wil je de projectstatus wijzigen naar "${target.label} - ${target.status}"?`)) return;
+
+            try {
+                const updated = {
+                    status: target.status,
+                    statusClass: target.statusClass
+                };
+                if (db && currentProjectId) {
+                    await updateDoc(doc(db, "projects", currentProjectId), updated);
+                }
+                currentProjectData = { ...currentProjectData, ...updated };
+                await logAuditEvent('status_change', `Status handmatig gewijzigd naar "${target.status}" via de 5-fasen tijdlijn.`);
+                renderProjectWorkspace(currentProjectData);
+            } catch (err) {
+                console.error("Fout bij wijzigen fase:", err);
+                alert("Kon fase niet wijzigen: " + err.message);
+            }
+        });
     });
 
     // 9. Action: Invoice + Mollie

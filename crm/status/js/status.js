@@ -1055,12 +1055,19 @@ function renderDesignSection(data) {
         designStatusPill.innerHTML = `<i class="fas fa-palette"></i> ${currentLang === 'en' ? 'Action Required: Review Design' : 'Actie Vereist: Design Beoordelen'}`;
 
         const previewUrl = data.designUrl || data.figmaUrl || '#';
+        const designTitle = data.designTitle || (currentLang === 'en' ? 'Visual Concept & Wireframe' : 'Visueel Ontwerp & Wireframe');
+        const designNotes = data.designNotes || '';
+
         designPreview.classList.remove('hidden');
         designPreview.innerHTML = `
-            <a href="${previewUrl}" target="_blank" class="design-preview-link">
-                <i class="fas fa-external-link-alt"></i> ${t.statusDesignViewLink}
-            </a>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                <h4 style="margin: 0 0 6px 0; color: #fff; font-size: 1rem;"><i class="fas fa-layer-group text-accent"></i> ${escapeHtml(designTitle)}</h4>
+                ${designNotes ? `<p style="margin: 0 0 10px 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">${escapeHtml(designNotes)}</p>` : ''}
+                <a href="${previewUrl}" target="_blank" class="design-preview-link" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600;">
+                    <i class="fas fa-external-link-alt"></i> ${t.statusDesignViewLink}
+                </a>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
                 <i class="fas fa-info-circle"></i> ${t.statusDesignViewHelp}
             </p>
         `;

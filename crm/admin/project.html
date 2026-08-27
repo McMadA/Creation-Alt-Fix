@@ -597,6 +597,78 @@
         </div>
     </div>
 
+    <!-- Phase 3: Design, Visual Concept & Prototype Studio Modal (TASK-815) -->
+    <div id="phase3-design-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+        <div class="workspace-card" style="max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; background: #0c1020; border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.8); padding: 24px;">
+            <div class="workspace-card-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-palette" style="color: #c084fc;"></i> Fase 3: Design & Visueel Concept Opleveren
+                    </h3>
+                    <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
+                        Kies een live HTML prototype, genereer een AI Google Imagen / Banana prompt, of koppel een externe designlink.
+                    </p>
+                </div>
+                <button type="button" id="btn-close-design-modal-x" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <!-- Quick Preset Action Buttons -->
+            <div style="display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;">
+                <button type="button" id="btn-modal-gen-ai-concept" class="btn btn-secondary btn-sm" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">
+                    <i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Concept & Image Prompt
+                </button>
+                <button type="button" id="btn-modal-use-staging" class="btn btn-secondary btn-sm" style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; border-color: rgba(34, 211, 238, 0.4);">
+                    <i class="fas fa-desktop"></i> 🌐 Koppel Live Staging Prototype
+                </button>
+            </div>
+
+            <!-- Input fields -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                    <label style="font-size: 0.78rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                        Ontwerp Concept Titel
+                    </label>
+                    <input type="text" id="modal-design-title" class="admin-input" placeholder="Bijv. Dark Modern AI Redesign Concept" style="margin-top: 4px;">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.78rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                        Prototype / Visual Link (Figma, Live Demo, Staging of Google Imagen URL) *
+                    </label>
+                    <input type="url" id="modal-design-url" class="admin-input" placeholder="https://... of https://www.figma.com/design/..." style="margin-top: 4px;" required>
+                </div>
+
+                <!-- Google Imagen / Banana AI Image Prompt Box -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.78rem; color: #c084fc; font-weight: 600;">
+                            <i class="fas fa-robot"></i> Google Imagen / Banana AI Generator Prompt
+                        </span>
+                        <button type="button" id="btn-copy-ai-image-prompt" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.72rem;">
+                            <i class="fas fa-copy"></i> Kopieer Prompt
+                        </button>
+                    </div>
+                    <textarea id="modal-ai-image-prompt" class="admin-input" rows="3" style="font-size: 0.82rem; font-family: monospace;" placeholder="Gedetailleerde prompt voor het genereren van een visueel UI concept in Google Imagen / Banana..."></textarea>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.78rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                        Toelichting voor de Klant in het Statusportaal
+                    </label>
+                    <textarea id="modal-design-notes" class="admin-input" rows="3" placeholder="Toelichting over de gekozen visuele richting, typografie en gebruikerservaring..." style="margin-top: 4px;"></textarea>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
+                <button type="button" id="btn-cancel-design-modal" class="btn btn-secondary btn-sm">Annuleren</button>
+                <button type="button" id="btn-confirm-send-design" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #a855f7, #6366f1); border: none; font-weight: 700; padding: 8px 18px;">
+                    <i class="fas fa-paper-plane"></i> 🚀 Design Opleveren (Fase 3 Activeren)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Script -->
     <script src="js/project.js" type="module"></script>
 </body>

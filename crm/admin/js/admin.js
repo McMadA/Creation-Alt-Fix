@@ -1349,19 +1349,26 @@ window.sendDesignToClient = async (id) => {
         return;
     }
 
-    // Read designUrl from the Klantkaart input if it's open, or from cached data
+    const p = cachedProjects.find(item => item.id == id);
     let designUrl = document.getElementById('edit-designUrl')?.value || '';
     if (!designUrl) {
-        const p = cachedProjects.find(item => item.id == id);
         designUrl = p?.designUrl || p?.figmaUrl || '';
     }
 
     if (!designUrl || !designUrl.trim()) {
-        alert("Vul eerst de Design / Figma URL in op de Klantkaart voordat je deze naar de klant stuurt.");
-        return;
+        const clientDomain = p?.domainName || p?.domain || '';
+        const suggestedUrl = clientDomain ? `https://${clientDomain}` : 'https://creationaltfix.nl';
+        const inputUrl = prompt(
+            "Voer de URL in van het ontwerp, live HTML staging prototype, Figma of Google Imagen/Banana concept:",
+            suggestedUrl
+        );
+        if (!inputUrl) return;
+        designUrl = inputUrl.trim();
+        const el = document.getElementById('edit-designUrl');
+        if (el) el.value = designUrl;
     }
 
-    if (!confirm(`Wil je het ontwerp versturen naar de klant?\n\nDesign URL: ${designUrl}\n\nDe status wordt gewijzigd naar "Design Gereed voor Review" en de klant kan het ontwerp beoordelen in zijn portaal.`)) return;
+    if (!confirm(`Wil je het ontwerp versturen naar de klant?\n\nDesign / Prototype URL: ${designUrl}\n\nDe status wordt gewijzigd naar "Design Gereed voor Review" en de klant kan het ontwerp beoordelen in zijn portaal.`)) return;
 
     try {
         const docRef = doc(db, "projects", id);
