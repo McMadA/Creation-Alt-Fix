@@ -1910,13 +1910,74 @@ function getMockProject(id) {
                 { id: 'ft_2', title: '[MIG-02] Doelomgeving inrichten (PHP, databases & opslag)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
                 { id: 'ft_3', title: '[MIG-03] Bestanden en database importeren & configuratie updaten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-17' },
                 { id: 'ft_4', title: '[MIG-04] DNS records, MX mailforwarding & SSL certificaten omzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
-                { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' }
+                { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' },
+                { id: 'ft_6', title: '[TASK-809] F-Truck Store Follow-Up & Klantafstemming', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
             ],
             internalNotes: [
                 { id: 'ft_n1', text: 'Hosting & migratie project: website is niet door Creation+Alt+Fix ontworpen, maar gemigreerd naar ons managed platform.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
             ],
             auditLog: [
                 { id: 'ft_l1', timestamp: '2026-08-25T18:00:00Z', type: 'status_updated', description: 'Migratie succesvol afgerond en live op managed hosting (5/5 taken voltooid).', actor: 'Allard Veldman' }
+            ]
+        };
+    }
+
+    if (String(id) === '13' || (typeof id === 'string' && (id.toLowerCase().includes('vanderplaats') || id.toLowerCase().includes('gerard')))) {
+        return {
+            id: id,
+            client: "VAN DER PLAATS (Gerard Klusser)",
+            companyName: "VAN DER PLAATS (Gerard Klusser)",
+            contactName: "Gerard Klusser",
+            email: "vanderplaats2@gmail.com",
+            domainName: "www.vanderplaats.nl",
+            domain: "www.vanderplaats.nl",
+            service: "Website & Klusbedrijf Formulier Backend",
+            goals: "Professionele klusbedrijf website met contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (Tel: +31 6 12104850, KvK: 98527339).",
+            projectGoals: "Professionele klusbedrijf website met contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (Tel: +31 6 12104850, KvK: 98527339).",
+            design: "Robuust, betrouwbaar, modern klusbedrijf thema.",
+            designPreferences: "Robuust, betrouwbaar, modern klusbedrijf thema.",
+            status: "In Ontwikkeling",
+            statusClass: "active",
+            date: "26-08-2026",
+            proposalPrice: "650,00",
+            tasks: [
+                { id: 'vdp_1', title: '[TASK-808] VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-02' }
+            ],
+            internalNotes: [
+                { id: 'vdp_n1', text: 'Offerteformulier koppelen via server-side mailer direct naar vanderplaats2@gmail.com.', createdAt: '2026-08-26T10:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 'vdp_l1', timestamp: '2026-08-26T10:00:00Z', type: 'lead_created', description: 'Project aangemaakt vanuit TODO.md DevOps backlog.', actor: 'Allard Veldman' }
+            ]
+        };
+    }
+
+    if (String(id) === '14' || (typeof id === 'string' && id.toLowerCase().includes('justin'))) {
+        return {
+            id: id,
+            client: "Justin",
+            companyName: "Justin",
+            contactName: "Justin",
+            email: "contact@justin.nl",
+            domainName: "www.justin.nl",
+            domain: "www.justin.nl",
+            service: "Website Laten Maken & Prototype",
+            goals: "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen.",
+            projectGoals: "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen.",
+            design: "Dark AI modern, strak, interactief.",
+            designPreferences: "Dark AI modern, strak, interactief.",
+            status: "Nieuwe Lead",
+            statusClass: "concept",
+            date: "27-08-2026",
+            proposalPrice: "600,00",
+            tasks: [
+                { id: 'jus_1', title: '[TASK-810] Justin Website Intake, Prototype & Offerte', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
+            ],
+            internalNotes: [
+                { id: 'jus_n1', text: 'Intake en offerte template voorbereiden.', createdAt: '2026-08-27T09:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 'jus_l1', timestamp: '2026-08-27T09:00:00Z', type: 'lead_created', description: 'Lead toegevoegd vanuit backlog.', actor: 'Allard Veldman' }
             ]
         };
     }

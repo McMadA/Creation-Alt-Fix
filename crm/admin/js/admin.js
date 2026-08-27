@@ -8,11 +8,13 @@
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
+import { parseTodoMarkdown, mapTaskToProject, syncTodoToFirestore, exportKanbanToTodoMarkdown, PROJECT_PROFILES } from "../../js/todo-sync.js";
+
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
@@ -314,11 +316,13 @@ const API = {
                     { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
                     { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'web_t4', title: 'Wat gebeurt er als ik overlijd met de websites? (Noodprotocol & Continuïteitsplan)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-08' },
+                    { id: 'web_t4', title: '[TASK-805] Creation+Alt+Fix Continuïteitsplan & Noodprotocol', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-08' },
                     { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
-                    { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'web_t7', title: 'Stories waarin ik bezig ben posten & Instagram branding', completed: false, status: 'inprogress', priority: 'medium', dueDate: '2026-08-28' },
-                    { id: 'web_t8', title: 'Personal branding & profielversterking op LinkedIn/Instagram', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' }
+                    { id: 'web_t6', title: '[TASK-703] Volledige Site-Wide & Portal EN-NL Vertaling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'web_t7', title: '[TASK-807] Marketing, Stories & Personal Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' },
+                    { id: 'web_t8', title: '[TASK-811] Vimexx Server Complete Back-up & Lokale/Cloud Archivering', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-14' },
+                    { id: 'web_t9', title: '[TASK-812] Webserver FTP Hardening & Brute-Force Aanvalspreventie', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-16' },
+                    { id: 'web_t10', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' }
                 ],
                 internalNotes: [
                     { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
@@ -350,20 +354,24 @@ const API = {
                     { id: 'task_103', title: '[TASK-103] Digitale Offerte-Ondertekening in Klantenportaal', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                     { id: 'task_104', title: '[TASK-104] Live Klanten Voortgangstracker (/status)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                     { id: 'task_105', title: '[TASK-105] Admin Tabel Zoeken, Filteren & CSV Export', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                    { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_107', title: '[TASK-107] Branded HTML Welkomstmail Dispatcher (EmailJS)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                     { id: 'task_108', title: '[TASK-108] Admin Tabelkolom Uitbreiding & Directe Links', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'task_109', title: '[TASK-109] Site-Wide Intake Funnel & CTA Button Integration', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_605', title: '[TASK-605] Full-Screen Dedicated Project Werkplek (project.html)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_601', title: '[TASK-601] Interne Notities & Automatische Audit Trail', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'task_602', title: '[TASK-602] 4-Kolommen Kanban Bord voor Deliverables', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
-                    { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
-                    { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                     { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
-                    { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
-                    { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
-                    { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
-                    { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
+                    { id: 'task_301', title: '[TASK-301] Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                    { id: 'task_302', title: '[TASK-302] Live LLM API Integratie voor AI Offerte Scope Generator', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                    { id: 'task_401', title: '[TASK-401] Visual Feedback & Annotation Overlay on Demo Environments', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                    { id: 'task_402', title: '[TASK-402] Client System Handover & Documentation Template', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                    { id: 'task_604', title: '[TASK-604] In-App Messaging & Project Ticketing Suite', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                    { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
+                    { id: 'task_813', title: '[TASK-813] Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-08' },
+                    { id: 'task_814', title: '[TASK-814] TODO.md DevOps Backlog naar CRM Firestore Kanban Tweeweg-Synchronisatie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                    { id: 'task_815', title: '[TASK-815] Fase 3 Design Versturen & UX Validatie Check', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-10' },
+                    { id: 'task_816', title: '[TASK-816] Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' }
                 ],
                 internalNotes: [
                     { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }
@@ -388,6 +396,7 @@ const API = {
                 date: "25-08-2026",
                 proposalPrice: "650,00",
                 tasks: [
+                    { id: 'bes_0', title: '[TASK-801] Besseling Installatietechniek Projectafronding', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
                     { id: 'bes_1', title: "Echte foto's — Vervang decoratieve placeholders door foto's van Maico & projecten", completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
                     { id: 'bes_2', title: 'Formulier backend koppelen aan Formspree / Netlify / API', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
                     { id: 'bes_3', title: 'Deployment — Push naar GitHub en deploy via hosting', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
@@ -418,7 +427,7 @@ const API = {
                 statusClass: "concept",
                 date: "25-08-2026",
                 tasks: [
-                    { id: 'ang_1', title: 'angelastenekes.nl vibecoden & interactief prototype bouwen', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
+                    { id: 'ang_1', title: '[TASK-803] Angela Stenekes Website Prototype & vibecoden', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
                 ],
                 internalNotes: [
                     { id: 'ang_n1', text: 'Toegevoegd via Microsoft To Do backlog.', createdAt: '2026-08-25T16:00:00Z', author: 'Allard' }
@@ -442,7 +451,7 @@ const API = {
                 statusClass: "active",
                 date: "25-08-2026",
                 tasks: [
-                    { id: 'hbi_1', title: 'Home Buyer Intelligence afmaken (AI Revisor & Local Mode)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
+                    { id: 'hbi_1', title: '[TASK-804] Home Buyer Intelligence (PropTech AI) Afronding', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
                 ],
                 internalNotes: [
                     { id: 'hbi_n1', text: 'Local mode architectuur diagram is al opgenomen in de showcase portfolio.', createdAt: '2026-08-25T17:00:00Z', author: 'Allard' }
@@ -510,13 +519,64 @@ const API = {
                     { id: 'ft_2', title: '[MIG-02] Doelomgeving inrichten (PHP, databases & opslag)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
                     { id: 'ft_3', title: '[MIG-03] Bestanden en database importeren & configuratie updaten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-17' },
                     { id: 'ft_4', title: '[MIG-04] DNS records, MX mailforwarding & SSL certificaten omzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
-                    { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' }
+                    { id: 'ft_5', title: '[MIG-05] 24/7 Uptime & periodiek back-upbeheer inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-20' },
+                    { id: 'ft_6', title: '[TASK-809] F-Truck Store Follow-Up & Klantafstemming', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
                 ],
                 internalNotes: [
                     { id: 'ft_n1', text: 'Hosting & migratie project: website is niet door Creation+Alt+Fix ontworpen, maar gemigreerd naar ons managed platform.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
                 ],
                 auditLog: [
                     { id: 'ft_l1', timestamp: '2026-08-25T18:00:00Z', type: 'status_updated', description: 'Migratie succesvol afgerond en live op managed hosting (5/5 taken voltooid).', actor: 'Allard Veldman' }
+                ]
+            },
+            {
+                id: 13,
+                client: "VAN DER PLAATS (Gerard Klusser)",
+                companyName: "VAN DER PLAATS (Gerard Klusser)",
+                contactName: "Gerard Klusser",
+                email: "vanderplaats2@gmail.com",
+                domainName: "www.vanderplaats.nl",
+                domain: "www.vanderplaats.nl",
+                service: "Website & Klusbedrijf Formulier Backend",
+                goals: "Professionele klusbedrijf website met contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (Tel: +31 6 12104850, KvK: 98527339).",
+                design: "Robuust, betrouwbaar, modern klusbedrijf thema.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "26-08-2026",
+                proposalPrice: "650,00",
+                tasks: [
+                    { id: 'vdp_1', title: '[TASK-808] VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-02' }
+                ],
+                internalNotes: [
+                    { id: 'vdp_n1', text: 'Offerteformulier koppelen via server-side mailer direct naar vanderplaats2@gmail.com.', createdAt: '2026-08-26T10:00:00Z', author: 'Allard Veldman' }
+                ],
+                auditLog: [
+                    { id: 'vdp_l1', timestamp: '2026-08-26T10:00:00Z', type: 'lead_created', description: 'Project aangemaakt vanuit TODO.md DevOps backlog.', actor: 'Allard Veldman' }
+                ]
+            },
+            {
+                id: 14,
+                client: "Justin",
+                companyName: "Justin",
+                contactName: "Justin",
+                email: "contact@justin.nl",
+                domainName: "www.justin.nl",
+                domain: "www.justin.nl",
+                service: "Website Laten Maken & Prototype",
+                goals: "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen.",
+                design: "Dark AI modern, strak, interactief.",
+                status: "Nieuwe Lead",
+                statusClass: "concept",
+                date: "27-08-2026",
+                proposalPrice: "600,00",
+                tasks: [
+                    { id: 'jus_1', title: '[TASK-810] Justin Website Intake, Prototype & Offerte', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' }
+                ],
+                internalNotes: [
+                    { id: 'jus_n1', text: 'Intake en offerte template voorbereiden.', createdAt: '2026-08-27T09:00:00Z', author: 'Allard Veldman' }
+                ],
+                auditLog: [
+                    { id: 'jus_l1', timestamp: '2026-08-27T09:00:00Z', type: 'lead_created', description: 'Lead toegevoegd vanuit backlog.', actor: 'Allard Veldman' }
                 ]
             }
         ];
@@ -1784,10 +1844,249 @@ async function saveGlobalTask(e) {
     }
 }
 
+// ============================================================
+// [TASK-814] TODO.md DevOps Backlog Sync & Export Controller
+// ============================================================
+let currentTodoMarkdownContent = '';
+let currentParsedTasks = [];
+
+async function fetchTodoMarkdown() {
+    try {
+        const res = await fetch('../../TODO.md?t=' + Date.now());
+        if (res.ok) {
+            currentTodoMarkdownContent = await res.text();
+            return currentTodoMarkdownContent;
+        }
+    } catch (e) {
+        console.warn("Kon TODO.md niet direct via relative fetch laden, probeer root fetch:", e);
+    }
+    try {
+        const res2 = await fetch('/TODO.md?t=' + Date.now());
+        if (res2.ok) {
+            currentTodoMarkdownContent = await res2.text();
+            return currentTodoMarkdownContent;
+        }
+    } catch (e2) {
+        console.warn("Kon TODO.md niet laden via /TODO.md:", e2);
+    }
+    return currentTodoMarkdownContent;
+}
+
+async function openTodoSyncModal() {
+    const modal = document.getElementById('todo-sync-modal');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    switchSyncModalTab('import');
+
+    const totalBadge = document.getElementById('sync-parsed-total-badge');
+    const statusMsg = document.getElementById('sync-execution-status');
+
+    if (totalBadge) totalBadge.innerText = 'Laden...';
+    if (statusMsg) statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin text-accent"></i> TODO.md backlog inlezen en analyseren...';
+
+    const md = await fetchTodoMarkdown();
+    if (!md) {
+        if (statusMsg) statusMsg.innerHTML = '<span style="color: #f87171;"><i class="fas fa-exclamation-triangle"></i> Kon TODO.md niet automatisch inlezen vanaf de server.</span>';
+        return;
+    }
+
+    currentParsedTasks = parseTodoMarkdown(md);
+    renderSyncBreakdown(currentParsedTasks);
+
+    // Also populate export tab
+    const exportArea = document.getElementById('todo-export-textarea');
+    if (exportArea) {
+        exportArea.value = exportKanbanToTodoMarkdown(md, cachedProjects);
+    }
+
+    if (statusMsg) {
+        statusMsg.innerHTML = `<span style="color: #34d399;"><i class="fas fa-check-circle"></i> <strong>${currentParsedTasks.length} taken</strong> succesvol geanalyseerd uit TODO.md. Klaar voor synchronisatie.</span>`;
+    }
+}
+
+function renderSyncBreakdown(tasks) {
+    const totalBadge = document.getElementById('sync-parsed-total-badge');
+    const breakdownGrid = document.getElementById('sync-project-breakdown-grid');
+    if (!breakdownGrid) return;
+
+    breakdownGrid.innerHTML = '';
+    const summaryByProject = {};
+
+    tasks.forEach(t => {
+        const p = t.targetProject || PROJECT_PROFILES.CRM_PORTAL;
+        const pName = p.client;
+        if (!summaryByProject[pName]) {
+            summaryByProject[pName] = { profile: p, tasks: [] };
+        }
+        summaryByProject[pName].tasks.push(t);
+    });
+
+    if (totalBadge) {
+        totalBadge.innerText = `${tasks.length} Taken over ${Object.keys(summaryByProject).length} Projecten`;
+    }
+
+    for (const [pName, group] of Object.entries(summaryByProject)) {
+        const card = document.createElement('div');
+        card.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center;';
+        
+        let doneCount = group.tasks.filter(t => t.status === 'done').length;
+        let activeCount = group.tasks.length - doneCount;
+
+        card.innerHTML = `
+            <div style="overflow: hidden; padding-right: 6px;">
+                <div style="font-size: 0.8rem; font-weight: 600; color: #fff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${escapeHtml(pName)}">
+                    ${escapeHtml(pName)}
+                </div>
+                <div style="font-size: 0.7rem; color: var(--color-text-secondary);">
+                    ${doneCount} voltooid · ${activeCount} openstaand
+                </div>
+            </div>
+            <span class="badge badge-active" style="font-size: 0.72rem; padding: 2px 6px; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.4); color: var(--color-primary-light);">
+                ${group.tasks.length} taken
+            </span>
+        `;
+        breakdownGrid.appendChild(card);
+    }
+}
+
+function switchSyncModalTab(tab) {
+    const paneImport = document.getElementById('pane-sync-import');
+    const paneExport = document.getElementById('pane-sync-export');
+    const btnImport = document.getElementById('tab-btn-sync-import');
+    const btnExport = document.getElementById('tab-btn-sync-export');
+
+    if (tab === 'import') {
+        paneImport?.classList.remove('hidden');
+        paneExport?.classList.add('hidden');
+        btnImport?.classList.replace('btn-secondary', 'btn-primary');
+        btnExport?.classList.replace('btn-primary', 'btn-secondary');
+    } else {
+        paneImport?.classList.add('hidden');
+        paneExport?.classList.remove('hidden');
+        btnExport?.classList.replace('btn-secondary', 'btn-primary');
+        btnImport?.classList.replace('btn-primary', 'btn-secondary');
+
+        // Update live export text
+        const exportArea = document.getElementById('todo-export-textarea');
+        if (exportArea && currentTodoMarkdownContent) {
+            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent, cachedProjects);
+        }
+    }
+}
+
+async function handleExecuteTodoSync() {
+    const btn = document.getElementById('btn-execute-todo-sync');
+    const statusMsg = document.getElementById('sync-execution-status');
+
+    if (!currentParsedTasks || currentParsedTasks.length === 0) {
+        alert("Geen taken gevonden om te synchroniseren. Herlaad het bestand eerst.");
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Synchroniseren...';
+    }
+    if (statusMsg) {
+        statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin text-accent"></i> Bezig met bijwerken van Firestore documenten en lokale projecten...';
+    }
+
+    try {
+        const summary = await syncTodoToFirestore(cachedProjects, currentParsedTasks, db, updateDoc, setDoc, doc);
+        
+        // Re-render Kanban board and stats
+        renderKanbanBoard();
+        renderProjectsTable(cachedProjects);
+        
+        if (statusMsg) {
+            statusMsg.innerHTML = `
+                <div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); border-radius: 6px; padding: 8px 12px; color: #34d399; width: 100%;">
+                    <i class="fas fa-check-circle"></i> <strong>Synchronisatie Voltooid!</strong><br>
+                    <span style="font-size: 0.8rem; color: #a7f3d0;">
+                        ${summary.totalTasks} taken verwerkt over ${summary.projectsAffected} projecten (${summary.projectsCreated} nieuwe projecten aangemaakt in CRM).
+                    </span>
+                </div>
+            `;
+        }
+
+        // Update export textarea as well
+        const exportArea = document.getElementById('todo-export-textarea');
+        if (exportArea && currentTodoMarkdownContent) {
+            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent, cachedProjects);
+        }
+
+        alert(`✅ Succesvol gesynchroniseerd!\n${summary.totalTasks} taken zijn gekoppeld en bijgewerkt in de CRM projecten.`);
+    } catch (err) {
+        console.error("Fout tijdens synchronisatie:", err);
+        if (statusMsg) {
+            statusMsg.innerHTML = `<span style="color: #f87171;"><i class="fas fa-times-circle"></i> Fout bij synchroniseren: ${escapeHtml(err.message)}</span>`;
+        }
+        alert("Fout bij synchroniseren: " + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-bolt"></i> 🚀 Nu Synchroniseren naar Firestore';
+        }
+    }
+}
+
+function handleCopyExportMarkdown() {
+    const exportArea = document.getElementById('todo-export-textarea');
+    const feedback = document.getElementById('export-copy-feedback');
+    if (!exportArea || !exportArea.value) return;
+
+    navigator.clipboard.writeText(exportArea.value).then(() => {
+        if (feedback) {
+            feedback.innerHTML = '<i class="fas fa-check"></i> Gekopieerd naar klembord!';
+            setTimeout(() => { feedback.innerHTML = ''; }, 3000);
+        }
+    }).catch(err => {
+        exportArea.select();
+        document.execCommand('copy');
+        if (feedback) {
+            feedback.innerHTML = '<i class="fas fa-check"></i> Gekopieerd!';
+            setTimeout(() => { feedback.innerHTML = ''; }, 3000);
+        }
+    });
+}
+
+function handleDownloadExportMarkdown() {
+    const exportArea = document.getElementById('todo-export-textarea');
+    if (!exportArea || !exportArea.value) return;
+
+    const blob = new Blob([exportArea.value], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'TODO.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function setupTodoSyncListeners() {
+    document.getElementById('btn-open-todo-sync-modal')?.addEventListener('click', openTodoSyncModal);
+    document.getElementById('btn-close-todo-sync-modal')?.addEventListener('click', () => {
+        document.getElementById('todo-sync-modal')?.classList.add('hidden');
+    });
+    document.getElementById('btn-cancel-todo-sync')?.addEventListener('click', () => {
+        document.getElementById('todo-sync-modal')?.classList.add('hidden');
+    });
+    document.getElementById('tab-btn-sync-import')?.addEventListener('click', () => switchSyncModalTab('import'));
+    document.getElementById('tab-btn-sync-export')?.addEventListener('click', () => switchSyncModalTab('export'));
+    document.getElementById('btn-reload-todo-file')?.addEventListener('click', () => openTodoSyncModal());
+    document.getElementById('btn-execute-todo-sync')?.addEventListener('click', handleExecuteTodoSync);
+    document.getElementById('btn-copy-todo-markdown')?.addEventListener('click', handleCopyExportMarkdown);
+    document.getElementById('btn-download-todo-markdown')?.addEventListener('click', handleDownloadExportMarkdown);
+}
+
 // Initialisatie bij pagina-laad event
 document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
     setupSearchAndFilters();
+    setupTodoSyncListeners();
     document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
     document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
 
@@ -1827,4 +2126,5 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Gemini API sleutel gewist.");
     });
 });
+
 

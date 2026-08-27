@@ -141,7 +141,10 @@
                         <h2 style="font-size: 1.3rem; color: #fff; margin-bottom: 4px;"><i class="fas fa-columns text-accent"></i> Project Taken & Deliverables</h2>
                         <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Beheer deliverables, deadlines en statussen over alle actieve klantprojecten.</p>
                     </div>
-                    <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" id="btn-open-todo-sync-modal" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-accent); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-sync-alt"></i> <span>Sync met TODO.md</span>
+                        </button>
                         <button class="btn btn-primary" id="btn-open-kanban-task-modal">
                             <i class="fas fa-plus"></i> Nieuwe Taak Toevoegen
                         </button>
@@ -319,6 +322,87 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('project-modal')">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO.md Synchronisatie & Export Modal (TASK-814) -->
+    <div id="todo-sync-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="workspace-card" style="max-width: 780px; width: 95%; max-height: 90vh; overflow-y: auto; background: #0b1329; border: 1px solid rgba(99,102,241,0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.9); padding: 24px; border-radius: 12px;">
+            <div class="workspace-card-header" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-sync-alt" style="color: var(--color-accent);"></i> TODO.md & Kanban Tweeweg-Synchronisatie
+                    </h3>
+                    <span style="font-size: 0.78rem; color: var(--color-text-secondary);">[TASK-814] Automatische koppeling van Markdown Backlog naar live Firestore Kanban borden</span>
+                </div>
+                <button type="button" id="btn-close-todo-sync-modal" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <!-- Sub-Tabs in Sync Modal -->
+            <div style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                <button type="button" id="tab-btn-sync-import" class="btn btn-sm btn-primary" style="font-weight: 600;">
+                    <i class="fas fa-file-import"></i> TODO.md ➔ Firestore Sync
+                </button>
+                <button type="button" id="tab-btn-sync-export" class="btn btn-sm btn-secondary" style="font-weight: 600;">
+                    <i class="fas fa-file-export"></i> Kanban ➔ TODO.md Export
+                </button>
+            </div>
+
+            <!-- TAB 1: Import / Sync -->
+            <div id="pane-sync-import">
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 14px;">
+                    Deze synchronisatie scant alle Epics en taken uit <code>TODO.md</code>, herkent statussen en prioriteiten, en koppelt elke taak automatisch aan het juiste project (CRM, Hoofdwebsite, Besseling, Arnold Design, Angela, Home Buyer Intelligence, VAN DER PLAATS, F-Truck, Justin).
+                </p>
+
+                <!-- Status & KPI Preview -->
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(99,102,241,0.2); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #fff; text-transform: uppercase;">
+                            <i class="fas fa-layer-group text-accent"></i> Gekoppelde Projecten & Takenverdeling
+                        </span>
+                        <span id="sync-parsed-total-badge" class="badge badge-active" style="font-size: 0.75rem;">Bezig met analyseren...</span>
+                    </div>
+                    <div id="sync-project-breakdown-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; max-height: 200px; overflow-y: auto; padding-right: 4px;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <div id="sync-execution-status" style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-info-circle text-accent"></i> Klik hieronder om de synchronisatie uit te voeren.
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <button type="button" id="btn-reload-todo-file" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-redo"></i> Herlaad TODO.md
+                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btn-cancel-todo-sync" class="btn btn-secondary btn-sm">Sluiten</button>
+                        <button type="button" id="btn-execute-todo-sync" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none; padding: 8px 18px;">
+                            <i class="fas fa-bolt"></i> 🚀 Nu Synchroniseren naar Firestore
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Export / Markdown Generator -->
+            <div id="pane-sync-export" class="hidden">
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 12px;">
+                    Onderstaande Markdown weerspiegelt de actuele statussen van alle taken op het Kanban bord en herberekent automatisch de Sprint Status Dashboard statistieken (voltooid %, in queue en voortgangsbalk).
+                </p>
+                <textarea id="todo-export-textarea" class="admin-input" rows="12" readonly style="font-family: monospace; font-size: 0.78rem; background: #030712; color: #e2e8f0; line-height: 1.4; margin-bottom: 14px;"></textarea>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span id="export-copy-feedback" style="font-size: 0.82rem; color: #34d399;"></span>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btn-download-todo-markdown" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i> Download TODO.md
+                        </button>
+                        <button type="button" id="btn-copy-todo-markdown" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 700; border: none;">
+                            <i class="fas fa-copy"></i> Kopieer Markdown naar Klembord
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

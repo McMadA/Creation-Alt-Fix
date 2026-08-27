@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **21 Tasks (70%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **9 Tasks (30%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **40 Active Epics & Tasks (1 Canceled)** |
+| **Completed Work Items** | ✅ Done | **22 Tasks (56%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **17 Tasks (44%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░] 70% Complete`
+`[█████████████░░░░░░░░░░░] 56% Complete`
 
 ---
 
@@ -225,3 +225,37 @@
 
 - [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
   - **Tasks**: Werkend maken van het contact- en offerteformulier van `vanderplaats.nl` met veilige e-mailverzending direct naar `vanderplaats2@gmail.com` op de Vimexx webserver (Klant: Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339, Foijingaweg 136 Kollumerpomp).
+
+- [ ] `[TASK-809]` `[P2-HIGH]` `[STATUS: BACKLOG]` **F-Truck Store (ftruckstore.nl / ftruckstore.com) Follow-Up & Klantafstemming**
+  - **Scope**: Klantbeheer, DirectAdmin & Status Portal
+  - **Tasks**: Follow-up uitvoeren met F-Truck Store (Ford Trucks), inventariseren van gewenste features / webshop uitbreiding en status updaten in het CRM.
+
+- [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
+  - **Scope**: Klantproject Justin
+  - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
+
+- [ ] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: BACKLOG]` **Vimexx Server Complete Back-up & Lokale/Cloud Archivering**
+  - **Scope**: DirectAdmin & Server Beheer
+  - **Tasks**: Volledige DirectAdmin server back-up genereren (alle 12 domeinen, MySQL databases, e-mailaccounts en DNS records) en veilig downloaden/archiveren op lokale opslag of cloud backup.
+
+- [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: BACKLOG]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
+  - **Scope**: Vimexx DirectAdmin & Server Security
+  - **Tasks**: Plain FTP (poort 21) uitschakelen / uitsluitend FTPS/SFTP forceren, DirectAdmin Brute Force Monitor & CSF firewall aanscherpen (IP ban na 5 pogingen), overbodige FTP-accounts verwijderen en sterke wachtwoorden toepassen.
+
+- [ ] `[TASK-813]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord**
+  - **Scope**: `crm/status/js/status.js`, `crm/status/index.html`
+  - **Tasks**: Verfijnen van de offerte-ervaring in het klantenportaal: duidelijke scheiding aanbrengen tussen "Offerte Bekijken / PDF Inzien" en een expliciete handtekeningstap / bevestiging voor "Definitief Digitaal Akkoord" zodat klanten niet per ongeluk direct ondertekenen.
+
+- [x] `[TASK-814]` `[P3-MEDIUM]` `[STATUS: DONE]` **TODO.md DevOps Backlog naar CRM Firestore Kanban Tweeweg-Synchronisatie**
+  - **Scope**: `crm/js/todo-sync.js`, `crm/admin/index.html`, `crm/admin/js/admin.js`, `scripts/sync-todo.mjs`
+  - **Details**: Intelligente tweeweg-synchronisatie gebouwd tussen `TODO.md` en het CRM Firestore Kanban bord. Bevat geavanceerde Regex parser voor Epics en taken, automatische projecttoewijzing (CRM & Portaal, Hoofdwebsite, Besseling, Arnold Design, Angela, Home Buyer Intelligence, VAN DER PLAATS, F-Truck, Justin), auto-provisioning van nieuwe projecten, live UI modal met project-verdeling en 1-klik Markdown export inclusief automatische herberekening van de Sprint Status Dashboard statistieken (56% voltooid).
+
+- [ ] `[TASK-815]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Fase 3 Design Versturen & UX Validatie Check**
+  - **Scope**: `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/js/admin.js`
+  - **Tasks**: Checken en optimaliseren van de Fase 3 actieknop: als `edit-designUrl` leeg is een behulpzame invoer-prompt/modal bieden om de Figma/Design prototype link direct op te geven, en verifiëren dat alle faseknoppen in de stappenbalk en de dropdown probleemloos reageren.
+
+- [ ] `[TASK-816]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
+  - **Scope**: `website/diensten/website-laten-maken/`, `crm/js/ai-engine.js`, `crm/js/pdf-generator.js`
+  - **Tasks**: Vaste tariefstructuur (€ 150,-/jaar voor Managed Cloud Hosting, Domeinnaam, SSL, Mail & Backups + optionele APK van € 350-€ 495/jaar) opnemen als selecteerbare modules in de AI Offerte Scope Generator, PDF Offerte/Factuur generator en de openbare website.
+
+
