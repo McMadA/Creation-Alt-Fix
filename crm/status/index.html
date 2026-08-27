@@ -52,6 +52,7 @@
                 <button type="button" data-lang="en" class="lang-btn">EN</button>
             </div>
             <span class="user-badge" id="user-email-display"><i class="fas fa-spinner fa-spin"></i> <span data-translate-key="statusLoadingUser">Laden...</span></span>
+            <a href="../../docs/index.html" target="_blank" class="btn-logout" style="background: rgba(34, 211, 238, 0.15); color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-book-bookmark"></i> <span data-translate-key="statusNavDocs">Documentatie</span></a>
             <button id="reset-password-btn" class="btn-logout" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);"><i class="fas fa-key"></i> <span data-translate-key="statusResetPassBtn">Wachtwoord Resetten</span></button>
             <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> <span data-translate-key="statusLogoutBtn">Uitloggen</span></button>
         </div>
@@ -232,6 +233,131 @@
                 </div>
             </section>
 
+            <!-- Live Concept Staging & Visuele Feedback / Annotatie Suite (TASK-401) -->
+            <section class="card" id="staging-card">
+                <div class="staging-card-header">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 4px;">
+                            <i class="fas fa-desktop"></i> <span data-translate-key="statusStagingTitle">Live Concept Preview & Visuele Feedback</span>
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;" data-translate-key="statusStagingDesc">
+                            Bekijk je website live in verschillende apparaten. Klik op 'Visuele Feedback Geven' om direct opmerkingen op elementen te pinnen.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" id="btn-toggle-annotation-mode" class="btn-annotation-toggle" title="Activeer point-and-click feedback modus">
+                            <i class="fas fa-crosshairs"></i> <span id="annotation-toggle-text" data-translate-key="statusToggleFeedbackBtn">✏️ Visuele Feedback Geven</span>
+                        </button>
+                        <a id="btn-open-staging-tab" href="#" target="_blank" class="btn-staging-tab" title="Open live website in nieuw tabblad">
+                            <i class="fas fa-external-link-alt"></i> <span data-translate-key="statusOpenTabBtn">Nieuw Tabblad</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Staging Toolbar (Viewport Switcher + URL Indicator) -->
+                <div class="staging-toolbar">
+                    <div class="staging-url-info">
+                        <span class="staging-status-dot"></span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem;" data-translate-key="statusLiveUrlLabel">Live URL:</span>
+                        <strong id="staging-url-display" style="color: #fff; font-size: 0.85rem;">https://...</strong>
+                    </div>
+                    
+                    <div class="staging-device-selector">
+                        <button type="button" class="staging-device-btn active" data-viewport="desktop" title="Desktop weergave (100%)">
+                            <i class="fas fa-laptop"></i> <span data-translate-key="statusViewportDesktop">Desktop</span>
+                        </button>
+                        <button type="button" class="staging-device-btn" data-viewport="tablet" title="Tablet weergave (768px)">
+                            <i class="fas fa-tablet-alt"></i> <span data-translate-key="statusViewportTablet">Tablet</span>
+                        </button>
+                        <button type="button" class="staging-device-btn" data-viewport="mobile" title="Mobiele weergave (375px)">
+                            <i class="fas fa-mobile-alt"></i> <span data-translate-key="statusViewportMobile">Mobiel</span>
+                        </button>
+                        <button type="button" id="btn-reload-staging-frame" class="staging-device-btn" title="Herlaad preview frame">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback Helper Notice (Active when in annotation mode) -->
+                <div id="annotation-mode-banner" class="annotation-mode-banner hidden">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-bullseye" style="color: var(--color-accent); font-size: 1.2rem;"></i>
+                        <div>
+                            <strong data-translate-key="statusAnnotationModeActiveTitle">Feedback Modus is Actief!</strong>
+                            <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #e2e8f0;" data-translate-key="statusAnnotationModeActiveDesc">
+                                Klik op elk gewenst element (titel, knop, sectie) op de website hieronder om een feedback pin te plaatsen.
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-stop-annotation-mode" class="btn-annotation-close" data-translate-key="statusAnnotationCloseBtn">Gereed</button>
+                </div>
+
+                <!-- Staging Canvas & Interactive Frame Container -->
+                <div class="staging-canvas-wrap">
+                    <div id="staging-viewport-container" class="staging-viewport-container viewport-desktop">
+                        
+                        <!-- Top browser bar for frame mockup -->
+                        <div class="staging-browser-mockup-bar">
+                            <div class="browser-dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <div class="browser-address-bar" id="mockup-address-bar">
+                                <i class="fas fa-lock" style="font-size: 0.7rem; color: #34d399;"></i>
+                                <span id="mockup-address-text">https://...</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" id="mockup-viewport-size">100%</div>
+                        </div>
+
+                        <!-- Iframe Container with Annotation Overlay -->
+                        <div class="staging-frame-relative-box" id="staging-frame-box">
+                            <iframe id="staging-iframe" class="staging-iframe" src="about:blank" allow="fullscreen"></iframe>
+                            
+                            <!-- Transparent Point-and-Click Annotation Layer -->
+                            <div id="annotation-overlay" class="annotation-overlay hidden">
+                                <!-- Pins are rendered dynamically -->
+                            </div>
+
+                            <!-- Interactive Pin Creation Popover -->
+                            <div id="pin-popover" class="pin-popover hidden">
+                                <div class="popover-header">
+                                    <span><i class="fas fa-map-pin" style="color: var(--color-accent);"></i> <strong data-translate-key="statusPinPopoverTitle">Feedback Pin Toevoegen</strong></span>
+                                    <button type="button" id="btn-close-popover" class="popover-close-btn">&times;</button>
+                                </div>
+                                <div class="popover-body">
+                                    <label for="pin-category-select" style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;" data-translate-key="statusPinCategoryLabel">Categorie:</label>
+                                    <select id="pin-category-select" class="chat-category-dropdown" style="width: 100%; margin-bottom: 8px;">
+                                        <option value="design" data-translate-key="statusPinCatDesign">🎨 Design & Styling</option>
+                                        <option value="content" data-translate-key="statusPinCatText">📄 Tekst & Afbeeldingen</option>
+                                        <option value="feature" data-translate-key="statusPinCatFeature">⚡ Functionaliteit</option>
+                                        <option value="bug" data-translate-key="statusPinCatBug">🐛 Bug / Verbetering</option>
+                                    </select>
+                                    <textarea id="pin-comment-input" rows="3" class="chat-textarea" placeholder="Bijv. Maak dit logo iets groter en pas de knopkleur aan naar donkerblauw..." style="margin-bottom: 10px; font-size: 0.85rem;" data-translate-key-placeholder="statusPinPlaceholder"></textarea>
+                                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                        <button type="button" id="btn-cancel-pin" class="btn-logout" style="padding: 6px 12px; font-size: 0.8rem;" data-translate-key="statusPinCancelBtn">Annuleren</button>
+                                        <button type="button" id="btn-submit-pin" class="btn-akkoord" style="width: auto; padding: 6px 16px; font-size: 0.82rem;" data-translate-key="statusPinSubmitBtn">Plaats Pin</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Pins List / Filter Drawer Under Frame -->
+                <div class="staging-pins-drawer" id="staging-pins-drawer">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: #fff;">
+                            <i class="fas fa-thumbtack" style="color: var(--color-accent);"></i> <span data-translate-key="statusPinsListTitle">Geplaatst Feedback Overzicht</span> (<span id="pins-count-display">0</span>)
+                        </span>
+                    </div>
+                    <div id="pins-summary-list" class="pins-summary-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
             <!-- Project Bestanden & Uploads -->
             <section class="card" id="files-card">
                 <h2 class="section-title"><i class="fas fa-folder-open"></i> <span data-translate-key="statusFilesTitle">Project Bestanden</span></h2>
@@ -252,7 +378,75 @@
                 </div>
             </section>
 
+            <!-- In-App Project Berichten, Revisies & Tickets (TASK-604) -->
+            <section class="card" id="messages-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <h2 class="section-title" style="margin-bottom: 0;">
+                        <i class="fas fa-comments"></i> <span data-translate-key="statusMessagesTitle">Berichten & Revisieverzoeken</span>
+                    </h2>
+                    <span id="messages-count-badge" class="badge badge-concept" style="margin-top: 0; font-size: 0.8rem;">0 berichten</span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" data-translate-key="statusMessagesDesc">
+                    Heb je een vraag, wens of revisieverzoek voor je project? Wissel hier direct berichten uit met Allard.
+                </p>
+
+                <!-- Filter Tabs for Messages -->
+                <div class="chat-filter-bar">
+                    <button type="button" class="chat-filter-btn active" data-filter="all" data-translate-key="statusChatFilterAll">Alle Berichten</button>
+                    <button type="button" class="chat-filter-btn" data-filter="revision" data-translate-key="statusChatFilterRevision">🎨 Revisies & Feedback</button>
+                    <button type="button" class="chat-filter-btn" data-filter="question" data-translate-key="statusChatFilterQuestion">💬 Vragen</button>
+                    <button type="button" class="chat-filter-btn" data-filter="urgent" data-translate-key="statusChatFilterUrgent">⚡ Spoed</button>
+                </div>
+
+                <!-- Chat Messages Stream -->
+                <div id="messages-thread" class="chat-thread-container">
+                    <!-- Populated dynamically by status.js -->
+                </div>
+
+                <!-- Compose New Message Form -->
+                <form id="chat-compose-form" class="chat-compose-box">
+                    <div class="chat-compose-header">
+                        <label for="chat-category-select" style="font-size: 0.82rem; color: var(--text-muted);" data-translate-key="statusChatTypeLabel">Type Bericht / Onderwerp:</label>
+                        <select id="chat-category-select" class="chat-category-dropdown">
+                            <option value="general" data-translate-key="statusCategoryGeneral">💬 Algemeen / Vraag</option>
+                            <option value="revision" data-translate-key="statusCategoryRevision">🎨 Design Feedback / Revisieverzoek</option>
+                            <option value="urgent" data-translate-key="statusCategoryUrgent">⚡ Spoedvraag</option>
+                            <option value="content" data-translate-key="statusCategoryContent">📄 Teksten & Bestanden Aanleveren</option>
+                        </select>
+                    </div>
+                    <textarea id="chat-message-input" rows="3" class="chat-textarea" placeholder="Typ hier je vraag, toelichting of revisieverzoek..." required data-translate-key-placeholder="statusChatPlaceholder"></textarea>
+                    <div class="chat-compose-footer">
+                        <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-shield-alt" style="color: var(--color-accent);"></i> <span data-translate-key="statusChatEncryptedNotice">Direct gekoppeld aan jouw project workspace.</span>
+                        </div>
+                        <button type="submit" id="btn-send-message" class="btn-akkoord" style="width: auto; padding: 10px 22px; font-size: 0.9rem;">
+                            <i class="fas fa-paper-plane"></i> <span data-translate-key="statusChatSendBtn">Verstuur Bericht</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
             <!-- Demo & Factuur Links & Direct Contact -->
+            <!-- Systeem Overdracht & Documentatie Gids (TASK-402) -->
+            <section id="handover-card" class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.05)); border: 1px solid rgba(99, 102, 241, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 4px; font-size: 1.25rem;">
+                            <i class="fas fa-book-bookmark text-accent"></i> <span data-translate-key="statusHandoverTitle">Systeem Overdracht & Documentatie</span>
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;" data-translate-key="statusHandoverDesc">
+                            Bekijk de officiële documentatiegids voor contentbeheer, DNS-instellingen, videohandleidingen en SEO-richtlijnen.
+                        </p>
+                    </div>
+                    <div>
+                        <a id="btn-open-project-docs" href="../../docs/index.html" target="_blank" class="btn-akkoord" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); color: #000; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 18px; border-radius: 8px; border: none; font-size: 0.88rem;">
+                            <i class="fas fa-external-link-alt"></i> <span data-translate-key="statusOpenDocsBtn">Open Documentatie Gids</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Snelle Acties & Contact -->
             <section class="card">
                 <h2 class="section-title"><i class="fas fa-link"></i> <span data-translate-key="statusActionsTitle">Snelle Acties & Contact</span></h2>
 
@@ -275,21 +469,21 @@
                         </div>
                     </a>
 
+                    <!-- In-App Bericht / Ticket Sturen (Vervangt mailto) -->
+                    <button type="button" id="btn-open-messaging-card" class="action-card" style="width: 100%; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.08); text-align: left; cursor: pointer; font-family: inherit;">
+                        <i class="fas fa-comments" style="color: var(--color-accent);"></i>
+                        <div>
+                            <h4 data-translate-key="statusOpenTicketTitle">Stuur Bericht of Vraag</h4>
+                            <p data-translate-key="statusOpenTicketDesc">Stel direct een vraag of dien een revisie in</p>
+                        </div>
+                    </button>
+
                     <!-- Contact via WhatsApp -->
                     <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" class="action-card">
                         <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                         <div>
                             <h4 data-translate-key="statusWhatsAppAllardTitle">WhatsApp met Allard</h4>
                             <p data-translate-key="statusWhatsAppAllardDesc">Stuur direct een bericht voor snelle vragen</p>
-                        </div>
-                    </a>
-
-                    <!-- Contact via E-mail -->
-                    <a href="mailto:info@creationaltfix.nl?subject=Vraag%20over%20mijn%20project" class="action-card">
-                        <i class="fas fa-envelope" style="color: var(--color-accent);"></i>
-                        <div>
-                            <h4 data-translate-key="statusSendEmailTitle">Stuur een E-mail</h4>
-                            <p>info@creationaltfix.nl</p>
                         </div>
                     </a>
                 </div>

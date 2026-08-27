@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **16 Tasks (53%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (47%)** |
+| **Completed Work Items** | ✅ Done | **21 Tasks (70%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **9 Tasks (30%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[█████████████░░░░░░░░░░░] 53% Complete`
+`[██████████████████░░░░░░] 70% Complete`
 
 ---
 
@@ -76,33 +76,26 @@
 ### 🤖 EPIC-03: AI Operations & Automation
 **Domain**: `crm/admin` & Cloud Functions | **Stack**: OpenAI / Gemini API, Scheduled Triggers
 
-- [ ] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated Aftercare Cronjobs (14-Day Check-in & 6-Month APK)**
-  - **Scope**: Cloud Background Cronjobs
-  - **Acceptance Criteria**:
-    - Trigger automated 14-day post-delivery check-in email (Google Review & Instagram follow invite).
-    - Trigger 6-month AI system check-in for recurring support.
+- [x] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: DONE]` **Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate**
+  - **Scope**: `crm/js/ai-engine.js`, `crm/admin/project.html`, `crm/admin/js/project.js`
+  - **Details**: Geautomatiseerde e-mail workflows na livegang (14-dagen review check-in & 6-maanden software APK). Inclusief verplichte handmatige review gate & dispatch wachtrij in het Admin Dashboard zodat er nooit ongewenst e-mails verstuurd worden zonder voorafgaande controle en akkoord.
 
-- [ ] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Live LLM API Integration for AI Proposal Scope Generator**
-  - **Scope**: `crm/admin/js/admin.js`, `crm/status/js/status.js`
-  - **Acceptance Criteria**:
-    - Repurpose the Admin Klantkaart AI drafter into an AI Offerte Scope & Investeringsvoorstel Generator (Fase 2).
-    - Connect live OpenAI / Gemini API endpoint to analyze client intake answers and automatically draft detailed project deliverables and scope.
-    - Save the generated `proposalScope` to Firestore so clients see their custom project deliverables before digitally signing in `/status`.
+- [x] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: DONE]` **Live LLM API Integratie voor AI Offerte Scope & Deliverables Generator**
+  - **Scope**: `crm/js/ai-engine.js`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/status/js/status.js`
+  - **Details**: Google Gemini 1.5 (Flash / Pro) REST API integratie gecombineerd met zero-config offline Creation+Alt+Fix heuristics fallback. Genereert met 1 klik complete deliverables, titels, investeringsprijzen en faseringen op basis van de intake-antwoorden en slaat deze direct op naar Firestore voor het digitale voorstel in het klantenportaal.
 
 ---
 
 ### 🎨 EPIC-04: Client Experience & Co-Creation
 **Domain**: Client Staging & Handover | **Stack**: Marker.io / Custom DOM Overlay, Static Templates
 
-- [ ] `[TASK-401]` `[P4-LOW]` `[STATUS: BACKLOG]` **Visual Feedback & Annotation Overlay on Demo Environments**
-  - **Scope**: Client Staging Subdomains
-  - **Acceptance Criteria**:
-    - Inject visual feedback widget on client demo sites allowing clients to leave point-and-click visual feedback during design review.
+- [x] `[TASK-401]` `[P4-LOW]` `[STATUS: DONE]` **Visual Feedback & Annotation Overlay on Demo Environments (Live Staging Suite)**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `firestore.rules`
+  - **Details**: Zero-configuration live concept staging viewer that automatically loads the domain URL (`domainName`, `domain`, `demoUrl`) from the Klantkaart with responsive viewports (Desktop, Tablet, Mobile) and interactive prototype fallback. Built point-and-click visual feedback annotation engine with numbered pins, popovers, real-time Firestore persistence, automatic In-App Chat syncing, and 1-click status resolution in the Admin Workstation.
 
-- [ ] `[TASK-402]` `[P4-LOW]` `[STATUS: BACKLOG]` **Client System Handover & Documentation Template**
-  - **Scope**: `website/docs/`
-  - **Acceptance Criteria**:
-    - Create standardized dark-mode handover guide & video documentation template for completed website/system delivery.
+- [x] `[TASK-402]` `[P4-LOW]` `[STATUS: DONE]` **Client System Handover & Documentation Template**
+  - **Scope**: `website/docs/index.html`, `website/docs/css/docs.css`, `website/docs/js/docs.js`, `crm/status/index.html`, `crm/status/js/status.js`
+  - **Details**: Interactive, Dark AI styled documentation & handover suite featuring quick start guide, DNS/Email SPF & DMARC configuration snippets, content & image optimization guidelines, video walkthrough preview mockup, SEO/GA4 search console submission steps, warranty/support strippenkaart info, interactive afvinkbare checklist with persistent localStorage progress bar, 1-click PDF/print exporter, and dynamic query param personalization (`?domain=...&client=...`) linked directly from the Client Status Portal and website footer.
 
 ---
 
@@ -178,9 +171,9 @@
   - **Scope**: `crm/js/pdf-generator.js`, `crm/status/`, `crm/admin/`
   - **Details**: Implemented high-quality PDF generation engine (`pdf-generator.js`) using `jsPDF`. Converts digitally signed proposals and invoices into official A4 PDFs containing Creation+Alt+Fix branding, legal KVK/BTW numbers, itemized deliverables, VAT calculations, and digital signature stamps. Automatically uploads PDF binaries to Firebase Storage (`projects/{id}/documents/`) and provides 1-click download buttons in the Client Portal (`/status`) and Admin Workstation (`project.html`).
 
-- [ ] `[TASK-604]` `[P4-LOW]` `[STATUS: BACKLOG]` **In-App Messaging / Ticketing**
-  - **Scope**: `crm/status/` & `crm/admin/`
-  - **Acceptance Criteria**: Replace standard mailto feedback buttons with a centralized Firestore-based chat/ticket thread per project.
+- [x] `[TASK-604]` `[P4-LOW]` `[STATUS: DONE]` **In-App Messaging & Project Ticketing Suite**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`, `crm/admin/js/admin.js`, `firestore.rules`
+  - **Details**: Replaced static `mailto:` feedback buttons with an in-app ticketing and chat module between client and administrator. Features multi-category support (Revisies, Vragen, Spoed, Bestanden), ticket status transitions (Open, In Behandeling, Opgelost), real-time Firestore synchronization, automated audit logging, full NL/EN localization, and visual unread message counters in the Admin dashboard.
 
 - [x] `[TASK-605]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
   - **Scope**: `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`, `crm/admin/index.html`, `crm/admin/js/admin.js`

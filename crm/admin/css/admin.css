@@ -216,4 +216,151 @@ h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--color-text-headi
 
 .note-input-box { background: rgba(0,0,0,0.25); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px; }
 
+/* ===========================================
+   ADMIN MESSAGES & TICKETS (TASK-604)
+   =========================================== */
+.admin-chat-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 16px;
+    background: rgba(11, 17, 32, 0.7);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.admin-chat-thread::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-chat-thread::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 3px;
+}
+
+.admin-msg-card {
+    background: var(--color-bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transition-base);
+    position: relative;
+}
+
+.admin-msg-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.admin-msg-card.from-client {
+    border-left: 3px solid var(--color-accent);
+    background: rgba(15, 23, 42, 0.85);
+}
+
+.admin-msg-card.from-admin {
+    border-left: 3px solid var(--color-primary-light);
+    background: rgba(30, 27, 75, 0.35);
+}
+
+.admin-msg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.82rem;
+}
+
+.admin-msg-sender {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.admin-msg-sender .sender-badge {
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-msg-sender .sender-badge.client {
+    background: rgba(34, 211, 238, 0.15);
+    color: var(--color-accent);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.admin-msg-sender .sender-badge.admin {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--color-primary-light);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.admin-msg-body {
+    font-size: 0.92rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.admin-msg-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.admin-msg-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-ticket-status-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.admin-ticket-status-btn:hover {
+    color: #fff;
+    border-color: var(--color-accent);
+}
+
+.admin-ticket-status-btn.is-resolved {
+    color: #34d399;
+    border-color: rgba(52, 211, 153, 0.4);
+    background: rgba(52, 211, 153, 0.1);
+}
+
+.admin-ticket-status-btn.is-inprogress {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.admin-ticket-status-btn.is-open {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.1);
+}
+
 

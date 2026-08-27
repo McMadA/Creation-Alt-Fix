@@ -15,6 +15,7 @@ import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, q
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
+import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail } from "../../js/ai-engine.js";
 
 let app, auth, db, storage, secondaryAuth;
 try {
@@ -302,6 +303,10 @@ function renderProjectWorkspace(p) {
 
     // Render Sub-Components
     renderTasksList(p.tasks || []);
+    renderAdminMessages(p.messages || []);
+    renderAdminStaging(p);
+    renderAiScopeBox(p);
+    renderAftercareQueue(p);
     renderTimelineAndNotes(p.internalNotes || [], p.auditLog || []);
     renderFilesList(p.files || []);
 }
@@ -598,6 +603,443 @@ function renderFilesList(files) {
     `).join('');
 }
 
+// --- [TASK-604] Admin Messages & Tickets Management ---
+let activeAdminChatFilter = 'all';
+
+function renderAdminMessages(messages) {
+    const threadElem = document.getElementById('admin-messages-thread');
+    const countTabElem = document.getElementById('tab-messages-count');
+    if (!threadElem) return;
+
+    const msgsList = Array.isArray(messages) ? messages : [];
+    if (countTabElem) countTabElem.innerText = msgsList.length;
+
+    // Filter messages based on activeAdminChatFilter
+    const filteredMessages = msgsList.filter(msg => {
+        if (activeAdminChatFilter === 'all') return true;
+        if (activeAdminChatFilter === 'open') return msg.status === 'open' || msg.status === 'in_progress';
+        if (activeAdminChatFilter === 'revision') return msg.category === 'revision';
+        if (activeAdminChatFilter === 'urgent') return msg.category === 'urgent';
+        if (activeAdminChatFilter === 'resolved') return msg.status === 'resolved';
+        return true;
+    });
+
+    if (filteredMessages.length === 0) {
+        threadElem.innerHTML = `<p style="color: var(--color-text-secondary); font-style: italic; font-size: 0.9rem; padding: 25px 10px; text-align: center;">Geen berichten gevonden voor dit filter. Schrijf hieronder een reactie naar de klant om de conversatie te starten!</p>`;
+        return;
+    }
+
+    threadElem.innerHTML = '';
+    filteredMessages.forEach(msg => {
+        const isAdmin = msg.sender === 'admin';
+        const card = document.createElement('div');
+        card.className = `admin-msg-card ${isAdmin ? 'from-admin' : 'from-client'}`;
+
+        const senderLabel = isAdmin 
+            ? 'Allard (Creation+Alt+Fix)' 
+            : (escapeHtml(msg.senderName) || 'Klant');
+        
+        const senderBadge = isAdmin 
+            ? '<span class="sender-badge admin"><i class="fas fa-shield-alt"></i> Beheerder</span>' 
+            : '<span class="sender-badge client"><i class="fas fa-user"></i> Klant</span>';
+
+        const dateStr = msg.createdAt 
+            ? new Date(msg.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
+            : 'Zojuist';
+
+        // Category Tag
+        let catLabel = '💬 Algemeen';
+        if (msg.category === 'revision') catLabel = '🎨 Design Revisie';
+        else if (msg.category === 'urgent') catLabel = '⚡ Spoed';
+        else if (msg.category === 'question') catLabel = '💬 Vraag';
+        else if (msg.category === 'content') catLabel = '📄 Bestanden & Teksten';
+
+        // Status
+        const currentStatus = msg.status || 'open';
+        let statusBtnClass = 'is-open';
+        let statusBtnLabel = '<i class="fas fa-circle"></i> Openstaand';
+        if (currentStatus === 'in_progress') {
+            statusBtnClass = 'is-inprogress';
+            statusBtnLabel = '<i class="fas fa-spinner fa-spin"></i> In Behandeling';
+        } else if (currentStatus === 'resolved') {
+            statusBtnClass = 'is-resolved';
+            statusBtnLabel = '<i class="fas fa-check-circle"></i> Opgelost';
+        }
+
+        card.innerHTML = `
+            <div class="admin-msg-header">
+                <div class="admin-msg-sender">
+                    <span>${senderLabel}</span>
+                    ${senderBadge}
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.75rem; color: var(--color-accent); font-weight: 600;">${catLabel}</span>
+                    <span style="font-size: 0.75rem; color: var(--color-text-secondary);">${dateStr}</span>
+                </div>
+            </div>
+            <div class="admin-msg-body">${escapeHtml(msg.message)}</div>
+            <div class="admin-msg-footer">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.72rem; color: var(--color-text-secondary);">Ticket Status:</span>
+                    <button type="button" class="admin-ticket-status-btn ${statusBtnClass}" data-action="toggle-status" data-id="${msg.id}" title="Klik om status te wijzigen">
+                        ${statusBtnLabel}
+                    </button>
+                </div>
+                <div class="admin-msg-actions">
+                    <button type="button" class="btn btn-sm" data-action="delete-msg" data-id="${msg.id}" style="background: transparent; color: #f87171; border: none; padding: 2px 6px; cursor: pointer;" title="Bericht verwijderen">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Toggle Status Handler
+        card.querySelector('[data-action="toggle-status"]').addEventListener('click', () => {
+            toggleMessageStatus(msg.id);
+        });
+
+        // Delete Message Handler
+        card.querySelector('[data-action="delete-msg"]').addEventListener('click', () => {
+            deleteMessage(msg.id);
+        });
+
+        threadElem.appendChild(card);
+    });
+
+    threadElem.scrollTop = threadElem.scrollHeight;
+}
+
+async function sendAdminMessage(category, messageText, ticketStatus) {
+    if (!messageText || !messageText.trim() || !currentProjectId) return;
+
+    const newMsg = {
+        id: 'msg_' + Date.now(),
+        sender: 'admin',
+        senderName: 'Allard (Creation+Alt+Fix)',
+        senderEmail: auth?.currentUser?.email || 'info@creationaltfix.nl',
+        category: category || 'general',
+        message: messageText.trim(),
+        createdAt: new Date().toISOString(),
+        status: ticketStatus || 'resolved',
+        readByAdmin: true,
+        readByClient: false
+    };
+
+    const updatedMessages = [...(currentProjectData.messages || []), newMsg];
+    currentProjectData.messages = updatedMessages;
+
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('message_sent', `Reactie gestuurd naar klant (${category}): "${newMsg.message.slice(0, 45)}${newMsg.message.length > 45 ? '...' : ''}"`);
+        } catch (err) {
+            console.error("Fout bij versturen admin bericht:", err);
+            alert("Fout bij opslaan bericht: " + err.message);
+        }
+    }
+}
+
+async function toggleMessageStatus(messageId) {
+    if (!currentProjectData || !currentProjectData.messages) return;
+
+    const updatedMessages = currentProjectData.messages.map(m => {
+        if (m.id === messageId) {
+            let nextStatus = 'in_progress';
+            if (m.status === 'open') nextStatus = 'in_progress';
+            else if (m.status === 'in_progress') nextStatus = 'resolved';
+            else if (m.status === 'resolved') nextStatus = 'open';
+            return { ...m, status: nextStatus };
+        }
+        return m;
+    });
+
+    currentProjectData.messages = updatedMessages;
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('ticket_status', `Status van ticket bijgewerkt.`);
+        } catch (err) {
+            console.error("Fout bij updaten ticket status:", err);
+        }
+    }
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm("Weet je zeker dat je dit bericht wilt verwijderen uit de chathistorie?")) return;
+
+    const updatedMessages = (currentProjectData.messages || []).filter(m => m.id !== messageId);
+    currentProjectData.messages = updatedMessages;
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('message_deleted', `Bericht/ticket verwijderd uit de projecthistorie.`);
+        } catch (err) {
+            console.error("Fout bij verwijderen bericht:", err);
+        }
+    }
+}
+
+// --- [TASK-401] Admin Live Staging & Visual Pins Management ---
+let activeAdminPinsFilter = 'all';
+
+function resolveAdminStagingUrl(p) {
+    if (!p) return null;
+    let url = p.domainName || p.domain || p.demoUrl || p.stagingUrl || p.designUrl;
+    if (!url || typeof url !== 'string') return null;
+    url = url.trim();
+    if (url === '' || url.toLowerCase() === 'n.v.t.' || url.toLowerCase() === 'geen' || url.toLowerCase() === 'nog geen domein') {
+        return null;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+    }
+    return url;
+}
+
+function renderAdminStaging(p) {
+    const iframe = document.getElementById('admin-staging-iframe');
+    const urlDisplay = document.getElementById('admin-staging-url-display');
+    const openBtn = document.getElementById('admin-open-staging-tab');
+    const tabCount = document.getElementById('tab-staging-count');
+    const pinsCountLabel = document.getElementById('admin-pins-count-label');
+    const overlay = document.getElementById('admin-pins-overlay');
+    const listContainer = document.getElementById('admin-pins-list-container');
+
+    const annotations = Array.isArray(p.annotations) ? p.annotations : [];
+    if (tabCount) tabCount.innerText = annotations.length;
+    if (pinsCountLabel) pinsCountLabel.innerText = annotations.length;
+
+    const resolvedUrl = resolveAdminStagingUrl(p);
+    if (resolvedUrl) {
+        if (iframe && iframe.dataset.loadedUrl !== resolvedUrl) {
+            iframe.src = resolvedUrl;
+            iframe.dataset.loadedUrl = resolvedUrl;
+        }
+        if (urlDisplay) urlDisplay.innerText = resolvedUrl;
+        if (openBtn) {
+            openBtn.href = resolvedUrl;
+            openBtn.classList.remove('hidden');
+        }
+    } else {
+        const dummyDemo = `https://demo.creationaltfix.nl/${encodeURIComponent((p.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
+        if (urlDisplay) urlDisplay.innerText = `${dummyDemo} (Geen extern domein)`;
+        if (openBtn) openBtn.classList.add('hidden');
+    }
+
+    // 1. Render Pins Markers on Admin Overlay
+    if (overlay) {
+        overlay.innerHTML = '';
+        annotations.forEach((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const isResolved = pin.status === 'resolved';
+            const marker = document.createElement('div');
+            marker.className = `annotation-pin ${isResolved ? 'resolved' : ''}`;
+            marker.style.left = `${pin.xPercent}%`;
+            marker.style.top = `${pin.yPercent}%`;
+            marker.innerHTML = isResolved ? '<i class="fas fa-check"></i>' : String(pinNum);
+            marker.title = `Pin #${pinNum} [${pin.category}]: ${escapeHtml(pin.comment)}`;
+            marker.style.pointerEvents = 'auto';
+
+            marker.addEventListener('click', () => {
+                const itemEl = document.getElementById(`admin-pin-card-${pin.id}`);
+                if (itemEl) {
+                    itemEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    itemEl.style.borderColor = 'var(--color-accent)';
+                    setTimeout(() => { itemEl.style.borderColor = 'var(--color-border)'; }, 1500);
+                }
+            });
+
+            overlay.appendChild(marker);
+        });
+    }
+
+    // 2. Render Pins Management List
+    if (listContainer) {
+        const filteredPins = annotations.filter(pin => {
+            if (activeAdminPinsFilter === 'all') return true;
+            if (activeAdminPinsFilter === 'open') return pin.status !== 'resolved';
+            if (activeAdminPinsFilter === 'resolved') return pin.status === 'resolved';
+            return true;
+        });
+
+        if (filteredPins.length === 0) {
+            listContainer.innerHTML = `<p style="color: var(--color-text-secondary); font-size: 0.85rem; font-style: italic; padding: 15px; text-align: center;">Geen pinnen gevonden voor dit filter.</p>`;
+            return;
+        }
+
+        listContainer.innerHTML = filteredPins.map((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const isResolved = pin.status === 'resolved';
+            const catLabel = pin.category === 'design' ? '🎨 Design' : (pin.category === 'content' ? '📄 Tekst' : (pin.category === 'bug' ? '🐛 Bug' : '⚡ Functionaliteit'));
+            const dateStr = pin.createdAt ? new Date(pin.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Zojuist';
+            const author = escapeHtml(pin.author || 'Klant');
+
+            return `
+                <div id="admin-pin-card-${pin.id}" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; transition: border-color 0.3s;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; max-width: 70%;">
+                        <span class="pin-badge" style="width: 26px; height: 26px; border-radius: 50%; background: ${isResolved ? '#10b981' : 'var(--color-accent)'}; color: ${isResolved ? '#fff' : '#000'}; font-weight: 800; font-size: 0.78rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                            ${isResolved ? '<i class="fas fa-check"></i>' : pinNum}
+                        </span>
+                        <div>
+                            <div style="font-weight: 600; color: #fff; font-size: 0.88rem; line-height: 1.4;">${escapeHtml(pin.comment)}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 3px;">
+                                <strong>${author}</strong> • ${catLabel} • Viewport: <code>${pin.device || 'desktop'}</code> • Geplaatst op: ${dateStr}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" class="btn btn-sm ${isResolved ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-resolve-pin" data-id="${pin.id}" style="font-size: 0.8rem; padding: 5px 12px;">
+                            ${isResolved ? '<i class="fas fa-undo"></i> Heropenen' : '<i class="fas fa-check-circle"></i> Markeer als Opgelost'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        listContainer.querySelectorAll('[data-action="toggle-resolve-pin"]').forEach(btn => {
+            btn.onclick = () => {
+                const pinId = btn.getAttribute('data-id');
+                togglePinResolution(pinId);
+            };
+        });
+    }
+}
+
+async function togglePinResolution(pinId) {
+    if (!currentProjectData || !currentProjectData.annotations) return;
+
+    let targetPinNum = 1;
+    let nextStatus = 'resolved';
+
+    const updatedAnnotations = currentProjectData.annotations.map(pin => {
+        if (pin.id === pinId) {
+            targetPinNum = pin.pinNumber || 1;
+            nextStatus = pin.status === 'resolved' ? 'open' : 'resolved';
+            return {
+                ...pin,
+                status: nextStatus,
+                resolvedAt: nextStatus === 'resolved' ? new Date().toISOString() : null
+            };
+        }
+        return pin;
+    });
+
+    currentProjectData.annotations = updatedAnnotations;
+    renderAdminStaging(currentProjectData);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { annotations: updatedAnnotations });
+            await logAuditEvent('pin_resolution', `Feedback Pin #${targetPinNum} gemarkeerd als ${nextStatus === 'resolved' ? 'Opgelost' : 'Openstaand'}.`);
+        } catch (err) {
+            console.error("Fout bij bijwerken pin status:", err);
+            alert("Fout bij updaten pin status: " + err.message);
+        }
+    }
+}
+
+// --- [TASK-302] AI Offerte Scope & Deliverables Suite ---
+let currentDeliverablesList = [];
+
+function renderAiScopeBox(p) {
+    const scopeBox = document.getElementById('ai-scope-box');
+    if (!scopeBox) return;
+
+    const hasScopeData = Boolean(p.proposalScope || (p.deliverables && p.deliverables.length > 0) || p.proposalTitle);
+    if (hasScopeData) {
+        document.getElementById('ai-scope-title').value = p.proposalTitle || `Realisatie Maatwerk Oplossing - ${p.client || ''}`;
+        document.getElementById('ai-scope-price').value = p.proposalPrice || '';
+        document.getElementById('ai-scope-summary').value = p.proposalScope || '';
+        currentDeliverablesList = Array.isArray(p.deliverables) ? [...p.deliverables] : [];
+        renderDeliverablesInputs();
+        scopeBox.classList.remove('hidden');
+    }
+}
+
+function renderDeliverablesInputs() {
+    const container = document.getElementById('ai-deliverables-list');
+    if (!container) return;
+
+    if (currentDeliverablesList.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.8rem; color: var(--color-text-secondary); font-style: italic;">Geen specifieke deliverables toegevoegd. Klik op 'Deliverable Toevoegen' of genereer automatisch via AI.</p>`;
+        return;
+    }
+
+    container.innerHTML = currentDeliverablesList.map((item, idx) => `
+        <div style="display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="flex: 1;">
+                <input type="text" class="admin-input deliverable-title-input" data-idx="${idx}" value="${escapeHtml(item.title || '')}" placeholder="Deliverable titel (bijv. Responsive Frontend)..." style="margin: 0 0 4px 0; font-size: 0.85rem; font-weight: 600;">
+                <input type="text" class="admin-input deliverable-desc-input" data-idx="${idx}" value="${escapeHtml(item.description || '')}" placeholder="Toelichting van de werkzaamheden..." style="margin: 0; font-size: 0.8rem; color: var(--color-text-secondary);">
+            </div>
+            <button type="button" class="btn btn-sm" data-action="remove-deliv" data-idx="${idx}" style="background: transparent; color: #f87171; border: none; padding: 6px; cursor: pointer;" title="Verwijderen">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('.deliverable-title-input').forEach(input => {
+        input.onchange = (e) => {
+            const i = parseInt(e.target.getAttribute('data-idx'), 10);
+            if (currentDeliverablesList[i]) currentDeliverablesList[i].title = e.target.value;
+        };
+    });
+
+    container.querySelectorAll('.deliverable-desc-input').forEach(input => {
+        input.onchange = (e) => {
+            const i = parseInt(e.target.getAttribute('data-idx'), 10);
+            if (currentDeliverablesList[i]) currentDeliverablesList[i].description = e.target.value;
+        };
+    });
+
+    container.querySelectorAll('[data-action="remove-deliv"]').forEach(btn => {
+        btn.onclick = () => {
+            const i = parseInt(btn.getAttribute('data-idx'), 10);
+            currentDeliverablesList.splice(i, 1);
+            renderDeliverablesInputs();
+        };
+    });
+}
+
+// --- [TASK-301] Nazorg & AI Dispatch Wachtrij Management ---
+function renderAftercareQueue(p) {
+    const aftercareBox = document.getElementById('aftercare-queue-box');
+    if (!aftercareBox) return;
+
+    const isCompleted = Boolean(p.status && (p.status.includes('Opgeleverd') || p.status.includes('Afgerond') || p.status.includes('Livegang') || p.status.includes('Mollie')));
+    
+    // If aftercare is already sent
+    if (p.aftercareSentAt) {
+        const sentDate = new Date(p.aftercareSentAt).toLocaleDateString('nl-NL');
+        aftercareBox.classList.remove('hidden');
+        document.getElementById('aftercare-subject-input').value = `Nazorg verzonden op ${sentDate}`;
+        document.getElementById('aftercare-body-input').value = `Deze klant heeft reeds een nazorg check-in ontvangen op ${sentDate}.`;
+        const approveBtn = document.getElementById('btn-approve-send-aftercare');
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.innerHTML = `<i class="fas fa-check"></i> Reeds Verzonden (${sentDate})`;
+        }
+        return;
+    }
+
+    if (isCompleted || p.aftercareQueuePending) {
+        aftercareBox.classList.remove('hidden');
+        const subjectInput = document.getElementById('aftercare-subject-input');
+        const bodyInput = document.getElementById('aftercare-body-input');
+        if (subjectInput && !subjectInput.value) {
+            generateAftercareEmail(p, '14day').then(mail => {
+                subjectInput.value = mail.subject;
+                bodyInput.value = mail.body;
+            });
+        }
+    }
+}
+
 // --- Change Project Phase & Workflow Status ---
 async function changeProjectPhase(phaseNumber) {
     if (!currentProjectData) return;
@@ -714,7 +1156,82 @@ function setupFormHandlers() {
         dateInput.value = '';
     });
 
-    // 3. Add Internal Note Form
+    // 3. Admin Messages & Tickets Filter & Reply Form
+    document.getElementById('admin-chat-filter')?.addEventListener('change', (e) => {
+        activeAdminChatFilter = e.target.value;
+        if (currentProjectData) {
+            renderAdminMessages(currentProjectData.messages || []);
+        }
+    });
+
+    document.getElementById('admin-reply-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const catSelect = document.getElementById('admin-reply-category');
+        const statusSelect = document.getElementById('admin-reply-status');
+        const replyInput = document.getElementById('admin-reply-input');
+        const sendBtn = document.getElementById('btn-admin-send-reply');
+
+        const category = catSelect ? catSelect.value : 'general';
+        const ticketStatus = statusSelect ? statusSelect.value : 'resolved';
+        const messageText = replyInput ? replyInput.value.trim() : '';
+
+        if (!messageText) return;
+
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+        }
+
+        try {
+            await sendAdminMessage(category, messageText, ticketStatus);
+            if (replyInput) replyInput.value = '';
+        } finally {
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Verstuur Reactie naar Klant';
+            }
+        }
+    });
+
+    // 4. Admin Live Staging & Pins Controls
+    document.querySelectorAll('.admin-vp-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-vp-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const targetVp = btn.getAttribute('data-vp');
+            const wrap = document.getElementById('admin-staging-viewport-wrap');
+            if (wrap) {
+                if (targetVp === 'desktop') {
+                    wrap.style.width = '100%';
+                    wrap.style.borderRadius = '8px';
+                } else if (targetVp === 'tablet') {
+                    wrap.style.width = '768px';
+                    wrap.style.borderRadius = '16px';
+                } else if (targetVp === 'mobile') {
+                    wrap.style.width = '375px';
+                    wrap.style.borderRadius = '24px';
+                }
+            }
+        });
+    });
+
+    document.getElementById('btn-admin-reload-staging')?.addEventListener('click', () => {
+        const iframe = document.getElementById('admin-staging-iframe');
+        if (iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => { iframe.src = currentSrc; }, 50);
+        }
+    });
+
+    document.getElementById('admin-pins-filter')?.addEventListener('change', (e) => {
+        activeAdminPinsFilter = e.target.value;
+        if (currentProjectData) {
+            renderAdminStaging(currentProjectData);
+        }
+    });
+
+    // 5. Add Internal Note Form
     document.getElementById('add-internal-note-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const noteInput = document.getElementById('internal-note-input');
@@ -722,7 +1239,7 @@ function setupFormHandlers() {
         noteInput.value = '';
     });
 
-    // 4. Activate Firebase Auth Button
+    // 5. Activate Firebase Auth Button
     document.getElementById('btn-activate-auth')?.addEventListener('click', async () => {
         const email = document.getElementById('edit-email').value.trim().toLowerCase();
         const contact = document.getElementById('edit-contact').value;
@@ -803,7 +1320,217 @@ function setupFormHandlers() {
         alert("Concept e-mail gekopieerd naar klembord!");
     });
 
-    // 7. Action: Generate Proposal
+    // 7. Gemini AI Setup Modal Handlers
+    const geminiModal = document.getElementById('gemini-settings-modal');
+    const geminiKeyInput = document.getElementById('gemini-api-key-input');
+    const geminiKeyStatus = document.getElementById('gemini-key-status');
+    const geminiModelSelect = document.getElementById('gemini-model-select');
+
+    document.getElementById('btn-open-gemini-modal')?.addEventListener('click', () => {
+        if (geminiKeyInput) geminiKeyInput.value = getGeminiApiKey();
+        if (geminiModelSelect) geminiModelSelect.value = getGeminiModel();
+        if (geminiKeyStatus) {
+            geminiKeyStatus.innerHTML = hasGeminiApiKey() 
+                ? '<strong style="color: #34d399;"><i class="fas fa-check-circle"></i> Gemini API sleutel is actief.</strong>' 
+                : '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Geen sleutel ingevoerd. Systeem gebruikt de slimme offline generator.</span>';
+        }
+        geminiModal?.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-gemini-modal')?.addEventListener('click', () => geminiModal?.classList.add('hidden'));
+    document.getElementById('btn-cancel-gemini-modal')?.addEventListener('click', () => geminiModal?.classList.add('hidden'));
+
+    document.getElementById('btn-save-gemini-key')?.addEventListener('click', () => {
+        const val = geminiKeyInput?.value.trim() || '';
+        const selectedModel = geminiModelSelect?.value || 'gemini-2.0-flash';
+        setGeminiApiKey(val);
+        setGeminiModel(selectedModel);
+        alert(val ? `Gemini instellingen opgeslagen (Model: ${selectedModel})!` : "Gemini API sleutel gewist. Offline generator actief.");
+        geminiModal?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-clear-gemini-key')?.addEventListener('click', () => {
+        setGeminiApiKey('');
+        if (geminiKeyInput) geminiKeyInput.value = '';
+        if (geminiKeyStatus) geminiKeyStatus.innerHTML = '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Sleutel gewist. Offline generator actief.</span>';
+        alert("Gemini API sleutel gewist.");
+    });
+
+    // 8. AI Offerte & Scope Generator (TASK-302)
+    const runAiScopeGeneration = async () => {
+        const triggerBtn = document.getElementById('btn-trigger-ai-scope');
+        const reGenBtn = document.getElementById('btn-re-generate-scope');
+        const origText = triggerBtn ? triggerBtn.innerHTML : '';
+        
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI Scope Wordt Gegenereerd...';
+        }
+        if (reGenBtn) reGenBtn.disabled = true;
+
+        try {
+            const scopeData = await generateProposalScope(currentProjectData || {});
+            
+            document.getElementById('ai-scope-title').value = scopeData.proposalTitle || `Realisatie Maatwerk Oplossing - ${currentProjectData?.client || ''}`;
+            document.getElementById('ai-scope-price').value = scopeData.estimatedPrice || '650,00';
+            document.getElementById('ai-scope-summary').value = scopeData.executiveSummary || '';
+            
+            currentDeliverablesList = Array.isArray(scopeData.deliverables) ? [...scopeData.deliverables] : [];
+            renderDeliverablesInputs();
+
+            const modelTag = document.getElementById('ai-generator-model-tag');
+            if (modelTag) {
+                modelTag.innerHTML = scopeData.isAiGenerated 
+                    ? '<strong style="color: #34d399;"><i class="fas fa-bolt"></i> Gegenereerd via Live Google Gemini 1.5 API</strong>' 
+                    : '<span style="color: var(--color-accent);"><i class="fas fa-cogs"></i> Gegenereerd via Creation+Alt+Fix Smart Heuristic Engine</span>';
+            }
+
+            document.getElementById('ai-scope-box')?.classList.remove('hidden');
+            document.getElementById('ai-scope-box')?.scrollIntoView({ behavior: 'smooth' });
+
+        } catch (err) {
+            console.error("Fout bij genereren scope:", err);
+            alert("Fout bij genereren scope: " + err.message);
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = origText;
+            }
+            if (reGenBtn) reGenBtn.disabled = false;
+        }
+    };
+
+    document.getElementById('btn-trigger-ai-scope')?.addEventListener('click', runAiScopeGeneration);
+    document.getElementById('btn-re-generate-scope')?.addEventListener('click', runAiScopeGeneration);
+    document.getElementById('btn-close-scope-box')?.addEventListener('click', () => {
+        document.getElementById('ai-scope-box')?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-add-deliverable')?.addEventListener('click', () => {
+        currentDeliverablesList.push({ title: "Nieuwe Deliverable", description: "Omschrijving van het op te leveren onderdeel..." });
+        renderDeliverablesInputs();
+    });
+
+    // Save AI Scope & Activate Proposal
+    document.getElementById('btn-save-ai-scope')?.addEventListener('click', async () => {
+        if (!db || !currentProjectId) return;
+        const title = document.getElementById('ai-scope-title')?.value.trim() || `Realisatie Maatwerk Oplossing - ${currentProjectData?.client || ''}`;
+        const price = document.getElementById('ai-scope-price')?.value.trim() || '650,00';
+        const summary = document.getElementById('ai-scope-summary')?.value.trim() || '';
+
+        const saveBtn = document.getElementById('btn-save-ai-scope');
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opslaan & Activeren...';
+        }
+
+        try {
+            const updated = {
+                proposalTitle: title,
+                proposalPrice: price,
+                proposalScope: summary,
+                deliverables: currentDeliverablesList,
+                status: "Wacht op Akkoord",
+                statusClass: "waiting",
+                proposalGeneratedAt: new Date().toISOString()
+            };
+
+            await updateDoc(doc(db, "projects", currentProjectId), updated);
+            currentProjectData = { ...currentProjectData, ...updated };
+
+            await logAuditEvent('ai_scope_saved', `AI Scope opgeslagen (€ ${price}) en offerte online geactiveerd (Status -> Wacht op Akkoord).`);
+            alert("Investeringsvoorstel en deliverables zijn succesvol opgeslagen en geactiveerd in het klantenportaal!");
+            renderProjectWorkspace(currentProjectData);
+
+        } catch (err) {
+            console.error("Fout bij opslaan AI scope:", err);
+            alert("Fout bij opslaan: " + err.message);
+        } finally {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Opslaan & Offerte Activeren (Fase 2)';
+            }
+        }
+    });
+
+    // 9. Nazorg & Review Wachtrij Handlers (TASK-301)
+    document.getElementById('btn-action-checkin')?.addEventListener('click', () => {
+        const box = document.getElementById('aftercare-queue-box');
+        if (box) {
+            box.classList.remove('hidden');
+            box.scrollIntoView({ behavior: 'smooth' });
+            if (!document.getElementById('aftercare-body-input').value) {
+                generateAftercareEmail(currentProjectData || {}, '14day').then(mail => {
+                    document.getElementById('aftercare-subject-input').value = mail.subject;
+                    document.getElementById('aftercare-body-input').value = mail.body;
+                });
+            }
+        }
+    });
+
+    document.getElementById('btn-gen-14day-mail')?.addEventListener('click', async () => {
+        const mail = await generateAftercareEmail(currentProjectData || {}, '14day');
+        document.getElementById('aftercare-subject-input').value = mail.subject;
+        document.getElementById('aftercare-body-input').value = mail.body;
+    });
+
+    document.getElementById('btn-gen-6month-mail')?.addEventListener('click', async () => {
+        const mail = await generateAftercareEmail(currentProjectData || {}, '6month');
+        document.getElementById('aftercare-subject-input').value = mail.subject;
+        document.getElementById('aftercare-body-input').value = mail.body;
+    });
+
+    document.getElementById('btn-open-aftercare-client')?.addEventListener('click', () => {
+        const email = document.getElementById('edit-email')?.value.trim();
+        const subject = encodeURIComponent(document.getElementById('aftercare-subject-input')?.value || 'Nazorg • Creation+Alt+Fix');
+        const body = encodeURIComponent(document.getElementById('aftercare-body-input')?.value || '');
+        window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+    });
+
+    document.getElementById('btn-approve-send-aftercare')?.addEventListener('click', async () => {
+        const email = document.getElementById('edit-email')?.value.trim();
+        const subject = document.getElementById('aftercare-subject-input')?.value.trim();
+        const body = document.getElementById('aftercare-body-input')?.value.trim();
+
+        if (!email) return alert("Geen e-mailadres bekend voor deze klant.");
+        if (!confirm(`Weet je zeker dat je deze nazorg e-mail wilt goedkeuren en verzenden naar ${email}?`)) return;
+
+        const approveBtn = document.getElementById('btn-approve-send-aftercare');
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met verzenden...';
+        }
+
+        try {
+            // Dispatch via mailto and log to Firestore
+            window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+
+            const nowIso = new Date().toISOString();
+            if (db && currentProjectId) {
+                await updateDoc(doc(db, "projects", currentProjectId), {
+                    aftercareSentAt: nowIso,
+                    aftercareQueuePending: false
+                });
+                currentProjectData.aftercareSentAt = nowIso;
+                currentProjectData.aftercareQueuePending = false;
+            }
+
+            await logAuditEvent('aftercare_sent', `Nazorg check-in e-mail goedgekeurd en verzonden naar ${email}.`);
+            alert(`Nazorg e-mail is succesvol geopend en geregistreerd in het audit logboek!`);
+            renderProjectWorkspace(currentProjectData);
+
+        } catch (err) {
+            console.error("Fout bij verzenden nazorg:", err);
+            alert("Fout bij afronden nazorg: " + err.message);
+        } finally {
+            if (approveBtn) {
+                approveBtn.disabled = false;
+                approveBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 🚀 Goedkeuren & Direct Verzenden';
+            }
+        }
+    });
+
+    // 10. Action: Generate Proposal (Legacy Quick Prompt)
     document.getElementById('btn-action-proposal')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
         const priceInput = prompt("Wat is de geoffreerde investering voor dit project? (bijv. 450,00)");
