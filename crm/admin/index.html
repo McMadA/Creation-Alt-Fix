@@ -327,7 +327,7 @@
     <div id="gemini-settings-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div class="workspace-card" style="max-width: 500px; width: 90%; background: #0f172a; border: 1px solid rgba(99,102,241,0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8); padding: 24px; border-radius: 12px;">
             <div class="workspace-card-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;"><i class="fas fa-brain" style="color: var(--color-accent);"></i> Google Gemini 1.5 Setup</h3>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;"><i class="fas fa-brain" style="color: var(--color-accent);"></i> Google Gemini Setup</h3>
                 <button type="button" id="btn-close-gemini-modal-main" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
             </div>
             <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
@@ -336,9 +336,10 @@
             <div style="margin-bottom: 14px;">
                 <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">AI Model Selectie</label>
                 <select id="gemini-model-select-main" class="admin-input" style="margin-top: 4px; cursor: pointer;">
-                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (Aanbevolen: Nieuwste, razendsnel)</option>
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Stabiele standaard)</option>
-                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Complexe redeneringen)</option>
+                    <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash (Aanbevolen: Nieuwste, razendsnel)</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                 </select>
             </div>
             <div style="margin-bottom: 14px;">

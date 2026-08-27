@@ -6,12 +6,13 @@
 
 const GEMINI_STORAGE_KEY = 'caf_gemini_api_key';
 const GEMINI_MODEL_STORAGE_KEY = 'caf_gemini_model';
-export const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
 
 export const AVAILABLE_MODELS = [
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Aanbevolen: Nieuwste, razendsnel)', isDefault: true },
-    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Stabiele standaard)', isDefault: false },
-    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Complexe redeneringen)', isDefault: false }
+    { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash (Aanbevolen: Nieuwste, razendsnel)', isDefault: true },
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', isDefault: false },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', isDefault: false },
+    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', isDefault: false }
 ];
 
 export function getGeminiApiKey() {
