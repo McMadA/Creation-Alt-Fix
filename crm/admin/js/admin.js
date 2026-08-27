@@ -12,7 +12,7 @@ import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, q
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
-import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey } from "../../js/ai-engine.js";
+import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
@@ -1795,9 +1795,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const geminiModalMain = document.getElementById('gemini-settings-modal');
     const geminiKeyInputMain = document.getElementById('gemini-api-key-input-main');
     const geminiKeyStatusMain = document.getElementById('gemini-key-status-main');
+    const geminiModelSelectMain = document.getElementById('gemini-model-select-main');
 
     document.getElementById('btn-open-gemini-modal-main')?.addEventListener('click', () => {
         if (geminiKeyInputMain) geminiKeyInputMain.value = getGeminiApiKey();
+        if (geminiModelSelectMain) geminiModelSelectMain.value = getGeminiModel();
         if (geminiKeyStatusMain) {
             geminiKeyStatusMain.innerHTML = hasGeminiApiKey()
                 ? '<strong style="color: #34d399;"><i class="fas fa-check-circle"></i> Gemini API sleutel is actief.</strong>'
@@ -1811,8 +1813,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-save-gemini-key-main')?.addEventListener('click', () => {
         const val = geminiKeyInputMain?.value.trim() || '';
+        const selectedModel = geminiModelSelectMain?.value || 'gemini-2.0-flash';
         setGeminiApiKey(val);
-        alert(val ? "Gemini API sleutel succesvol opgeslagen!" : "Gemini API sleutel gewist. Offline generator actief.");
+        setGeminiModel(selectedModel);
+        alert(val ? `Gemini instellingen opgeslagen (Model: ${selectedModel})!` : "Gemini API sleutel gewist. Offline generator actief.");
         geminiModalMain?.classList.add('hidden');
     });
 

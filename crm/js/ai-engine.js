@@ -5,7 +5,14 @@
  */
 
 const GEMINI_STORAGE_KEY = 'caf_gemini_api_key';
-const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_MODEL_STORAGE_KEY = 'caf_gemini_model';
+export const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash';
+
+export const AVAILABLE_MODELS = [
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Aanbevolen: Nieuwste, razendsnel)', isDefault: true },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Stabiele standaard)', isDefault: false },
+    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Complexe redeneringen)', isDefault: false }
+];
 
 export function getGeminiApiKey() {
     return localStorage.getItem(GEMINI_STORAGE_KEY) || '';
@@ -19,12 +26,22 @@ export function setGeminiApiKey(key) {
     }
 }
 
+export function getGeminiModel() {
+    return localStorage.getItem(GEMINI_MODEL_STORAGE_KEY) || DEFAULT_GEMINI_MODEL;
+}
+
+export function setGeminiModel(modelId) {
+    if (modelId && typeof modelId === 'string') {
+        localStorage.setItem(GEMINI_MODEL_STORAGE_KEY, modelId.trim());
+    }
+}
+
 export function hasGeminiApiKey() {
     return Boolean(getGeminiApiKey());
 }
 
 /**
- * Call Gemini 1.5 REST API
+ * Call Gemini REST API
  */
 async function callGeminiApi(promptText, systemInstruction = '') {
     const apiKey = getGeminiApiKey();
@@ -32,7 +49,8 @@ async function callGeminiApi(promptText, systemInstruction = '') {
         throw new Error("Geen Gemini API sleutel geconfigureerd.");
     }
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    const model = getGeminiModel();
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const requestBody = {
         contents: [
