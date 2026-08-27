@@ -103,7 +103,56 @@ const translations = {
         statusProposalPrepBtn: "Offerte wordt opgesteld door Creation+Alt+Fix...",
         statusProposalPrepHelp: "Vragen of spoed? Neem gerust direct contact op via WhatsApp of E-mail hieronder.",
         statusDesignPrepBtn: "Creation+Alt+Fix werkt aan het visuele ontwerp...",
-        statusDesignPrepHelp: "Zodra het ontwerp/wireframe klaar is, verschijnt hier een preview en kun je het met één klik goedkeuren."
+        statusDesignPrepHelp: "Zodra het ontwerp/wireframe klaar is, verschijnt hier een preview en kun je het met één klik goedkeuren.",
+        statusMessagesTitle: "Berichten & Revisieverzoeken",
+        statusMessagesDesc: "Heb je een vraag, wens of revisieverzoek voor je project? Wissel hier direct berichten uit met Allard.",
+        statusChatFilterAll: "Alle Berichten",
+        statusChatFilterRevision: "🎨 Revisies & Feedback",
+        statusChatFilterQuestion: "💬 Vragen",
+        statusChatFilterUrgent: "⚡ Spoed",
+        statusChatTypeLabel: "Type Bericht / Onderwerp:",
+        statusCategoryGeneral: "💬 Algemeen / Vraag",
+        statusCategoryRevision: "🎨 Design Feedback / Revisieverzoek",
+        statusCategoryUrgent: "⚡ Spoedvraag",
+        statusCategoryContent: "📄 Teksten & Bestanden Aanleveren",
+        statusChatPlaceholder: "Typ hier je vraag, toelichting of revisieverzoek...",
+        statusChatEncryptedNotice: "Direct gekoppeld aan jouw project workspace.",
+        statusChatSendBtn: "Verstuur Bericht",
+        statusOpenTicketTitle: "Stuur Bericht of Vraag",
+        statusOpenTicketDesc: "Stel direct een vraag of dien een revisie in",
+        statusChatEmpty: "Nog geen berichten gewisseld. Heb je een vraag of feedback? Stuur hieronder direct een bericht!",
+        statusChatSending: "Bezig met verzenden...",
+        statusChatSentSuccess: "Bericht succesvol verzonden!",
+        statusChatSendError: "Fout bij verzenden van bericht.",
+        statusChatStatusOpen: "Open",
+        statusChatStatusProgress: "In Behandeling",
+        statusChatStatusResolved: "Opgelost",
+        statusChatFromTeam: "Creation+Alt+Fix Support",
+        statusChatFromYou: "Jij (Klant)",
+        statusStagingTitle: "Live Concept Preview & Visuele Feedback",
+        statusStagingDesc: "Bekijk je website live in verschillende apparaten. Klik op 'Visuele Feedback Geven' om direct opmerkingen op elementen te pinnen.",
+        statusToggleFeedbackBtn: "✏️ Visuele Feedback Geven",
+        statusStopFeedbackBtn: "✅ Feedback Modus Sluiten",
+        statusOpenTabBtn: "Nieuw Tabblad",
+        statusLiveUrlLabel: "Live URL:",
+        statusViewportDesktop: "Desktop",
+        statusViewportTablet: "Tablet",
+        statusViewportMobile: "Mobiel",
+        statusAnnotationModeActiveTitle: "Feedback Modus is Actief!",
+        statusAnnotationModeActiveDesc: "Klik op elk gewenst element (titel, knop, sectie) op de website hieronder om een feedback pin te plaatsen.",
+        statusAnnotationCloseBtn: "Gereed",
+        statusPinPopoverTitle: "Feedback Pin Toevoegen",
+        statusPinCategoryLabel: "Categorie:",
+        statusPinCatDesign: "🎨 Design & Styling",
+        statusPinCatText: "📄 Tekst & Afbeeldingen",
+        statusPinCatFeature: "⚡ Functionaliteit",
+        statusPinCatBug: "🐛 Bug / Verbetering",
+        statusPinPlaceholder: "Bijv. Maak dit logo iets groter en pas de knopkleur aan naar donkerblauw...",
+        statusPinCancelBtn: "Annuleren",
+        statusPinSubmitBtn: "Plaats Pin",
+        statusPinsListTitle: "Geplaatst Feedback Overzicht",
+        statusNoPinsYet: "Nog geen pinnen geplaatst. Activeer feedback modus om een pin op de website te plaatsen.",
+        statusPinPlacedSuccess: "Feedback pin succesvol geplaatst!"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -181,7 +230,56 @@ const translations = {
         statusProposalPrepBtn: "Proposal is being prepared by Creation+Alt+Fix...",
         statusProposalPrepHelp: "Questions or urgent timeline? Feel free to contact Allard directly via WhatsApp or Email below.",
         statusDesignPrepBtn: "Creation+Alt+Fix is crafting the visual design...",
-        statusDesignPrepHelp: "As soon as wireframes/designs are ready, a preview will appear here for instant approval."
+        statusDesignPrepHelp: "As soon as wireframes/designs are ready, a preview will appear here for instant approval.",
+        statusMessagesTitle: "Messages & Revision Requests",
+        statusMessagesDesc: "Have a question, request, or revision for your project? Communicate directly with Allard here.",
+        statusChatFilterAll: "All Messages",
+        statusChatFilterRevision: "🎨 Revisions & Feedback",
+        statusChatFilterQuestion: "💬 Questions",
+        statusChatFilterUrgent: "⚡ Urgent",
+        statusChatTypeLabel: "Message Type / Subject:",
+        statusCategoryGeneral: "💬 General / Question",
+        statusCategoryRevision: "🎨 Design Feedback / Revision",
+        statusCategoryUrgent: "⚡ Urgent Request",
+        statusCategoryContent: "📄 Submit Copy & Assets",
+        statusChatPlaceholder: "Type your question, details, or revision request here...",
+        statusChatEncryptedNotice: "Directly linked to your project workspace.",
+        statusChatSendBtn: "Send Message",
+        statusOpenTicketTitle: "Send Message or Request",
+        statusOpenTicketDesc: "Ask a question or submit a project revision",
+        statusChatEmpty: "No messages exchanged yet. Have a question or feedback? Send a message below!",
+        statusChatSending: "Sending message...",
+        statusChatSentSuccess: "Message sent successfully!",
+        statusChatSendError: "Error sending message.",
+        statusChatStatusOpen: "Open",
+        statusChatStatusProgress: "In Progress",
+        statusChatStatusResolved: "Resolved",
+        statusChatFromTeam: "Creation+Alt+Fix Support",
+        statusChatFromYou: "You (Client)",
+        statusStagingTitle: "Live Concept Preview & Visual Feedback",
+        statusStagingDesc: "Preview your website live across devices. Click 'Give Visual Feedback' to drop annotation pins directly onto elements.",
+        statusToggleFeedbackBtn: "✏️ Give Visual Feedback",
+        statusStopFeedbackBtn: "✅ Close Feedback Mode",
+        statusOpenTabBtn: "New Tab",
+        statusLiveUrlLabel: "Live URL:",
+        statusViewportDesktop: "Desktop",
+        statusViewportTablet: "Tablet",
+        statusViewportMobile: "Mobile",
+        statusAnnotationModeActiveTitle: "Visual Feedback Mode is Active!",
+        statusAnnotationModeActiveDesc: "Click on any element (headline, button, section) on the website below to drop a feedback pin.",
+        statusAnnotationCloseBtn: "Done",
+        statusPinPopoverTitle: "Add Feedback Pin",
+        statusPinCategoryLabel: "Category:",
+        statusPinCatDesign: "🎨 Design & Styling",
+        statusPinCatText: "📄 Text & Images",
+        statusPinCatFeature: "⚡ Functionality",
+        statusPinCatBug: "🐛 Bug / Fix",
+        statusPinPlaceholder: "E.g. Make this logo slightly larger and adjust button color to dark blue...",
+        statusPinCancelBtn: "Cancel",
+        statusPinSubmitBtn: "Place Pin",
+        statusPinsListTitle: "Placed Feedback Summary",
+        statusNoPinsYet: "No feedback pins placed yet. Activate feedback mode to pin notes onto the live concept.",
+        statusPinPlacedSuccess: "Feedback pin placed successfully!"
     }
 };
 
@@ -457,6 +555,12 @@ function renderDashboard(data) {
 
     // Render Project Bestanden
     renderFilesSection(data);
+
+    // Render Live Staging & Visual Feedback Annotation Suite (TASK-401)
+    renderStagingSection(data);
+
+    // Render In-App Berichten & Revisies (TASK-604)
+    renderMessagesSection(data);
 
     // Render Snelle Links (Demo / Mollie)
     if (data.demoUrl) {
@@ -778,9 +882,9 @@ function renderDesignSection(data) {
                 <button id="btn-design-akkoord" class="btn-akkoord" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #a855f7, #7c3aed);">
                     <i class="fas fa-palette"></i> ${t.statusDesignAgreeBtn}
                 </button>
-                <a href="mailto:info@creationaltfix.nl?subject=Feedback%20Design%20Project" class="btn-akkoord" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); text-align: center; text-decoration: none;">
+                <button type="button" id="btn-design-feedback-trigger" class="btn-akkoord" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); text-align: center; cursor: pointer;">
                     <i class="fas fa-comment-dots"></i> ${t.statusDesignFeedbackBtn}
-                </a>
+                </button>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
                 <i class="fas fa-shield-alt"></i> ${t.statusDesignAgreeHelp}
@@ -788,6 +892,25 @@ function renderDesignSection(data) {
         `;
 
         setupDesignAcceptButton();
+
+        const feedbackTrigger = document.getElementById('btn-design-feedback-trigger');
+        if (feedbackTrigger) {
+            feedbackTrigger.onclick = () => {
+                const categorySelect = document.getElementById('chat-category-select');
+                if (categorySelect) categorySelect.value = 'revision';
+                const inputArea = document.getElementById('chat-message-input');
+                const messagesCard = document.getElementById('messages-card');
+                if (messagesCard) messagesCard.scrollIntoView({ behavior: 'smooth' });
+                if (inputArea) {
+                    inputArea.focus();
+                    if (!inputArea.value) {
+                        inputArea.value = currentLang === 'en' 
+                            ? "Regarding the visual design: " 
+                            : "Betreft het visueel ontwerp: ";
+                    }
+                }
+            };
+        }
 
     } else {
         // STATE A: Design in Voorbereiding
@@ -894,3 +1017,694 @@ function renderFilesSection(data) {
         `;
     }).join('');
 }
+
+// ===========================================
+// IN-APP MESSAGING & TICKETING LOGIC (TASK-604)
+// ===========================================
+let activeChatFilter = 'all';
+
+function renderMessagesSection(data) {
+    const t = translations[currentLang] || translations.nl;
+    const threadContainer = document.getElementById('messages-thread');
+    const countBadge = document.getElementById('messages-count-badge');
+    if (!threadContainer) return;
+
+    const messages = (data && data.messages && Array.isArray(data.messages)) ? data.messages : [];
+    
+    if (countBadge) {
+        countBadge.innerText = `${messages.length} ${messages.length === 1 ? (currentLang === 'en' ? 'message' : 'bericht') : (currentLang === 'en' ? 'messages' : 'berichten')}`;
+    }
+
+    // Filter messages based on activeChatFilter
+    const filteredMessages = messages.filter(msg => {
+        if (activeChatFilter === 'all') return true;
+        if (activeChatFilter === 'revision') return msg.category === 'revision';
+        if (activeChatFilter === 'question') return msg.category === 'question' || msg.category === 'general';
+        if (activeChatFilter === 'urgent') return msg.category === 'urgent';
+        return true;
+    });
+
+    if (filteredMessages.length === 0) {
+        threadContainer.innerHTML = `
+            <div class="chat-empty-state">
+                <i class="fas fa-comments"></i>
+                <p style="font-size: 0.9rem; margin-top: 6px;">${t.statusChatEmpty}</p>
+            </div>
+        `;
+    } else {
+        const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
+        
+        threadContainer.innerHTML = filteredMessages.map(msg => {
+            const isAdmin = msg.sender === 'admin';
+            const isClient = !isAdmin;
+            const bubbleClass = isAdmin ? 'admin' : 'client';
+            
+            const senderDisplayName = isAdmin 
+                ? 'Allard (Creation+Alt+Fix)' 
+                : (escapeHtml(msg.senderName) || t.statusChatFromYou);
+            
+            const senderIcon = isAdmin 
+                ? '<i class="fas fa-shield-alt" style="color: var(--color-accent);"></i>' 
+                : '<i class="fas fa-user-circle"></i>';
+            
+            const teamBadge = isAdmin 
+                ? `<span class="chat-badge-team">${t.statusChatFromTeam}</span>` 
+                : '';
+
+            const dateStr = msg.createdAt 
+                ? new Date(msg.createdAt).toLocaleString(localeStr, { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  }) 
+                : (currentLang === 'en' ? 'Just now' : 'Zojuist');
+
+            // Category tag formatting
+            let catLabel = '💬 Algemeen';
+            let catClass = 'general';
+            if (msg.category === 'revision') {
+                catLabel = '🎨 Revisie';
+                catClass = 'revision';
+            } else if (msg.category === 'urgent') {
+                catLabel = '⚡ Spoed';
+                catClass = 'urgent';
+            } else if (msg.category === 'question') {
+                catLabel = '💬 Vraag';
+                catClass = 'question';
+            } else if (msg.category === 'content') {
+                catLabel = '📄 Bestanden';
+                catClass = 'content';
+            }
+
+            // Ticket Status formatting
+            let statusHtml = '';
+            if (msg.status === 'open') {
+                statusHtml = `<span class="chat-ticket-status open"><i class="fas fa-circle" style="font-size: 0.55rem;"></i> ${t.statusChatStatusOpen}</span>`;
+            } else if (msg.status === 'in_progress') {
+                statusHtml = `<span class="chat-ticket-status in_progress"><i class="fas fa-spinner fa-spin" style="font-size: 0.55rem;"></i> ${t.statusChatStatusProgress}</span>`;
+            } else if (msg.status === 'resolved') {
+                statusHtml = `<span class="chat-ticket-status resolved"><i class="fas fa-check" style="font-size: 0.55rem;"></i> ${t.statusChatStatusResolved}</span>`;
+            }
+
+            return `
+                <div class="chat-bubble ${bubbleClass}">
+                    <div class="chat-bubble-header">
+                        <div class="chat-sender-name">
+                            ${senderIcon}
+                            <span>${senderDisplayName}</span>
+                            ${teamBadge}
+                        </div>
+                        <span class="chat-timestamp">${dateStr}</span>
+                    </div>
+                    <div class="chat-bubble-body">${escapeHtml(msg.message)}</div>
+                    <div class="chat-bubble-footer">
+                        <span class="chat-cat-tag ${catClass}">${catLabel}</span>
+                        ${statusHtml}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Auto scroll to bottom
+        threadContainer.scrollTop = threadContainer.scrollHeight;
+    }
+
+    setupChatListeners();
+}
+
+function setupChatListeners() {
+    // Filter buttons
+    document.querySelectorAll('.chat-filter-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.chat-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeChatFilter = btn.getAttribute('data-filter') || 'all';
+            const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+            if (activeProject) renderMessagesSection(activeProject.data);
+        };
+    });
+
+    // Compose Form Submit
+    const form = document.getElementById('chat-compose-form');
+    if (form && !form.dataset.bound) {
+        form.dataset.bound = "true";
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const t = translations[currentLang] || translations.nl;
+            const categoryEl = document.getElementById('chat-category-select');
+            const messageEl = document.getElementById('chat-message-input');
+            const sendBtn = document.getElementById('btn-send-message');
+
+            const category = categoryEl ? categoryEl.value : 'general';
+            const messageText = messageEl ? messageEl.value.trim() : '';
+
+            if (!messageText || !currentProjectDocId) return;
+
+            sendBtn.disabled = true;
+            const origBtnHtml = sendBtn.innerHTML;
+            sendBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.statusChatSending}`;
+
+            try {
+                const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+                const existingMessages = (activeProject && activeProject.data.messages && Array.isArray(activeProject.data.messages)) 
+                    ? [...activeProject.data.messages] 
+                    : [];
+
+                const clientName = (activeProject && (activeProject.data.contactName || activeProject.data.client)) || 'Klant';
+                const clientEmail = auth?.currentUser?.email || (activeProject && activeProject.data.email) || '';
+
+                const newMsg = {
+                    id: 'msg_' + Date.now(),
+                    sender: 'client',
+                    senderName: clientName,
+                    senderEmail: clientEmail,
+                    category: category,
+                    message: messageText,
+                    createdAt: new Date().toISOString(),
+                    readByAdmin: false,
+                    readByClient: true,
+                    status: 'open'
+                };
+
+                existingMessages.push(newMsg);
+
+                // Update Firestore
+                if (db) {
+                    await updateDoc(doc(db, "projects", currentProjectDocId), {
+                        messages: existingMessages
+                    });
+                }
+
+                if (activeProject) {
+                    activeProject.data.messages = existingMessages;
+                }
+
+                messageEl.value = '';
+                renderMessagesSection(activeProject ? activeProject.data : { messages: existingMessages });
+
+            } catch (err) {
+                console.error("Fout bij verzenden bericht:", err);
+                alert(t.statusChatSendError + " " + err.message);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = origBtnHtml;
+            }
+        };
+    }
+
+    // Quick contact button hookup
+    const quickTicketBtn = document.getElementById('btn-open-messaging-card');
+    if (quickTicketBtn && !quickTicketBtn.dataset.bound) {
+        quickTicketBtn.dataset.bound = "true";
+        quickTicketBtn.onclick = () => {
+            const messagesCard = document.getElementById('messages-card');
+            const inputArea = document.getElementById('chat-message-input');
+            if (messagesCard) messagesCard.scrollIntoView({ behavior: 'smooth' });
+            if (inputArea) inputArea.focus();
+        };
+    }
+}
+
+// ===========================================
+// LIVE STAGING & VISUAL ANNOTATION SUITE (TASK-401)
+// ===========================================
+
+export function resolveStagingUrl(p) {
+    if (!p) return null;
+    let url = p.domainName || p.domain || p.demoUrl || p.stagingUrl || p.designUrl;
+    if (!url || typeof url !== 'string') return null;
+    url = url.trim();
+    if (url === '' || url.toLowerCase() === 'n.v.t.' || url.toLowerCase() === 'geen' || url.toLowerCase() === 'nog geen domein') {
+        return null;
+    }
+    // Prefix https:// if protocol is missing
+    if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+    }
+    return url;
+}
+
+let isAnnotationModeActive = false;
+let currentPendingPinCoords = null;
+let currentViewport = 'desktop';
+
+function renderStagingSection(data) {
+    const t = translations[currentLang] || translations.nl;
+    const stagingCard = document.getElementById('staging-card');
+    if (!stagingCard) return;
+
+    const resolvedUrl = resolveStagingUrl(data);
+    const iframe = document.getElementById('staging-iframe');
+    const urlDisplay = document.getElementById('staging-url-display');
+    const mockupUrl = document.getElementById('mockup-address-text');
+    const openTabBtn = document.getElementById('btn-open-staging-tab');
+
+    if (resolvedUrl) {
+        if (iframe && iframe.dataset.loadedUrl !== resolvedUrl) {
+            iframe.removeAttribute('srcdoc');
+            iframe.src = resolvedUrl;
+            iframe.dataset.loadedUrl = resolvedUrl;
+        }
+        if (urlDisplay) urlDisplay.innerText = resolvedUrl;
+        if (mockupUrl) mockupUrl.innerText = resolvedUrl;
+        if (openTabBtn) {
+            openTabBtn.href = resolvedUrl;
+            openTabBtn.classList.remove('hidden');
+        }
+    } else {
+        // Generate built-in interactive Dark AI prototype
+        if (iframe && iframe.dataset.loadedUrl !== 'prototype') {
+            iframe.removeAttribute('src');
+            iframe.srcdoc = generateFallbackPrototype(data);
+            iframe.dataset.loadedUrl = 'prototype';
+        }
+        const protoTitle = (data.client || data.companyName || 'Concept') + ' - Concept Prototype';
+        if (urlDisplay) urlDisplay.innerText = `https://demo.creationaltfix.nl/${encodeURIComponent((data.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
+        if (mockupUrl) mockupUrl.innerText = `https://demo.creationaltfix.nl/${encodeURIComponent((data.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
+        if (openTabBtn) {
+            openTabBtn.href = '#';
+            openTabBtn.onclick = (e) => {
+                e.preventDefault();
+                const newWin = window.open('about:blank', '_blank');
+                if (newWin) newWin.document.write(generateFallbackPrototype(data));
+            };
+        }
+    }
+
+    // Render placed pins
+    renderAnnotationPins(data.annotations || []);
+
+    // Wire up Device Switcher and Annotation Engine
+    setupStagingControls(data);
+}
+
+function generateFallbackPrototype(p) {
+    const clientName = escapeHtml(p.client || p.companyName || 'Jouw Bedrijf');
+    const service = escapeHtml(p.service || 'Website & Webshop Realisatie');
+    const goals = escapeHtml(p.goals || p.projectGoals || 'Een converterende, razendsnelle online aanwezigheid op maat.');
+    const design = escapeHtml(p.design || p.designPreferences || 'Modern, Dark AI met professionele typografie en vloeiende animaties.');
+
+    return `
+        <!DOCTYPE html>
+        <html lang="nl">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${clientName} - Live Staging Preview</title>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #f8fafc; line-height: 1.6; }
+                .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 10; }
+                .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; color: #22d3ee; text-decoration: none; }
+                .nav-links { display: flex; gap: 20px; list-style: none; }
+                .nav-links a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+                .hero { text-align: center; padding: 70px 20px; max-width: 900px; margin: 0 auto; }
+                .hero-badge { display: inline-block; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px; }
+                .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; font-weight: 700; color: #fff; margin-bottom: 18px; line-height: 1.2; }
+                .hero p { color: #94a3b8; font-size: 1.1rem; max-width: 700px; margin: 0 auto 30px auto; }
+                .hero-btn { background: linear-gradient(135deg, #6366f1, #22d3ee); color: #fff; border: none; padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+                .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 1000px; margin: 40px auto 80px auto; padding: 0 20px; }
+                .card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 25px; border-radius: 12px; }
+                .card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 10px; }
+                .card p { color: #94a3b8; font-size: 0.9rem; }
+            </style>
+        </head>
+        <body>
+            <nav class="nav">
+                <a href="#" class="logo">${clientName}</a>
+                <ul class="nav-links">
+                    <li><a href="#">Diensten</a></li>
+                    <li><a href="#">Over Ons</a></li>
+                    <li><a href="#">Projecten</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="hero">
+                <div class="hero-badge">Concept Prototype • Creation+Alt+Fix</div>
+                <h1>Welkom bij ${clientName}</h1>
+                <p>${goals}</p>
+                <button class="hero-btn">Ontdek Mogelijkheden</button>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 Project Deliverables</h3>
+                    <p>${service}</p>
+                </div>
+                <div class="card">
+                    <h3>🎨 Design Richting</h3>
+                    <p>${design}</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Live Staging</h3>
+                    <p>Plaats via het klantenportaal direct visuele feedback pinnen op elk element in deze preview.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function renderAnnotationPins(annotations) {
+    const overlay = document.getElementById('annotation-overlay');
+    const summaryList = document.getElementById('pins-summary-list');
+    const countDisplay = document.getElementById('pins-count-display');
+    const t = translations[currentLang] || translations.nl;
+
+    const pins = Array.isArray(annotations) ? annotations : [];
+    if (countDisplay) countDisplay.innerText = pins.length;
+
+    // 1. Render glowing pin markers on the overlay
+    if (overlay) {
+        // Preserve popover if inside overlay
+        const popover = document.getElementById('pin-popover');
+        overlay.innerHTML = '';
+        if (popover) overlay.appendChild(popover);
+
+        pins.forEach((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const pinEl = document.createElement('div');
+            pinEl.className = `annotation-pin ${pin.status === 'resolved' ? 'resolved' : ''}`;
+            pinEl.style.left = `${pin.xPercent}%`;
+            pinEl.style.top = `${pin.yPercent}%`;
+            pinEl.innerHTML = pin.status === 'resolved' ? '<i class="fas fa-check"></i>' : String(pinNum);
+            pinEl.title = `Pin #${pinNum}: ${escapeHtml(pin.comment)}`;
+
+            pinEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openExistingPinPopover(pin, pinEl);
+            });
+
+            overlay.appendChild(pinEl);
+        });
+    }
+
+    // 2. Render summary list under the frame
+    if (summaryList) {
+        if (pins.length === 0) {
+            summaryList.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-muted); font-style: italic;">${t.statusNoPinsYet}</p>`;
+            return;
+        }
+
+        const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
+        summaryList.innerHTML = pins.map((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const isResolved = pin.status === 'resolved';
+            const catLabel = pin.category === 'design' ? '🎨 Design' : (pin.category === 'content' ? '📄 Tekst' : (pin.category === 'bug' ? '🐛 Bug' : '⚡ Functie'));
+            const dateStr = pin.createdAt ? new Date(pin.createdAt).toLocaleDateString(localeStr) : '';
+
+            return `
+                <div class="pin-summary-item ${isResolved ? 'resolved' : ''}">
+                    <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                        <span class="pin-badge">${pinNum}</span>
+                        <div style="overflow: hidden;">
+                            <div style="font-weight: 600; color: #fff; font-size: 0.85rem; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                                ${escapeHtml(pin.comment)}
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                ${catLabel} • ${dateStr} • <span style="color: ${isResolved ? '#34d399' : '#fbbf24'};">${isResolved ? (currentLang === 'en' ? 'Resolved' : 'Opgelost') : (currentLang === 'en' ? 'Open' : 'Openstaand')}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm" data-action="delete-pin" data-id="${pin.id}" style="background: transparent; color: #f87171; border: none; padding: 4px; cursor: pointer;" title="Verwijder pin">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+        summaryList.querySelectorAll('[data-action="delete-pin"]').forEach(btn => {
+            btn.onclick = () => {
+                const pinId = btn.getAttribute('data-id');
+                deleteAnnotationPin(pinId);
+            };
+        });
+    }
+}
+
+function openExistingPinPopover(pin, pinEl) {
+    const popover = document.getElementById('pin-popover');
+    if (!popover) return;
+
+    popover.style.left = `calc(${pin.xPercent}% + 15px)`;
+    popover.style.top = `${pin.yPercent}%`;
+    popover.classList.remove('hidden');
+
+    const catLabel = pin.category === 'design' ? '🎨 Design & Styling' : (pin.category === 'content' ? '📄 Tekst & Afbeeldingen' : (pin.category === 'bug' ? '🐛 Bug / Verbetering' : '⚡ Functionaliteit'));
+    const isResolved = pin.status === 'resolved';
+
+    popover.innerHTML = `
+        <div class="popover-header">
+            <span><i class="fas fa-map-pin" style="color: var(--color-accent);"></i> <strong>Feedback Pin #${pin.pinNumber || ''}</strong></span>
+            <button type="button" id="btn-close-popover-existing" class="popover-close-btn">&times;</button>
+        </div>
+        <div class="popover-body">
+            <div style="font-size: 0.75rem; color: var(--color-accent); font-weight: 700; margin-bottom: 6px;">${catLabel}</div>
+            <p style="font-size: 0.88rem; color: #fff; line-height: 1.4; margin-bottom: 10px; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px;">${escapeHtml(pin.comment)}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Status: <strong style="color: ${isResolved ? '#34d399' : '#fbbf24'};">${isResolved ? '✅ Opgelost' : '⏳ In Behandeling'}</strong></span>
+                <button type="button" id="btn-del-existing-pin" class="btn btn-sm" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 3px 8px; font-size: 0.72rem;">Verwijder</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('btn-close-popover-existing')?.addEventListener('click', () => {
+        popover.classList.add('hidden');
+    });
+
+    document.getElementById('btn-del-existing-pin')?.addEventListener('click', () => {
+        popover.classList.add('hidden');
+        deleteAnnotationPin(pin.id);
+    });
+}
+
+function setupStagingControls(data) {
+    const t = translations[currentLang] || translations.nl;
+    const toggleBtn = document.getElementById('btn-toggle-annotation-mode');
+    const stopBtn = document.getElementById('btn-stop-annotation-mode');
+    const banner = document.getElementById('annotation-mode-banner');
+    const overlay = document.getElementById('annotation-overlay');
+    const frameBox = document.getElementById('staging-frame-box');
+    const popover = document.getElementById('pin-popover');
+    const viewportContainer = document.getElementById('staging-viewport-container');
+    const viewportSizeLabel = document.getElementById('mockup-viewport-size');
+
+    // 1. Device Viewport Switcher
+    document.querySelectorAll('.staging-device-btn[data-viewport]').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.staging-device-btn[data-viewport]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const targetVp = btn.getAttribute('data-viewport');
+            currentViewport = targetVp;
+
+            if (viewportContainer) {
+                viewportContainer.className = `staging-viewport-container viewport-${targetVp}`;
+            }
+            if (viewportSizeLabel) {
+                viewportSizeLabel.innerText = targetVp === 'desktop' ? '100%' : (targetVp === 'tablet' ? '768px' : '375px');
+            }
+            if (popover) popover.classList.add('hidden');
+        };
+    });
+
+    // 2. Reload Frame Button
+    const reloadBtn = document.getElementById('btn-reload-staging-frame');
+    if (reloadBtn && !reloadBtn.dataset.bound) {
+        reloadBtn.dataset.bound = "true";
+        reloadBtn.onclick = () => {
+            const iframe = document.getElementById('staging-iframe');
+            if (iframe) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                setTimeout(() => { iframe.src = currentSrc; }, 50);
+            }
+        };
+    }
+
+    // 3. Toggle Annotation Mode
+    const toggleMode = (enable) => {
+        isAnnotationModeActive = enable;
+        if (toggleBtn) {
+            toggleBtn.classList.toggle('active', enable);
+            document.getElementById('annotation-toggle-text').innerText = enable ? t.statusStopFeedbackBtn : t.statusToggleFeedbackBtn;
+        }
+        if (banner) banner.classList.toggle('hidden', !enable);
+        if (overlay) overlay.classList.toggle('hidden', !enable);
+        if (popover) popover.classList.add('hidden');
+    };
+
+    if (toggleBtn && !toggleBtn.dataset.bound) {
+        toggleBtn.dataset.bound = "true";
+        toggleBtn.onclick = () => toggleMode(!isAnnotationModeActive);
+    }
+    if (stopBtn && !stopBtn.dataset.bound) {
+        stopBtn.dataset.bound = "true";
+        stopBtn.onclick = () => toggleMode(false);
+    }
+
+    // 4. Click on Annotation Overlay to Drop Pin
+    if (overlay && !overlay.dataset.clickBound) {
+        overlay.dataset.clickBound = "true";
+        overlay.onclick = (e) => {
+            if (!isAnnotationModeActive) return;
+            if (e.target !== overlay) return; // Don't trigger if clicked on an existing pin
+
+            const rect = overlay.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const xPercent = Math.round((x / rect.width) * 1000) / 10;
+            const yPercent = Math.round((y / rect.height) * 1000) / 10;
+
+            currentPendingPinCoords = { xPercent, yPercent };
+
+            // Position Popover
+            if (popover) {
+                // Adjust if too close to right edge
+                const popoverX = xPercent > 70 ? Math.max(5, xPercent - 35) : xPercent;
+                popover.style.left = `${popoverX}%`;
+                popover.style.top = `${Math.min(yPercent, 65)}%`;
+
+                // Restore default popover html
+                popover.innerHTML = `
+                    <div class="popover-header">
+                        <span><i class="fas fa-map-pin" style="color: var(--color-accent);"></i> <strong data-translate-key="statusPinPopoverTitle">${t.statusPinPopoverTitle}</strong></span>
+                        <button type="button" id="btn-close-popover" class="popover-close-btn">&times;</button>
+                    </div>
+                    <div class="popover-body">
+                        <label for="pin-category-select" style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">${t.statusPinCategoryLabel}</label>
+                        <select id="pin-category-select" class="chat-category-dropdown" style="width: 100%; margin-bottom: 8px;">
+                            <option value="design">${t.statusPinCatDesign}</option>
+                            <option value="content">${t.statusPinCatText}</option>
+                            <option value="feature">${t.statusPinCatFeature}</option>
+                            <option value="bug">${t.statusPinCatBug}</option>
+                        </select>
+                        <textarea id="pin-comment-input" rows="3" class="chat-textarea" placeholder="${t.statusPinPlaceholder}" style="margin-bottom: 10px; font-size: 0.85rem;"></textarea>
+                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <button type="button" id="btn-cancel-pin" class="btn-logout" style="padding: 6px 12px; font-size: 0.8rem;">${t.statusPinCancelBtn}</button>
+                            <button type="button" id="btn-submit-pin" class="btn-akkoord" style="width: auto; padding: 6px 16px; font-size: 0.82rem;">${t.statusPinSubmitBtn}</button>
+                        </div>
+                    </div>
+                `;
+
+                popover.classList.remove('hidden');
+                document.getElementById('pin-comment-input')?.focus();
+
+                document.getElementById('btn-close-popover').onclick = () => popover.classList.add('hidden');
+                document.getElementById('btn-cancel-pin').onclick = () => popover.classList.add('hidden');
+                document.getElementById('btn-submit-pin').onclick = submitNewPin;
+            }
+        };
+    }
+}
+
+async function submitNewPin() {
+    const t = translations[currentLang] || translations.nl;
+    const catSelect = document.getElementById('pin-category-select');
+    const commentInput = document.getElementById('pin-comment-input');
+    const popover = document.getElementById('pin-popover');
+    const submitBtn = document.getElementById('btn-submit-pin');
+
+    if (!commentInput || !currentPendingPinCoords || !currentProjectDocId) return;
+    const comment = commentInput.value.trim();
+    if (!comment) return alert(t.statusPinPlaceholder);
+
+    const category = catSelect ? catSelect.value : 'design';
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    try {
+        const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+        const existingAnnotations = (activeProject && activeProject.data.annotations && Array.isArray(activeProject.data.annotations)) 
+            ? [...activeProject.data.annotations] 
+            : [];
+        
+        const existingMessages = (activeProject && activeProject.data.messages && Array.isArray(activeProject.data.messages)) 
+            ? [...activeProject.data.messages] 
+            : [];
+
+        const nextPinNumber = existingAnnotations.length + 1;
+        const authorName = (activeProject && (activeProject.data.contactName || activeProject.data.client)) || 'Klant';
+
+        const newPin = {
+            id: 'pin_' + Date.now(),
+            pinNumber: nextPinNumber,
+            xPercent: currentPendingPinCoords.xPercent,
+            yPercent: currentPendingPinCoords.yPercent,
+            device: currentViewport,
+            category: category,
+            comment: comment,
+            createdAt: new Date().toISOString(),
+            status: 'open',
+            author: authorName
+        };
+
+        existingAnnotations.push(newPin);
+
+        // Also sync automatically as a revision ticket in the In-App Chat
+        const newMsg = {
+            id: 'msg_pin_' + Date.now(),
+            sender: 'client',
+            senderName: authorName,
+            senderEmail: auth?.currentUser?.email || '',
+            category: 'revision',
+            message: `[Visuele Pin #${nextPinNumber} - ${category.toUpperCase()}]: ${comment}`,
+            createdAt: new Date().toISOString(),
+            status: 'open',
+            readByAdmin: false,
+            readByClient: true
+        };
+        existingMessages.push(newMsg);
+
+        if (db) {
+            await updateDoc(doc(db, "projects", currentProjectDocId), {
+                annotations: existingAnnotations,
+                messages: existingMessages
+            });
+        }
+
+        if (activeProject) {
+            activeProject.data.annotations = existingAnnotations;
+            activeProject.data.messages = existingMessages;
+        }
+
+        if (popover) popover.classList.add('hidden');
+        renderAnnotationPins(existingAnnotations);
+        renderMessagesSection(activeProject ? activeProject.data : { messages: existingMessages });
+
+        alert(t.statusPinPlacedSuccess);
+
+    } catch (err) {
+        console.error("Fout bij opslaan pin:", err);
+        alert("Fout bij opslaan pin: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = t.statusPinSubmitBtn;
+    }
+}
+
+async function deleteAnnotationPin(pinId) {
+    if (!confirm("Weet je zeker dat je deze feedback pin wilt verwijderen?")) return;
+
+    try {
+        const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+        if (!activeProject || !currentProjectDocId) return;
+
+        const updatedAnnotations = (activeProject.data.annotations || []).filter(p => p.id !== pinId);
+        activeProject.data.annotations = updatedAnnotations;
+
+        if (db) {
+            await updateDoc(doc(db, "projects", currentProjectDocId), {
+                annotations: updatedAnnotations
+            });
+        }
+
+        renderAnnotationPins(updatedAnnotations);
+
+    } catch (err) {
+        console.error("Fout bij verwijderen pin:", err);
+    }
+}
+

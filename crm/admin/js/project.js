@@ -302,6 +302,8 @@ function renderProjectWorkspace(p) {
 
     // Render Sub-Components
     renderTasksList(p.tasks || []);
+    renderAdminMessages(p.messages || []);
+    renderAdminStaging(p);
     renderTimelineAndNotes(p.internalNotes || [], p.auditLog || []);
     renderFilesList(p.files || []);
 }
@@ -598,6 +600,347 @@ function renderFilesList(files) {
     `).join('');
 }
 
+// --- [TASK-604] Admin Messages & Tickets Management ---
+let activeAdminChatFilter = 'all';
+
+function renderAdminMessages(messages) {
+    const threadElem = document.getElementById('admin-messages-thread');
+    const countTabElem = document.getElementById('tab-messages-count');
+    if (!threadElem) return;
+
+    const msgsList = Array.isArray(messages) ? messages : [];
+    if (countTabElem) countTabElem.innerText = msgsList.length;
+
+    // Filter messages based on activeAdminChatFilter
+    const filteredMessages = msgsList.filter(msg => {
+        if (activeAdminChatFilter === 'all') return true;
+        if (activeAdminChatFilter === 'open') return msg.status === 'open' || msg.status === 'in_progress';
+        if (activeAdminChatFilter === 'revision') return msg.category === 'revision';
+        if (activeAdminChatFilter === 'urgent') return msg.category === 'urgent';
+        if (activeAdminChatFilter === 'resolved') return msg.status === 'resolved';
+        return true;
+    });
+
+    if (filteredMessages.length === 0) {
+        threadElem.innerHTML = `<p style="color: var(--color-text-secondary); font-style: italic; font-size: 0.9rem; padding: 25px 10px; text-align: center;">Geen berichten gevonden voor dit filter. Schrijf hieronder een reactie naar de klant om de conversatie te starten!</p>`;
+        return;
+    }
+
+    threadElem.innerHTML = '';
+    filteredMessages.forEach(msg => {
+        const isAdmin = msg.sender === 'admin';
+        const card = document.createElement('div');
+        card.className = `admin-msg-card ${isAdmin ? 'from-admin' : 'from-client'}`;
+
+        const senderLabel = isAdmin 
+            ? 'Allard (Creation+Alt+Fix)' 
+            : (escapeHtml(msg.senderName) || 'Klant');
+        
+        const senderBadge = isAdmin 
+            ? '<span class="sender-badge admin"><i class="fas fa-shield-alt"></i> Beheerder</span>' 
+            : '<span class="sender-badge client"><i class="fas fa-user"></i> Klant</span>';
+
+        const dateStr = msg.createdAt 
+            ? new Date(msg.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
+            : 'Zojuist';
+
+        // Category Tag
+        let catLabel = '💬 Algemeen';
+        if (msg.category === 'revision') catLabel = '🎨 Design Revisie';
+        else if (msg.category === 'urgent') catLabel = '⚡ Spoed';
+        else if (msg.category === 'question') catLabel = '💬 Vraag';
+        else if (msg.category === 'content') catLabel = '📄 Bestanden & Teksten';
+
+        // Status
+        const currentStatus = msg.status || 'open';
+        let statusBtnClass = 'is-open';
+        let statusBtnLabel = '<i class="fas fa-circle"></i> Openstaand';
+        if (currentStatus === 'in_progress') {
+            statusBtnClass = 'is-inprogress';
+            statusBtnLabel = '<i class="fas fa-spinner fa-spin"></i> In Behandeling';
+        } else if (currentStatus === 'resolved') {
+            statusBtnClass = 'is-resolved';
+            statusBtnLabel = '<i class="fas fa-check-circle"></i> Opgelost';
+        }
+
+        card.innerHTML = `
+            <div class="admin-msg-header">
+                <div class="admin-msg-sender">
+                    <span>${senderLabel}</span>
+                    ${senderBadge}
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.75rem; color: var(--color-accent); font-weight: 600;">${catLabel}</span>
+                    <span style="font-size: 0.75rem; color: var(--color-text-secondary);">${dateStr}</span>
+                </div>
+            </div>
+            <div class="admin-msg-body">${escapeHtml(msg.message)}</div>
+            <div class="admin-msg-footer">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.72rem; color: var(--color-text-secondary);">Ticket Status:</span>
+                    <button type="button" class="admin-ticket-status-btn ${statusBtnClass}" data-action="toggle-status" data-id="${msg.id}" title="Klik om status te wijzigen">
+                        ${statusBtnLabel}
+                    </button>
+                </div>
+                <div class="admin-msg-actions">
+                    <button type="button" class="btn btn-sm" data-action="delete-msg" data-id="${msg.id}" style="background: transparent; color: #f87171; border: none; padding: 2px 6px; cursor: pointer;" title="Bericht verwijderen">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Toggle Status Handler
+        card.querySelector('[data-action="toggle-status"]').addEventListener('click', () => {
+            toggleMessageStatus(msg.id);
+        });
+
+        // Delete Message Handler
+        card.querySelector('[data-action="delete-msg"]').addEventListener('click', () => {
+            deleteMessage(msg.id);
+        });
+
+        threadElem.appendChild(card);
+    });
+
+    threadElem.scrollTop = threadElem.scrollHeight;
+}
+
+async function sendAdminMessage(category, messageText, ticketStatus) {
+    if (!messageText || !messageText.trim() || !currentProjectId) return;
+
+    const newMsg = {
+        id: 'msg_' + Date.now(),
+        sender: 'admin',
+        senderName: 'Allard (Creation+Alt+Fix)',
+        senderEmail: auth?.currentUser?.email || 'info@creationaltfix.nl',
+        category: category || 'general',
+        message: messageText.trim(),
+        createdAt: new Date().toISOString(),
+        status: ticketStatus || 'resolved',
+        readByAdmin: true,
+        readByClient: false
+    };
+
+    const updatedMessages = [...(currentProjectData.messages || []), newMsg];
+    currentProjectData.messages = updatedMessages;
+
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('message_sent', `Reactie gestuurd naar klant (${category}): "${newMsg.message.slice(0, 45)}${newMsg.message.length > 45 ? '...' : ''}"`);
+        } catch (err) {
+            console.error("Fout bij versturen admin bericht:", err);
+            alert("Fout bij opslaan bericht: " + err.message);
+        }
+    }
+}
+
+async function toggleMessageStatus(messageId) {
+    if (!currentProjectData || !currentProjectData.messages) return;
+
+    const updatedMessages = currentProjectData.messages.map(m => {
+        if (m.id === messageId) {
+            let nextStatus = 'in_progress';
+            if (m.status === 'open') nextStatus = 'in_progress';
+            else if (m.status === 'in_progress') nextStatus = 'resolved';
+            else if (m.status === 'resolved') nextStatus = 'open';
+            return { ...m, status: nextStatus };
+        }
+        return m;
+    });
+
+    currentProjectData.messages = updatedMessages;
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('ticket_status', `Status van ticket bijgewerkt.`);
+        } catch (err) {
+            console.error("Fout bij updaten ticket status:", err);
+        }
+    }
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm("Weet je zeker dat je dit bericht wilt verwijderen uit de chathistorie?")) return;
+
+    const updatedMessages = (currentProjectData.messages || []).filter(m => m.id !== messageId);
+    currentProjectData.messages = updatedMessages;
+    renderAdminMessages(updatedMessages);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
+            await logAuditEvent('message_deleted', `Bericht/ticket verwijderd uit de projecthistorie.`);
+        } catch (err) {
+            console.error("Fout bij verwijderen bericht:", err);
+        }
+    }
+}
+
+// --- [TASK-401] Admin Live Staging & Visual Pins Management ---
+let activeAdminPinsFilter = 'all';
+
+function resolveAdminStagingUrl(p) {
+    if (!p) return null;
+    let url = p.domainName || p.domain || p.demoUrl || p.stagingUrl || p.designUrl;
+    if (!url || typeof url !== 'string') return null;
+    url = url.trim();
+    if (url === '' || url.toLowerCase() === 'n.v.t.' || url.toLowerCase() === 'geen' || url.toLowerCase() === 'nog geen domein') {
+        return null;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+    }
+    return url;
+}
+
+function renderAdminStaging(p) {
+    const iframe = document.getElementById('admin-staging-iframe');
+    const urlDisplay = document.getElementById('admin-staging-url-display');
+    const openBtn = document.getElementById('admin-open-staging-tab');
+    const tabCount = document.getElementById('tab-staging-count');
+    const pinsCountLabel = document.getElementById('admin-pins-count-label');
+    const overlay = document.getElementById('admin-pins-overlay');
+    const listContainer = document.getElementById('admin-pins-list-container');
+
+    const annotations = Array.isArray(p.annotations) ? p.annotations : [];
+    if (tabCount) tabCount.innerText = annotations.length;
+    if (pinsCountLabel) pinsCountLabel.innerText = annotations.length;
+
+    const resolvedUrl = resolveAdminStagingUrl(p);
+    if (resolvedUrl) {
+        if (iframe && iframe.dataset.loadedUrl !== resolvedUrl) {
+            iframe.src = resolvedUrl;
+            iframe.dataset.loadedUrl = resolvedUrl;
+        }
+        if (urlDisplay) urlDisplay.innerText = resolvedUrl;
+        if (openBtn) {
+            openBtn.href = resolvedUrl;
+            openBtn.classList.remove('hidden');
+        }
+    } else {
+        const dummyDemo = `https://demo.creationaltfix.nl/${encodeURIComponent((p.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
+        if (urlDisplay) urlDisplay.innerText = `${dummyDemo} (Geen extern domein)`;
+        if (openBtn) openBtn.classList.add('hidden');
+    }
+
+    // 1. Render Pins Markers on Admin Overlay
+    if (overlay) {
+        overlay.innerHTML = '';
+        annotations.forEach((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const isResolved = pin.status === 'resolved';
+            const marker = document.createElement('div');
+            marker.className = `annotation-pin ${isResolved ? 'resolved' : ''}`;
+            marker.style.left = `${pin.xPercent}%`;
+            marker.style.top = `${pin.yPercent}%`;
+            marker.innerHTML = isResolved ? '<i class="fas fa-check"></i>' : String(pinNum);
+            marker.title = `Pin #${pinNum} [${pin.category}]: ${escapeHtml(pin.comment)}`;
+            marker.style.pointerEvents = 'auto';
+
+            marker.addEventListener('click', () => {
+                const itemEl = document.getElementById(`admin-pin-card-${pin.id}`);
+                if (itemEl) {
+                    itemEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    itemEl.style.borderColor = 'var(--color-accent)';
+                    setTimeout(() => { itemEl.style.borderColor = 'var(--color-border)'; }, 1500);
+                }
+            });
+
+            overlay.appendChild(marker);
+        });
+    }
+
+    // 2. Render Pins Management List
+    if (listContainer) {
+        const filteredPins = annotations.filter(pin => {
+            if (activeAdminPinsFilter === 'all') return true;
+            if (activeAdminPinsFilter === 'open') return pin.status !== 'resolved';
+            if (activeAdminPinsFilter === 'resolved') return pin.status === 'resolved';
+            return true;
+        });
+
+        if (filteredPins.length === 0) {
+            listContainer.innerHTML = `<p style="color: var(--color-text-secondary); font-size: 0.85rem; font-style: italic; padding: 15px; text-align: center;">Geen pinnen gevonden voor dit filter.</p>`;
+            return;
+        }
+
+        listContainer.innerHTML = filteredPins.map((pin, idx) => {
+            const pinNum = pin.pinNumber || (idx + 1);
+            const isResolved = pin.status === 'resolved';
+            const catLabel = pin.category === 'design' ? '🎨 Design' : (pin.category === 'content' ? '📄 Tekst' : (pin.category === 'bug' ? '🐛 Bug' : '⚡ Functionaliteit'));
+            const dateStr = pin.createdAt ? new Date(pin.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Zojuist';
+            const author = escapeHtml(pin.author || 'Klant');
+
+            return `
+                <div id="admin-pin-card-${pin.id}" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; transition: border-color 0.3s;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; max-width: 70%;">
+                        <span class="pin-badge" style="width: 26px; height: 26px; border-radius: 50%; background: ${isResolved ? '#10b981' : 'var(--color-accent)'}; color: ${isResolved ? '#fff' : '#000'}; font-weight: 800; font-size: 0.78rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                            ${isResolved ? '<i class="fas fa-check"></i>' : pinNum}
+                        </span>
+                        <div>
+                            <div style="font-weight: 600; color: #fff; font-size: 0.88rem; line-height: 1.4;">${escapeHtml(pin.comment)}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 3px;">
+                                <strong>${author}</strong> • ${catLabel} • Viewport: <code>${pin.device || 'desktop'}</code> • Geplaatst op: ${dateStr}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" class="btn btn-sm ${isResolved ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-resolve-pin" data-id="${pin.id}" style="font-size: 0.8rem; padding: 5px 12px;">
+                            ${isResolved ? '<i class="fas fa-undo"></i> Heropenen' : '<i class="fas fa-check-circle"></i> Markeer als Opgelost'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        listContainer.querySelectorAll('[data-action="toggle-resolve-pin"]').forEach(btn => {
+            btn.onclick = () => {
+                const pinId = btn.getAttribute('data-id');
+                togglePinResolution(pinId);
+            };
+        });
+    }
+}
+
+async function togglePinResolution(pinId) {
+    if (!currentProjectData || !currentProjectData.annotations) return;
+
+    let targetPinNum = 1;
+    let nextStatus = 'resolved';
+
+    const updatedAnnotations = currentProjectData.annotations.map(pin => {
+        if (pin.id === pinId) {
+            targetPinNum = pin.pinNumber || 1;
+            nextStatus = pin.status === 'resolved' ? 'open' : 'resolved';
+            return {
+                ...pin,
+                status: nextStatus,
+                resolvedAt: nextStatus === 'resolved' ? new Date().toISOString() : null
+            };
+        }
+        return pin;
+    });
+
+    currentProjectData.annotations = updatedAnnotations;
+    renderAdminStaging(currentProjectData);
+
+    if (db && currentProjectId) {
+        try {
+            await updateDoc(doc(db, "projects", currentProjectId), { annotations: updatedAnnotations });
+            await logAuditEvent('pin_resolution', `Feedback Pin #${targetPinNum} gemarkeerd als ${nextStatus === 'resolved' ? 'Opgelost' : 'Openstaand'}.`);
+        } catch (err) {
+            console.error("Fout bij bijwerken pin status:", err);
+            alert("Fout bij updaten pin status: " + err.message);
+        }
+    }
+}
+
 // --- Change Project Phase & Workflow Status ---
 async function changeProjectPhase(phaseNumber) {
     if (!currentProjectData) return;
@@ -714,7 +1057,82 @@ function setupFormHandlers() {
         dateInput.value = '';
     });
 
-    // 3. Add Internal Note Form
+    // 3. Admin Messages & Tickets Filter & Reply Form
+    document.getElementById('admin-chat-filter')?.addEventListener('change', (e) => {
+        activeAdminChatFilter = e.target.value;
+        if (currentProjectData) {
+            renderAdminMessages(currentProjectData.messages || []);
+        }
+    });
+
+    document.getElementById('admin-reply-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const catSelect = document.getElementById('admin-reply-category');
+        const statusSelect = document.getElementById('admin-reply-status');
+        const replyInput = document.getElementById('admin-reply-input');
+        const sendBtn = document.getElementById('btn-admin-send-reply');
+
+        const category = catSelect ? catSelect.value : 'general';
+        const ticketStatus = statusSelect ? statusSelect.value : 'resolved';
+        const messageText = replyInput ? replyInput.value.trim() : '';
+
+        if (!messageText) return;
+
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+        }
+
+        try {
+            await sendAdminMessage(category, messageText, ticketStatus);
+            if (replyInput) replyInput.value = '';
+        } finally {
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Verstuur Reactie naar Klant';
+            }
+        }
+    });
+
+    // 4. Admin Live Staging & Pins Controls
+    document.querySelectorAll('.admin-vp-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-vp-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const targetVp = btn.getAttribute('data-vp');
+            const wrap = document.getElementById('admin-staging-viewport-wrap');
+            if (wrap) {
+                if (targetVp === 'desktop') {
+                    wrap.style.width = '100%';
+                    wrap.style.borderRadius = '8px';
+                } else if (targetVp === 'tablet') {
+                    wrap.style.width = '768px';
+                    wrap.style.borderRadius = '16px';
+                } else if (targetVp === 'mobile') {
+                    wrap.style.width = '375px';
+                    wrap.style.borderRadius = '24px';
+                }
+            }
+        });
+    });
+
+    document.getElementById('btn-admin-reload-staging')?.addEventListener('click', () => {
+        const iframe = document.getElementById('admin-staging-iframe');
+        if (iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => { iframe.src = currentSrc; }, 50);
+        }
+    });
+
+    document.getElementById('admin-pins-filter')?.addEventListener('change', (e) => {
+        activeAdminPinsFilter = e.target.value;
+        if (currentProjectData) {
+            renderAdminStaging(currentProjectData);
+        }
+    });
+
+    // 5. Add Internal Note Form
     document.getElementById('add-internal-note-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const noteInput = document.getElementById('internal-note-input');
@@ -722,7 +1140,7 @@ function setupFormHandlers() {
         noteInput.value = '';
     });
 
-    // 4. Activate Firebase Auth Button
+    // 5. Activate Firebase Auth Button
     document.getElementById('btn-activate-auth')?.addEventListener('click', async () => {
         const email = document.getElementById('edit-email').value.trim().toLowerCase();
         const contact = document.getElementById('edit-contact').value;

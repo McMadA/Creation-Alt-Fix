@@ -49,12 +49,12 @@ service cloud.firestore {
 
       // UPDATE:
       //   - Admins can update any field
-      //   - Authenticated clients can only update specific status fields (digital signature)
+      //   - Authenticated clients can only update specific status fields (digital signature, files, messages, tickets, annotations)
       allow update: if isAdmin()
                     || (request.auth != null 
                         && resource.data.clientUid == request.auth.uid
                         && request.resource.data.diff(resource.data).affectedKeys()
-                           .hasOnly(['status', 'statusClass', 'proposalAcceptedAt', 'designAcceptedAt']));
+                           .hasOnly(['status', 'statusClass', 'proposalAcceptedAt', 'designAcceptedAt', 'files', 'messages', 'tickets', 'annotations']));
 
       // DELETE: Only admins
       allow delete: if isAdmin();

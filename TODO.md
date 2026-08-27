@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **16 Tasks (53%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (47%)** |
+| **Completed Work Items** | ✅ Done | **18 Tasks (60%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **12 Tasks (40%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[█████████████░░░░░░░░░░░] 53% Complete`
+`[███████████████░░░░░░░░░] 60% Complete`
 
 ---
 
@@ -94,10 +94,9 @@
 ### 🎨 EPIC-04: Client Experience & Co-Creation
 **Domain**: Client Staging & Handover | **Stack**: Marker.io / Custom DOM Overlay, Static Templates
 
-- [ ] `[TASK-401]` `[P4-LOW]` `[STATUS: BACKLOG]` **Visual Feedback & Annotation Overlay on Demo Environments**
-  - **Scope**: Client Staging Subdomains
-  - **Acceptance Criteria**:
-    - Inject visual feedback widget on client demo sites allowing clients to leave point-and-click visual feedback during design review.
+- [x] `[TASK-401]` `[P4-LOW]` `[STATUS: DONE]` **Visual Feedback & Annotation Overlay on Demo Environments (Live Staging Suite)**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `firestore.rules`
+  - **Details**: Zero-configuration live concept staging viewer that automatically loads the domain URL (`domainName`, `domain`, `demoUrl`) from the Klantkaart with responsive viewports (Desktop, Tablet, Mobile) and interactive prototype fallback. Built point-and-click visual feedback annotation engine with numbered pins, popovers, real-time Firestore persistence, automatic In-App Chat syncing, and 1-click status resolution in the Admin Workstation.
 
 - [ ] `[TASK-402]` `[P4-LOW]` `[STATUS: BACKLOG]` **Client System Handover & Documentation Template**
   - **Scope**: `website/docs/`
@@ -178,9 +177,9 @@
   - **Scope**: `crm/js/pdf-generator.js`, `crm/status/`, `crm/admin/`
   - **Details**: Implemented high-quality PDF generation engine (`pdf-generator.js`) using `jsPDF`. Converts digitally signed proposals and invoices into official A4 PDFs containing Creation+Alt+Fix branding, legal KVK/BTW numbers, itemized deliverables, VAT calculations, and digital signature stamps. Automatically uploads PDF binaries to Firebase Storage (`projects/{id}/documents/`) and provides 1-click download buttons in the Client Portal (`/status`) and Admin Workstation (`project.html`).
 
-- [ ] `[TASK-604]` `[P4-LOW]` `[STATUS: BACKLOG]` **In-App Messaging / Ticketing**
-  - **Scope**: `crm/status/` & `crm/admin/`
-  - **Acceptance Criteria**: Replace standard mailto feedback buttons with a centralized Firestore-based chat/ticket thread per project.
+- [x] `[TASK-604]` `[P4-LOW]` `[STATUS: DONE]` **In-App Messaging & Project Ticketing Suite**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`, `crm/admin/js/admin.js`, `firestore.rules`
+  - **Details**: Replaced static `mailto:` feedback buttons with an in-app ticketing and chat module between client and administrator. Features multi-category support (Revisies, Vragen, Spoed, Bestanden), ticket status transitions (Open, In Behandeling, Opgelost), real-time Firestore synchronization, automated audit logging, full NL/EN localization, and visual unread message counters in the Admin dashboard.
 
 - [x] `[TASK-605]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
   - **Scope**: `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/css/admin.css`, `crm/admin/index.html`, `crm/admin/js/admin.js`

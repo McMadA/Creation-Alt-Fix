@@ -96,6 +96,12 @@
                 <button class="tab-btn" data-tab="tab-tasks">
                     <i class="fas fa-tasks"></i> Taken & Deadlines (<span id="tab-tasks-count">0</span>)
                 </button>
+                <button class="tab-btn" data-tab="tab-messages">
+                    <i class="fas fa-comments"></i> Berichten & Tickets (<span id="tab-messages-count">0</span>)
+                </button>
+                <button class="tab-btn" data-tab="tab-staging">
+                    <i class="fas fa-desktop"></i> Live Staging & Pins (<span id="tab-staging-count">0</span>)
+                </button>
                 <button class="tab-btn" data-tab="tab-notes">
                     <i class="fas fa-sticky-note"></i> Interne Notities & Logboek (<span id="tab-notes-count">0</span>)
                 </button>
@@ -256,7 +262,132 @@
                         </div>
                     </div>
 
-                    <!-- TAB 4: Interne Notities & Logboek (Audit Trail) -->
+                    <!-- TAB 4: Berichten & Tickets (TASK-604) -->
+                    <div id="tab-messages" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3><i class="fas fa-comments text-accent"></i> Project Berichten & Klantcommunicatie</h3>
+                                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 4px;">
+                                        Live communicatie met de klant. Berichten worden direct gesynchroniseerd met het klantenportaal (/status).
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <select id="admin-chat-filter" class="admin-input" style="margin: 0; padding: 6px 12px; font-size: 0.85rem; width: auto; cursor: pointer;">
+                                        <option value="all">Alle Berichten</option>
+                                        <option value="open">Alleen Openstaande Vragen & Revisies</option>
+                                        <option value="revision">Alleen Design Revisies</option>
+                                        <option value="urgent">Alleen Spoedberichten</option>
+                                        <option value="resolved">Opgeloste Tickets</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Messages thread stream -->
+                            <div id="admin-messages-thread" class="admin-chat-thread" style="margin-bottom: 20px;">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+
+                            <!-- Admin Reply Box -->
+                            <form id="admin-reply-form" class="admin-chat-compose-box" style="background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                    <h4 style="font-size: 0.9rem; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-reply text-accent"></i> Reageren naar Klant
+                                    </h4>
+                                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                        <select id="admin-reply-category" class="admin-input" style="margin: 0; padding: 6px 10px; font-size: 0.82rem; width: auto; cursor: pointer;">
+                                            <option value="general">💬 Algemene Reactie / Antwoord</option>
+                                            <option value="revision">🎨 Revisie Feedback / Update</option>
+                                            <option value="urgent">⚡ Spoed Afhandeling</option>
+                                            <option value="content">📄 Bestanden / Info Ontvangen</option>
+                                        </select>
+                                        <select id="admin-reply-status" class="admin-input" style="margin: 0; padding: 6px 10px; font-size: 0.82rem; width: auto; cursor: pointer;">
+                                            <option value="resolved">Markeer als: ✅ Opgelost</option>
+                                            <option value="in_progress">Markeer als: 🔄 In Behandeling</option>
+                                            <option value="open">Markeer als: ⏳ Openstaand</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <textarea id="admin-reply-input" class="admin-input" rows="3" placeholder="Schrijf een reactie voor de klant (verschijnt direct in het klantenportaal)..." required style="margin-bottom: 10px;"></textarea>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <span style="font-size: 0.78rem; color: var(--color-text-secondary);">
+                                        <i class="fas fa-info-circle text-accent"></i> Wordt automatisch gelogd in het project audit trail.
+                                    </span>
+                                    <button type="submit" id="btn-admin-send-reply" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-paper-plane"></i> Verstuur Reactie naar Klant
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Live Staging & Visuele Pins (TASK-401) -->
+                    <div id="tab-staging" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3><i class="fas fa-desktop text-accent"></i> Live Concept Staging & Visuele Feedback Pins</h3>
+                                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 4px;">
+                                        Inspecteer de concept-website zoals de klant hem ziet. Bekijk en beheer geplaatste feedback pinnen.
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <a id="admin-open-staging-tab" href="#" target="_blank" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-external-link-alt"></i> Open in Nieuw Tabblad
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Admin Staging Toolbar (Viewport Switcher + URL Indicator) -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: 15px;">
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block;"></span>
+                                    <span style="color: var(--color-text-secondary);">Domein / Staging:</span>
+                                    <strong id="admin-staging-url-display" style="color: #fff;">https://...</strong>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn btn-secondary btn-sm admin-vp-btn active" data-vp="desktop"><i class="fas fa-laptop"></i> Desktop</button>
+                                    <button type="button" class="btn btn-secondary btn-sm admin-vp-btn" data-vp="tablet"><i class="fas fa-tablet-alt"></i> Tablet</button>
+                                    <button type="button" class="btn btn-secondary btn-sm admin-vp-btn" data-vp="mobile"><i class="fas fa-mobile-alt"></i> Mobiel</button>
+                                    <button type="button" id="btn-admin-reload-staging" class="btn btn-secondary btn-sm" title="Herlaad preview"><i class="fas fa-redo-alt"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Admin Staging Canvas Frame -->
+                            <div class="admin-staging-canvas" style="display: flex; justify-content: center; background: #060913; padding: 15px; border-radius: 12px; border: 1px solid var(--color-border); margin-bottom: 20px; overflow: hidden;">
+                                <div id="admin-staging-viewport-wrap" style="width: 100%; transition: width 0.3s ease; border-radius: 8px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                    <div style="position: relative; width: 100%; height: 500px;">
+                                        <iframe id="admin-staging-iframe" style="width: 100%; height: 100%; border: none; background: #fff;" src="about:blank"></iframe>
+                                        <!-- Overlay for showing pin markers -->
+                                        <div id="admin-pins-overlay" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;">
+                                            <!-- Rendered dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Admin Pins List & Resolution Section -->
+                            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h4 style="font-size: 0.92rem; color: #fff; margin: 0;">
+                                        <i class="fas fa-thumbtack text-accent"></i> Geplaatste Feedback Pinnen door Klant (<span id="admin-pins-count-label">0</span>)
+                                    </h4>
+                                    <select id="admin-pins-filter" class="admin-input" style="margin: 0; padding: 4px 10px; font-size: 0.82rem; width: auto; cursor: pointer;">
+                                        <option value="all">Alle Pinnen</option>
+                                        <option value="open">Alleen Openstaand</option>
+                                        <option value="resolved">Alleen Opgelost</option>
+                                    </select>
+                                </div>
+                                <div id="admin-pins-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- Dynamic list of pins with toggle resolve buttons -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: Interne Notities & Logboek (Audit Trail) -->
                     <div id="tab-notes" class="tab-pane">
                         <div class="workspace-card">
                             <div class="workspace-card-header">

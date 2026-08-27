@@ -631,19 +631,37 @@ function renderTablesData(projectsToRender) {
     const formatTaskCounter = (p) => {
         const tasks = p.tasks || [];
         const total = tasks.length;
+        let taskBadge = '';
         if (total === 0) {
-            return `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: var(--color-text-secondary);"><i class="fas fa-minus" style="font-size: 0.65rem; opacity: 0.5;"></i> 0 taken</span>`;
-        }
-        const done = tasks.filter(t => t.completed || t.status === 'done').length;
-        const isAllDone = done === total && total > 0;
-        const color = isAllDone ? '#34d399' : done > 0 ? '#818cf8' : '#fbbf24';
-        const bg = isAllDone ? 'rgba(16, 185, 129, 0.12)' : done > 0 ? 'rgba(99, 102, 241, 0.12)' : 'rgba(251, 191, 36, 0.12)';
-        const border = isAllDone ? 'rgba(16, 185, 129, 0.3)' : done > 0 ? 'rgba(99, 102, 241, 0.3)' : 'rgba(251, 191, 36, 0.3)';
-        const icon = isAllDone ? 'fa-check-circle' : 'fa-tasks';
+            taskBadge = `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: var(--color-text-secondary);"><i class="fas fa-minus" style="font-size: 0.65rem; opacity: 0.5;"></i> 0 taken</span>`;
+        } else {
+            const done = tasks.filter(t => t.completed || t.status === 'done').length;
+            const isAllDone = done === total && total > 0;
+            const color = isAllDone ? '#34d399' : done > 0 ? '#818cf8' : '#fbbf24';
+            const bg = isAllDone ? 'rgba(16, 185, 129, 0.12)' : done > 0 ? 'rgba(99, 102, 241, 0.12)' : 'rgba(251, 191, 36, 0.12)';
+            const border = isAllDone ? 'rgba(16, 185, 129, 0.3)' : done > 0 ? 'rgba(99, 102, 241, 0.3)' : 'rgba(251, 191, 36, 0.3)';
+            const icon = isAllDone ? 'fa-check-circle' : 'fa-tasks';
 
-        return `<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: ${bg}; border: 1px solid ${border}; font-size: 0.82rem; font-weight: 600; color: ${color}; white-space: nowrap;" title="${done} van de ${total} taken voltooid">
-            <i class="fas ${icon}"></i> ${done}/${total} af
-        </span>`;
+            taskBadge = `<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: ${bg}; border: 1px solid ${border}; font-size: 0.82rem; font-weight: 600; color: ${color}; white-space: nowrap;" title="${done} van de ${total} taken voltooid">
+                <i class="fas ${icon}"></i> ${done}/${total} af
+            </span>`;
+        }
+
+        const msgs = p.messages || [];
+        if (msgs.length > 0) {
+            const unreadCount = msgs.filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
+            if (unreadCount > 0) {
+                taskBadge += ` <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.8rem; font-weight: 700; color: #f87171; margin-left: 6px;" title="${unreadCount} openstaande ticket(s)/bericht(en)">
+                    <i class="fas fa-comment-dots"></i> ${unreadCount}
+                </span>`;
+            } else {
+                taskBadge += ` <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); font-size: 0.8rem; font-weight: 600; color: var(--color-accent); margin-left: 6px;" title="${msgs.length} bericht(en) in historie">
+                    <i class="fas fa-comments"></i> ${msgs.length}
+                </span>`;
+            }
+        }
+
+        return taskBadge;
     };
 
     const formatEmail = (email) => {
