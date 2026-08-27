@@ -236,3 +236,64 @@ export async function generateAftercareEmail(projectData, type = '14day') {
         };
     }
 }
+
+/**
+ * Generate Visual Design Concept & Google Imagen / Banana AI Prompt (TASK-815)
+ * Combines Gemini LLM / heuristics to generate:
+ * 1. An ultra-realistic Google Imagen / Midjourney / Banana AI visual generator prompt.
+ * 2. Visual design concept explanation for the client.
+ * 3. Suggested design / prototype preview URL.
+ */
+export async function generateVisualDesignConcept(projectData) {
+    const client = projectData.client || projectData.companyName || 'Opdrachtgever';
+    const service = projectData.service || 'Website / Applicatie';
+    const goals = projectData.goals || projectData.projectGoals || 'Modern, converterend en betrouwbaar digitaal platform.';
+    const designPref = projectData.design || projectData.designPreferences || 'Donker, modern, strakke typografie, betrouwbaar en dynamisch';
+    const domain = projectData.domainName || projectData.domain || 'creationaltfix.nl';
+
+    const apiKey = getGeminiApiKey();
+
+    if (apiKey) {
+        try {
+            const prompt = `Je bent de Hoofd UI/UX Designer en Creative Director bij Creation+Alt+Fix.
+Maak een visueel ontwerpconcept en een ultra-strakke AI Image Generator Prompt (voor Google Imagen 3 / Google Banana / Midjourney) voor het volgende klantproject:
+
+Klant: ${client}
+Dienst: ${service}
+Domein: ${domain}
+Projectdoelen: ${goals}
+Design & Stijlvoorkeuren: ${designPref}
+
+Genereer een JSON response met exact de volgende structuur:
+{
+  "conceptTitle": "Korte pakkende titel voor het visuele ontwerpconcept",
+  "aiImagePrompt": "Engelse gedetailleerde prompt voor Google Imagen/Banana (8k, UI/UX landing page mockup, dark modern aesthetic, responsive grid, glassmorphism, clean typography, vibrant accents, highly detailed UI components)",
+  "colorPalette": ["#0a0e1a", "#6366f1", "#22d3ee"],
+  "designRationale": "Nederlandse toelichting voor de klant over de visuele richting, layoutkeuzes en waarom dit perfect aansluit bij de doelgroep.",
+  "suggestedPrototypeUrl": "https://${domain}"
+}
+Geef UITSLUITEND valide JSON terug zonder markdown backticks.`;
+
+            const rawResponse = await callGeminiApi(prompt);
+            const cleaned = rawResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleaned);
+            return {
+                ...parsed,
+                isAiGenerated: true
+            };
+        } catch (err) {
+            console.warn("Gemini design concept generatie fallback:", err);
+        }
+    }
+
+    // Heuristics fallback
+    return {
+        conceptTitle: `Modern UI/UX Visual Concept • ${client}`,
+        aiImagePrompt: `Modern ultra-clean website UI UX mockup for "${client}" (${service}), dark aesthetic with glowing subtle neon accents, hero banner with clear call-to-action button, responsive card layout, modern Space Grotesk and Inter typography, frosted glass glassmorphism panels, minimal luxury vibe, professional corporate Dutch brand, 8k resolution, UI design Behance Dribbble top trending --ar 16:9`,
+        colorPalette: ["#0a0e1a", "#6366f1", "#22d3ee"],
+        designRationale: `Voor ${client} is gekozen voor een eigentijds, converterend ontwerp. De layout combineert een overzichtelijke navigatiestructuur met moderne Dark AI design elementen, heldere contrasten en snelle laadtijden op zowel desktop als mobiel.`,
+        suggestedPrototypeUrl: `https://${domain}`,
+        isAiGenerated: false
+    };
+}
+

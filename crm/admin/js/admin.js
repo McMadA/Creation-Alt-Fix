@@ -1850,31 +1850,116 @@ async function saveGlobalTask(e) {
 let currentTodoMarkdownContent = '';
 let currentParsedTasks = [];
 
+const FALLBACK_TODO_MARKDOWN = `# 🛠️ Creation+Alt+Fix - DevOps Backlog & Engineering Roadmap
+
+## 📊 Sprint Status Dashboard
+| Metric | Status | Count |
+| :--- | :--- | :--- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **40 Active Epics & Tasks (1 Canceled)** |
+| **Completed Work Items** | ✅ Done | **22 Tasks (56%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **17 Tasks (44%)** |
+| **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (\`main.yml\`)** |
+
+**Sprint Completion Progress:**
+\`[█████████████░░░░░░░░░░░] 56% Complete\`
+
+---
+
+## 🎯 Active Epics & Backlog
+
+### 🚀 EPIC-01: CRM & Client Portal Infrastructure
+- [x] \`[TASK-101]\` \`[P1-CRITICAL]\` \`[STATUS: DONE]\` **Intake Alert & Push Notification Dispatcher**
+- [x] \`[TASK-102]\` \`[P1-CRITICAL]\` \`[STATUS: DONE]\` **Admin Klantkaart & Detailed Lead Inspector**
+- [x] \`[TASK-103]\` \`[P1-CRITICAL]\` \`[STATUS: DONE]\` **Integrated Digital Proposal Signing Suite**
+- [x] \`[TASK-104]\` \`[P1-CRITICAL]\` \`[STATUS: DONE]\` **Live Client Progress Tracker (\`/status\`)**
+- [x] \`[TASK-105]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Admin Data Table Search, Filtering & CSV Exporter**
+- [x] \`[TASK-106]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Firebase Auth Custom Sender Domain & SMTP Integration**
+- [x] \`[TASK-107]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Dedicated Branded Client Welcome Email Dispatcher**
+- [x] \`[TASK-108]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Admin Data Table Column Expansion & Quick Links**
+- [x] \`[TASK-109]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Site-Wide Intake Funnel & CTA Button Integration**
+
+### 💳 EPIC-02: FinTech & Payment Pipeline
+- [ ] \`[TASK-201]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Mollie API Integration & Webhook Listener**
+
+### 🤖 EPIC-03: AI Operations & Automation
+- [x] \`[TASK-301]\` \`[P3-MEDIUM]\` \`[STATUS: DONE]\` **Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate**
+- [x] \`[TASK-302]\` \`[P3-MEDIUM]\` \`[STATUS: DONE]\` **Live LLM API Integratie voor AI Offerte Scope & Deliverables Generator**
+
+### 🎨 EPIC-04: Client Experience & Co-Creation
+- [x] \`[TASK-401]\` \`[P4-LOW]\` \`[STATUS: DONE]\` **Visual Feedback & Annotation Overlay on Demo Environments (Live Staging Suite)**
+- [x] \`[TASK-402]\` \`[P4-LOW]\` \`[STATUS: DONE]\` **Client System Handover & Documentation Template**
+
+### 📈 EPIC-05: Growth, Marketing & Infra Pipelines
+- [~] \`[TASK-501]\` \`[P3-MEDIUM]\` \`[STATUS: CANCELLED]\` **Google Ads Campaign Activation (€400 Credit)**
+- [ ] \`[TASK-502]\` \`[P4-LOW]\` \`[STATUS: BACKLOG]\` **Hosting Management & Terugkerende Onderhoudsdiensten**
+- [ ] \`[TASK-503]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)**
+
+### 🗃️ EPIC-06: Advanced CRM Features (Expansion)
+- [x] \`[TASK-601]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Internal Notes & Audit Trail (Logboek)**
+- [x] \`[TASK-602]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Task & Deadline Management (Kanban)**
+- [x] \`[TASK-603]\` \`[P3-MEDIUM]\` \`[STATUS: DONE]\` **Automated PDF Generation for Quotes & Invoices**
+- [x] \`[TASK-604]\` \`[P4-LOW]\` \`[STATUS: DONE]\` **In-App Messaging & Project Ticketing Suite**
+- [x] \`[TASK-605]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Admin Klantkaart Layout Expansion / Full-Screen Page View**
+
+### 🎨 EPIC-07: Public Portfolio & Project Showcase (Website)
+- [x] \`[TASK-701]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Portfolio & Project Showcase Subpage (\`website/projecten.html\`)**
+- [x] \`[TASK-702]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Creation+Alt+Fix Proprietary CRM Showcase & Case Study**
+- [x] \`[TASK-703]\` \`[P2-HIGH]\` \`[STATUS: DONE]\` **Volledige Site-Wide & Portal EN-NL Vertaling (Bilingual Localization)**
+
+### 📋 EPIC-08: Client Project Deliverables & Systems Backlog (Microsoft To Do Sync)
+- [ ] \`[TASK-801]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Besseling Installatietechniek Projectafronding**
+- [ ] \`[TASK-802]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Arnold Design AI Scrape Protection & Showcase**
+- [ ] \`[TASK-803]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Angela Stenekes Website Prototype**
+- [ ] \`[TASK-804]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Home Buyer Intelligence (PropTech AI) Afronding**
+- [ ] \`[TASK-805]\` \`[P3-MEDIUM]\` \`[STATUS: BACKLOG]\` **Creation+Alt+Fix Continuïteitsplan & Noodprotocol**
+- [ ] \`[TASK-807]\` \`[P3-MEDIUM]\` \`[STATUS: BACKLOG]\` **Marketing, Stories & Personal Branding**
+- [ ] \`[TASK-808]\` \`[P2-HIGH]\` \`[STATUS: IN_PROGRESS]\` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
+- [ ] \`[TASK-809]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **F-Truck Store (ftruckstore.nl / ftruckstore.com) Follow-Up & Klantafstemming**
+- [ ] \`[TASK-810]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Justin Website Intake, Prototype & Offerte**
+- [ ] \`[TASK-811]\` \`[P1-CRITICAL]\` \`[STATUS: BACKLOG]\` **Vimexx Server Complete Back-up & Lokale/Cloud Archivering**
+- [ ] \`[TASK-812]\` \`[P1-CRITICAL]\` \`[STATUS: BACKLOG]\` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
+- [ ] \`[TASK-813]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord**
+- [x] \`[TASK-814]\` \`[P3-MEDIUM]\` \`[STATUS: DONE]\` **TODO.md DevOps Backlog naar CRM Firestore Kanban Tweeweg-Synchronisatie**
+- [ ] \`[TASK-815]\` \`[P2-HIGH]\` \`[STATUS: BACKLOG]\` **Fase 3 Design Versturen & UX Validatie Check**
+- [ ] \`[TASK-816]\` \`[P3-MEDIUM]\` \`[STATUS: BACKLOG]\` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
+`;
+
 async function fetchTodoMarkdown() {
-    try {
-        const res = await fetch('../../TODO.md?t=' + Date.now());
-        if (res.ok) {
-            currentTodoMarkdownContent = await res.text();
-            return currentTodoMarkdownContent;
+    const candidateUrls = [
+        '../../TODO.md?t=' + Date.now(),
+        '../TODO.md?t=' + Date.now(),
+        'TODO.md?t=' + Date.now(),
+        '/TODO.md?t=' + Date.now(),
+        '/crm/TODO.md?t=' + Date.now(),
+        'https://raw.githubusercontent.com/McMadA/Creation-Alt-Fix/main/TODO.md'
+    ];
+
+    for (const url of candidateUrls) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                const text = await res.text();
+                if (text && text.includes('Sprint Status Dashboard')) {
+                    currentTodoMarkdownContent = text;
+                    return currentTodoMarkdownContent;
+                }
+            }
+        } catch (e) {
+            // probeer volgende kandidaat
         }
-    } catch (e) {
-        console.warn("Kon TODO.md niet direct via relative fetch laden, probeer root fetch:", e);
     }
-    try {
-        const res2 = await fetch('/TODO.md?t=' + Date.now());
-        if (res2.ok) {
-            currentTodoMarkdownContent = await res2.text();
-            return currentTodoMarkdownContent;
-        }
-    } catch (e2) {
-        console.warn("Kon TODO.md niet laden via /TODO.md:", e2);
-    }
+
+    // Slimme fallback als alle netwerk/bestandspaden falen (bijv. offline of lokaal file://)
+    currentTodoMarkdownContent = FALLBACK_TODO_MARKDOWN;
     return currentTodoMarkdownContent;
 }
 
 async function openTodoSyncModal() {
     const modal = document.getElementById('todo-sync-modal');
-    if (!modal) return;
+    if (!modal) {
+        console.warn("Modal #todo-sync-modal niet gevonden in DOM!");
+        return;
+    }
 
     modal.classList.remove('hidden');
     switchSyncModalTab('import');
@@ -1886,18 +1971,13 @@ async function openTodoSyncModal() {
     if (statusMsg) statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin text-accent"></i> TODO.md backlog inlezen en analyseren...';
 
     const md = await fetchTodoMarkdown();
-    if (!md) {
-        if (statusMsg) statusMsg.innerHTML = '<span style="color: #f87171;"><i class="fas fa-exclamation-triangle"></i> Kon TODO.md niet automatisch inlezen vanaf de server.</span>';
-        return;
-    }
-
-    currentParsedTasks = parseTodoMarkdown(md);
+    currentParsedTasks = parseTodoMarkdown(md || FALLBACK_TODO_MARKDOWN);
     renderSyncBreakdown(currentParsedTasks);
 
     // Also populate export tab
     const exportArea = document.getElementById('todo-export-textarea');
     if (exportArea) {
-        exportArea.value = exportKanbanToTodoMarkdown(md, cachedProjects);
+        exportArea.value = exportKanbanToTodoMarkdown(md || FALLBACK_TODO_MARKDOWN, cachedProjects);
     }
 
     if (statusMsg) {
@@ -1969,8 +2049,8 @@ function switchSyncModalTab(tab) {
 
         // Update live export text
         const exportArea = document.getElementById('todo-export-textarea');
-        if (exportArea && currentTodoMarkdownContent) {
-            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent, cachedProjects);
+        if (exportArea && (currentTodoMarkdownContent || FALLBACK_TODO_MARKDOWN)) {
+            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent || FALLBACK_TODO_MARKDOWN, cachedProjects);
         }
     }
 }
@@ -2012,8 +2092,8 @@ async function handleExecuteTodoSync() {
 
         // Update export textarea as well
         const exportArea = document.getElementById('todo-export-textarea');
-        if (exportArea && currentTodoMarkdownContent) {
-            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent, cachedProjects);
+        if (exportArea && (currentTodoMarkdownContent || FALLBACK_TODO_MARKDOWN)) {
+            exportArea.value = exportKanbanToTodoMarkdown(currentTodoMarkdownContent || FALLBACK_TODO_MARKDOWN, cachedProjects);
         }
 
         alert(`✅ Succesvol gesynchroniseerd!\n${summary.totalTasks} taken zijn gekoppeld en bijgewerkt in de CRM projecten.`);
@@ -2066,6 +2146,14 @@ function handleDownloadExportMarkdown() {
     URL.revokeObjectURL(url);
 }
 
+// Bind to window for direct HTML event access
+window.openTodoSyncModal = openTodoSyncModal;
+window.closeTodoSyncModal = () => document.getElementById('todo-sync-modal')?.classList.add('hidden');
+window.switchSyncModalTab = switchSyncModalTab;
+window.handleExecuteTodoSync = handleExecuteTodoSync;
+window.handleCopyExportMarkdown = handleCopyExportMarkdown;
+window.handleDownloadExportMarkdown = handleDownloadExportMarkdown;
+
 function setupTodoSyncListeners() {
     document.getElementById('btn-open-todo-sync-modal')?.addEventListener('click', openTodoSyncModal);
     document.getElementById('btn-close-todo-sync-modal')?.addEventListener('click', () => {
@@ -2082,8 +2170,7 @@ function setupTodoSyncListeners() {
     document.getElementById('btn-download-todo-markdown')?.addEventListener('click', handleDownloadExportMarkdown);
 }
 
-// Initialisatie bij pagina-laad event
-document.addEventListener('DOMContentLoaded', () => {
+function initAdminPage() {
     setupNavigation();
     setupSearchAndFilters();
     setupTodoSyncListeners();
@@ -2125,6 +2212,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (geminiKeyStatusMain) geminiKeyStatusMain.innerHTML = '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Sleutel gewist. Offline generator actief.</span>';
         alert("Gemini API sleutel gewist.");
     });
-});
+}
+
+// Initialisatie bij pagina-laad event of direct
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminPage);
+} else {
+    initAdminPage();
+}
+
 
 

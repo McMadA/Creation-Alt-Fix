@@ -85,7 +85,22 @@ const translations = {
         statusAddedOn: "Toegevoegd op",
         statusViewFile: "Bekijk",
         statusAgreeBtn: "Digitaal Akkoord Geven & Starten",
-        statusAgreeNotice: "Door te klikken ga je digitaal akkoord met de voorgestelde scope en prijsopgave.",
+        statusOpenSignModalBtn: "✍️ Definitief Digitaal Akkoord Geven",
+        statusPreviewPdfBtn: "📄 Offerte & PDF Inzien",
+        statusPreviewPdfDesc: "Bekijk de officiële offerte specificaties, leveringsvoorwaarden en investering in PDF.",
+        statusSigningModalTitle: "Definitief Digitaal Akkoord & Ondertekening",
+        statusSigningModalSubtitle: "Controleer onderstaande gegevens en bevestig je digitale handtekening om het project direct te starten.",
+        statusSigningProjectLabel: "Project / Offerte",
+        statusSigningTotalLabel: "Totaal Investering",
+        statusSigningSignerNameLabel: "Naam ondertekenaar (gemachtigde) *",
+        statusSigningSignerEmailLabel: "E-mailadres ter verificatie",
+        statusSigningDateLabel: "Datum van akkoord",
+        statusSigningCheckboxLabel: "Ik verklaar bevoegd te zijn om namens de opdrachtgever akkoord te geven op dit investeringsvoorstel en de deliverables, en ga akkoord met de algemene voorwaarden van Creation+Alt+Fix.",
+        statusSigningConfirmBtn: "Definitief Ondertekenen & Starten",
+        statusSigningCancelBtn: "Annuleren",
+        statusSigningCheckboxRequired: "Vink de akkoordverklaring aan om digitaal te kunnen ondertekenen.",
+        statusSigningNameRequired: "Vul alsjeblieft de naam van de gemachtigde ondertekenaar in.",
+        statusAgreeNotice: "Door te ondertekenen ga je digitaal akkoord met de voorgestelde scope en prijsopgave.",
         statusAgreeConfirm: "Weet je zeker dat je digitaal akkoord wilt geven op deze offerte",
         statusAgreeSigning: "Bezig met digitaal ondertekenen & PDF genereren...",
         statusAgreeSuccessAlert: "Gefeliciteerd! Je akkoord is digitaal ondertekend en de officiële offerte PDF is gegenereerd en gedownload.",
@@ -216,7 +231,22 @@ const translations = {
         statusAddedOn: "Uploaded on",
         statusViewFile: "View",
         statusAgreeBtn: "Accept Proposal Digitally & Start",
-        statusAgreeNotice: "By clicking, you digitally agree to the proposed scope and quotation.",
+        statusOpenSignModalBtn: "✍️ Give Final Digital Acceptance",
+        statusPreviewPdfBtn: "📄 Preview Proposal & PDF",
+        statusPreviewPdfDesc: "Review official quotation specifications, deliverables, and investment in PDF format.",
+        statusSigningModalTitle: "Final Digital Acceptance & Signature",
+        statusSigningModalSubtitle: "Review the project specifications below and confirm your digital signature to start development.",
+        statusSigningProjectLabel: "Project / Quotation",
+        statusSigningTotalLabel: "Total Investment",
+        statusSigningSignerNameLabel: "Signer Name (Authorized Person) *",
+        statusSigningSignerEmailLabel: "Verification Email",
+        statusSigningDateLabel: "Date of Acceptance",
+        statusSigningCheckboxLabel: "I confirm that I am authorized to accept this project proposal and deliverables, and I agree to the terms and conditions of Creation+Alt+Fix.",
+        statusSigningConfirmBtn: "Sign Digitally & Start Project",
+        statusSigningCancelBtn: "Cancel",
+        statusSigningCheckboxRequired: "Please check the agreement box to digitally sign.",
+        statusSigningNameRequired: "Please provide the name of the authorized signer.",
+        statusAgreeNotice: "By signing, you digitally agree to the proposed scope and quotation.",
         statusAgreeConfirm: "Are you sure you want to digitally sign and accept this proposal",
         statusAgreeSigning: "Digitally signing & generating official PDF...",
         statusAgreeSuccessAlert: "Congratulations! Your agreement is signed and the official proposal PDF has been generated and downloaded.",
@@ -702,15 +732,22 @@ function renderProposalSection(data) {
         successMsg.classList.add('hidden');
         actionContainer.classList.remove('hidden');
         actionContainer.innerHTML = `
-            <button id="btn-akkoord" class="btn-akkoord">
-                <i class="fas fa-signature"></i> ${t.statusAgreeBtn}
-            </button>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
-                <i class="fas fa-shield-alt"></i> ${t.statusAgreeNotice}
-            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                <div style="display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap;">
+                    <button id="btn-open-sign-modal" type="button" class="btn-akkoord" style="flex: 1.2; min-width: 240px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);">
+                        <i class="fas fa-file-signature"></i> <span>${t.statusOpenSignModalBtn}</span>
+                    </button>
+                    <button id="btn-preview-proposal-pdf" type="button" class="btn-logout" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 12px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.92rem; transition: all 0.2s ease;">
+                        <i class="fas fa-file-pdf text-accent"></i> <span>${t.statusPreviewPdfBtn}</span>
+                    </button>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-shield-alt text-accent"></i> <span>${t.statusPreviewPdfDesc}</span>
+                </p>
+            </div>
         `;
 
-        setupAgreeButton();
+        setupProposalActionFlow(data);
     } else {
         // STATE A: Offerte in Voorbereiding (Intake ontvangen)
         statusPill.className = "offerte-status-pill pending";
@@ -732,108 +769,226 @@ function renderProposalSection(data) {
     }
 }
 
-function setupAgreeButton() {
-    const btn = document.getElementById('btn-akkoord');
-    if (!btn) return;
+function setupProposalActionFlow(data) {
+    const t = translations[currentLang] || translations.nl;
 
-    btn.onclick = async () => {
-        const t = translations[currentLang] || translations.nl;
-        if (!currentProjectDocId) {
-            alert(t.statusAgreeErrorAlert);
-            return;
-        }
-
-        const priceText = document.getElementById('offerte-price')?.innerText || '';
-        if (!confirm(`${t.statusAgreeConfirm} (${priceText})?`)) return;
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.statusAgreeSigning}`;
-        btn.disabled = true;
-
-        try {
-            const projectRef = doc(db, "projects", currentProjectDocId);
-            const nowIso = new Date().toISOString();
-
-            const activeProjectObj = clientProjectsList.find(p => p.id === currentProjectDocId);
-            const projData = activeProjectObj ? { ...activeProjectObj.data } : {};
-            projData.proposalAcceptedAt = nowIso;
-            projData.id = currentProjectDocId;
-
-            // 1. Generate Signed Proposal PDF
-            let pdfDownloadUrl = null;
-            let pdfFileName = null;
+    // 1. Setup Preview Concept PDF button
+    const btnPreview = document.getElementById('btn-preview-proposal-pdf');
+    if (btnPreview) {
+        btnPreview.onclick = async () => {
+            const originalHtml = btnPreview.innerHTML;
+            btnPreview.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF genereren...';
+            btnPreview.disabled = true;
             try {
-                const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(projData, true);
-                pdfFileName = filename;
+                const activeProjectObj = clientProjectsList.find(p => p.id === currentProjectDocId);
+                const projData = activeProjectObj ? { ...activeProjectObj.data } : { ...data };
+                projData.id = currentProjectDocId || 'concept';
 
-                // 2. Upload to Firebase Storage
-                if (storage) {
-                    const uploadRes = await uploadPdfToStorage(storage, pdfBlob, currentProjectDocId, filename);
-                    if (uploadRes) {
-                        pdfDownloadUrl = uploadRes.downloadUrl;
+                const { doc: pDoc, filename } = await generateProposalPDF(projData, false);
+                pDoc.save(filename);
+            } catch (err) {
+                console.error("Concept PDF download fout:", err);
+                alert("Kon de concept offerte PDF niet genereren: " + err.message);
+            } finally {
+                btnPreview.innerHTML = originalHtml;
+                btnPreview.disabled = false;
+            }
+        };
+    }
+
+    // 2. Setup Open Signing Modal button
+    const btnOpenSign = document.getElementById('btn-open-sign-modal');
+    const modal = document.getElementById('proposal-signing-modal');
+    if (btnOpenSign && modal) {
+        btnOpenSign.onclick = () => {
+            const activeProjectObj = clientProjectsList.find(p => p.id === currentProjectDocId);
+            const proj = activeProjectObj ? activeProjectObj.data : data;
+
+            // Fill project title & numbers
+            const titleEl = document.getElementById('sign-modal-project-title');
+            if (titleEl) {
+                titleEl.innerText = proj.proposalTitle || proj.client || proj.companyName || proj.service || 'Creation+Alt+Fix Offerte';
+            }
+
+            const rawPrice = proj.proposalPrice ? String(proj.proposalPrice).replace(/[^0-9,.-]/g, '').replace(',', '.') : '0';
+            const numPrice = parseFloat(rawPrice) || 0;
+            const vatPrice = numPrice * 0.21;
+            const totalIncPrice = numPrice * 1.21;
+
+            const formatVal = (val) => `€ ${val.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const totalPriceEl = document.getElementById('sign-modal-total-price');
+            const priceExEl = document.getElementById('sign-modal-price-ex');
+            const priceVatEl = document.getElementById('sign-modal-price-vat');
+            const priceIncEl = document.getElementById('sign-modal-price-inc');
+
+            if (totalPriceEl) totalPriceEl.innerText = formatVal(numPrice);
+            if (priceExEl) priceExEl.innerText = formatVal(numPrice);
+            if (priceVatEl) priceVatEl.innerText = formatVal(vatPrice);
+            if (priceIncEl) priceIncEl.innerText = formatVal(totalIncPrice);
+
+            // Fill signer info
+            const nameInput = document.getElementById('sign-signer-name');
+            if (nameInput) {
+                nameInput.value = proj.contactName || proj.client || auth.currentUser?.displayName || '';
+            }
+
+            const emailInput = document.getElementById('sign-signer-email');
+            if (emailInput) {
+                emailInput.value = proj.email || auth.currentUser?.email || '';
+            }
+
+            const dateInput = document.getElementById('sign-signer-date');
+            if (dateInput) {
+                dateInput.value = new Date().toLocaleDateString(currentLang === 'en' ? 'en-US' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            const checkbox = document.getElementById('sign-agreement-checkbox');
+            if (checkbox) checkbox.checked = false;
+
+            const errBox = document.getElementById('sign-modal-error');
+            if (errBox) {
+                errBox.innerText = '';
+                errBox.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+        };
+    }
+
+    // 3. Modal Close Triggers
+    const closeBtnX = document.getElementById('btn-close-sign-modal-x');
+    const cancelBtn = document.getElementById('btn-cancel-sign-modal');
+    if (closeBtnX) closeBtnX.onclick = () => modal?.classList.add('hidden');
+    if (cancelBtn) cancelBtn.onclick = () => modal?.classList.add('hidden');
+
+    // 4. Confirm Signature Trigger
+    const btnConfirmSign = document.getElementById('btn-confirm-final-signature');
+    if (btnConfirmSign) {
+        btnConfirmSign.onclick = async () => {
+            const errBox = document.getElementById('sign-modal-error');
+            const signerName = document.getElementById('sign-signer-name')?.value.trim();
+            const agreementChecked = document.getElementById('sign-agreement-checkbox')?.checked;
+
+            if (!signerName) {
+                if (errBox) {
+                    errBox.innerText = t.statusSigningNameRequired;
+                    errBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (!agreementChecked) {
+                if (errBox) {
+                    errBox.innerText = t.statusSigningCheckboxRequired;
+                    errBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (errBox) errBox.classList.add('hidden');
+
+            const origConfirmText = btnConfirmSign.innerHTML;
+            btnConfirmSign.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.statusAgreeSigning}`;
+            btnConfirmSign.disabled = true;
+
+            try {
+                const projectRef = doc(db, "projects", currentProjectDocId);
+                const nowIso = new Date().toISOString();
+
+                const activeProjectObj = clientProjectsList.find(p => p.id === currentProjectDocId);
+                const projData = activeProjectObj ? { ...activeProjectObj.data } : { ...data };
+                projData.proposalAcceptedAt = nowIso;
+                projData.proposalSignedBy = signerName;
+                projData.id = currentProjectDocId;
+
+                // 1. Generate Signed Proposal PDF
+                let pdfDownloadUrl = null;
+                let pdfFileName = null;
+                try {
+                    const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(projData, true);
+                    pdfFileName = filename;
+
+                    // 2. Upload to Firebase Storage if available
+                    if (storage) {
+                        const uploadRes = await uploadPdfToStorage(storage, pdfBlob, currentProjectDocId, filename);
+                        if (uploadRes) {
+                            pdfDownloadUrl = uploadRes.downloadUrl;
+                        }
                     }
+
+                    // Auto-download for the client
+                    pdfDoc.save(filename);
+                } catch (pdfErr) {
+                    console.warn("PDF generatie / upload waarschuwing:", pdfErr);
                 }
 
-                pdfDoc.save(filename);
-            } catch (pdfErr) {
-                console.warn("PDF generatie / upload waarschuwing:", pdfErr);
-            }
-
-            const updatePayload = {
-                status: "Wacht op Design & Ontwerp",
-                statusClass: "active",
-                proposalAcceptedAt: nowIso
-            };
-            if (pdfDownloadUrl) {
-                updatePayload.proposalPdfUrl = pdfDownloadUrl;
-                updatePayload.proposalPdfName = pdfFileName;
-            }
-
-            await updateDoc(projectRef, updatePayload);
-
-            if (activeProjectObj) {
-                activeProjectObj.data.status = "Wacht op Design & Ontwerp";
-                activeProjectObj.data.proposalAcceptedAt = nowIso;
-                if (pdfDownloadUrl) activeProjectObj.data.proposalPdfUrl = pdfDownloadUrl;
-            }
-
-            // Update UI direct naar State C (Geaccepteerd)
-            document.getElementById('offerte-status-pill').className = "offerte-status-pill accepted";
-            document.getElementById('offerte-status-pill').innerHTML = `<i class="fas fa-check-circle"></i> ${t.statusOfferteAcceptedTitle}`;
-
-            document.getElementById('offerte-action-container').classList.add('hidden');
-            document.getElementById('offerte-success-msg').classList.remove('hidden');
-            const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
-            document.getElementById('accepted-date').innerText = new Date(nowIso).toLocaleDateString(localeStr);
-
-            const dlBtn = document.getElementById('btn-download-proposal-pdf');
-            if (dlBtn) {
-                dlBtn.onclick = async () => {
-                    if (pdfDownloadUrl) {
-                        window.open(pdfDownloadUrl, '_blank');
-                    } else {
-                        const { doc: pDoc, filename } = await generateProposalPDF(projData, true);
-                        pDoc.save(filename);
-                    }
+                const updatePayload = {
+                    status: "Wacht op Design & Ontwerp",
+                    statusClass: "active",
+                    proposalAcceptedAt: nowIso,
+                    proposalSignedBy: signerName
                 };
+                if (pdfDownloadUrl) {
+                    updatePayload.proposalPdfUrl = pdfDownloadUrl;
+                    updatePayload.proposalPdfName = pdfFileName;
+                }
+
+                await updateDoc(projectRef, updatePayload);
+
+                if (activeProjectObj) {
+                    activeProjectObj.data.status = "Wacht op Design & Ontwerp";
+                    activeProjectObj.data.proposalAcceptedAt = nowIso;
+                    activeProjectObj.data.proposalSignedBy = signerName;
+                    if (pdfDownloadUrl) activeProjectObj.data.proposalPdfUrl = pdfDownloadUrl;
+                }
+
+                // Close modal
+                modal?.classList.add('hidden');
+
+                // Update UI to State C (Accepted)
+                document.getElementById('offerte-status-pill').className = "offerte-status-pill accepted";
+                document.getElementById('offerte-status-pill').innerHTML = `<i class="fas fa-check-circle"></i> ${t.statusOfferteAcceptedTitle}`;
+
+                document.getElementById('offerte-action-container').classList.add('hidden');
+                document.getElementById('offerte-success-msg').classList.remove('hidden');
+                const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
+                document.getElementById('accepted-date').innerText = new Date(nowIso).toLocaleDateString(localeStr);
+
+                const dlBtn = document.getElementById('btn-download-proposal-pdf');
+                if (dlBtn) {
+                    dlBtn.onclick = async () => {
+                        if (pdfDownloadUrl) {
+                            window.open(pdfDownloadUrl, '_blank');
+                        } else {
+                            const { doc: pDoc, filename } = await generateProposalPDF(projData, true);
+                            pDoc.save(filename);
+                        }
+                    };
+                }
+
+                document.getElementById('status-badge').innerText = "Wacht op Design & Ontwerp";
+                document.getElementById('status-badge').className = "badge badge-active";
+                document.getElementById('progress-bar-fill').style.width = "60%";
+                document.getElementById('progress-percent-display').innerText = "60% Complete";
+                updateTimeline(3);
+
+                renderDesignSection({ status: "Wacht op Design & Ontwerp" });
+
+                alert(t.statusAgreeSuccessAlert);
+            } catch (error) {
+                console.error("Akkoord opslaan fout:", error);
+                if (errBox) {
+                    errBox.innerText = t.statusAgreeErrorAlert + " (" + error.message + ")";
+                    errBox.classList.remove('hidden');
+                }
+                alert(t.statusAgreeErrorAlert);
+            } finally {
+                btnConfirmSign.innerHTML = origConfirmText;
+                btnConfirmSign.disabled = false;
             }
-
-            document.getElementById('status-badge').innerText = "Wacht op Design & Ontwerp";
-            document.getElementById('status-badge').className = "badge badge-active";
-            document.getElementById('progress-bar-fill').style.width = "60%";
-            document.getElementById('progress-percent-display').innerText = "60% Complete";
-            updateTimeline(3);
-
-            renderDesignSection({ status: "Wacht op Design & Ontwerp" });
-
-            alert(t.statusAgreeSuccessAlert);
-
-        } catch (error) {
-            console.error("Fout bij digitaal akkoord:", error);
-            alert(t.statusAgreeErrorAlert);
-            btn.innerHTML = `<i class="fas fa-signature"></i> ${t.statusAgreeBtn}`;
-            btn.disabled = false;
-        }
-    };
+        };
+    }
 }
 
 function renderDesignSection(data) {

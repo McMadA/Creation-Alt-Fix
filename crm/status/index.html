@@ -492,6 +492,92 @@
         </div>
     </main>
 
+    <!-- Modal: Definitief Digitaal Akkoord & Handtekening (TASK-813) -->
+    <div id="proposal-signing-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">
+        <div class="card" style="max-width: 620px; width: 100%; border-color: rgba(99, 102, 241, 0.4); max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7); background: #0c1020;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
+                <div>
+                    <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-signature text-accent"></i> <span data-translate-key="statusSigningModalTitle">Definitief Digitaal Akkoord</span>
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" data-translate-key="statusSigningModalSubtitle">
+                        Controleer onderstaande specificaties en bevestig je digitale handtekening om de ontwikkeling te starten.
+                    </p>
+                </div>
+                <button type="button" id="btn-close-sign-modal-x" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Investering & Scope Summary Box -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;" data-translate-key="statusSigningProjectLabel">Project / Offerte</span>
+                        <div id="sign-modal-project-title" style="font-weight: 700; color: #fff; font-size: 1.05rem;">Creation+Alt+Fix Offerte</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;" data-translate-key="statusSigningTotalLabel">Totaal Investering</span>
+                        <div id="sign-modal-total-price" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: var(--color-accent);">€ 0,00</div>
+                    </div>
+                </div>
+                <div id="sign-modal-vat-calc" style="font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                    <span>Excl. 21% BTW: <strong id="sign-modal-price-ex" style="color: #cbd5e1;">€ 0,00</strong></span>
+                    <span>21% BTW: <strong id="sign-modal-price-vat" style="color: #cbd5e1;">€ 0,00</strong></span>
+                    <span>Incl. BTW: <strong id="sign-modal-price-inc" style="color: #34d399;">€ 0,00</strong></span>
+                </div>
+            </div>
+
+            <!-- Formulier velden voor ondertekening -->
+            <form id="proposal-signing-form" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;" data-translate-key="statusSigningSignerNameLabel">
+                        Naam ondertekenaar (gemachtigde) *
+                    </label>
+                    <input type="text" id="sign-signer-name" required placeholder="Bijv. Naam / Bedrijfsnaam" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; color: #fff; font-family: inherit; font-size: 0.95rem; box-sizing: border-box;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;" data-translate-key="statusSigningSignerEmailLabel">
+                            E-mailadres ter verificatie
+                        </label>
+                        <input type="email" id="sign-signer-email" readonly style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; color: #94a3b8; font-size: 0.88rem; cursor: not-allowed; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;" data-translate-key="statusSigningDateLabel">
+                            Datum van akkoord
+                        </label>
+                        <input type="text" id="sign-signer-date" readonly style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; color: #94a3b8; font-size: 0.88rem; cursor: not-allowed; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <!-- Checkbox Akkoordverklaring -->
+                <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px; margin-top: 4px;">
+                    <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer; color: #cbd5e1; font-size: 0.85rem; line-height: 1.5;">
+                        <input type="checkbox" id="sign-agreement-checkbox" required style="margin-top: 3px; accent-color: #10b981; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;">
+                        <span data-translate-key="statusSigningCheckboxLabel">
+                            Ik verklaar bevoegd te zijn om namens de opdrachtgever akkoord te geven op dit investeringsvoorstel en de deliverables, en ga akkoord met de algemene voorwaarden van Creation+Alt+Fix.
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Error feedback -->
+                <div id="sign-modal-error" class="hidden" style="color: #f87171; font-size: 0.85rem; padding: 8px 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px;"></div>
+
+                <!-- Action buttons -->
+                <div style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                    <button type="button" id="btn-cancel-sign-modal" class="btn-logout" style="padding: 10px 18px; border-radius: 8px;" data-translate-key="statusSigningCancelBtn">
+                        Annuleren
+                    </button>
+                    <button type="button" id="btn-confirm-final-signature" class="btn-akkoord" style="padding: 10px 22px; font-size: 0.95rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-signature"></i> <span data-translate-key="statusSigningConfirmBtn">Definitief Ondertekenen & Starten</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JS Logic Script -->
     <script type="module" src="js/status.js"></script>
     <script src="/js/cookie-consent.js"></script>

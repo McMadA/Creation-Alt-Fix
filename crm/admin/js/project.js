@@ -1738,8 +1738,13 @@ function getMockProject(id) {
                 { id: 'web_t1', title: '[TASK-109] Meertalige subpages en vertaalkoppelingen (NL/EN)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
                 { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'web_t4', title: '[TASK-703] Volledige Site-Wide & Portal EN-NL Vertaling (Bilingual Localization)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-26' },
                 { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
-                { id: 'web_t6', title: 'SEO Sitemap, Structured Data & Google Search Console Indexering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' }
+                { id: 'web_t6', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
+                { id: 'web_t7', title: '[TASK-805] Creation+Alt+Fix Continuïteitsplan & Noodprotocol', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
+                { id: 'web_t8', title: '[TASK-807] Marketing, Stories & Personal Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-18' },
+                { id: 'web_t9', title: '[TASK-811] Vimexx Server Complete Back-up & Lokale/Cloud Archivering', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-02' },
+                { id: 'web_t10', title: '[TASK-812] Webserver FTP Hardening & Brute-Force Aanvalspreventie', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-04' }
             ],
             internalNotes: [
                 { id: 'web_n1', text: 'Portfolio grid succesvol uitgebreid naar 13 projecten met responsive tablet/desktop navbar.', createdAt: '2026-08-25T18:00:00Z', author: 'Allard Veldman' }
@@ -1774,20 +1779,24 @@ function getMockProject(id) {
                 { id: 'task_103', title: '[TASK-103] Digitale Offerte-Ondertekening in Klantenportaal', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                 { id: 'task_104', title: '[TASK-104] Live Klanten Voortgangstracker (/status)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                 { id: 'task_105', title: '[TASK-105] Admin Tabel Zoeken, Filteren & CSV Export', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
+                { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_107', title: '[TASK-107] Branded HTML Welkomstmail Dispatcher (EmailJS)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-13' },
                 { id: 'task_108', title: '[TASK-108] Admin Tabelkolom Uitbreiding & Directe Links', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'task_109', title: '[TASK-109] Site-Wide Intake Funnel & CTA Button Integration', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_605', title: '[TASK-605] Full-Screen Dedicated Project Werkplek (project.html)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_601', title: '[TASK-601] Interne Notities & Automatische Audit Trail', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'task_602', title: '[TASK-602] 4-Kolommen Kanban Bord voor Deliverables', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                { id: 'task_106', title: '[TASK-106] Firebase Auth Custom Sender Domain & SMTP Integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
-                { id: 'task_301', title: '[TASK-301] Geautomatiseerde Aftercare Cronjobs (14d Review / 6m APK)', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-10' },
-                { id: 'task_302', title: '[TASK-302] Live LLM API voor AI Offerte Scope Generator', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
                 { id: 'task_603', title: '[TASK-603] Automatische PDF Generatie voor Offertes & Facturen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-25' },
-                { id: 'task_azure', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
-                { id: 'task_604', title: '[TASK-604] In-App Firestore Messaging & Ticketing', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-25' },
-                { id: 'task_401', title: '[TASK-401] Visuele Feedback & Annotatie Widget op Demo Omgevingen', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-30' },
-                { id: 'task_402', title: '[TASK-402] Gestandaardiseerd Systeem Overdrachtsdocument & Video Template', completed: false, status: 'todo', priority: 'low', dueDate: '2026-10-05' }
+                { id: 'task_301', title: '[TASK-301] Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                { id: 'task_302', title: '[TASK-302] Live LLM API Integratie voor AI Offerte Scope Generator', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                { id: 'task_401', title: '[TASK-401] Visual Feedback & Annotation Overlay on Demo Environments', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                { id: 'task_402', title: '[TASK-402] Client System Handover & Documentation Template', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                { id: 'task_604', title: '[TASK-604] In-App Messaging & Project Ticketing Suite', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
+                { id: 'task_201', title: '[TASK-201] Mollie API Integratie & Webhook Listener via Tailscale', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-05' },
+                { id: 'task_813', title: '[TASK-813] Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-08' },
+                { id: 'task_814', title: '[TASK-814] TODO.md DevOps Backlog naar CRM Firestore Kanban Tweeweg-Synchronisatie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
+                { id: 'task_815', title: '[TASK-815] Fase 3 Design Versturen & UX Validatie Check', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-10' },
+                { id: 'task_816', title: '[TASK-816] Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' }
             ],
             internalNotes: [
                 { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }
