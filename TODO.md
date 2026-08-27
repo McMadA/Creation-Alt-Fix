@@ -229,3 +229,6 @@
 
 
 
+
+- [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
+  - **Tasks**: Werkend maken van het contact- en offerteformulier van `vanderplaats.nl` met veilige e-mailverzending direct naar `vanderplaats2@gmail.com` op de Vimexx webserver (Klant: Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339, Foijingaweg 136 Kollumerpomp).
