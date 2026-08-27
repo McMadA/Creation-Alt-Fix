@@ -152,7 +152,11 @@ const translations = {
         statusPinSubmitBtn: "Plaats Pin",
         statusPinsListTitle: "Geplaatst Feedback Overzicht",
         statusNoPinsYet: "Nog geen pinnen geplaatst. Activeer feedback modus om een pin op de website te plaatsen.",
-        statusPinPlacedSuccess: "Feedback pin succesvol geplaatst!"
+        statusPinPlacedSuccess: "Feedback pin succesvol geplaatst!",
+        statusNavDocs: "Documentatie",
+        statusHandoverTitle: "Systeem Overdracht & Documentatie",
+        statusHandoverDesc: "Bekijk de officiële documentatiegids voor contentbeheer, DNS-instellingen, videohandleidingen en SEO-richtlijnen.",
+        statusOpenDocsBtn: "Open Documentatie Gids"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -279,7 +283,11 @@ const translations = {
         statusPinSubmitBtn: "Place Pin",
         statusPinsListTitle: "Placed Feedback Summary",
         statusNoPinsYet: "No feedback pins placed yet. Activate feedback mode to pin notes onto the live concept.",
-        statusPinPlacedSuccess: "Feedback pin placed successfully!"
+        statusPinPlacedSuccess: "Feedback pin placed successfully!",
+        statusNavDocs: "Documentation",
+        statusHandoverTitle: "System Handover & Documentation",
+        statusHandoverDesc: "View the official documentation guide for content management, DNS settings, video tutorials, and SEO guidelines.",
+        statusOpenDocsBtn: "Open Documentation Guide"
     }
 };
 
@@ -572,6 +580,14 @@ function renderDashboard(data) {
         const mollieCard = document.getElementById('mollie-link');
         mollieCard.href = data.mollieLink;
         mollieCard.classList.remove('hidden');
+    }
+
+    // Configure Handover Docs Link (TASK-402)
+    const docsBtn = document.getElementById('btn-open-project-docs');
+    if (docsBtn) {
+        const domainVal = data.domainName || data.domain || '';
+        const clientVal = clientName;
+        docsBtn.href = `../../docs/index.html?domain=${encodeURIComponent(domainVal)}&client=${encodeURIComponent(clientVal)}`;
     }
 }
 

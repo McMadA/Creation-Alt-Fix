@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **20 Tasks (67%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **10 Tasks (33%)** |
+| **Completed Work Items** | ✅ Done | **21 Tasks (70%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **9 Tasks (30%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[█████████████████░░░░░░░] 67% Complete`
+`[██████████████████░░░░░░] 70% Complete`
 
 ---
 
@@ -93,10 +93,9 @@
   - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `firestore.rules`
   - **Details**: Zero-configuration live concept staging viewer that automatically loads the domain URL (`domainName`, `domain`, `demoUrl`) from the Klantkaart with responsive viewports (Desktop, Tablet, Mobile) and interactive prototype fallback. Built point-and-click visual feedback annotation engine with numbered pins, popovers, real-time Firestore persistence, automatic In-App Chat syncing, and 1-click status resolution in the Admin Workstation.
 
-- [ ] `[TASK-402]` `[P4-LOW]` `[STATUS: BACKLOG]` **Client System Handover & Documentation Template**
-  - **Scope**: `website/docs/`
-  - **Acceptance Criteria**:
-    - Create standardized dark-mode handover guide & video documentation template for completed website/system delivery.
+- [x] `[TASK-402]` `[P4-LOW]` `[STATUS: DONE]` **Client System Handover & Documentation Template**
+  - **Scope**: `website/docs/index.html`, `website/docs/css/docs.css`, `website/docs/js/docs.js`, `crm/status/index.html`, `crm/status/js/status.js`
+  - **Details**: Interactive, Dark AI styled documentation & handover suite featuring quick start guide, DNS/Email SPF & DMARC configuration snippets, content & image optimization guidelines, video walkthrough preview mockup, SEO/GA4 search console submission steps, warranty/support strippenkaart info, interactive afvinkbare checklist with persistent localStorage progress bar, 1-click PDF/print exporter, and dynamic query param personalization (`?domain=...&client=...`) linked directly from the Client Status Portal and website footer.
 
 ---
 
