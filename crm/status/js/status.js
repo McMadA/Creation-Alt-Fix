@@ -659,10 +659,29 @@ function renderProposalSection(data) {
         statusPill.className = "offerte-status-pill action-required";
         statusPill.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${currentLang === 'en' ? 'Action Required: Digital Acceptance' : 'Actie Vereist: Digitaal Akkoord'}`;
 
-        const priceVal = data.proposalPrice || (currentLang === 'en' ? "Custom quotation" : "In overleg");
-        priceEl.innerText = priceVal.startsWith("€") ? priceVal : `€ ${priceVal}`;
-        
-        scopeEl.innerText = data.proposalScope || `${currentLang === 'en' ? 'Based on your submitted intake, we will deliver the following scope:' : 'Op basis van de door jou ingevulde intake gaan we de volgende scope realiseren:'}\n\n${data.goals || data.projectGoals || (currentLang === 'en' ? 'Complete software & website realization as discussed.' : 'Volledige software & website realisatie zoals besproken.')}`;
+        let scopeHtml = '';
+        if (data.proposalTitle) {
+            scopeHtml += `<h4 style="color: #fff; margin-bottom: 8px; font-size: 1.05rem;"><i class="fas fa-layer-group text-accent"></i> ${escapeHtml(data.proposalTitle)}</h4>`;
+        }
+        if (data.proposalScope) {
+            scopeHtml += `<p style="margin-bottom: 12px; line-height: 1.5; color: #cbd5e1;">${escapeHtml(data.proposalScope)}</p>`;
+        } else {
+            scopeHtml += `<p style="margin-bottom: 12px; line-height: 1.5; color: #cbd5e1;">${escapeHtml(data.goals || data.projectGoals || (currentLang === 'en' ? 'Complete software & website realization as discussed.' : 'Volledige software & website realisatie zoals besproken.'))}</p>`;
+        }
+
+        if (Array.isArray(data.deliverables) && data.deliverables.length > 0) {
+            scopeHtml += `<div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+                <strong style="color: var(--color-accent); font-size: 0.82rem; text-transform: uppercase;">${currentLang === 'en' ? 'Included Deliverables & Scope:' : 'Inbegrepen Deliverables & Scope:'}</strong>
+                ${data.deliverables.map((d) => `
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 14px;">
+                        <div style="font-weight: 700; color: #fff; font-size: 0.9rem;"><i class="fas fa-check-circle" style="color: #34d399; margin-right: 6px;"></i> ${escapeHtml(d.title || '')}</div>
+                        ${d.description ? `<div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 3px;">${escapeHtml(d.description)}</div>` : ''}
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        scopeEl.innerHTML = scopeHtml;
 
         successMsg.classList.add('hidden');
         actionContainer.classList.remove('hidden');

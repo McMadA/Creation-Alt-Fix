@@ -70,9 +70,12 @@
                         <option value="Opgeleverd">Fase 5: Livegang & Mollie</option>
                     </select>
                 </div>
-                <div>
+                <div style="display: flex; gap: 8px;">
                     <button id="admin-export-csv-btn" class="btn btn-secondary" onclick="exportProjectsToCSV()">
-                        <i class="fas fa-file-csv"></i> Exporteer als CSV
+                        <i class="fas fa-file-csv"></i> Exporteer CSV
+                    </button>
+                    <button id="btn-open-gemini-modal-main" class="btn btn-secondary" title="Configureer Google Gemini AI">
+                        <i class="fas fa-brain" style="color: var(--color-accent);"></i> Gemini AI
                     </button>
                 </div>
             </div>
@@ -316,6 +319,31 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('project-modal')">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gemini AI API Key Settings Modal -->
+    <div id="gemini-settings-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="workspace-card" style="max-width: 500px; width: 90%; background: #0f172a; border: 1px solid rgba(99,102,241,0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8); padding: 24px; border-radius: 12px;">
+            <div class="workspace-card-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;"><i class="fas fa-brain" style="color: var(--color-accent);"></i> Google Gemini 1.5 Setup</h3>
+                <button type="button" id="btn-close-gemini-modal-main" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                Voer je Google Gemini API sleutel in voor live AI scope & offerte generatie. Zonder API sleutel schakelt het systeem automatisch over naar de ingebouwde Creation+Alt+Fix slimme offline generator.
+            </p>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Gemini API Sleutel</label>
+                <input type="password" id="gemini-api-key-input-main" class="admin-input" placeholder="AIzaSy..." style="margin-top: 4px;">
+            </div>
+            <div id="gemini-key-status-main" style="font-size: 0.82rem; margin-bottom: 16px; color: #94a3b8;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" id="btn-clear-gemini-key-main" class="btn btn-secondary btn-sm" style="color: #f87171;">Sleutel Wissen</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" id="btn-cancel-gemini-modal-main" class="btn btn-secondary btn-sm">Sluiten</button>
+                    <button type="button" id="btn-save-gemini-key-main" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;">Sleutel Opslaan</button>
+                </div>
             </div>
         </div>
     </div>

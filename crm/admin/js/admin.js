@@ -12,6 +12,7 @@ import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, q
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
+import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey } from "../../js/ai-engine.js";
 
 
 // We gebruiken een try-catch zodat de app niet direct crasht als de config nog dummy-data is.
@@ -1789,5 +1790,37 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSearchAndFilters();
     document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
     document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
+
+    // Gemini Modal in Main Admin
+    const geminiModalMain = document.getElementById('gemini-settings-modal');
+    const geminiKeyInputMain = document.getElementById('gemini-api-key-input-main');
+    const geminiKeyStatusMain = document.getElementById('gemini-key-status-main');
+
+    document.getElementById('btn-open-gemini-modal-main')?.addEventListener('click', () => {
+        if (geminiKeyInputMain) geminiKeyInputMain.value = getGeminiApiKey();
+        if (geminiKeyStatusMain) {
+            geminiKeyStatusMain.innerHTML = hasGeminiApiKey()
+                ? '<strong style="color: #34d399;"><i class="fas fa-check-circle"></i> Gemini API sleutel is actief.</strong>'
+                : '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Geen sleutel ingevoerd. Systeem gebruikt de slimme offline generator.</span>';
+        }
+        geminiModalMain?.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-gemini-modal-main')?.addEventListener('click', () => geminiModalMain?.classList.add('hidden'));
+    document.getElementById('btn-cancel-gemini-modal-main')?.addEventListener('click', () => geminiModalMain?.classList.add('hidden'));
+
+    document.getElementById('btn-save-gemini-key-main')?.addEventListener('click', () => {
+        const val = geminiKeyInputMain?.value.trim() || '';
+        setGeminiApiKey(val);
+        alert(val ? "Gemini API sleutel succesvol opgeslagen!" : "Gemini API sleutel gewist. Offline generator actief.");
+        geminiModalMain?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-clear-gemini-key-main')?.addEventListener('click', () => {
+        setGeminiApiKey('');
+        if (geminiKeyInputMain) geminiKeyInputMain.value = '';
+        if (geminiKeyStatusMain) geminiKeyStatusMain.innerHTML = '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Sleutel gewist. Offline generator actief.</span>';
+        alert("Gemini API sleutel gewist.");
+    });
 });
 

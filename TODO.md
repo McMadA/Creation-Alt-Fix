@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **31 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **18 Tasks (60%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **12 Tasks (40%)** |
+| **Completed Work Items** | ✅ Done | **20 Tasks (67%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **10 Tasks (33%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[███████████████░░░░░░░░░] 60% Complete`
+`[█████████████████░░░░░░░] 67% Complete`
 
 ---
 
@@ -76,18 +76,13 @@
 ### 🤖 EPIC-03: AI Operations & Automation
 **Domain**: `crm/admin` & Cloud Functions | **Stack**: OpenAI / Gemini API, Scheduled Triggers
 
-- [ ] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Automated Aftercare Cronjobs (14-Day Check-in & 6-Month APK)**
-  - **Scope**: Cloud Background Cronjobs
-  - **Acceptance Criteria**:
-    - Trigger automated 14-day post-delivery check-in email (Google Review & Instagram follow invite).
-    - Trigger 6-month AI system check-in for recurring support.
+- [x] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: DONE]` **Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate**
+  - **Scope**: `crm/js/ai-engine.js`, `crm/admin/project.html`, `crm/admin/js/project.js`
+  - **Details**: Geautomatiseerde e-mail workflows na livegang (14-dagen review check-in & 6-maanden software APK). Inclusief verplichte handmatige review gate & dispatch wachtrij in het Admin Dashboard zodat er nooit ongewenst e-mails verstuurd worden zonder voorafgaande controle en akkoord.
 
-- [ ] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Live LLM API Integration for AI Proposal Scope Generator**
-  - **Scope**: `crm/admin/js/admin.js`, `crm/status/js/status.js`
-  - **Acceptance Criteria**:
-    - Repurpose the Admin Klantkaart AI drafter into an AI Offerte Scope & Investeringsvoorstel Generator (Fase 2).
-    - Connect live OpenAI / Gemini API endpoint to analyze client intake answers and automatically draft detailed project deliverables and scope.
-    - Save the generated `proposalScope` to Firestore so clients see their custom project deliverables before digitally signing in `/status`.
+- [x] `[TASK-302]` `[P3-MEDIUM]` `[STATUS: DONE]` **Live LLM API Integratie voor AI Offerte Scope & Deliverables Generator**
+  - **Scope**: `crm/js/ai-engine.js`, `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/status/js/status.js`
+  - **Details**: Google Gemini 1.5 (Flash / Pro) REST API integratie gecombineerd met zero-config offline Creation+Alt+Fix heuristics fallback. Genereert met 1 klik complete deliverables, titels, investeringsprijzen en faseringen op basis van de intake-antwoorden en slaat deze direct op naar Firestore voor het digitale voorstel in het klantenportaal.
 
 ---
 

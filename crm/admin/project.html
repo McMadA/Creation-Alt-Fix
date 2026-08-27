@@ -57,6 +57,9 @@
                             <option value="5">Fase 5: Opgeleverd (Livegang)</option>
                         </select>
                     </div>
+                    <button type="button" id="btn-open-gemini-modal" class="btn btn-secondary btn-sm" title="Configureer Gemini AI API Sleutel">
+                        <i class="fas fa-brain" style="color: var(--color-accent);"></i> Gemini AI
+                    </button>
                     <a id="btn-open-client-portal" href="../status/index.html" target="_blank" class="btn btn-secondary btn-sm">
                         <i class="fas fa-external-link-alt"></i> Klantenportaal
                     </a>
@@ -192,18 +195,23 @@
                     <!-- TAB 2: Offerte & Snelacties -->
                     <div id="tab-actions" class="tab-pane">
                         <div class="workspace-card">
-                            <div class="workspace-card-header">
-                                <h3><i class="fas fa-bolt text-accent"></i> Werkstroom & Snelacties per Fase</h3>
+                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3><i class="fas fa-bolt text-accent"></i> Werkstroom & Snelacties per Fase</h3>
+                                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 4px;">
+                                        Beheer de offerte, AI scope generatie, ontwerpstatus en geautomatiseerde nazorg.
+                                    </p>
+                                </div>
                             </div>
                             
                             <div class="action-buttons-grid" style="margin-bottom: 25px;">
                                 <button class="btn btn-secondary" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
-                                <button class="btn btn-secondary" id="btn-action-proposal"><i class="fas fa-file-contract"></i> Offerte Genereren (Fase 2)</button>
+                                <button class="btn btn-primary" id="btn-trigger-ai-scope" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;"><i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Offerte & Scope (Fase 2)</button>
                                 <button class="btn btn-secondary" id="btn-action-download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
                                 <button class="btn btn-secondary" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
                                 <button class="btn btn-secondary" id="btn-action-mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie Link (Fase 5)</button>
                                 <button class="btn btn-secondary" id="btn-action-download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
-                                <button class="btn btn-secondary" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)</button>
+                                <button class="btn btn-secondary" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> Nazorg & Check-in (Fase 5)</button>
                             </div>
 
                             <!-- Proposal Link Display -->
@@ -213,6 +221,99 @@
                                     <input type="text" id="proposal-link-input" class="admin-input" readonly style="flex: 1; min-width: 260px; margin: 0;">
                                     <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Bekijk Offerte</a>
                                     <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-proposal-link"><i class="fas fa-copy"></i> Kopiëren</button>
+                                </div>
+                            </div>
+
+                            <!-- AI Offerte Scope & Deliverables Suite (TASK-302) -->
+                            <div id="ai-scope-box" class="hidden" style="padding: 20px; background: rgba(99, 102, 241, 0.07); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.35); margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                                    <div>
+                                        <h4 style="color: var(--color-accent); margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-brain"></i> AI Gegenereerde Projectscope & Deliverables
+                                        </h4>
+                                        <span style="font-size: 0.78rem; color: var(--color-text-secondary);" id="ai-generator-model-tag">
+                                            Aangedreven door Gemini 1.5 & Creation+Alt+Fix Heuristics
+                                        </span>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" id="btn-re-generate-scope" class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> Opnieuw Genereren</button>
+                                        <button type="button" id="btn-close-scope-box" class="btn btn-secondary btn-sm">&times; Sluiten</button>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 12px;">
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Project / Offerte Titel</label>
+                                        <input type="text" id="ai-scope-title" class="admin-input" style="margin-top: 4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Geoffreerde Investering (€)</label>
+                                        <input type="text" id="ai-scope-price" class="admin-input" style="margin-top: 4px;" placeholder="bijv. 750,00">
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 15px;">
+                                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Doel & Samenvatting (Executive Summary)</label>
+                                    <textarea id="ai-scope-summary" class="admin-input" rows="3" style="margin-top: 4px;"></textarea>
+                                </div>
+
+                                <div style="margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Deliverables & Functionaliteiten</label>
+                                        <button type="button" id="btn-add-deliverable" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.75rem;"><i class="fas fa-plus"></i> Deliverable Toevoegen</button>
+                                    </div>
+                                    <div id="ai-deliverables-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+                                    <span style="font-size: 0.78rem; color: #34d399;">
+                                        <i class="fas fa-check-circle"></i> Wijzigingen worden direct doorgevoerd in het digitale klantenportaal (/status & /offerte).
+                                    </span>
+                                    <button type="button" id="btn-save-ai-scope" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700;">
+                                        <i class="fas fa-check"></i> Opslaan & Offerte Activeren (Fase 2)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Nazorg & AI Dispatch Wachtrij Box (TASK-301) -->
+                            <div id="aftercare-queue-box" class="hidden" style="padding: 20px; background: rgba(245, 158, 11, 0.08); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.35); margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                    <div>
+                                        <h4 style="color: #fbbf24; margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-shield-alt"></i> 🔔 Nazorg & AI Dispatch Wachtrij (Review Vereist)
+                                        </h4>
+                                        <p style="font-size: 0.78rem; color: var(--color-text-secondary); margin: 2px 0 0 0;">
+                                            AI heeft een nazorg e-mail klaargezet. Controleer de tekst alvorens deze wordt verstuurd.
+                                        </p>
+                                    </div>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button type="button" id="btn-gen-14day-mail" class="btn btn-secondary btn-sm">14-Dagen Review</button>
+                                        <button type="button" id="btn-gen-6month-mail" class="btn btn-secondary btn-sm">6-Maanden APK</button>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Onderwerp</label>
+                                    <input type="text" id="aftercare-subject-input" class="admin-input" style="margin-top: 4px;">
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">E-mail Inhoud</label>
+                                    <textarea id="aftercare-body-input" class="admin-input" rows="7" style="margin-top: 4px; font-family: var(--font-body);"></textarea>
+                                </div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <span style="font-size: 0.78rem; color: #fbbf24;">
+                                        <i class="fas fa-lock"></i> Handmatige goedkeuring vereist: er wordt niets verzonden zonder jouw akkoord.
+                                    </span>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" id="btn-open-aftercare-client" class="btn btn-secondary btn-sm"><i class="fas fa-envelope-open"></i> Open in Mail Client</button>
+                                        <button type="button" id="btn-approve-send-aftercare" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700;">
+                                            <i class="fas fa-paper-plane"></i> 🚀 Goedkeuren & Direct Verzenden
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -458,6 +559,31 @@
                     </div>
                 </aside>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Gemini AI API Key Settings Modal -->
+    <div id="gemini-settings-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="workspace-card" style="max-width: 500px; width: 90%; background: #0f172a; border: 1px solid rgba(99,102,241,0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8); padding: 24px;">
+            <div class="workspace-card-header" style="margin-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;"><i class="fas fa-brain" style="color: var(--color-accent);"></i> Google Gemini 1.5 Setup</h3>
+                <button type="button" id="btn-close-gemini-modal" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                Voer je Google Gemini API sleutel in voor live AI scope & offerte generatie. Zonder API sleutel schakelt het systeem automatisch over naar de ingebouwde Creation+Alt+Fix slimme offline generator.
+            </p>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Gemini API Sleutel</label>
+                <input type="password" id="gemini-api-key-input" class="admin-input" placeholder="AIzaSy..." style="margin-top: 4px;">
+            </div>
+            <div id="gemini-key-status" style="font-size: 0.82rem; margin-bottom: 16px; color: #94a3b8;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" id="btn-clear-gemini-key" class="btn btn-secondary btn-sm" style="color: #f87171;">Sleutel Wissen</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" id="btn-cancel-gemini-modal" class="btn btn-secondary btn-sm">Sluiten</button>
+                    <button type="button" id="btn-save-gemini-key" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;">Sleutel Opslaan</button>
+                </div>
             </div>
         </div>
     </div>
