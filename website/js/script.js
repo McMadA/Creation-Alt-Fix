@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "skipToContent": "Direct naar inhoud",
 
     // --- HERO SECTIE (HOME) ---
+    "heroSpotlight": "🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligente <span class=\"accent\">AI-Oplossingen</span> voor Jouw Bedrijf",
     "heroSubtitle": "Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.",
@@ -114,6 +115,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     "project1Title": "Creation+Alt+Fix CRM",
     "project1P": "Een volledig custom CRM & Klantenportaal. Real-time Firebase tracking, digitale offertes, geautomatiseerde onboarding en statusportaal.",
     "project1Btn": "Bekijk Case Study",
+    "projectArnoldTitle": "Arnold Design — AI Scrape Shield",
+    "projectArnoldP": "7-laags IP- en AI-scraping protectiesysteem gecombineerd met een monumentale glas-in-lood showcase voor kunstenaar Arnold Doornbos.",
+    "projectArnoldBtn": "Bekijk AI Case",
     "project2Title": "Home Buyer Intelligence",
     "project2P": "AI-gedreven woninganalyse met risicoscoring en biedstrategie voor de Nederlandse huizenmarkt. Gebouwd met React, Fastify en Google Gemini AI.",
     "project2Btn": "Bekijk AI Case",
@@ -632,6 +636,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "skipToContent": "Skip to content",
 
     // --- HERO SECTION (HOME) ---
+    "heroSpotlight": "🛡️ Case Study: 7-Layer AI Scrape Shield for Arnold Design",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligent <span class=\"accent\">AI Solutions</span> for Your Business",
     "heroSubtitle": "We translate your idea into working software at lightning speed. From smart automation to complete websites, powered by AI.",
@@ -714,6 +719,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     "project1Title": "Creation+Alt+Fix CRM",
     "project1P": "A full custom CRM & Client Portal. Real-time Firebase tracking, digital proposals, automated onboarding and status portal.",
     "project1Btn": "View Case Study",
+    "projectArnoldTitle": "Arnold Design — AI Scrape Shield",
+    "projectArnoldP": "7-layer IP & AI scraping defense system paired with a monumental stained glass showcase for artist Arnold Doornbos.",
+    "projectArnoldBtn": "View AI Case",
     "project2Title": "Home Buyer Intelligence",
     "project2P": "AI-powered property analysis with risk scoring and bidding strategy for the Dutch housing market. Built with React, Fastify and Google Gemini AI.",
     "project2Btn": "View AI Case",

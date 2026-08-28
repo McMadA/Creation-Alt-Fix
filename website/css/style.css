@@ -511,6 +511,51 @@ a:hover {
     50% { opacity: 0; }
 }
 
+/* Spotlight banner / pill */
+.hero-spotlight-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 50px;
+    padding: 6px 18px 6px 8px;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+    text-decoration: none;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+}
+.hero-spotlight-link:hover {
+    background: rgba(99, 102, 241, 0.22);
+    border-color: rgba(168, 85, 247, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    color: #fff;
+}
+.hero-spotlight-link .spotlight-tag {
+    background: var(--gradient-accent, linear-gradient(135deg, #6366f1, #8b5cf6));
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.hero-spotlight-link i {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    color: #a5b4fc;
+}
+.hero-spotlight-link:hover i {
+    transform: translateX(4px);
+    color: #fff;
+}
+
 .hero-headline {
     font-family: var(--font-heading);
     font-size: 3.5rem;
