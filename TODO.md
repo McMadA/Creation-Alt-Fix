@@ -7,12 +7,12 @@
 
 ## 📊 Sprint Status Dashboard
 
-| Metric | Status | Count |
-| :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **42 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **27 Tasks (64%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (33%)** |
-| **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
+| Metric                             | Status       | Count                                    |
+| :--------------------------------- | :----------- | :--------------------------------------- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked   | **42 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done      | **27 Tasks (64%)**                       |
+| **Active / Backlog Items**         | ⏳ In Queue  | **14 Tasks (33%)**                       |
+| **CI/CD Pipeline Status**          | 🚀 Automated | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
 `[████████████████░░░░░░░░] 64% Complete`
@@ -20,6 +20,10 @@
 ---
 
 ## 🎯 Openstaande Taken & Actieve Backlog
+
+- [ ] `[CONTENT]` `[P3-MEDIUM]` **LinkedIn Post: Arnold Design AI Scrape Protection Showcase**
+  - **Scope**: Content Marketing / Portfolio
+  - **Tasks**: LinkedIn post schrijven over de AI scrape-proof implementatie voor Arnold Design. Toon de multi-layer beschermingsstrategie (robots.txt AI bot blocklist, TDM Reservation headers, ProtectedImage watermarking, contextmenu bescherming). Link naar live showcase op creationaltfix.nl/arnold-design/.
 
 ### 📋 Systeem- & Klantproject Deliverables
 
@@ -139,6 +143,7 @@
 ## ✅ Voltooide Taken & Roadmap Historie
 
 ### 🚀 EPIC-01: CRM & Client Portal Infrastructure
+
 - [x] `[TASK-101]` `[P1-CRITICAL]` `[STATUS: DONE]` **Intake Alert & Push Notification Dispatcher**
   - **Scope**: `crm/intake/js/notifications.js`
   - **Details**: Zero-setup FormSubmit email delivery targeting `info@creationaltfix.nl` combined with Webhook (Telegram/Discord) and EmailJS fallback upon intake submission.
@@ -153,7 +158,7 @@
 
 - [x] `[TASK-104]` `[P1-CRITICAL]` `[STATUS: DONE]` **Live Client Progress Tracker (`/status`)**
   - **Scope**: `crm/status/`
-  - **Details**: Responsive 4-stage visual pipeline (*Intake & Akkoord* -> *Design & Ontwerp* -> *Ontwikkeling & Testen* -> *Livegang*). Fully authenticated via Firebase Auth with strict `/admin` access control.
+  - **Details**: Responsive 4-stage visual pipeline (_Intake & Akkoord_ -> _Design & Ontwerp_ -> _Ontwikkeling & Testen_ -> _Livegang_). Fully authenticated via Firebase Auth with strict `/admin` access control.
 
 - [x] `[TASK-105]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Data Table Search, Filtering & CSV Exporter**
   - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
@@ -178,6 +183,7 @@
 ---
 
 ### 🤖 EPIC-03: AI Operations & Automation
+
 - [x] `[TASK-301]` `[P3-MEDIUM]` `[STATUS: DONE]` **Geautomatiseerde Nazorg & Review Wachtrij met Handmatige Goedkeurings-Gate**
   - **Scope**: `crm/js/ai-engine.js`, `crm/admin/project.html`, `crm/admin/js/project.js`
   - **Details**: Geautomatiseerde e-mail workflows na livegang (14-dagen review check-in & 6-maanden software APK). Inclusief verplichte handmatige review gate & dispatch wachtrij in het Admin Dashboard zodat er nooit ongewenst e-mails verstuurd worden zonder voorafgaande controle en akkoord.
@@ -189,6 +195,7 @@
 ---
 
 ### 🎨 EPIC-04: Client Experience & Co-Creation
+
 - [x] `[TASK-401]` `[P4-LOW]` `[STATUS: DONE]` **Visual Feedback & Annotation Overlay on Demo Environments (Live Staging Suite)**
   - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `crm/admin/project.html`, `crm/admin/js/project.js`, `firestore.rules`
   - **Details**: Zero-configuration live concept staging viewer dat automatisch de domein-URL laadt met responsive viewports (Desktop, Tablet, Mobile) en interactieve prototype fallback. Gebouwd met genummerde feedback-pins, realtime Firestore persistentie en automatische chat synchronisatie.
@@ -200,6 +207,7 @@
 ---
 
 ### 📦 EPIC-05: Customer Success & Maintenance Automation
+
 - [x] `[TASK-502]` `[P4-LOW]` `[STATUS: DONE]` **Hosting Management & Terugkerende Onderhoudsdiensten (Vaste Tarieven)**
   - **Scope**: DirectAdmin / Vimexx Management, `crm/js/ai-engine.js`, `website/diensten/website-laten-maken/`, `advies_hosting_tarieven_task816.md`
   - **Details**: Voltooid via TASK-816. Vaste 2-traps tariefstructuur geformaliseerd op basis van Pi-Boekhouding data (€ 150,-/jr Cloud Hosting & Domein All-in + € 350,-/jr APK & Strippenkaart) en geïntegreerd in CRM AI Scope Generator, facturatie en openbare dienstenpagina.
@@ -207,6 +215,7 @@
 ---
 
 ### 🗃️ EPIC-06: Advanced CRM Features (Expansion)
+
 - [x] `[TASK-601]` `[P2-HIGH]` `[STATUS: DONE]` **Internal Notes & Audit Trail (Logboek)**
   - **Scope**: `crm/admin/js/project.js`, `crm/admin/project.html`, `crm/admin/css/admin.css`
   - **Details**: Privénotities en automatische tijdlijnregistratie op Firestore (`internalNotes` & `auditLog`). Logt automatisch statuswijzigingen, offertes, client auth activatie en uploads met auteurslabels.
@@ -230,6 +239,7 @@
 ---
 
 ### 🎨 EPIC-07: Public Portfolio & Project Showcase (Website)
+
 - [x] `[TASK-701]` `[P2-HIGH]` `[STATUS: DONE]` **Portfolio & Project Showcase Subpage (`website/projecten.html`)**
   - **Scope**: `website/projecten.html`, `website/css/projecten.css`, `website/js/subpage.js`, `website/components/navbar.html`
   - **Details**: Dark AI showcase pagina met 12 projectkaarten, interactieve categoriefilters, tech stack badges en responsieve weergave.
@@ -245,6 +255,7 @@
 ---
 
 ### 📋 EPIC-08: DevOps Backlog & Synchronisatie
+
 - [x] `[TASK-813]` `[P2-HIGH]` `[STATUS: DONE]` **Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord**
   - **Scope**: `crm/status/js/status.js`, `crm/status/index.html`
   - **Details**: Verfijnde 2-staps offerte-ervaring in het klantenportaal: duidelijke scheiding tussen "Offerte & PDF Inzien" (directe concept PDF download) en "Definitief Digitaal Akkoord Geven" via een speciale Dark AI modal met bevoegdheidsverklaring, gemachtigde ondertekenaar validatie en realtime PDF ondertekening.
