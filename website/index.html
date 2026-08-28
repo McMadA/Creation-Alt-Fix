@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     
     <!-- Preload critical images -->
     <link rel="preload" as="image" href="/images/ChatGPT Image.webp" type="image/webp">
@@ -81,12 +81,24 @@
     <aside id="case-study-notification" class="spotlight-notification" aria-label="Nieuwe Case Study Melding">
         <button type="button" class="spotlight-close-btn" id="close-spotlight-btn" aria-label="Sluit melding">&times;</button>
         <div class="spotlight-header">
-            <span class="spotlight-badge"><i class="fas fa-shield-halved"></i> Nieuwe Case Study</span>
+            <span class="spotlight-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Nieuwe Case Study</span>
+            </span>
             <span class="spotlight-client">Arnold Design</span>
         </div>
         <div class="spotlight-body">
             <div class="spotlight-icon-wrap">
-                <i class="fas fa-shield-virus"></i>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2Z" fill="url(#shieldGrad)" stroke="#818cf8" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M9 12L11 14L15 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="shieldGrad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6366f1"/>
+                            <stop offset="1" stop-color="#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
             <div class="spotlight-details">
                 <h4 class="spotlight-title" data-translate-key="spotlightNotifyTitle">7-Laags AI Scrape Shield</h4>
@@ -95,10 +107,11 @@
         </div>
         <div class="spotlight-actions">
             <a href="/projects/arnold-design/" class="btn-spotlight-primary">
-                <span data-translate-key="spotlightNotifyBtn">Lees het hele verhaal</span> <i class="fas fa-arrow-right"></i>
+                <span data-translate-key="spotlightNotifyBtn">Lees het hele verhaal</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
             <a href="https://creationaltfix.nl/arnold-design/" target="_blank" rel="noopener noreferrer" class="btn-spotlight-secondary" title="Bekijk de live website" aria-label="Bekijk de live website">
-                <i class="fas fa-external-link-alt"></i>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
             </a>
         </div>
     </aside>
