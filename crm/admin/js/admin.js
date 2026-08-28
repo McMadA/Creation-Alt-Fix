@@ -317,10 +317,10 @@ const API = {
                     { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                     { id: 'web_t4', title: '[TASK-805] Creation+Alt+Fix Continuïteitsplan & Noodprotocol', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-08' },
-                    { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
+                    { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten (Vaste Tarieven)', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
                     { id: 'web_t6', title: '[TASK-703] Volledige Site-Wide & Portal EN-NL Vertaling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
-                    { id: 'web_t7', title: '[TASK-807] Marketing, Stories & Personal Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' },
-                    { id: 'web_t8', title: '[TASK-811] Vimexx Server Complete Back-up & Lokale/Cloud Archivering', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-14' },
+                    { id: 'web_t7', title: '[TASK-807] Stories waarin ik bezig ben posten & Instagram Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' },
+                    { id: 'web_t8', title: '[TASK-811] Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-28' },
                     { id: 'web_t9', title: '[TASK-812] Webserver FTP Hardening & Brute-Force Aanvalspreventie', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-16' },
                     { id: 'web_t10', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' }
                 ],
@@ -902,6 +902,10 @@ function setupNavigation() {
                     area.classList.add('hidden');
                 }
             });
+
+            if (targetView === 'settings') {
+                initSettingsTab();
+            }
         });
     });
 }
@@ -2177,14 +2181,93 @@ function setupTodoSyncListeners() {
     document.getElementById('btn-download-todo-markdown')?.addEventListener('click', handleDownloadExportMarkdown);
 }
 
+function initSettingsTab() {
+    const keyInput = document.getElementById('settings-gemini-key-input');
+    const modelSelect = document.getElementById('settings-gemini-model');
+    const badge = document.getElementById('settings-gemini-badge');
+    const statusDiv = document.getElementById('settings-gemini-status');
+    const toggleVisBtn = document.getElementById('btn-toggle-gemini-key-vis');
+
+    function refreshSettingsUI() {
+        const apiKey = getGeminiApiKey();
+        const model = getGeminiModel();
+        const hasKey = hasGeminiApiKey();
+
+        if (keyInput) keyInput.value = apiKey;
+        if (modelSelect) modelSelect.value = model;
+
+        if (badge) {
+            if (hasKey) {
+                badge.style.background = '#064e3b';
+                badge.style.color = '#34d399';
+                badge.style.borderColor = '#059669';
+                badge.innerHTML = '🟢 Gemini API Actief';
+            } else {
+                badge.style.background = '#1e293b';
+                badge.style.color = '#94a3b8';
+                badge.style.borderColor = '#334155';
+                badge.innerHTML = 'Offline Generator';
+            }
+        }
+
+        if (statusDiv) {
+            statusDiv.innerHTML = hasKey
+                ? `<strong style="color: #34d399;"><i class="fas fa-check-circle"></i> Live AI actief (Model: ${model}).</strong>`
+                : '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Geen API sleutel ingevoerd. Systeem gebruikt de ingebouwde Creation+Alt+Fix offline generator.</span>';
+        }
+    }
+
+    refreshSettingsUI();
+
+    // Toggle Visibility
+    toggleVisBtn?.addEventListener('click', () => {
+        if (!keyInput) return;
+        if (keyInput.type === 'password') {
+            keyInput.type = 'text';
+            toggleVisBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+            keyInput.type = 'password';
+            toggleVisBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    });
+
+    // Save Gemini Settings from Tab
+    document.getElementById('btn-settings-save-gemini')?.addEventListener('click', () => {
+        const val = keyInput?.value.trim() || '';
+        const selectedModel = modelSelect?.value || 'gemini-3.5-flash';
+        setGeminiApiKey(val);
+        setGeminiModel(selectedModel);
+        refreshSettingsUI();
+        alert(val ? `Gemini instellingen succesvol opgeslagen (Model: ${selectedModel})!` : "Gemini API sleutel gewist. Offline generator actief.");
+    });
+
+    // Clear Gemini Key from Tab
+    document.getElementById('btn-settings-clear-gemini')?.addEventListener('click', () => {
+        setGeminiApiKey('');
+        if (keyInput) keyInput.value = '';
+        refreshSettingsUI();
+        alert("Gemini API sleutel gewist. Systeem schakelt terug naar offline generator.");
+    });
+
+    // Open TODO.md Sync Hub from Settings
+    document.getElementById('btn-settings-open-todo-sync')?.addEventListener('click', () => {
+        if (typeof openTodoSyncModal === 'function') {
+            openTodoSyncModal();
+        } else {
+            document.getElementById('todo-sync-modal')?.classList.remove('hidden');
+        }
+    });
+}
+
 function initAdminPage() {
     setupNavigation();
     setupSearchAndFilters();
     setupTodoSyncListeners();
+    initSettingsTab();
     document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
     document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
 
-    // Gemini Modal in Main Admin
+    // Gemini Modal in Main Admin (for secondary modal access)
     const geminiModalMain = document.getElementById('gemini-settings-modal');
     const geminiKeyInputMain = document.getElementById('gemini-api-key-input-main');
     const geminiKeyStatusMain = document.getElementById('gemini-key-status-main');
@@ -2206,9 +2289,10 @@ function initAdminPage() {
 
     document.getElementById('btn-save-gemini-key-main')?.addEventListener('click', () => {
         const val = geminiKeyInputMain?.value.trim() || '';
-        const selectedModel = geminiModelSelectMain?.value || 'gemini-2.0-flash';
+        const selectedModel = geminiModelSelectMain?.value || 'gemini-3.5-flash';
         setGeminiApiKey(val);
         setGeminiModel(selectedModel);
+        initSettingsTab();
         alert(val ? `Gemini instellingen opgeslagen (Model: ${selectedModel})!` : "Gemini API sleutel gewist. Offline generator actief.");
         geminiModalMain?.classList.add('hidden');
     });
@@ -2217,6 +2301,7 @@ function initAdminPage() {
         setGeminiApiKey('');
         if (geminiKeyInputMain) geminiKeyInputMain.value = '';
         if (geminiKeyStatusMain) geminiKeyStatusMain.innerHTML = '<span style="color: #94a3b8;"><i class="fas fa-info-circle"></i> Sleutel gewist. Offline generator actief.</span>';
+        initSettingsTab();
         alert("Gemini API sleutel gewist.");
     });
 }

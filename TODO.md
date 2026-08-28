@@ -9,13 +9,13 @@
 
 | Metric | Status | Count |
 | :--- | :--- | :--- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked | **40 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **26 Tasks (67%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **13 Tasks (33%)** |
+| **Total Features / Backlog Tasks** | 🔢 Tracked | **42 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items** | ✅ Done | **27 Tasks (64%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (33%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[█████████████████░░░░░░░] 67% Complete`
+`[████████████████░░░░░░░░] 64% Complete`
 
 ---
 
@@ -39,6 +39,13 @@
   - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`)
   - **Tasks**: `angelastenekes.nl` vibecoden en interactief prototype ontwerpen.
 
+- [ ] `[TASK-817]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Klantafstemming 2027: Nieuwe Tarieven, Werkwijze via Klantenportaal & Gratis Website Vernieuwing**
+  - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`), `crm/status/`, `crm/admin/`
+  - **Tasks**:
+    - Digitaal akkoord voorstel opstellen via het CRM Klantenportaal voor ingang per 1 januari 2027 op basis van de nieuwe vaste tariefstructuur (€ 150,-/jr Cloud Hosting All-in & optionele APK).
+    - Gratis vernieuwde, moderne website (`angelastenekes.nl`) aanbieden als loyaliteitsbonus / redesign upgrade.
+    - Professionele communicatie over de nieuwe werkwijze: fysieke service op locatie bij de knipperij stopt; support, updates en wijzigingsverzoeken verlopen vanaf heden 100% digitaal via het klantenportaal en remote service.
+
 - [ ] `[TASK-804]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Home Buyer Intelligence (PropTech AI) Afronding**
   - **Scope**: Platform showcase Home Buyer Intelligence (`hbi.creationaltfix.nl`)
   - **Tasks**: AI Revisor agent en local mode architectuur finaliseren.
@@ -55,9 +62,16 @@
   - **Scope**: Organisatie & Hosting Continuïteit
   - **Tasks**: Noodprotocol documenteren voor beheer en continuïteit van klantwebsites en hosting infrastructuren.
 
-- [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Marketing, Stories & Personal Branding**
+- [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Stories waarin ik bezig ben posten & Instagram Branding**
   - **Scope**: Socials, Instagram & LinkedIn
   - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken.
+
+- [ ] `[TASK-818]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Subdomein Routing & URL Structuur Fix (`portal.creationaltfix.nl` naar `creationaltfix.nl/portal/` of `/crm/`)**
+  - **Scope**: `website/.htaccess`, `crm/`, DirectAdmin DNS & Subdomeinen, `main.yml`
+  - **Tasks**:
+    - DirectAdmin subdomein / vhost routing inspecteren: `portal.creationaltfix.nl` en `hbi.creationaltfix.nl` functioneren momenteel niet direct door docroot / SSL / DNS binding.
+    - URL-structuur en paden afstemmen zodat alle beheer- en klantenportalen naadloos bereikbaar zijn via `creationaltfix.nl/portal/admin` (of `creationaltfix.nl/crm/admin/`).
+    - Nginx / Apache `.htaccess` rewrites en redirects configureren zodat inkomende verzoeken op `portal.creationaltfix.nl/*` automatisch worden doorgestuurd naar het correcte subpad.
 
 ---
 
@@ -68,11 +82,6 @@
   - **Acceptance Criteria**:
     - Embed official Mollie Python SDK into Flask accounting service.
     - Setup webhook endpoint over Tailscale tunnel to automatically process payment events and reflect status updates in Firestore.
-
-- [ ] `[TASK-502]` `[P4-LOW]` `[STATUS: BACKLOG]` **Hosting Management & Terugkerende Onderhoudsdiensten**
-  - **Scope**: DirectAdmin / Vimexx Management
-  - **Acceptance Criteria**:
-    - Formalize €25/year .nl domain & hosting structure + prepaid hourly maintenance packages for recurring revenue.
 
 - [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)**
   - **Scope**: Microsoft Azure Cloud (Azure Static Web Apps, Azure App Services, Azure DNS Zones, Custom SSL, Azure Resource Groups, GitHub Actions CI/CD)
@@ -187,6 +196,13 @@
 - [x] `[TASK-402]` `[P4-LOW]` `[STATUS: DONE]` **Client System Handover & Documentation Template**
   - **Scope**: `website/docs/index.html`, `website/docs/css/docs.css`, `website/docs/js/docs.js`, `crm/status/index.html`, `crm/status/js/status.js`
   - **Details**: Interactieve Dark AI documentatie- en overdrachtssuite met quick start, DNS/SPF records, AVG/GDPR compliance, SEO stappenplan, interactieve afvinkbare checklist en 1-klik PDF export.
+
+---
+
+### 📦 EPIC-05: Customer Success & Maintenance Automation
+- [x] `[TASK-502]` `[P4-LOW]` `[STATUS: DONE]` **Hosting Management & Terugkerende Onderhoudsdiensten (Vaste Tarieven)**
+  - **Scope**: DirectAdmin / Vimexx Management, `crm/js/ai-engine.js`, `website/diensten/website-laten-maken/`, `advies_hosting_tarieven_task816.md`
+  - **Details**: Voltooid via TASK-816. Vaste 2-traps tariefstructuur geformaliseerd op basis van Pi-Boekhouding data (€ 150,-/jr Cloud Hosting & Domein All-in + € 350,-/jr APK & Strippenkaart) en geïntegreerd in CRM AI Scope Generator, facturatie en openbare dienstenpagina.
 
 ---
 

@@ -17,7 +17,7 @@ import { escapeHtml } from "./firebase-config.js";
 export const PROJECT_PROFILES = {
     CRM_PORTAL: {
         id: "7",
-        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "task-813", "task-814", "task-815", "task-816"],
+        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "task-813", "task-814", "task-815", "task-816", "task-818"],
         client: "Creation+Alt+Fix (CRM & Portaal)",
         companyName: "Creation+Alt+Fix (CRM & Portaal)",
         contactName: "Allard Veldman",
@@ -85,7 +85,7 @@ export const PROJECT_PROFILES = {
     },
     ANGELA: {
         id: "9",
-        matchKeys: ["angela", "stenekes", "angelastenekes", "task-803"],
+        matchKeys: ["angela", "stenekes", "angelastenekes", "task-803", "task-817"],
         client: "Angela Stenekes",
         companyName: "Angela Stenekes",
         contactName: "Angela Stenekes",
@@ -315,7 +315,7 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-802' || fullText.includes('arnold') || fullText.includes('glas-in-lood')) {
         return PROJECT_PROFILES.ARNOLD;
     }
-    if (code === 'TASK-803' || fullText.includes('angela') || fullText.includes('angelastenekes')) {
+    if (code === 'TASK-803' || code === 'TASK-817' || fullText.includes('angela') || fullText.includes('angelastenekes')) {
         return PROJECT_PROFILES.ANGELA;
     }
     if (code === 'TASK-804' || fullText.includes('home buyer') || fullText.includes('hbi') || fullText.includes('proptech')) {
@@ -333,7 +333,7 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-805' || code === 'TASK-807' || code === 'TASK-811' || code === 'TASK-812') {
         return PROJECT_PROFILES.HOOFDWEBSITE;
     }
-    if (code === 'TASK-813' || code === 'TASK-814' || code === 'TASK-815' || code === 'TASK-816') {
+    if (code === 'TASK-813' || code === 'TASK-814' || code === 'TASK-815' || code === 'TASK-816' || code === 'TASK-818') {
         return PROJECT_PROFILES.CRM_PORTAL;
     }
 
@@ -456,12 +456,21 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
         const existingTasksList = existingProj.tasks || [];
         const mergedTasks = [];
 
+        // Helper to normalize title for similarity matching
+        const normalizeStr = str => (str || '').toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
+
         // 1. Process all parsed tasks from TODO.md for this project
         newTasks.forEach(pt => {
-            // Check if task already exists in project by taskCode or id
+            const ptNorm = normalizeStr(pt.title);
+
+            // Check if task already exists in project by taskCode, id, or semantic title match
             const existingTask = existingTasksList.find(et => {
                 if (et.id === pt.id) return true;
                 if (et.title && et.title.includes(pt.taskCode)) return true;
+                const etNorm = normalizeStr(et.title);
+                if (etNorm && ptNorm && (etNorm === ptNorm || (etNorm.includes('stories') && etNorm.includes('instagram') && ptNorm.includes('stories')))) {
+                    return true;
+                }
                 return false;
             });
 
@@ -495,12 +504,22 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
             summary.tasksAddedOrUpdated++;
         });
 
-        // 2. Preserve any existing manual tasks in project that don't have a TASK-xxx prefix
+        // 2. Preserve any existing manual tasks in project that don't have a TASK-xxx prefix and are not duplicates
         existingTasksList.forEach(et => {
             const hasTaskCode = et.title && et.title.match(/\[(TASK-\d+|MIG-\d+)\]/i);
+            const etNorm = normalizeStr(et.title);
+            
             if (!hasTaskCode) {
-                // Keep bespoke project deliverable if not duplicate
-                if (!mergedTasks.some(mt => mt.id === et.id || mt.title === et.title)) {
+                // Check if it's a semantic duplicate of an already merged task (e.g. Stories / Instagram)
+                const isDuplicate = mergedTasks.some(mt => {
+                    if (mt.id === et.id) return true;
+                    const mtNorm = normalizeStr(mt.title);
+                    if (mtNorm === etNorm) return true;
+                    if (etNorm.includes('stories') && etNorm.includes('instagram') && mtNorm.includes('stories')) return true;
+                    return false;
+                });
+
+                if (!isDuplicate) {
                     mergedTasks.push(et);
                 }
             }

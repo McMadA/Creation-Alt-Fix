@@ -1874,11 +1874,11 @@ function getMockProject(id) {
                 { id: 'web_t2', title: '[TASK-701] Portfolio & Showcase Pagina met interactieve filters', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'web_t3', title: '[TASK-702] Creation+Alt+Fix CRM Case Study & Live Demo Showcase', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
                 { id: 'web_t4', title: '[TASK-703] Volledige Site-Wide & Portal EN-NL Vertaling (Bilingual Localization)', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-26' },
-                { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten', completed: false, status: 'todo', priority: 'low', dueDate: '2026-09-10' },
+                { id: 'web_t5', title: '[TASK-502] Hosting Management & Terugkerende Onderhoudsdiensten (Vaste Tarieven)', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-27' },
                 { id: 'web_t6', title: '[TASK-503] Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-20' },
                 { id: 'web_t7', title: '[TASK-805] Creation+Alt+Fix Continuïteitsplan & Noodprotocol', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-15' },
-                { id: 'web_t8', title: '[TASK-807] Marketing, Stories & Personal Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-18' },
-                { id: 'web_t9', title: '[TASK-811] Vimexx Server Complete Back-up & Lokale/Cloud Archivering', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-02' },
+                { id: 'web_t8', title: '[TASK-807] Stories waarin ik bezig ben posten & Instagram Branding', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-18' },
+                { id: 'web_t9', title: '[TASK-811] Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-28' },
                 { id: 'web_t10', title: '[TASK-812] Webserver FTP Hardening & Brute-Force Aanvalspreventie', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-04' }
             ],
             internalNotes: [

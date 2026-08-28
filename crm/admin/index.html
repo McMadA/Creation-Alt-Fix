@@ -55,12 +55,12 @@
                 <h1>Dashboard <span class="accent">Overzicht</span></h1>
             </header>
 
-            <!-- Search, Filter & CSV Export Toolbar -->
+            <!-- Search & Filter Toolbar -->
             <div class="admin-toolbar" style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center;">
-                <div style="flex: 1; min-width: 240px;">
+                <div style="flex: 1; min-width: 260px;">
                     <input type="text" id="admin-search-input" class="admin-input" placeholder="🔍 Zoek op klantnaam, e-mail, domein of dienst..." style="margin: 0;">
                 </div>
-                <div style="width: 220px;">
+                <div style="width: 240px;">
                     <select id="admin-status-filter" class="admin-input" style="margin: 0; cursor: pointer;">
                         <option value="all">Alle Statussen & Fasen</option>
                         <option value="Intake">Fase 1: Intake Voltooid</option>
@@ -69,14 +69,6 @@
                         <option value="Ontwikkeling">Fase 4: Ontwikkeling</option>
                         <option value="Opgeleverd">Fase 5: Livegang & Mollie</option>
                     </select>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button id="admin-export-csv-btn" class="btn btn-secondary" onclick="exportProjectsToCSV()">
-                        <i class="fas fa-file-csv"></i> Exporteer CSV
-                    </button>
-                    <button id="btn-open-gemini-modal-main" class="btn btn-secondary" title="Configureer Google Gemini AI">
-                        <i class="fas fa-brain" style="color: var(--color-accent);"></i> Gemini AI
-                    </button>
                 </div>
             </div>
 
@@ -199,9 +191,156 @@
             </div>
 
             <div class="content-area hidden" id="view-settings">
-                <div class="admin-card" style="padding: 24px;">
-                    <h2><i class="fas fa-cog" style="color: var(--color-accent-alt); margin-right: 8px;"></i> Instellingen</h2>
-                    <p style="color: var(--color-text-secondary); margin-top: 10px;">Firebase configuratie status: <strong style="color: #4ade80;">Firestore Verbonden (mythical-cider-475118-e5)</strong></p>
+                <div style="margin-bottom: 24px;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-cog" style="color: var(--color-accent-alt);"></i> Systeem &amp; CRM Instellingen
+                    </h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.9rem;">
+                        Beheer Google Gemini AI integraties, data exports, DevOps backlog synchronisaties en serverkoppelingen.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px;">
+                    <!-- CARD 1: GOOGLE GEMINI AI CONFIGURATIE -->
+                    <div class="admin-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-brain" style="color: var(--color-accent); font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Google Gemini AI Engine</h3>
+                                        <div style="font-size: 0.78rem; color: var(--color-text-secondary);">Scope, Offertes &amp; Design Generator</div>
+                                    </div>
+                                </div>
+                                <div id="settings-gemini-badge" style="padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; background: #1e293b; color: #94a3b8; border: 1px solid #334155;">
+                                    Offline Generator
+                                </div>
+                            </div>
+
+                            <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 18px; line-height: 1.5;">
+                                Schakelt live AI-analyse in voor automatische deliverables, faseplanningen en executive summaries bij het openen van projecten.
+                            </p>
+
+                            <div style="margin-bottom: 16px;">
+                                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">AI Model Selectie</label>
+                                <select id="settings-gemini-model" class="admin-input" style="margin-top: 6px; cursor: pointer;">
+                                    <option value="gemini-3.5-flash">Gemini 3.5 Flash (Aanbevolen: Razendsnel &amp; Actueel)</option>
+                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                </select>
+                            </div>
+
+                            <div style="margin-bottom: 16px;">
+                                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Gemini API Sleutel</label>
+                                <div style="position: relative; margin-top: 6px;">
+                                    <input type="password" id="settings-gemini-key-input" class="admin-input" placeholder="AIzaSy..." style="margin: 0; padding-right: 40px;">
+                                    <button type="button" id="btn-toggle-gemini-key-vis" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="settings-gemini-status" style="font-size: 0.82rem; margin-bottom: 20px; color: #94a3b8;"></div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" id="btn-settings-save-gemini" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;">
+                                <i class="fas fa-save"></i> Sleutel Opslaan
+                            </button>
+                            <button type="button" id="btn-settings-clear-gemini" class="btn btn-secondary btn-sm" style="color: #f87171;">
+                                <i class="fas fa-trash-alt"></i> Wissen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2: DATA EXPORT & DEVOPS BACKLOG SYNC -->
+                    <div class="admin-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(52, 211, 153, 0.15); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-file-export" style="color: #34d399; font-size: 1.1rem;"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Data Export &amp; Rapportages</h3>
+                                    <div style="font-size: 0.78rem; color: var(--color-text-secondary);">CSV Exports &amp; DevOps Backlog</div>
+                                </div>
+                            </div>
+
+                            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                                <div style="font-weight: 600; font-size: 0.88rem; color: #f8fafc; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-file-csv" style="color: #22d3ee;"></i> Klant- &amp; Projectgegevens Exporteren
+                                </div>
+                                <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.4;">
+                                    Download alle actieve, wachtende en opgeleverde klantendossiers inclusief offertes, contactpersonen en fasen naar CSV (Excel compatibel).
+                                </p>
+                                <button id="admin-export-csv-btn" class="btn btn-secondary btn-sm" onclick="exportProjectsToCSV()" style="background: #1e293b; border-color: #334155;">
+                                    <i class="fas fa-download"></i> Exporteer Direct naar CSV
+                                </button>
+                            </div>
+
+                            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px;">
+                                <div style="font-weight: 600; font-size: 0.88rem; color: #f8fafc; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-sync-alt" style="color: #818cf8;"></i> TODO.md DevOps Backlog Sync
+                                </div>
+                                <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.4;">
+                                    Synchroniseer de lokale Git markdown backlog (`TODO.md`) met het live Firestore Kanban bord.
+                                </p>
+                                <button id="btn-settings-open-todo-sync" class="btn btn-secondary btn-sm" style="background: #1e1b4b; border-color: #6366f1; color: #c7d2fe;">
+                                    <i class="fas fa-tasks"></i> Open TODO.md Sync Hub
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 3: CLOUD, SERVER & DATABASE STATUS -->
+                    <div class="admin-card" style="padding: 24px; grid-column: 1 / -1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                            <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-server" style="color: #38bdf8; font-size: 1.1rem;"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Cloud Infrastructure &amp; Systeemstatus</h3>
+                                <div style="font-size: 0.78rem; color: var(--color-text-secondary);">Firebase Firestore, Vimexx Server &amp; Taakplanner</div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 14px;">
+                            <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Database</div>
+                                <div style="font-weight: 700; color: #34d399; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-check-circle"></i> Firestore Verbonden
+                                </div>
+                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">mythical-cider-475118-e5</div>
+                            </div>
+
+                            <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Vimexx Server Back-up</div>
+                                <div style="font-weight: 700; color: #38bdf8; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-shield-alt"></i> Dagelijks 21:30 uur
+                                </div>
+                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">12 Domeinen (10.62 GB)</div>
+                            </div>
+
+                            <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Pi-Boekhouding Back-up</div>
+                                <div style="font-weight: 700; color: #a78bfa; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-database"></i> Dagelijks 21:00 uur
+                                </div>
+                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">SQLite DB &amp; Documenten</div>
+                            </div>
+
+                            <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">CRM Versie</div>
+                                <div style="font-weight: 700; color: #f8fafc; margin-top: 4px;">
+                                    v2.4.0 <span style="font-size: 0.75rem; color: var(--color-accent);">Dark AI</span>
+                                </div>
+                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Bilingual NL/EN Ready</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="content-area" id="view-dashboard">
