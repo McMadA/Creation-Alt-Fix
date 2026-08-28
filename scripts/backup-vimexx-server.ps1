@@ -41,6 +41,7 @@ param (
     [string]$Username = "",
     [string]$Password = "",
     [string]$OutputDir = "C:\Users\Admin\Backups\Vimexx-Server-Backups",
+    [int]$MaxArchivesToKeep = 2,
     [switch]$SkipApiTrigger = $false,
     [string]$ConfigFile = "$PSScriptRoot\.vimexx-credentials.json"
 )
@@ -363,7 +364,21 @@ $reportPath = Join-Path $TargetFolder "BACKUP_RAPPORT.md"
 $reportContent | Out-File -FilePath $reportPath -Encoding UTF8
 Write-Success "Back-up rapport opgeslagen in: $reportPath"
 
-# --- 7. AFRONDING & OVERZICHT ---
-Write-Header "Back-up & Archivering Succesvol Voltooid!"
+# --- 7. AUTOMATISCHE OPSLAG RETENTIE & CLEANUP ---
+Write-Step "Opslag" "Lokale schijfruimte optimaliseren (Max $MaxArchivesToKeep recente wekelijkse archieven)..."
+$existingFolders = Get-ChildItem -Path $OutputDir -Directory | Where-Object { $_.Name -match "^\d{4}-\d{2}-\d{2}" } | Sort-Object CreationTime -Descending
+if ($existingFolders.Count -gt $MaxArchivesToKeep) {
+    $foldersToDelete = $existingFolders | Select-Object -Skip $MaxArchivesToKeep
+    foreach ($f in $foldersToDelete) {
+        Write-Host "  Verwijderen van oud wekelijks archief: $($f.Name)..." -ForegroundColor Yellow
+        Remove-Item -Path $f.FullName -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Write-Success "Opslag opgeschoond: maximaal $MaxArchivesToKeep recente archieven bewaard (~$([math]::Round($MaxArchivesToKeep * 10.6, 1)) GB max)."
+} else {
+    Write-Success "Opslag binnen limiet ($($existingFolders.Count)/$MaxArchivesToKeep archieven bewaard)."
+}
+
+# --- 8. AFRONDING & OVERZICHT ---
+Write-Header "Wekelijkse Back-up & Archivering Succesvol Voltooid!"
 Write-Host "Alle 12 domeinen, databases en mailboxen zijn veilig lokaal gearchiveerd." -ForegroundColor Green
 Write-Host "Locatie: $localFilePath`n" -ForegroundColor Cyan

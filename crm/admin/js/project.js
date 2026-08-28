@@ -1931,7 +1931,7 @@ function getMockProject(id) {
                 { id: 'task_813', title: '[TASK-813] Klantenportaal Offerte Acceptatieflow: Gescheiden Preview & Definitief Akkoord', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-08' },
                 { id: 'task_814', title: '[TASK-814] TODO.md DevOps Backlog naar CRM Firestore Kanban Tweeweg-Synchronisatie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-27' },
                 { id: 'task_815', title: '[TASK-815] Fase 3 Design Versturen & UX Validatie Check', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-10' },
-                { id: 'task_816', title: '[TASK-816] Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-12' }
+                { id: 'task_816', title: '[TASK-816] Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-28' }
             ],
             internalNotes: [
                 { id: 'crm_n1', text: 'EPIC-06 uitbreiding voltooid: dedicated project.html, Kanban bord en Firestore audit logging zijn 100% operationeel.', createdAt: '2026-08-25T20:00:00Z', author: 'Allard Veldman' }

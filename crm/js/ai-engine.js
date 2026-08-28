@@ -260,7 +260,7 @@ export async function generateAftercareEmail(projectData, type = '14day') {
         return {
             type: '14day',
             subject: `Hoe bevalt de nieuwe website? • Creation+Alt+Fix`,
-            body: `Beste ${contact},\n\nHet is inmiddels zo'n twee weken geleden dat we ${service} succesvol live hebben gezet voor ${client}!\n\nIk ben erg benieuwd hoe de eerste reacties zijn en of alles naar wens verloopt. Mocht je nog kleine wensen of vragen hebben, laat het me gerust weten.\n\nAls je tevreden bent over onze samenwerking, zou je me een enorm plezier doen met een korte Google Review:\n👉 https://g.page/r/creationaltfix/review\n\nAlvast hartelijk dank en veel succes met het project!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix\nwww.creationaltfix.nl`
+            body: `Beste ${contact},\n\nHet is inmiddels zo'n twee weken geleden dat we ${service} succesvol live hebben gezet voor ${client}!\n\nIk ben erg benieuwd hoe de eerste reacties zijn en of alles naar wens verloopt. Mocht je nog kleine wensen of vragen hebben, laat het me gerust weten.\n\nAls je tevreden bent over onze samenwerking, zou je me een enorm plezier doen met een korte Google Review:\n👉 https://g.page/r/CYY-gf76AgDBEBM/review\n\nAlvast hartelijk dank en veel succes met het project!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix\nwww.creationaltfix.nl`
         };
     } else {
         // 6-month APK

@@ -1,52 +1,26 @@
-# 🛡️ Vimexx DirectAdmin Server Complete Back-up & Archivering (TASK-811)
+# 🛡️ Creation+Alt+Fix - Backup & Cloud Control Center Suite
 
-Geautomatiseerd PowerShell script voor het aanroepen van de DirectAdmin API, het downloaden van het volledige `.tar.gz` archiefbestand via beveiligde FTPS, het berekenen van de SHA256-checksum en het valideren van de archief- en database-integriteit.
-
----
-
-## 📋 Wat wordt er geback-upt? (100% Volledig)
-1. **Alle 12 Domeinen & Subdomeinen:**
-   - `creationaltfix.nl` (inclusief `portal.` en `hbi.` subdomeinen)
-   - `angelastenekes.nl`, `bakkertjesieg.nl`, `capybaraculture.com`, `ftruckstore.nl`, `ftruckstore.com`, `naaiatelier-willa.nl`, `pomppop.nl`, `qolipa.nl`, `qolipa.com`, `scholte-elektrotechniek.nl`, `stenekesrioolspecialist.nl`
-2. **Alle MySQL/MariaDB Databases:** Volledige `.sql` dumps van alle klantdatabases.
-3. **Alle E-mailaccounts & Mailboxen:** IMAP/Maildir berichten, forwarders en filters.
-4. **DNS & SSL Certificaten:** Complete zonefiles, SPF/DKIM keys en SSL-certificaten.
+Volledig geïntegreerd back-up-, data-export en retentiesysteem voor Creation+Alt+Fix:
+1. **Vimexx DirectAdmin Server:** Complete multi-domein server snapshot (12 domeinen, MySQL dumps, mailboxen, DNS & SSL).
+2. **Pi-Boekhouding:** Financiële administratie, SQLite database, inkoop-/verkoopfacturen en documentenscans.
+3. **CRM & Klanten Data Export:** Real-time Firestore & database CSV export met 20 kolommen (klanten, offertes, deliverables en fasen).
 
 ---
 
-## 🚀 Hoe te Gebruiken
+## ⏳ Retentiebeleid & Schijfruimtebeveiliging (Tiered Storage Guard)
 
-### Optie A: Interactief met veilige prompt
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\backup-vimexx-server.ps1
-```
-*Het script vraagt netjes om je gebruikersnaam en maskeert het wachtwoord tijdens het intypen.*
+Om te voorkomen dat de lokale harde schijf volloopt, hanteren we twee geoptimaliseerde retentiebeleiden:
 
----
+### 1. Vimexx Server Back-up (Grote snapshots ~10.6 GB)
+* **Frequentie:** **Wekelijks (elke zondag om 21:30 uur)**.
+* **Retentie:** **Maximaal 2 recente wekelijkse snapshots** worden lokaal bewaard (`C:\Users\Admin\Backups\Vimexx-Server-Backups\`).
+* **Opslag:** Schijfruimte blijft altijd begrensd tot ~15-20 GB max. Oudere archieven worden na een succesvolle nieuwe backup automatisch opgeruimd.
 
-### Optie B: Met parameters
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\backup-vimexx-server.ps1 -Username "u12345p6789" -Password "Wachtwoord123!"
-```
-
----
-
-### Optie C: Met automatisch lokaal configuratiebestand
-Kopieer `scripts/vimexx-credentials.example.json` naar `scripts/.vimexx-credentials.json` en vul je gegevens in:
-```json
-{
-  "ServerHost": "web0156.zxcs.nl",
-  "Port": 2222,
-  "Username": "jouw_gebruikersnaam",
-  "Password": "jouw_wachtwoord"
-}
-```
-*(Dit bestand staat automatisch in `.gitignore` en wordt nooit naar GitHub gepusht).*
-
-Voer daarna simpelweg uit:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\backup-vimexx-server.ps1
-```
+### 2. Pi-Boekhouding & CRM Data Exports (Tiered GFS Policy)
+* **Tier 1 (Afgelopen 30 dagen):** **Elke dag** een volledige back-up snapshot bewaard (30 dagelijkse herstelpunten).
+* **Tier 2 (1 tot 12 maanden oud):** **1 back-up per maand** bewaard (de laatste snapshot van die kalendermaand; tussenliggende dagelijkse kopieën worden automatisch opgeruimd).
+* **Tier 3 (Ouder dan 1 jaar):** **1 back-up per jaar** bewaard (de laatste snapshot van dat kalenderjaar).
+* **Resultaat:** Maximale historische audit-dekking met minimale opslagbelasting!
 
 ---
 
@@ -58,24 +32,23 @@ Je kunt het **Creation+Alt+Fix Backup & Server Control Center** op 3 manieren op
 3. **Via PowerShell:** `powershell -STA -ExecutionPolicy Bypass -File scripts\backup-hub-gui.ps1`
 
 Het dashboard biedt direct:
-- 📊 **Exporteer CRM CSV:** 1-klik export van alle 13 CRM-klanten, actieve fasen, contactgegevens en offertes direct naar Excel-compatibel CSV-formaat (`C:\Users\Admin\Backups\CRM-Exports\`).
-- 🌐 **Vimexx Server Back-up:** Laatste run, bestandsgrootte (10.62 GB), geplande taak en SHA256 integriteit.
-- 📚 **Pi-Boekhouding Back-up:** Laatste snapshot, SQLite databases en facturen.
-- ⚡ **1-Klik Knoppen:** Direct back-up draaien voor Vimexx of Boekhouding.
+- 🌐 **Vimexx Server Back-up:** Wekelijkse run, bestandsgrootte (~10.62 GB), geplande taak (Zondag 21:30) en SHA256 integriteit.
+- 📚 **Pi-Boekhouding Back-up:** Dagelijkse snapshot, SQLite database en facturen (Dagelijks 21:00).
+- 📊 **CRM & Klanten Export:** Real-time CSV export van alle 15 klantendossiers, offertes en fasen (Dagelijks 20:30).
+- ⚡ **1-Klik Knoppen:** Direct back-up draaien of exporteren per onderdeel.
 - 📂 **1-Klik Mappen:** Direct openen van de archieflocaties in Windows Verkenner.
-- 📋 **Historie & Inspectielog:** Overzicht van alle gemaakte back-up snapshots.
+- 📋 **Geïntegreerde Historie:** Chronologisch overzicht van alle gemaakte archieven met automatische retentiestatus.
 
 ---
 
-## ⏰ Automatische Planning (Windows Taakplanner)
+## ⏰ Geautomatiseerde Planning (Windows Taakplanner)
 
-Beide back-up processen draaien automatisch via de Windows Taakplanner:
-- **`Vimexx-Server-Complete-Backup`**: Dagelijks om **21:30 uur**
+Alle drie de processen draaien volledig automatisch via de Windows Taakplanner:
+- **`Vimexx-Server-Complete-Backup`**: Wekelijks op **zondag om 21:30 uur**
 - **`Pi-Boekhouding-Backup`**: Dagelijks om **21:00 uur**
+- **`CreationAltFix-CRM-Daily-Export`**: Dagelijks om **20:30 uur**
 
-Wil je de tijden aanpassen? Voer uit:
+Wil je de taken opnieuw instellen of aanpassen? Voer uit:
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\setup-auto-vimexx-backup.ps1 -Time "22:00" -Frequency "Daily"
+powershell -ExecutionPolicy Bypass -File scripts\setup-auto-vimexx-backup.ps1 -Frequency "Weekly" -DayOfWeek "Sunday" -Time "21:30"
 ```
-
-

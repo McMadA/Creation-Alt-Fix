@@ -534,6 +534,75 @@ foreach ($p in $projects) {
 $utf8BomEncoding = New-Object System.Text.UTF8Encoding $true
 [System.IO.File]::WriteAllLines($csvPath, $csvLines, $utf8BomEncoding)
 
+# --- TIERED RETENTION POLICY: 30 Dagen Dagelijks -> 12 Maanden Maandelijks -> 1/Jaar ---
+function Apply-TieredRetentionPolicy {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TargetDir,
+        [string]$Filter = "*.csv"
+    )
+
+    if (-not (Test-Path $TargetDir)) { return }
+
+    $now = Get-Date
+    $items = Get-ChildItem -Path $TargetDir -File -Filter $Filter | Sort-Object LastWriteTime
+
+    if ($items.Count -eq 0) { return }
+
+    $toKeep = [System.Collections.Generic.HashSet[string]]::new()
+    $monthlyBuckets = @{} # Key: "yyyy-MM" -> item with latest date in that month
+    $yearlyBuckets = @{}  # Key: "yyyy"    -> item with latest date in that year
+
+    foreach ($item in $items) {
+        $itemDate = $item.LastWriteTime
+        
+        # Parse datum uit bestandsnaam indien aanwezig (bijv. CreationAltFix_CRM_Projecten_2026-08-28.csv)
+        if ($item.Name -match "(\d{4})[-_](\d{2})[-_](\d{2})") {
+            try {
+                $itemDate = [datetime]::new([int]$matches[1], [int]$matches[2], [int]$matches[3])
+            } catch { }
+        }
+
+        $ageDays = ($now - $itemDate).TotalDays
+
+        if ($ageDays -le 30) {
+            # 1. Binnen 30 dagen: BEWAAR ELKE DAG
+            [void]$toKeep.Add($item.FullName)
+        }
+        elseif ($ageDays -le 365) {
+            # 2. Tussen 30 en 365 dagen: BEWAAR 1 PER MAAND (de meest recente van die maand)
+            $monthKey = $itemDate.ToString("yyyy-MM")
+            $monthlyBuckets[$monthKey] = $item.FullName
+        }
+        else {
+            # 3. Ouder dan 365 dagen: BEWAAR 1 PER JAAR (de meest recente van dat jaar)
+            $yearKey = $itemDate.ToString("yyyy")
+            $yearlyBuckets[$yearKey] = $item.FullName
+        }
+    }
+
+    # Voeg maandelijkse en jaarlijkse bewaarde bestanden toe
+    foreach ($path in $monthlyBuckets.Values) { [void]$toKeep.Add($path) }
+    foreach ($path in $yearlyBuckets.Values) { [void]$toKeep.Add($path) }
+
+    # Verwijder bestanden buiten de retentie
+    $deletedCount = 0
+    foreach ($item in $items) {
+        if (-not $toKeep.Contains($item.FullName)) {
+            Remove-Item -Path $item.FullName -Force -ErrorAction SilentlyContinue
+            $deletedCount++
+        }
+    }
+
+    return @{
+        TotalScanned = $items.Count
+        KeptCount = $toKeep.Count
+        DeletedCount = $deletedCount
+    }
+}
+
+$retentionResult = Apply-TieredRetentionPolicy -TargetDir $OutputDir -Filter "*.csv"
+
 if (-not $Quiet) {
     Write-Host "================================================================================" -ForegroundColor Cyan
     Write-Host "  Creation+Alt+Fix - Live CRM & Klanten Data Export Engine" -ForegroundColor White
@@ -541,7 +610,8 @@ if (-not $Quiet) {
     $bron = if ($isLive) { "LIVE Firebase Firestore" } else { "Actuele Project Database" }
     Write-Host "  [OK] $($projects.Count) Klantdossiers geexporteerd vanuit: $bron" -ForegroundColor Green
     Write-Host "  Bestand: $csvPath" -ForegroundColor Yellow
-    Write-Host "  Formaat: UTF-8 met BOM (100% Excel-compatibel, puntkomma-gescheiden)`n" -ForegroundColor Gray
+    Write-Host "  Formaat: UTF-8 met BOM (100% Excel-compatibel, puntkomma-gescheiden)" -ForegroundColor Gray
+    Write-Host "  Retentiebeleid: 30 Dagen Dagelijks -> 12 Maanden Maandelijks -> 1/Jaar (Actief)`n" -ForegroundColor DarkGray
 }
 
 if ($OpenAfterExport) {

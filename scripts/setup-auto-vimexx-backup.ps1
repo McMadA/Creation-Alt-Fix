@@ -11,7 +11,7 @@
 param (
     [string]$Time = "21:30",
     [ValidateSet("Daily", "Weekly")]
-    [string]$Frequency = "Daily",
+    [string]$Frequency = "Weekly",
     [string]$DayOfWeek = "Sunday",
     [switch]$Force = $false
 )

@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "webPricingDevTitle": "1. Website Realisatie",
     "webPricingDevP": "One-page online visitekaartje vanaf €99,- of complete maatwerk bedrijfswebsite vanaf €550,-. Inclusief responsive design, SEO basis en contactformulieren.",
     "webPricingHostTitle": "2. Managed Cloud Hosting All-in",
-    "webPricingHostP": "Snelle NVMe webhosting, 1x .nl domein, SSL-certificaat, 5 zakelijke mailboxen (SPF/DKIM/DMARC), dagelijkse backups en continue security monitoring.",
+    "webPricingHostP": "Snelle NVMe webhosting, 1x .nl domein, SSL-certificaat, 5 zakelijke mailboxen (SPF/DKIM/DMARC), geautomatiseerde dagelijkse back-ups (100% dataherstelgarantie) en continue uptime- & security monitoring.",
     "webPricingApkTitle": "3. Website & Security APK",
     "webPricingApkP": "Jaarlijkse beveiligingsaudit, PHP/DB optimalisatie, SEO audit, inclusief 2 uur wijzigingsstrippenkaart (normaal €65,-/uur) en officieel APK keuringsrapport.",
     "webH2Waarom": "Waarom een website bij Creation+Alt+Fix?",
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "webFaq4Q": "Kan ik mijn website later nog aanpassen?",
     "webFaq4A": "Absoluut. Wij bouwen websites die makkelijk te onderhouden en uit te breiden zijn. Ook bieden wij onderhoudspakketten aan.",
     "webFaq5Q": "Regelen jullie ook hosting en domeinnaam?",
-    "webFaq5A": "Ja, met ons Managed Cloud Hosting All-in pakket (€ 150,-/jaar excl. BTW) regelen wij uw .nl domeinnaam, snelle NVMe hosting, SSL beveiliging, 5 zakelijke e-mailaccounts met SPF/DKIM/DMARC anti-spoofing en automatische dagelijkse back-ups. U heeft nergens omkijken naar.",
+    "webFaq5A": "Ja, met ons Managed Cloud Hosting All-in pakket (€ 150,-/jaar excl. BTW) regelen wij uw .nl domeinnaam, snelle NVMe hosting, SSL beveiliging, 5 zakelijke e-mailaccounts met SPF/DKIM/DMARC anti-spoofing en geautomatiseerde dagelijkse back-ups met 1-klik herstelgarantie. U heeft nergens omkijken naar.",
     "webRelatedTitle": "Gerelateerde diensten",
 
     // --- DASHBOARD SUBPAGE ---
@@ -885,7 +885,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "webPricingDevTitle": "1. Website Development",
     "webPricingDevP": "One-page online business card from €99 or full custom business website from €550. Includes responsive design, core SEO, and contact forms.",
     "webPricingHostTitle": "2. Managed Cloud Hosting All-in",
-    "webPricingHostP": "High-speed NVMe web hosting, 1x .nl domain, SSL certificate, 5 business mailboxes (SPF/DKIM/DMARC), daily backups and continuous monitoring.",
+    "webPricingHostP": "High-speed NVMe web hosting, 1x .nl domain, SSL certificate, 5 business mailboxes (SPF/DKIM/DMARC), automated daily backups (100% data recovery guarantee) and continuous uptime monitoring.",
     "webPricingApkTitle": "3. Website & Security APK",
     "webPricingApkP": "Annual security audit, PHP/DB optimization, SEO audit, including 2 hours maintenance coupon (normal rate €65/hr) and official APK report.",
     "webH2Waarom": "Why a website from Creation+Alt+Fix?",
@@ -901,7 +901,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "webFaq4Q": "Can I modify my website later?",
     "webFaq4A": "Absolutely. We build websites that are easy to maintain and expand. We also offer maintenance packages.",
     "webFaq5Q": "Do you also arrange hosting and domain name?",
-    "webFaq5A": "Yes, with our Managed Cloud Hosting All-in package (€150/year excl. VAT) we handle your .nl domain name, fast NVMe hosting, SSL security, 5 business mailboxes with SPF/DKIM/DMARC anti-spoofing and automatic daily backups. Complete peace of mind.",
+    "webFaq5A": "Yes, with our Managed Cloud Hosting All-in package (€150/year excl. VAT) we handle your .nl domain name, fast NVMe hosting, SSL security, 5 business mailboxes with SPF/DKIM/DMARC anti-spoofing and automated daily backups with 1-click recovery guarantee. Complete peace of mind.",
     "webRelatedTitle": "Related services",
 
     // --- DASHBOARD SUBPAGE ---

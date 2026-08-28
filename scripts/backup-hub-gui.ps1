@@ -99,7 +99,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="12 Domeinen, MySQL databases, Maildir en DNS" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Text="12 Domeinen, Databases &amp; Mailboxen (Wekelijks / Max 2 Arch.)" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
@@ -145,7 +145,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="SQLite Database, Inkoop/Verkoop Facturen en Scans" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Text="SQLite DB, Facturen &amp; Scans (30d Dagelijks | 12m Maandelijks | 1/Jaar)" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
@@ -191,7 +191,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="15 Klantdossiers, Offertes, Kanban &amp; Fasen" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Text="15 Klantdossiers &amp; Offertes (30d Dagelijks | 12m Maandelijks | 1/Jaar)" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
@@ -304,9 +304,77 @@ $boekhoudingBackupDir = "C:\Users\Admin\Backups\Pi-Boekhouding"
 $crmBackupDir = "C:\Users\Admin\Backups\CRM-Exports"
 $workspaceDir = "C:\Users\Admin\Documents\GitHub\Websites\Creation-Alt-Fix"
 
+function Apply-TieredRetentionPolicy {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TargetDir,
+        [string]$Filter = "*",
+        [switch]$IsDirectoryMode = $false
+    )
+
+    if (-not (Test-Path $TargetDir)) { return }
+
+    $now = Get-Date
+    $items = if ($IsDirectoryMode) {
+        Get-ChildItem -Path $TargetDir -Directory | Sort-Object CreationTime
+    } else {
+        Get-ChildItem -Path $TargetDir -File -Filter $Filter | Sort-Object LastWriteTime
+    }
+
+    if ($items.Count -eq 0) { return }
+
+    $toKeep = [System.Collections.Generic.HashSet[string]]::new()
+    $monthlyBuckets = @{}
+    $yearlyBuckets = @{}
+
+    foreach ($item in $items) {
+        $itemDate = if ($IsDirectoryMode) { $item.CreationTime } else { $item.LastWriteTime }
+        
+        if ($item.Name -match "(\d{4})[-_](\d{2})[-_](\d{2})") {
+            try {
+                $itemDate = [datetime]::new([int]$matches[1], [int]$matches[2], [int]$matches[3])
+            } catch { }
+        }
+
+        $ageDays = ($now - $itemDate).TotalDays
+
+        if ($ageDays -le 30) {
+            # 1. Binnen 30 dagen: BEWAAR ELKE DAG
+            [void]$toKeep.Add($item.FullName)
+        }
+        elseif ($ageDays -le 365) {
+            # 2. Tussen 30 en 365 dagen: BEWAAR 1 PER MAAND (de laatste van die maand)
+            $monthKey = $itemDate.ToString("yyyy-MM")
+            $monthlyBuckets[$monthKey] = $item.FullName
+        }
+        else {
+            # 3. Ouder dan 365 dagen: BEWAAR 1 PER JAAR (de laatste van dat jaar)
+            $yearKey = $itemDate.ToString("yyyy")
+            $yearlyBuckets[$yearKey] = $item.FullName
+        }
+    }
+
+    foreach ($path in $monthlyBuckets.Values) { [void]$toKeep.Add($path) }
+    foreach ($path in $yearlyBuckets.Values) { [void]$toKeep.Add($path) }
+
+    foreach ($item in $items) {
+        if (-not $toKeep.Contains($item.FullName)) {
+            if ($IsDirectoryMode) {
+                Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
+            } else {
+                Remove-Item -Path $item.FullName -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
+}
+
 function Refresh-DashboardData {
-    $txtStatusMessage.Text = "Gegevens vernieuwen..."
+    $txtStatusMessage.Text = "Gegevens vernieuwen & retentie toepassen..."
     $historyList = [System.Collections.ArrayList]::new()
+
+    # Apply Tiered Retentions
+    Apply-TieredRetentionPolicy -TargetDir $crmBackupDir -Filter "*.csv"
+    Apply-TieredRetentionPolicy -TargetDir $boekhoudingBackupDir -IsDirectoryMode
 
     # 1. Check Vimexx Backups
     if (Test-Path $vimexxBackupDir) {
@@ -409,7 +477,7 @@ function Refresh-DashboardData {
 
     # 4. Check Scheduled Tasks
     $vimexxTask = Get-ScheduledTask -TaskName "Vimexx-Server-Complete-Backup" -ErrorAction SilentlyContinue
-    $txtVimexxSchedule.Text = if ($vimexxTask) { "Gepland ($($vimexxTask.State))" } else { "Niet ingepland" }
+    $txtVimexxSchedule.Text = if ($vimexxTask) { "Wekelijks (Zon 21:30)" } else { "Niet ingepland" }
 
     $bhTask = Get-ScheduledTask -TaskName "Pi-Boekhouding-Backup" -ErrorAction SilentlyContinue
     $txtBoekhoudingSchedule.Text = if ($bhTask) { "Gepland ($($bhTask.State))" } else { "Niet ingepland" }
