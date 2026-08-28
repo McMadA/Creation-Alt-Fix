@@ -99,23 +99,42 @@ export async function generateProposalScope(projectData) {
         try {
             const systemPrompt = `Je bent een ervaren IT & Software Consultant bij Creation+Alt+Fix (Allard Veldman).
 Je schrijft overtuigende, professionele en technisch onderbouwde investeringsvoorstellen en projectscopes voor klanten in het Nederlands.
+Hanteer hierbij de vaste tariefstructuur van Creation+Alt+Fix:
+- Web & Software Ontwikkeling: Marktconform per project (bijv. € 550 - € 850)
+- Managed Cloud Hosting & Domein All-in: Vaste prijs € 150,00 per jaar (inclusief NVMe hosting, .nl domeinnaam, SSL, 5 zakelijke mailboxen met SPF/DKIM/DMARC en dagelijkse backups)
+- Jaarlijkse Website & Security APK: Optioneel € 350,00 per jaar (beveiligingsaudit, PHP/DB check, SEO check en 2 uur strippenkaart @ € 65,-/u)
+
 Geef je antwoord ALTIJD uitsluitend als geldig JSON object in het volgende formaat zonder markdown codeblokken:
 {
   "proposalTitle": "Korte krachtige projecttitel",
-  "estimatedPrice": "750,00",
+  "estimatedPrice": "550,00",
   "executiveSummary": "Samenvatting van het projectdoel en de toegevoegde waarde",
+  "items": [
+    {
+      "description": "Ontwikkeling & Realisatie Maatwerk Website / Applicatie",
+      "subtext": "UI/UX ontwerp, responsive frontend, interactieve componenten en livegang.",
+      "price": "550,00",
+      "period": "eenmalig"
+    },
+    {
+      "description": "Managed Cloud Hosting & Domeinnaam (Jaar 1)",
+      "subtext": "Snelle NVMe cloud hosting, .nl domein, SSL, 5 zakelijke mailboxen, SPF/DKIM/DMARC en dagelijkse backups.",
+      "price": "150,00",
+      "period": "per jaar"
+    }
+  ],
   "deliverables": [
     { "title": "Onderdeel 1", "description": "Gedetailleerde toelichting van wat wordt opgeleverd" },
     { "title": "Onderdeel 2", "description": "Gedetailleerde toelichting" },
     { "title": "Onderdeel 3", "description": "Gedetailleerde toelichting" },
-    { "title": "Onderdeel 4", "description": "Gedetailleerde toelichting" }
+    { "title": "Managed Cloud Hosting & Domein", "description": "All-in hostingpakket t.w.v. € 150,-/jr inclusief .nl domein, SSL, zakelijke mail en dagelijkse backups." }
   ],
   "timeline": [
     { "phase": "Fase 1: Wireframing & Design", "duration": "1 week" },
     { "phase": "Fase 2: Ontwikkeling & Testen", "duration": "1-2 weken" },
     { "phase": "Fase 3: Livegang & Oplevering", "duration": "3 dagen" }
   ],
-  "termsSummary": "Inclusief 14 dagen garantie na livegang, SSL-certificaat en mobiele responsive optimalisatie."
+  "termsSummary": "Vaste prijsafspraak inclusief 14 dagen nazorg. Managed Cloud Hosting (€ 150,-/jr excl. BTW) wordt na 12 maanden stilzwijgend verlengd met een opzegtermijn van 1 maand."
 }`;
 
             const userPrompt = `Genereer een compleet investeringsvoorstel en deliverables scope voor het volgende project:
@@ -126,7 +145,7 @@ Geef je antwoord ALTIJD uitsluitend als geldig JSON object in het volgende forma
 - Designvoorkeuren: ${design}
 - Domein: ${domain}
 
-Zorg voor een heldere deliverables opsomming, realistische fasering en een marktconforme prijsindicatie voor een freelance software expert.`;
+Zorg voor een heldere deliverables opsomming, realistische fasering, duidelijke splitsing van eenmalige realisatie en de jaarlijkse Managed Hosting (€ 150,-/jr).`;
 
             const rawResponse = await callGeminiApi(userPrompt, systemPrompt);
             const cleanedJson = rawResponse.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
@@ -144,7 +163,7 @@ Zorg voor een heldere deliverables opsomming, realistische fasering en een markt
 }
 
 /**
- * Smart Heuristic Fallback Scope Generator
+ * Smart Heuristic Fallback Scope Generator (TASK-816)
  */
 function generateSmartHeuristicScope(p) {
     const client = p.client || p.companyName || 'Jouw Onderneming';
@@ -153,18 +172,18 @@ function generateSmartHeuristicScope(p) {
     const design = p.design || p.designPreferences || 'Modern, strak en responsive';
 
     let title = `Realisatie Maatwerk Oplossing - ${client}`;
-    let price = '650,00';
+    let devPrice = '550,00';
     let deliverables = [];
     let timeline = [];
 
     if (service.includes('ai') || service.includes('automatisering')) {
         title = `AI Automatisering & Workflow Engine - ${client}`;
-        price = '850,00';
+        devPrice = '850,00';
         deliverables = [
             { title: "Intake & Procesanalyse", description: `Diepgaande analyse van de huidige workflows van ${client} om automatiseringskansen te identificeren.` },
             { title: "AI Agent & Webhook Integratie", description: "Inrichten van slimme LLM-modellen en geautomatiseerde webhooks voor real-time dataverwerking." },
             { title: "Dashboard & Notificatiesysteem", description: "Centraal dashboard met automatische e-mail- en pushnotificaties bij voltooide acties." },
-            { title: "Testing, Beveiliging & Overdracht", description: "Uitgebreide end-to-end testen met foutafhandeling en documentatie voor intern gebruik." }
+            { title: "Managed Cloud Hosting & API Gateway", description: "Inclusief 12 maanden Managed Hosting, DNS-beheer, SSL-certificaat en monitoring (€ 150,-/jr)." }
         ];
         timeline = [
             { phase: "Fase 1: Architectuur & API Setup", duration: "1 week" },
@@ -173,12 +192,12 @@ function generateSmartHeuristicScope(p) {
         ];
     } else if (service.includes('dashboard') || service.includes('data')) {
         title = `Interactief Data Dashboard & Rapportages - ${client}`;
-        price = '750,00';
+        devPrice = '750,00';
         deliverables = [
             { title: "Data Koppelingen & ETL Pipeline", description: `Koppelen van externe databronnen en API's specifiek voor ${client}.` },
             { title: "Visualisatie & KPI Widgets", description: "Realtime grafieken, filters, KPI-tellers en exportmogelijkheden (CSV/PDF)." },
             { title: "Gebruikersrollen & Toegangscontrole", description: "Beveiligde inlogomgeving met rolgebaseerde datatoegang." },
-            { title: "Documentatie & Training", description: "Oplevering met instructies voor databeheer en onderhoud." }
+            { title: "Managed Cloud Hosting & Serverbeheer", description: "Inclusief 12 maanden veilige cloud hosting, SSL en dagelijkse backups (€ 150,-/jr)." }
         ];
         timeline = [
             { phase: "Fase 1: Datamodellering & Mockups", duration: "1 week" },
@@ -188,12 +207,12 @@ function generateSmartHeuristicScope(p) {
     } else {
         // Website / Webshop / General
         title = `Professionele Bedrijfswebsite & Lead Funnel - ${client}`;
-        price = '550,00';
+        devPrice = '550,00';
         deliverables = [
             { title: "Design & Wireframing op Maat", description: `Uniek UI/UX ontwerp afgestemd op de stijlvoorkeuren: "${design}".` },
             { title: "Responsive Frontend Ontwikkeling", description: "Razendsnelle, mobielvriendelijke website gebouwd met moderne webtechnologieën." },
-            { title: "Interactief Klantenportaal & Offerte Suite", description: "Inclusief digitaal accorderen, status tracking en contactmogelijkheden." },
-            { title: "SEO, Performance & AVG Beveiliging", description: "Zoekmachine-optimalisatie, SSL-certificaat, cookie-consent en snelle laadtijden." }
+            { title: "Interactief Klantenportaal & Offerte Suite", description: "Inclusief digitaal accorderen, status tracking en feedback annotaties." },
+            { title: "Managed Cloud Hosting & Domein (12 mnd)", description: "Snelle NVMe hosting, .nl domein, SSL, 5 mailboxen (SPF/DKIM/DMARC) en dagelijkse backups (€ 150,-/jr)." }
         ];
         timeline = [
             { phase: "Fase 1: Wireframing & Design Review", duration: "4-5 dagen" },
@@ -202,13 +221,29 @@ function generateSmartHeuristicScope(p) {
         ];
     }
 
+    const items = [
+        {
+            description: `Ontwikkeling & Realisatie: ${title}`,
+            subtext: `Maatwerk project conform specificaties gericht op "${goals}".`,
+            price: devPrice,
+            period: "eenmalig"
+        },
+        {
+            description: "Managed Cloud Hosting & Domeinnaam All-in (Jaar 1)",
+            subtext: "Snelle NVMe SSD webhosting, 1x .nl domein, SSL, 5 zakelijke mailboxen (SPF/DKIM/DMARC) en dagelijkse backups.",
+            price: "150,00",
+            period: "per jaar"
+        }
+    ];
+
     return {
         proposalTitle: title,
-        estimatedPrice: price,
-        executiveSummary: `Creation+Alt+Fix realiseert voor ${client} een hoogwaardige maatwerkoplossing gericht op: "${goals}". Met bewezen technologieën zorgen we voor betrouwbaarheid, schaalbaarheid en direct meetbaar resultaat.`,
+        estimatedPrice: devPrice,
+        items: items,
+        executiveSummary: `Creation+Alt+Fix realiseert voor ${client} een hoogwaardige maatwerkoplossing gericht op: "${goals}". Met bewezen technologieën en managed hosting zorgen we voor maximale betrouwbaarheid, snelheid en meetbaar resultaat.`,
         deliverables: deliverables,
         timeline: timeline,
-        termsSummary: "Vaste prijsafspraak inclusief 14 dagen nazorg en volledige opleveringsgarantie.",
+        termsSummary: "Vaste prijsafspraak inclusief 14 dagen nazorg. Managed Cloud Hosting (€ 150,-/jr excl. BTW) wordt na 12 maanden stilzwijgend verlengd met een opzegtermijn van 1 maand.",
         isAiGenerated: false
     };
 }

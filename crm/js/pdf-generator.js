@@ -55,6 +55,63 @@ function formatEuro(amount) {
 }
 
 /**
+ * Resolves structured line items for proposals and invoices (TASK-816)
+ */
+export function resolveProposalItems(p) {
+    if (Array.isArray(p.items) && p.items.length > 0) {
+        return p.items.map(it => {
+            const price = parsePrice(it.price || it.amount || 0);
+            const qty = parsePrice(it.quantity || it.aantal || 1) || 1;
+            return {
+                quantity: qty,
+                description: it.description || it.omschrijving || 'Dienst',
+                subtext: it.subtext || it.beschrijving || '',
+                price: price,
+                total: price * qty
+            };
+        });
+    }
+
+    const rawPrice = parsePrice(p.proposalPrice || p.price || '0');
+    const service = p.service || 'Website & Software Realisatie';
+    const goals = p.proposalScope || p.goals || p.projectGoals || 'Volledige realisatie van maatwerk software & webapplicatie conform specificaties.';
+
+    const items = [
+        {
+            quantity: 1,
+            description: service,
+            subtext: goals,
+            price: rawPrice,
+            total: rawPrice
+        }
+    ];
+
+    if (p.includeHosting || p.hostingPrice) {
+        const hostingPrice = parsePrice(p.hostingPrice || 150);
+        items.push({
+            quantity: 1,
+            description: "Managed Cloud Hosting & Domein All-in (12 mnd)",
+            subtext: "Snelle NVMe webhosting, 1x .nl domein, SSL, 5 mailboxen (SPF/DKIM/DMARC) en dagelijkse backups.",
+            price: hostingPrice,
+            total: hostingPrice
+        });
+    }
+
+    if (p.includeApk || p.apkPrice) {
+        const apkPrice = parsePrice(p.apkPrice || 350);
+        items.push({
+            quantity: 1,
+            description: "Jaarlijkse Website & Security APK + Strippenkaart",
+            subtext: "Periodieke beveiligingsaudit, PHP/DB checkup, SEO audit en 2 uur strippenkaart (normaal € 65,- / uur).",
+            price: apkPrice,
+            total: apkPrice
+        });
+    }
+
+    return items;
+}
+
+/**
  * Generates an official Offerte / Investeringsvoorstel PDF
  * Styled 1:1 matching factuursjabloon.html
  * 
@@ -81,9 +138,10 @@ export async function generateProposalPDF(p, isSigned = false) {
     const domain = p.domainName || p.domain || 'Nog te bepalen';
     const service = p.service || 'Website & Software Realisatie';
     const goals = p.proposalScope || p.goals || p.projectGoals || 'Volledige realisatie van maatwerk software & webapplicatie volgens specificaties.';
-    const rawPrice = parsePrice(p.proposalPrice || '0');
-    const vatAmount = rawPrice * 0.21;
-    const totalPrice = rawPrice + vatAmount;
+    const items = resolveProposalItems(p);
+    const subtotal = items.reduce((sum, it) => sum + it.total, 0);
+    const vatAmount = subtotal * 0.21;
+    const totalPrice = subtotal + vatAmount;
     const docDate = p.proposalAcceptedAt ? new Date(p.proposalAcceptedAt) : new Date();
     const dateFormatted = docDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
     const quoteNumber = `CAF-OFF-${docDate.getFullYear()}-${String(p.id || '101').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase()}`;
@@ -238,7 +296,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     }
 
     // ==========================================
-    // 5. TABLE SECTION (Dark Header #0a0e1a from factuursjabloon.html)
+    // 5. TABLE SECTION (Dark Header #0a0e1a - Multi-line items)
     // ==========================================
     y += 22;
     const tableHeaderHeight = 9;
@@ -249,45 +307,53 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.setFontSize(8.5);
     doc.setTextColor(255, 255, 255);
     doc.text("AANT.", margin + 4, y + 6);
-    doc.text("OMSCHRIJVING & DELIVERABLES", margin + 22, y + 6);
+    doc.text("OMSCHRIJVING & SPECIFICATIES", margin + 22, y + 6);
     doc.text("PRIJS", pageWidth - margin - 35, y + 6, { align: "right" });
     doc.text("TOTAAL", pageWidth - margin - 4, y + 6, { align: "right" });
 
-    // Table Content Row
     y += tableHeaderHeight;
-    const rowHeight = 24;
-    doc.setFillColor(255, 255, 255);
-    doc.rect(margin, y, contentWidth, rowHeight, 'F');
-    doc.setDrawColor(226, 232, 240);
-    doc.rect(margin, y, contentWidth, rowHeight, 'S');
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(30, 41, 59);
-    doc.text("1", margin + 7, y + 7);
+    // Dynamic Multi-Line Item Rendering
+    items.forEach((item) => {
+        const splitSubtext = item.subtext ? doc.splitTextToSize(item.subtext, contentWidth - 75) : [];
+        const dynamicRowHeight = Math.max(16, 10 + (splitSubtext.length * 4.2));
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.text(service, margin + 22, y + 7);
+        doc.setFillColor(255, 255, 255);
+        doc.rect(margin, y, contentWidth, dynamicRowHeight, 'F');
+        doc.setDrawColor(226, 232, 240);
+        doc.rect(margin, y, contentWidth, dynamicRowHeight, 'S');
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(100, 116, 139);
-    const splitGoals = doc.splitTextToSize(goals, contentWidth - 75);
-    doc.text(splitGoals, margin + 22, y + 12.5);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(30, 41, 59);
+        doc.text(String(item.quantity || 1), margin + 7, y + 6.5);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(30, 41, 59);
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 35, y + 7, { align: "right" });
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text(item.description, margin + 22, y + 6.5);
 
-    doc.setFont("helvetica", "bold");
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 4, y + 7, { align: "right" });
+        if (splitSubtext.length > 0) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7.8);
+            doc.setTextColor(100, 116, 139);
+            doc.text(splitSubtext, margin + 22, y + 11.5);
+        }
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(30, 41, 59);
+        doc.text(formatEuro(item.price), pageWidth - margin - 35, y + 6.5, { align: "right" });
+
+        doc.setFont("helvetica", "bold");
+        doc.text(formatEuro(item.total), pageWidth - margin - 4, y + 6.5, { align: "right" });
+
+        y += dynamicRowHeight;
+    });
 
     // ==========================================
     // 6. TOTALS SECTION (Right Aligned Box #f8fafc from factuursjabloon.html)
     // ==========================================
-    y += rowHeight + 8;
+    y += 6;
     const totalsWidth = 85;
     const totalsX = pageWidth - margin - totalsWidth;
     const totalsHeight = 32;
@@ -302,7 +368,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.setTextColor(100, 116, 139);
     doc.text("Subtotaal", totalsX + 6, y + 8);
     doc.setTextColor(30, 41, 59);
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 6, y + 8, { align: "right" });
+    doc.text(formatEuro(subtotal), pageWidth - margin - 6, y + 8, { align: "right" });
 
     doc.setTextColor(100, 116, 139);
     doc.text("BTW (21%)", totalsX + 6, y + 15);
@@ -325,7 +391,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     // ==========================================
     // 7. DIGITAL SIGNATURE CERTIFICATE (Green Stamp)
     // ==========================================
-    y += totalsHeight + 8;
+    y += totalsHeight + 6;
     if (isSigned || p.proposalAcceptedAt) {
         doc.setFillColor(240, 253, 244); // #f0fdf4 Green
         doc.roundedRect(margin, y, contentWidth, 32, 2, 2, 'F');
@@ -423,9 +489,10 @@ export async function generateInvoicePDF(p) {
     const email = p.email || '—';
     const domain = p.domainName || p.domain || '—';
     const service = p.service || 'Website & Software Realisatie';
-    const rawPrice = parsePrice(p.proposalPrice || '0');
-    const vatAmount = rawPrice * 0.21;
-    const totalPrice = rawPrice + vatAmount;
+    const items = resolveProposalItems(p);
+    const subtotal = items.reduce((sum, it) => sum + it.total, 0);
+    const vatAmount = subtotal * 0.21;
+    const totalPrice = subtotal + vatAmount;
     const docDate = new Date();
     const dueDate = new Date();
     dueDate.setDate(docDate.getDate() + 14);
@@ -598,40 +665,49 @@ export async function generateInvoicePDF(p) {
     doc.text("PRIJS", pageWidth - margin - 35, y + 6, { align: "right" });
     doc.text("TOTAAL", pageWidth - margin - 4, y + 6, { align: "right" });
 
-    // Table Content Row
     y += tableHeaderHeight;
-    const rowHeight = 20;
-    doc.setFillColor(255, 255, 255);
-    doc.rect(margin, y, contentWidth, rowHeight, 'F');
-    doc.setDrawColor(226, 232, 240);
-    doc.rect(margin, y, contentWidth, rowHeight, 'S');
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(30, 41, 59);
-    doc.text("1", margin + 7, y + 7);
+    // Dynamic Multi-Line Invoice Item Rendering
+    items.forEach((item) => {
+        const splitSubtext = item.subtext ? doc.splitTextToSize(item.subtext, contentWidth - 75) : [];
+        const dynamicRowHeight = Math.max(16, 10 + (splitSubtext.length * 4.2));
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.text(service, margin + 22, y + 7);
+        doc.setFillColor(255, 255, 255);
+        doc.rect(margin, y, contentWidth, dynamicRowHeight, 'F');
+        doc.setDrawColor(226, 232, 240);
+        doc.rect(margin, y, contentWidth, dynamicRowHeight, 'S');
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(100, 116, 139);
-    doc.text("Software ontwikkeling, web design en project realisatie conform oplevering.", margin + 22, y + 12.5);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(30, 41, 59);
+        doc.text(String(item.quantity || 1), margin + 7, y + 6.5);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(30, 41, 59);
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 35, y + 7, { align: "right" });
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text(item.description, margin + 22, y + 6.5);
 
-    doc.setFont("helvetica", "bold");
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 4, y + 7, { align: "right" });
+        if (splitSubtext.length > 0) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7.8);
+            doc.setTextColor(100, 116, 139);
+            doc.text(splitSubtext, margin + 22, y + 11.5);
+        }
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(30, 41, 59);
+        doc.text(formatEuro(item.price), pageWidth - margin - 35, y + 6.5, { align: "right" });
+
+        doc.setFont("helvetica", "bold");
+        doc.text(formatEuro(item.total), pageWidth - margin - 4, y + 6.5, { align: "right" });
+
+        y += dynamicRowHeight;
+    });
 
     // ==========================================
     // 6. TOTALS SECTION
     // ==========================================
-    y += rowHeight + 8;
+    y += 6;
     const totalsWidth = 85;
     const totalsX = pageWidth - margin - totalsWidth;
     const totalsHeight = 32;
@@ -646,7 +722,7 @@ export async function generateInvoicePDF(p) {
     doc.setTextColor(100, 116, 139);
     doc.text("Subtotaal", totalsX + 6, y + 8);
     doc.setTextColor(30, 41, 59);
-    doc.text(formatEuro(rawPrice), pageWidth - margin - 6, y + 8, { align: "right" });
+    doc.text(formatEuro(subtotal), pageWidth - margin - 6, y + 8, { align: "right" });
 
     doc.setTextColor(100, 116, 139);
     doc.text("BTW (21%)", totalsX + 6, y + 15);

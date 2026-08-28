@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **40 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **24 Tasks (62%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **15 Tasks (38%)** |
+| **Completed Work Items** | ✅ Done | **25 Tasks (64%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (36%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[███████████████░░░░░░░░░] 62% Complete`
+`[████████████████░░░░░░░░] 64% Complete`
 
 ---
 
@@ -50,10 +50,6 @@
 - [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
   - **Scope**: Klantproject Justin
   - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
-
-- [ ] `[TASK-816]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
-  - **Scope**: `website/diensten/website-laten-maken/`, `crm/js/ai-engine.js`, `crm/js/pdf-generator.js`
-  - **Tasks**: Vaste tariefstructuur (€ 150,-/jaar voor Managed Cloud Hosting, Domeinnaam, SSL, Mail & Backups + optionele APK van € 350-€ 495/jaar) opnemen als selecteerbare modules in de AI Offerte Scope Generator, PDF Offerte/Factuur generator en de openbare website.
 
 - [ ] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Creation+Alt+Fix Continuïteitsplan & Noodprotocol**
   - **Scope**: Organisatie & Hosting Continuïteit
@@ -248,3 +244,7 @@
 - [x] `[TASK-815]` `[P2-HIGH]` `[STATUS: DONE]` **Fase 3 Design Studio, AI Concept Visual Generator & UX Validatie Check**
   - **Scope**: `crm/admin/project.html`, `crm/admin/js/project.js`, `crm/admin/js/admin.js`, `crm/js/ai-engine.js`, `crm/status/`
   - **Details**: Geavanceerde Fase 3 Design & Visual Studio modal gebouwd (`#phase3-design-modal`). Geïntegreerd met Google Imagen / Banana AI visual generator prompt engine, live HTML interactive staging prototypes, flexibele design URL koppeling, en interactieve 5-fasen tijdlijn klik-transities.
+
+- [x] `[TASK-816]` `[P3-MEDIUM]` `[STATUS: DONE]` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
+  - **Scope**: `website/diensten/website-laten-maken/`, `crm/js/ai-engine.js`, `crm/js/pdf-generator.js`, `website/js/subpage.js`, `advies_hosting_tarieven_task816.md`
+  - **Details**: Vaste 2-traps tariefstructuur geformaliseerd op basis van Pi-Boekhouding data: 1. Managed Cloud Hosting & Domein All-in (€ 150,-/jr excl. BTW voor NVMe hosting, .nl domein, SSL, 5 zakelijke mailboxen met SPF/DKIM/DMARC en dagelijkse backups), en 2. Jaarlijkse Website & Security APK (€ 350,-/jr incl. 2 uur strippenkaart @ € 65,-/u). Volledig geïmplementeerd in de AI Scope Generator (`items`), multi-line PDF Offerte & Factuur Generator (`resolveProposalItems`), en de openbare marketingpagina met 100% tweetalige vertaling.
