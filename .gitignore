@@ -9,3 +9,5 @@ Thumbs.db
 *.backup
 scripts/vimexx-credentials.json
 scripts/crm-credentials.json
+scripts/*.clixml
+*.clixml

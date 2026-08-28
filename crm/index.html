@@ -445,12 +445,12 @@
             return false;
         }
 
-        // Automatisch doorsturen als de gebruiker al ingelogd is
+        // Automatisch doorsturen als de klant al ingelogd is
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const email = (user.email || '').toLowerCase();
                 if (isAdminEmail(email)) {
-                    window.location.href = "admin/";
+                    // Beheerders moeten via het admin-portaal (/portal/admin/) inloggen
                     return;
                 }
                 const userIsClient = await isClient(email, user.uid);
@@ -477,7 +477,11 @@
                 const userEmail = (userCred.user.email || '').toLowerCase();
 
                 if (isAdminEmail(userEmail)) {
-                    window.location.href = "admin/";
+                    await signOut(auth);
+                    errDiv.innerHTML = `Dit is het Klantenportaal. Beheerders kunnen inloggen via het <a href="admin/" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">Beheerders Dashboard</a>.`;
+                    errDiv.classList.remove('hidden');
+                    btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.portalBtnLogin}`;
+                    btn.disabled = false;
                     return;
                 }
 

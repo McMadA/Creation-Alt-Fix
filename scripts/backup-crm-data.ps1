@@ -29,7 +29,16 @@ if (-not (Test-Path $OutputDir)) {
 $dateStr = (Get-Date).ToString("yyyy-MM-dd")
 $csvPath = Join-Path $OutputDir "CreationAltFix_CRM_Projecten_${dateStr}.csv"
 
-# Lees optionele credentials uit crm-credentials.json
+# Lees optionele credentials (eerst versleutelde Windows DPAPI kluis, daarna optionele json)
+$secureCredsFile = Join-Path $PSScriptRoot ".crm-credentials.clixml"
+if ((-not $Email -or -not $Password) -and (Test-Path $secureCredsFile)) {
+    try {
+        $secCred = Import-Clixml -Path $secureCredsFile
+        $Email = $secCred.UserName
+        $Password = $secCred.GetNetworkCredential().Password
+    } catch { }
+}
+
 if ((-not $Email -or -not $Password) -and (Test-Path $credentialsFile)) {
     try {
         $jsonCreds = Get-Content $credentialsFile -Raw | ConvertFrom-Json

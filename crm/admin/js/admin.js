@@ -7,7 +7,7 @@
  */
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
@@ -563,11 +563,58 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     
     const success = await API.login(email, password);
     if (!success) {
-        btn.innerHTML = 'Inloggen';
+        btn.innerHTML = 'Inloggen met E-mail';
         if (errDiv) {
             errDiv.innerText = 'Ongeldig e-mailadres of wachtwoord. Controleer je gegevens.';
             errDiv.classList.remove('hidden');
         }
+    }
+});
+
+// Google Sign-In Handler voor Beheerder (TASK-818 Security Suite)
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+document.getElementById('btn-google-login')?.addEventListener('click', async () => {
+    const errDiv = document.getElementById('login-error');
+    const btn = document.getElementById('btn-google-login');
+    if (errDiv) errDiv.classList.add('hidden');
+    btn.disabled = true;
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met Google...';
+
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const userEmail = (result.user.email || '').toLowerCase();
+        
+        let isAdmin = isAdminEmail(userEmail);
+        if (!isAdmin && db) {
+            try {
+                const qAdmin = query(collection(db, "admins"), where("email", "==", userEmail));
+                const snapAdmin = await getDocs(qAdmin);
+                if (!snapAdmin.empty) { isAdmin = true; }
+            } catch (e) { }
+        }
+
+        if (!isAdmin) {
+            await signOut(auth);
+            if (errDiv) {
+                errDiv.innerText = `Toegang geweigerd: Account "${userEmail}" heeft geen beheerdersrechten.`;
+                errDiv.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+            return;
+        }
+        // onAuthStateChanged toont automatisch het dashboard
+    } catch (err) {
+        console.error("Google Sign-In mislukt:", err);
+        if (errDiv) {
+            errDiv.innerText = `Google Inloggen mislukt: ${err.message || 'Probeer het opnieuw'}`;
+            errDiv.classList.remove('hidden');
+        }
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
     }
 });
 
