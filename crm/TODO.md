@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **42 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **27 Tasks (64%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (33%)** |
+| **Completed Work Items** | ✅ Done | **28 Tasks (67%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **13 Tasks (31%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░] 64% Complete`
+`[████████████████░░░░░░░░] 67% Complete`
 
 ---
 
@@ -30,10 +30,6 @@
 - [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek Projectafronding**
   - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
   - **Tasks**: Vervang decoratieve placeholders door echte projectfoto's van Maico, voeg Google Analytics tracking toe, integreer Google Reviews widget/link (Formulier backend, deployment, favicon en Over Mij e-mailadres reeds voltooid).
-
-- [ ] `[TASK-802]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Arnold Design AI Scrape Protection & Showcase**
-  - **Scope**: Klantproject Arnold Design (`www.arnolddesign.nl`)
-  - **Tasks**: Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect), glas-in-lood galerij & dynamische filter categorieën afronden, showcase op Creation+Alt+Fix integreren.
 
 - [ ] `[TASK-803]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Website Prototype**
   - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`)
@@ -241,6 +237,10 @@
 - [x] `[TASK-703]` `[P2-HIGH]` `[STATUS: DONE]` **Volledige Site-Wide & Portal EN-NL Vertaling (Bilingual Localization)**
   - **Scope**: `website/js/script.js`, `website/js/subpage.js`, `website/js/cookie-consent.js`, `website/js/live-demo.js`, `website/*.html`, `crm/intake/`, `crm/status/`, `crm/index.html`, `crm/offerte/`
   - **Details**: Centraal 537-sleutel meertalig vertaalwoordenboek (NL/EN) over alle marketingpagina's, intakes en portalen met automatische taaldetectie en zonder herlaadvertraging.
+
+- [x] `[TASK-802]` `[P2-HIGH]` `[STATUS: DONE]` **Arnold Design AI Scrape Protection & Showcase Case Study**
+  - **Scope**: Klantproject Arnold Design (`www.arnolddesign.nl`), `website/projects/arnold-design/`, `website/projecten.html`
+  - **Details**: Complete 7-laagse Defense-in-Depth AI- en IP-beveiliging gerealiseerd: robots.txt crawler filter (20+ AI bots), .htaccess response headers (X-Robots-Tag: noai & EU TDM Directive 2019/790 Art. 4), Vimexx WAF rate limiting (512 KB/s op /images/), Sharp automated pixel watermarking pipeline (ingebakken watermerk, max 1400px, -88% bestandsgrootte naar 23MB, 7.5s build), client-side UI pointer-shield met rechtsklik toast-notificatie, HTML metadata declaraties, en juridisch AI-verbod in de Algemene Voorwaarden. Inclusief dynamische glas-in-lood filtergalerij (5 categorieën) en dedicated case study subpagina op `creationaltfix.nl/projects/arnold-design/`.
 
 ---
 

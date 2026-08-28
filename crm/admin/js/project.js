@@ -2140,9 +2140,9 @@ function getMockProject(id) {
         date: "25-08-2026",
         tasks: [
             { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
-            { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-08-30' },
-            { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-02' },
-            { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: false, status: 'todo', priority: 'medium', dueDate: '2026-09-05' }
+            { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-30' },
+            { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: true, status: 'done', priority: 'high', dueDate: '2026-09-02' },
+            { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-09-05' }
         ],
         internalNotes: [
             { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
