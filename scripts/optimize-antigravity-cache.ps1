@@ -1,25 +1,28 @@
 <#
 .SYNOPSIS
-    Optimalisatie- en compressie-tool voor Antigravity / Gemini cache en data.
+    Optimalisatie-, retentie- en opruimtool voor Antigravity / Gemini cache en data.
 .DESCRIPTION
-    1. Analyseert de omvang van C:\Users\Admin\.gemini
+    1. Analyseert de omvang van C:\Users\Admin\.gemini en antigravity-ide
     2. Verwijdert veilige tijdelijke browser cache (Chromium Cache & Code Cache)
-    3. Ruimt optioneel oude browser subagent video-opnames (.webp) op
-    4. Verwijdert overbodige oude backup-mappen
-    5. Past transparante Windows NTFS-compressie toe op de data- en conversatiebestanden (bespaart 60-80% schijfruimte zonder verlies van werking)
+    3. Ruimt oude browser subagent video-opnames (.webp) op
+    4. Verwijdert overbodige oude legacy mappen (antigravity en antigravity-backup)
+    5. Archiveert / ruimt oude afgesloten conversaties (.db/.jsonl) en brain werkmappen op ouder dan N dagen
+    6. Past transparante Windows NTFS-compressie toe op de data- en conversatiebestanden
 #>
 
 [CmdletBinding()]
 param (
+    [int]$RetentionDays = 30,
+    [switch]$CleanConversations = $true,
+    [switch]$CleanBrainFolders = $true,
     [switch]$CleanBrowserCache = $true,
     [switch]$CleanOldRecordings = $true,
-    [int]$RecordingsOlderThanDays = 7,
-    [switch]$CleanOldBackups = $true,
+    [switch]$CleanLegacyDirs = $true,
     [switch]$ApplyNTFSCompression = $true
 )
 
 Write-Host "=====================================================" -ForegroundColor Cyan
-Write-Host " Antigravity / Gemini Cache & Storage Optimizer " -ForegroundColor White
+Write-Host " Antigravity / Gemini Smart Storage & Cache Cleaner  " -ForegroundColor White
 Write-Host "=====================================================" -ForegroundColor Cyan
 
 $geminiPath = "$env:USERPROFILE\.gemini"
@@ -35,13 +38,41 @@ function Get-FolderSizeMB ([string]$path) {
     return 0
 }
 
-$initialSize = Get-FolderSizeMB $geminiPath
-$initialGB = [math]::Round($initialSize / 1024, 2)
-Write-Host "`nHuidige totale grootte van .gemini: $initialGB GB ($initialSize MB)" -ForegroundColor Yellow
+$initialTotal = Get-FolderSizeMB $geminiPath
+$initialIde = Get-FolderSizeMB "$geminiPath\antigravity-ide"
+Write-Host "`n[+] Huidige status:" -ForegroundColor Yellow
+Write-Host "  * Totale omvang .gemini:       $([math]::Round($initialTotal / 1024, 2)) GB ($initialTotal MB)" -ForegroundColor White
+Write-Host "  * Omvang antigravity-ide:     $([math]::Round($initialIde / 1024, 2)) GB ($initialIde MB)" -ForegroundColor White
 
-# 1. Browser Cache Opruimen
+$cutoff = (Get-Date).AddDays(-$RetentionDays)
+$totalFreedBytes = 0
+
+# 1. Oude redundante / legacy mappen opruimen
+if ($CleanLegacyDirs) {
+    Write-Host "`n[1/5] Oude legacy mappen controleren..." -ForegroundColor White
+    $legacyDirs = @(
+        "$geminiPath\antigravity-backup",
+        "$geminiPath\antigravity",
+        "$geminiPath\tmp"
+    )
+    foreach ($ld in $legacyDirs) {
+        if (Test-Path $ld) {
+            $szMB = Get-FolderSizeMB $ld
+            if ($ld -like "*tmp*") {
+                Get-ChildItem -Path "$ld\*" -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "  * Tijdelijke map geleegd: $ld ($szMB MB opgeruimd)" -ForegroundColor Green
+            } else {
+                Remove-Item $ld -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "  * Oude map verwijderd: $ld ($szMB MB opgeruimd)" -ForegroundColor Green
+            }
+            $totalFreedBytes += ($szMB * 1MB)
+        }
+    }
+}
+
+# 2. Browser Cache & Recordings Opruimen
 if ($CleanBrowserCache) {
-    Write-Host "`n[1/4] Tijdelijke Browser Cache opruimen..." -ForegroundColor White
+    Write-Host "`n[2/5] Tijdelijke Browser Cache & Opnames opruimen..." -ForegroundColor White
     $browserCacheDirs = @(
         "$geminiPath\antigravity-browser-profile\Default\Cache",
         "$geminiPath\antigravity-browser-profile\Default\Code Cache",
@@ -55,60 +86,83 @@ if ($CleanBrowserCache) {
             $sz = Get-FolderSizeMB $bDir
             Remove-Item "$bDir\*" -Recurse -Force -ErrorAction SilentlyContinue
             $leaf = Split-Path $bDir -Leaf
-            Write-Host "  * Opgeruimd: $leaf ($sz MB vrijgemaakt)" -ForegroundColor Green
+            Write-Host "  * Cache geleegd: $leaf ($sz MB vrijgemaakt)" -ForegroundColor Green
+            $totalFreedBytes += ($sz * 1MB)
         }
     }
 }
 
-# 2. Browser Video Recordings opruimen
 if ($CleanOldRecordings) {
-    Write-Host "`n[2/4] Browser Video Recordings (.webp) opruimen..." -ForegroundColor White
     $recDirs = @(
         "$geminiPath\antigravity-ide\browser_recordings",
-        "$geminiPath\antigravity\browser_recordings",
-        "$geminiPath\antigravity-backup\browser_recordings"
+        "$geminiPath\antigravity\browser_recordings"
     )
-    $cutoff = (Get-Date).AddDays(-$RecordingsOlderThanDays)
-    $removedCount = 0
-    $removedBytes = 0
-
+    $recCount = 0
+    $recBytes = 0
     foreach ($rDir in $recDirs) {
         if (Test-Path $rDir) {
             $files = Get-ChildItem $rDir -Filter "*.webp" -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -lt $cutoff }
             foreach ($f in $files) {
-                $removedBytes += $f.Length
-                $removedCount++
+                $recBytes += $f.Length
+                $recCount++
                 Remove-Item $f.FullName -Force -ErrorAction SilentlyContinue
             }
         }
     }
-    $freedMB = [math]::Round($removedBytes / 1MB, 2)
-    Write-Host "  * $removedCount video opnames ouder dan $RecordingsOlderThanDays dagen opgeruimd ($freedMB MB vrijgemaakt)" -ForegroundColor Green
-}
-
-# 3. Oude Backups opruimen
-if ($CleanOldBackups) {
-    Write-Host "`n[3/4] Oude redundante backup-mappen controleren..." -ForegroundColor White
-    $backupDir = "$geminiPath\antigravity-backup"
-    if (Test-Path $backupDir) {
-        $bSz = Get-FolderSizeMB $backupDir
-        Remove-Item $backupDir -Recurse -Force -ErrorAction SilentlyContinue
-        Write-Host "  * Oude map 'antigravity-backup' verwijderd ($bSz MB vrijgemaakt)" -ForegroundColor Green
-    } else {
-        Write-Host "  - Geen oude backup-mappen gevonden." -ForegroundColor DarkGray
+    if ($recCount -gt 0) {
+        $recMB = [math]::Round($recBytes / 1MB, 2)
+        Write-Host "  * $recCount video-opnames ouder dan $RetentionDays dagen verwijderd ($recMB MB vrijgemaakt)" -ForegroundColor Green
+        $totalFreedBytes += $recBytes
     }
 }
 
-# 4. Transparante Windows NTFS Compressie
+# 3. Oude conversaties opruimen (> RetentionDays)
+if ($CleanConversations) {
+    Write-Host "`n[3/5] Historische conversaties ouder dan $RetentionDays dagen opruimen..." -ForegroundColor White
+    $convDir = "$geminiPath\antigravity-ide\conversations"
+    if (Test-Path $convDir) {
+        $oldConvs = Get-ChildItem $convDir -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -lt $cutoff }
+        $cCount = 0
+        $cBytes = 0
+        foreach ($cf in $oldConvs) {
+            $cBytes += $cf.Length
+            $cCount++
+            Remove-Item $cf.FullName -Force -ErrorAction SilentlyContinue
+        }
+        $cMB = [math]::Round($cBytes / 1MB, 2)
+        Write-Host "  * $cCount oude conversatiebestanden opgeruimd ($cMB MB vrijgemaakt)" -ForegroundColor Green
+        $totalFreedBytes += $cBytes
+    }
+}
+
+# 4. Oude Brain / Sessie mappen opruimen (> RetentionDays)
+if ($CleanBrainFolders) {
+    Write-Host "`n[4/5] Oude Brain sessiewerkmappen ouder dan $RetentionDays dagen opruimen..." -ForegroundColor White
+    $brainDir = "$geminiPath\antigravity-ide\brain"
+    if (Test-Path $brainDir) {
+        $oldBrains = Get-ChildItem $brainDir -Directory -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -lt $cutoff }
+        $bCount = 0
+        $bBytes = 0
+        foreach ($bd in $oldBrains) {
+            $files = Get-ChildItem $bd.FullName -Recurse -File -ErrorAction SilentlyContinue
+            $sz = ($files | Measure-Object -Property Length -Sum).Sum
+            if ($sz) { $bBytes += $sz }
+            $bCount++
+            Remove-Item $bd.FullName -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        $bMB = [math]::Round($bBytes / 1MB, 2)
+        Write-Host "  * $bCount oude sessieworkspaces opgeruimd ($bMB MB vrijgemaakt)" -ForegroundColor Green
+        $totalFreedBytes += $bBytes
+    }
+}
+
+# 5. Transparante Windows NTFS Compressie toepassen
 if ($ApplyNTFSCompression) {
-    Write-Host "`n[4/4] Windows NTFS-compressie toepassen op tekst- en JSONL-bestanden..." -ForegroundColor White
-    Write-Host "  (Comprimeert data transparant op schijf zonder verlies van werking)" -ForegroundColor DarkGray
-    
+    Write-Host "`n[5/5] Transparante Windows NTFS-compressie toepassen op resterende data..." -ForegroundColor White
     $targetDirs = @(
         "$geminiPath\antigravity-ide\conversations",
         "$geminiPath\antigravity-ide\brain",
-        "$geminiPath\antigravity-ide\implicit",
-        "$geminiPath\antigravity\conversations"
+        "$geminiPath\antigravity-ide\implicit"
     )
     foreach ($tDir in $targetDirs) {
         if (Test-Path $tDir) {
@@ -119,13 +173,16 @@ if ($ApplyNTFSCompression) {
     }
 }
 
-$finalSize = Get-FolderSizeMB $geminiPath
-$finalGB = [math]::Round($finalSize / 1024, 2)
-$savedMB = [math]::Round($initialSize - $finalSize, 2)
+$finalTotal = Get-FolderSizeMB $geminiPath
+$finalIde = Get-FolderSizeMB "$geminiPath\antigravity-ide"
+$totalSavedMB = [math]::Round($initialTotal - $finalTotal, 2)
 
 Write-Host "`n=====================================================" -ForegroundColor Cyan
-Write-Host " Optimalisatie Voltooid!" -ForegroundColor Green
-Write-Host " Oorspronkelijke grootte: $initialGB GB ($initialSize MB)" -ForegroundColor DarkGray
-Write-Host " Nieuwe grootte:          $finalGB GB ($finalSize MB)" -ForegroundColor Green
-Write-Host " Direct vrijgemaakt:      $savedMB MB" -ForegroundColor Yellow
+Write-Host " Optimalisatie & Schoonmaak Succesvol Voltooid!" -ForegroundColor Green
+Write-Host "-----------------------------------------------------" -ForegroundColor DarkGray
+Write-Host " Oorspronkelijke omvang:  $([math]::Round($initialTotal / 1024, 2)) GB ($initialTotal MB)" -ForegroundColor DarkGray
+Write-Host " Nieuwe totale omvang:    $([math]::Round($finalTotal / 1024, 2)) GB ($finalTotal MB)" -ForegroundColor Green
+Write-Host " Nieuwe antigravity-ide:  $([math]::Round($finalIde / 1024, 2)) GB ($finalIde MB)" -ForegroundColor Green
+Write-Host " Direct Vrijgemaakt:      $totalSavedMB MB" -ForegroundColor Yellow
 Write-Host "=====================================================" -ForegroundColor Cyan
+
