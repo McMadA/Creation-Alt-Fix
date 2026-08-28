@@ -54,8 +54,21 @@ if ($Frequency -eq "Daily") {
 $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 2)
 
-# Register the Scheduled Task
+# Register Vimexx Task
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Automatische complete server backup van alle 12 domeinen, databases en mailboxen op Vimexx DirectAdmin (Creation+Alt+Fix TASK-811)." | Out-Null
 
 Write-Host "`n  [OK] Windows Taakplanner taak '$taskName' succesvol geregistreerd!" -ForegroundColor Green
 Write-Host "  De server backup zal automatisch $Frequency draaien om $Time uur." -ForegroundColor Cyan
+
+# Register CRM Export Task (Daily at 20:30)
+$crmTaskName = "CreationAltFix-CRM-Daily-Export"
+$crmScript = Join-Path $scriptDir "backup-crm-data.ps1"
+if (Test-Path $crmScript) {
+    $existingCrm = Get-ScheduledTask -TaskName $crmTaskName -ErrorAction SilentlyContinue
+    if ($existingCrm) { Unregister-ScheduledTask -TaskName $crmTaskName -Confirm:$false }
+    $crmAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$crmScript`" -Quiet"
+    $crmTrigger = New-ScheduledTaskTrigger -Daily -At "20:30"
+    Register-ScheduledTask -TaskName $crmTaskName -Action $crmAction -Trigger $crmTrigger -Principal $principal -Settings $settings -Description "Dagelijkse geautomatiseerde CSV export van alle 13 CRM-klantendossiers en offertes (Creation+Alt+Fix)." | Out-Null
+    Write-Host "  [OK] Windows Taakplanner taak '$crmTaskName' succesvol geregistreerd (Dagelijks 20:30 uur)!" -ForegroundColor Green
+}
+

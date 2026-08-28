@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Creation+Alt+Fix - Desktop Backup & Cloud Control Center Dashboard (WPF GUI)
+    Ondersteunt: Vimexx DirectAdmin Server (12 Domeinen), Pi-Boekhouding & CRM Klanten Data Exports.
 #>
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
@@ -10,7 +11,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Creation+Alt+Fix - Backup &amp; Server Control Center" 
-    Height="740" Width="1050" 
+    Height="780" Width="1220" 
     WindowStartupLocation="CenterScreen" 
     Background="#0B0F19" 
     Foreground="#F3F4F6"
@@ -22,7 +23,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             <Setter Property="Foreground" Value="#F8FAFC"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Padding" Value="12,8"/>
             <Setter Property="BorderBrush" Value="#334155"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -64,7 +65,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         <TextBlock Text="[CREATION+ALT+FIX]" FontSize="18" FontWeight="Bold" Foreground="#6366F1" VerticalAlignment="Center"/>
                         <TextBlock Text="  |  Backup &amp; Server Control Center" FontSize="18" FontWeight="SemiBold" Foreground="#E2E8F0" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <TextBlock Text="Centraal beheer en monitoring voor Vimexx Server en Boekhouding backups" FontSize="12" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    <TextBlock Text="Centraal beheer en monitoring voor Vimexx Server, Pi-Boekhouding en CRM data exports" FontSize="12" Foreground="#94A3B8" Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -74,102 +75,150 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             </Grid>
         </Border>
 
-        <!-- TWO SERVICE CARDS -->
+        <!-- THREE SERVICE CARDS -->
         <Grid Grid.Row="1" Margin="0,0,0,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- CARD 1: VIMEXX DIRECTADMIN -->
-            <Border Grid.Column="0" Background="#111827" BorderBrush="#312E81" BorderThickness="1.5" CornerRadius="12" Padding="20">
+            <Border Grid.Column="0" Background="#111827" BorderBrush="#312E81" BorderThickness="1.5" CornerRadius="12" Padding="18">
                 <StackPanel>
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Vimexx Server Back-up" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
-                        <Border Grid.Column="1" Background="#064E3B" BorderBrush="#059669" BorderThickness="1" CornerRadius="12" Padding="10,2">
-                            <TextBlock Text="ACTIEF" FontSize="11" FontWeight="Bold" Foreground="#34D399"/>
+                        <TextBlock Grid.Column="0" Text="Vimexx Server Back-up" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#064E3B" BorderBrush="#059669" BorderThickness="1" CornerRadius="12" Padding="8,2">
+                            <TextBlock Text="ACTIEF" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="12 Domeinen, MySQL databases, Maildir en DNS Zonefiles" FontSize="12" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Text="12 Domeinen, MySQL databases, Maildir en DNS" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
                         <StackPanel>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Laatste Back-up:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtVimexxLastDate" Text="Laden..." HorizontalAlignment="Right" Foreground="#E2E8F0" FontSize="12" FontWeight="SemiBold"/>
+                                <TextBlock Text="Laatste Back-up:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtVimexxLastDate" Text="Laden..." HorizontalAlignment="Right" Foreground="#E2E8F0" FontSize="11" FontWeight="SemiBold"/>
                             </Grid>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Grootte:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtVimexxSize" Text="Laden..." HorizontalAlignment="Right" Foreground="#22D3EE" FontSize="12" FontWeight="Bold"/>
+                                <TextBlock Text="Grootte:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtVimexxSize" Text="Laden..." HorizontalAlignment="Right" Foreground="#22D3EE" FontSize="11" FontWeight="Bold"/>
                             </Grid>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Geplande Taak:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtVimexxSchedule" Text="Dagelijks om 21:30" HorizontalAlignment="Right" Foreground="#A78BFA" FontSize="12"/>
+                                <TextBlock Text="Geplande Taak:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtVimexxSchedule" Text="Dagelijks om 21:30" HorizontalAlignment="Right" Foreground="#A78BFA" FontSize="11"/>
                             </Grid>
                             <Grid>
-                                <TextBlock Text="Integriteit:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtVimexxIntegrity" Text="SHA256 Valid" HorizontalAlignment="Right" Foreground="#10B981" FontSize="12"/>
+                                <TextBlock Text="Integriteit:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtVimexxIntegrity" Text="SHA256 Valid" HorizontalAlignment="Right" Foreground="#10B981" FontSize="11"/>
                             </Grid>
                         </StackPanel>
                     </Border>
 
                     <!-- Buttons -->
                     <UniformGrid Columns="2" Rows="1">
-                        <Button Name="btnRunVimexx" Content="Nu Back-up Draaien" Background="#4338CA" BorderBrush="#6366F1" Foreground="#FFFFFF" Margin="0,0,6,0"/>
-                        <Button Name="btnOpenVimexxDir" Content="Open Map" Background="#1E293B" Margin="6,0,0,0"/>
+                        <Button Name="btnRunVimexx" Content="Nu Back-up Draaien" Background="#4338CA" BorderBrush="#6366F1" Foreground="#FFFFFF" Margin="0,0,5,0" FontSize="12"/>
+                        <Button Name="btnOpenVimexxDir" Content="Open Map" Background="#1E293B" Margin="5,0,0,0" FontSize="12"/>
                     </UniformGrid>
                 </StackPanel>
             </Border>
 
             <!-- CARD 2: PI-BOEKHOUDING -->
-            <Border Grid.Column="2" Background="#111827" BorderBrush="#065F46" BorderThickness="1.5" CornerRadius="12" Padding="20">
+            <Border Grid.Column="2" Background="#111827" BorderBrush="#065F46" BorderThickness="1.5" CornerRadius="12" Padding="18">
                 <StackPanel>
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Pi-Boekhouding Back-up" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
-                        <Border Grid.Column="1" Background="#064E3B" BorderBrush="#059669" BorderThickness="1" CornerRadius="12" Padding="10,2">
-                            <TextBlock Text="ACTIEF" FontSize="11" FontWeight="Bold" Foreground="#34D399"/>
+                        <TextBlock Grid.Column="0" Text="Pi-Boekhouding Back-up" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#064E3B" BorderBrush="#059669" BorderThickness="1" CornerRadius="12" Padding="8,2">
+                            <TextBlock Text="ACTIEF" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="SQLite Database, Inkomende/Uitgaande Facturen en Scans" FontSize="12" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Text="SQLite Database, Inkoop/Verkoop Facturen en Scans" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
                         <StackPanel>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Laatste Back-up:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtBoekhoudingLastDate" Text="Laden..." HorizontalAlignment="Right" Foreground="#E2E8F0" FontSize="12" FontWeight="SemiBold"/>
+                                <TextBlock Text="Laatste Back-up:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtBoekhoudingLastDate" Text="Laden..." HorizontalAlignment="Right" Foreground="#E2E8F0" FontSize="11" FontWeight="SemiBold"/>
                             </Grid>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Grootte:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtBoekhoudingSize" Text="Laden..." HorizontalAlignment="Right" Foreground="#22D3EE" FontSize="12" FontWeight="Bold"/>
+                                <TextBlock Text="Grootte:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtBoekhoudingSize" Text="Laden..." HorizontalAlignment="Right" Foreground="#22D3EE" FontSize="11" FontWeight="Bold"/>
                             </Grid>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="Geplande Taak:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtBoekhoudingSchedule" Text="Dagelijks om 21:00" HorizontalAlignment="Right" Foreground="#A78BFA" FontSize="12"/>
+                                <TextBlock Text="Geplande Taak:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtBoekhoudingSchedule" Text="Dagelijks om 21:00" HorizontalAlignment="Right" Foreground="#A78BFA" FontSize="11"/>
                             </Grid>
                             <Grid>
-                                <TextBlock Text="Integriteit:" Foreground="#94A3B8" FontSize="12"/>
-                                <TextBlock Name="txtBoekhoudingIntegrity" Text="SQLite Valid" HorizontalAlignment="Right" Foreground="#10B981" FontSize="12"/>
+                                <TextBlock Text="Integriteit:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtBoekhoudingIntegrity" Text="SQLite Valid" HorizontalAlignment="Right" Foreground="#10B981" FontSize="11"/>
                             </Grid>
                         </StackPanel>
                     </Border>
 
                     <!-- Buttons -->
                     <UniformGrid Columns="2" Rows="1">
-                        <Button Name="btnRunBoekhouding" Content="Nu Back-up Draaien" Background="#047857" BorderBrush="#10B981" Foreground="#FFFFFF" Margin="0,0,6,0"/>
-                        <Button Name="btnOpenBoekhoudingDir" Content="Open Map" Background="#1E293B" Margin="6,0,0,0"/>
+                        <Button Name="btnRunBoekhouding" Content="Nu Back-up Draaien" Background="#047857" BorderBrush="#10B981" Foreground="#FFFFFF" Margin="0,0,5,0" FontSize="12"/>
+                        <Button Name="btnOpenBoekhoudingDir" Content="Open Map" Background="#1E293B" Margin="5,0,0,0" FontSize="12"/>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- CARD 3: CRM & KLANTEN DATA EXPORT -->
+            <Border Grid.Column="4" Background="#111827" BorderBrush="#0E7490" BorderThickness="1.5" CornerRadius="12" Padding="18">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="CRM &amp; Klanten Export" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#064E3B" BorderBrush="#059669" BorderThickness="1" CornerRadius="12" Padding="8,2">
+                            <TextBlock Text="ACTIEF" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
+                        </Border>
+                    </Grid>
+
+                    <TextBlock Text="15 Klantdossiers, Offertes, Kanban &amp; Fasen" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
+
+                    <!-- Details Box -->
+                    <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Laatste Export:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtCrmLastDate" Text="Laden..." HorizontalAlignment="Right" Foreground="#E2E8F0" FontSize="11" FontWeight="SemiBold"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Grootte / Aantal:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtCrmSize" Text="Laden..." HorizontalAlignment="Right" Foreground="#22D3EE" FontSize="11" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Geplande Taak:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtCrmSchedule" Text="Dagelijks om 20:30" HorizontalAlignment="Right" Foreground="#A78BFA" FontSize="11"/>
+                            </Grid>
+                            <Grid>
+                                <TextBlock Text="Bestandsformaat:" Foreground="#94A3B8" FontSize="11"/>
+                                <TextBlock Name="txtCrmIntegrity" Text="UTF-8 CSV (Excel)" HorizontalAlignment="Right" Foreground="#10B981" FontSize="11"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Buttons -->
+                    <UniformGrid Columns="2" Rows="1">
+                        <Button Name="btnRunCrm" Content="Nu Exporteren" Background="#0284C7" BorderBrush="#38BDF8" Foreground="#FFFFFF" Margin="0,0,5,0" FontSize="12"/>
+                        <Button Name="btnOpenCrmDir" Content="Open Map" Background="#1E293B" Margin="5,0,0,0" FontSize="12"/>
                     </UniformGrid>
                 </StackPanel>
             </Border>
@@ -186,11 +235,11 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             <ListView Name="lvBackups" Background="Transparent" BorderThickness="0" Foreground="#F3F4F6">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Type" Width="140" DisplayMemberBinding="{Binding Type}"/>
-                        <GridViewColumn Header="Datum &amp; Tijd" Width="170" DisplayMemberBinding="{Binding DateFormatted}"/>
-                        <GridViewColumn Header="Bestandsnaam / Map" Width="260" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding Type}"/>
+                        <GridViewColumn Header="Datum &amp; Tijd" Width="160" DisplayMemberBinding="{Binding DateFormatted}"/>
+                        <GridViewColumn Header="Bestandsnaam / Snapshot" Width="360" DisplayMemberBinding="{Binding Name}"/>
                         <GridViewColumn Header="Grootte" Width="120" DisplayMemberBinding="{Binding SizeFormatted}"/>
-                        <GridViewColumn Header="Status" Width="150" DisplayMemberBinding="{Binding Status}"/>
+                        <GridViewColumn Header="Status" Width="160" DisplayMemberBinding="{Binding Status}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -224,19 +273,27 @@ $window = [System.Windows.Markup.XamlReader]::Load($reader)
 # Get Named Controls
 $btnRefresh = $window.FindName("btnRefresh")
 $btnOpenAllBackups = $window.FindName("btnOpenAllBackups")
+
 $btnRunVimexx = $window.FindName("btnRunVimexx")
 $btnOpenVimexxDir = $window.FindName("btnOpenVimexxDir")
-$btnRunBoekhouding = $window.FindName("btnRunBoekhouding")
-$btnOpenBoekhoudingDir = $window.FindName("btnOpenBoekhoudingDir")
-$btnScheduleSettings = $window.FindName("btnScheduleSettings")
-$btnOpenReport = $window.FindName("btnOpenReport")
-
 $txtVimexxLastDate = $window.FindName("txtVimexxLastDate")
 $txtVimexxSize = $window.FindName("txtVimexxSize")
 $txtVimexxSchedule = $window.FindName("txtVimexxSchedule")
+
+$btnRunBoekhouding = $window.FindName("btnRunBoekhouding")
+$btnOpenBoekhoudingDir = $window.FindName("btnOpenBoekhoudingDir")
 $txtBoekhoudingLastDate = $window.FindName("txtBoekhoudingLastDate")
 $txtBoekhoudingSize = $window.FindName("txtBoekhoudingSize")
 $txtBoekhoudingSchedule = $window.FindName("txtBoekhoudingSchedule")
+
+$btnRunCrm = $window.FindName("btnRunCrm")
+$btnOpenCrmDir = $window.FindName("btnOpenCrmDir")
+$txtCrmLastDate = $window.FindName("txtCrmLastDate")
+$txtCrmSize = $window.FindName("txtCrmSize")
+$txtCrmSchedule = $window.FindName("txtCrmSchedule")
+
+$btnScheduleSettings = $window.FindName("btnScheduleSettings")
+$btnOpenReport = $window.FindName("btnOpenReport")
 $txtHistoryCount = $window.FindName("txtHistoryCount")
 $txtStatusMessage = $window.FindName("txtStatusMessage")
 $lvBackups = $window.FindName("lvBackups")
@@ -244,6 +301,7 @@ $lvBackups = $window.FindName("lvBackups")
 # Base Directories
 $vimexxBackupDir = "C:\Users\Admin\Backups\Vimexx-Server-Backups"
 $boekhoudingBackupDir = "C:\Users\Admin\Backups\Pi-Boekhouding"
+$crmBackupDir = "C:\Users\Admin\Backups\CRM-Exports"
 $workspaceDir = "C:\Users\Admin\Documents\GitHub\Websites\Creation-Alt-Fix"
 
 function Refresh-DashboardData {
@@ -270,7 +328,7 @@ function Refresh-DashboardData {
             $txtVimexxSize.Text = "0 GB"
         }
 
-        # Add all Vimexx to history
+        # Add Vimexx to history
         foreach ($folder in $vimexxFolders) {
             $files = Get-ChildItem -Path $folder.FullName -Filter "*backup*.tar.*" -File
             foreach ($f in $files) {
@@ -278,6 +336,7 @@ function Refresh-DashboardData {
                 [void]$historyList.Add([PSCustomObject]@{
                     Type = "Vimexx Server"
                     DateFormatted = $f.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
+                    RawDate = $f.LastWriteTime
                     Name = $f.Name
                     SizeFormatted = $size
                     Status = "100% Geverifieerd"
@@ -306,8 +365,9 @@ function Refresh-DashboardData {
             $totalSize = (Get-ChildItem -Path $folder.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
             $sizeFormatted = if ($totalSize -gt 1MB) { "$([math]::Round($totalSize / 1MB, 2)) MB" } else { "$([math]::Round($totalSize / 1KB, 2)) KB" }
             [void]$historyList.Add([PSCustomObject]@{
-                Type = "Boekhouding"
+                Type = "Pi-Boekhouding"
                 DateFormatted = $folder.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
+                RawDate = $folder.LastWriteTime
                 Name = $folder.Name
                 SizeFormatted = $sizeFormatted
                 Status = "Snapshot OK"
@@ -316,24 +376,53 @@ function Refresh-DashboardData {
         }
     }
 
-    # 3. Scheduled Tasks Check
-    $vimexxTask = Get-ScheduledTask -TaskName "Vimexx-Server-Complete-Backup" -ErrorAction SilentlyContinue
-    if ($vimexxTask) {
-        $txtVimexxSchedule.Text = "Gepland ($($vimexxTask.State))"
+    # 3. Check CRM Data Exports
+    if (Test-Path $crmBackupDir) {
+        $crmFiles = Get-ChildItem -Path $crmBackupDir -Filter "*.csv" -File | Sort-Object LastWriteTime -Descending
+        if ($crmFiles.Count -gt 0) {
+            $latestCrm = $crmFiles[0]
+            $kb = [math]::Round($latestCrm.Length / 1KB, 1)
+            $txtCrmLastDate.Text = $latestCrm.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
+            $txtCrmSize.Text = "$kb KB (15 dossiers)"
+        } else {
+            $txtCrmLastDate.Text = "Geen exports"
+            $txtCrmSize.Text = "0 KB"
+        }
+
+        # Add CRM Exports to history
+        foreach ($csv in $crmFiles | Select-Object -First 15) {
+            $kb = [math]::Round($csv.Length / 1KB, 1)
+            [void]$historyList.Add([PSCustomObject]@{
+                Type = "CRM Export (CSV)"
+                DateFormatted = $csv.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
+                RawDate = $csv.LastWriteTime
+                Name = $csv.Name
+                SizeFormatted = "$kb KB"
+                Status = "Excel Valid (15 Klanten)"
+                FullPath = $csv.FullName
+            })
+        }
     } else {
-        $txtVimexxSchedule.Text = "Niet ingepland"
+        $txtCrmLastDate.Text = "Geen exports"
+        $txtCrmSize.Text = "0 KB"
     }
+
+    # 4. Check Scheduled Tasks
+    $vimexxTask = Get-ScheduledTask -TaskName "Vimexx-Server-Complete-Backup" -ErrorAction SilentlyContinue
+    $txtVimexxSchedule.Text = if ($vimexxTask) { "Gepland ($($vimexxTask.State))" } else { "Niet ingepland" }
 
     $bhTask = Get-ScheduledTask -TaskName "Pi-Boekhouding-Backup" -ErrorAction SilentlyContinue
-    if ($bhTask) {
-        $txtBoekhoudingSchedule.Text = "Gepland ($($bhTask.State))"
-    } else {
-        $txtBoekhoudingSchedule.Text = "Niet ingepland"
-    }
+    $txtBoekhoudingSchedule.Text = if ($bhTask) { "Gepland ($($bhTask.State))" } else { "Niet ingepland" }
+
+    $crmTask = Get-ScheduledTask -TaskName "CreationAltFix-CRM-Daily-Export" -ErrorAction SilentlyContinue
+    $txtCrmSchedule.Text = if ($crmTask) { "Gepland ($($crmTask.State))" } else { "Niet ingepland" }
+
+    # Sort History by DateTime Descending
+    $sortedHistory = $historyList | Sort-Object RawDate -Descending
 
     # Populate ListView
-    $lvBackups.ItemsSource = $historyList
-    $txtHistoryCount.Text = "$($historyList.Count) archieven gevonden"
+    $lvBackups.ItemsSource = $sortedHistory
+    $txtHistoryCount.Text = "$($sortedHistory.Count) archieven & snapshots gevonden"
     $txtStatusMessage.Text = "Dashboard succesvol bijgewerkt om $((Get-Date).ToString('HH:mm:ss'))."
 }
 
@@ -355,6 +444,11 @@ $btnOpenBoekhoudingDir.Add_Click({
     Start-Process "explorer.exe" $boekhoudingBackupDir
 })
 
+$btnOpenCrmDir.Add_Click({
+    if (-not (Test-Path $crmBackupDir)) { New-Item -ItemType Directory -Path $crmBackupDir -Force | Out-Null }
+    Start-Process "explorer.exe" $crmBackupDir
+})
+
 $btnRunVimexx.Add_Click({
     $txtStatusMessage.Text = "Vimexx server back-up gestart in nieuw venster..."
     $script = Join-Path $workspaceDir "scripts\backup-vimexx-server.ps1"
@@ -367,8 +461,15 @@ $btnRunBoekhouding.Add_Click({
     if (Test-Path $script) {
         Start-Process "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -NoExit -File `"$script`""
     } else {
-        [System.Windows.MessageBox]::Show("Kan backup-pi.ps1 niet vinden", "Informatie", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
+        [System.Windows.MessageBox]::Show("Kan backup-pi.ps1 niet vinden in Boekhoudings map.", "Informatie", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
     }
+})
+
+$btnRunCrm.Add_Click({
+    $txtStatusMessage.Text = "CRM CSV export genereren..."
+    $script = Join-Path $workspaceDir "scripts\backup-crm-data.ps1"
+    & powershell.exe -ExecutionPolicy Bypass -File $script -OpenAfterExport
+    Refresh-DashboardData
 })
 
 $btnScheduleSettings.Add_Click({

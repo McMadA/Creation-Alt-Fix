@@ -8,3 +8,4 @@ Thumbs.db
 *.sql
 *.backup
 scripts/vimexx-credentials.json
+scripts/crm-credentials.json

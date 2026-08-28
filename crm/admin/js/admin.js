@@ -196,43 +196,6 @@ const API = {
     getMockProjects() {
         return [
             {
-                id: 1,
-                client: "Bakkerij de Vries",
-                companyName: "Bakkerij de Vries",
-                contactName: "Jan de Vries",
-                email: "jan@bakkerijdevries.nl",
-                domainName: "www.bakkerijdevries.nl",
-                domain: "www.bakkerijdevries.nl",
-                service: "Webshop Laten Maken",
-                goals: "Online bestelsysteem voor ambachtelijk brood & gebak.",
-                design: "Modern, warm, ambachtelijk met oranje tinten.",
-                status: "In Ontwikkeling",
-                statusClass: "active",
-                date: "12-08-2026",
-                tasks: [
-                    { id: 't1_1', title: 'iDEAL & Mollie betaalkoppeling testen', status: 'inprogress', priority: 'high', dueDate: '2026-08-28' },
-                    { id: 't1_2', title: 'Productcategorieën en allergenen invoeren', status: 'todo', priority: 'medium', dueDate: '2026-08-30' }
-                ]
-            },
-            {
-                id: 2,
-                client: "Jansen IT Consulting",
-                companyName: "Jansen IT Consulting",
-                contactName: "Mark Jansen",
-                email: "mark@jansen-it.nl",
-                domainName: "www.jansen-it.nl",
-                domain: "www.jansen-it.nl",
-                service: "Slimme Automatisering & AI",
-                goals: "Lead intake automatiseren met AI e-mail drafts.",
-                design: "Zakelijk, minimalistisch, strak blauw.",
-                status: "Wacht op Akkoord",
-                statusClass: "waiting",
-                date: "11-08-2026",
-                tasks: [
-                    { id: 't2_1', title: 'AI prompt tuning & webhook testen', status: 'review', priority: 'high', dueDate: '2026-08-27' }
-                ]
-            },
-            {
                 id: 3,
                 client: "Stenekes Riool & Grondwerk",
                 companyName: "Stenekes Riool & Grondwerk",
@@ -248,24 +211,6 @@ const API = {
                 date: "08-08-2026",
                 tasks: [
                     { id: 't3_1', title: 'Livegang en Google Bedrijfsprofiel koppeling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' }
-                ]
-            },
-            {
-                id: 4,
-                client: "Kapsalon Bella",
-                companyName: "Kapsalon Bella",
-                contactName: "Bella Visser",
-                email: "afspraken@kapsalonbella.nl",
-                domainName: "www.kapsalonbella.nl",
-                domain: "www.kapsalonbella.nl",
-                service: "Website & Afsprakensysteem",
-                goals: "Online agenda koppeling voor knipafspraken.",
-                design: "Pastel roze, goud, elegant.",
-                status: "Nieuwe Lead",
-                statusClass: "concept",
-                date: "13-08-2026",
-                tasks: [
-                    { id: 't4_1', title: 'Intakegesprek inplannen & wensen inventariseren', status: 'todo', priority: 'high', dueDate: '2026-08-29' }
                 ]
             },
             {
@@ -434,30 +379,6 @@ const API = {
                 ],
                 auditLog: [
                     { id: 'ang_l1', timestamp: '2026-08-25T16:00:00Z', type: 'lead_created', description: 'Lead aangemaakt vanuit Microsoft To Do.', actor: 'Allard' }
-                ]
-            },
-            {
-                id: 10,
-                client: "Home Buyer Intelligence",
-                companyName: "Home Buyer Intelligence (PropTech AI)",
-                contactName: "Allard Veldman",
-                email: "info@creationaltfix.nl",
-                domainName: "hbi.creationaltfix.nl",
-                domain: "hbi.creationaltfix.nl",
-                service: "PropTech AI Webapplicatie",
-                goals: "Intelligente vastgoeddata analyse en geautomatiseerde aankoopadviezen met AI Revisor agent in local mode.",
-                design: "Modern dashboard, 3D architectuur visualisatie, real-time filters.",
-                status: "In Ontwikkeling",
-                statusClass: "active",
-                date: "25-08-2026",
-                tasks: [
-                    { id: 'hbi_1', title: '[TASK-804] Home Buyer Intelligence (PropTech AI) Afronding', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
-                ],
-                internalNotes: [
-                    { id: 'hbi_n1', text: 'Local mode architectuur diagram is al opgenomen in de showcase portfolio.', createdAt: '2026-08-25T17:00:00Z', author: 'Allard' }
-                ],
-                auditLog: [
-                    { id: 'hbi_l1', timestamp: '2026-08-25T17:00:00Z', type: 'data_updated', description: 'Project deliverables gesynchroniseerd.', actor: 'Allard' }
                 ]
             },
             {
@@ -853,33 +774,81 @@ function setupSearchAndFilters() {
 }
 
 window.exportProjectsToCSV = () => {
-    if (cachedProjects.length === 0) return alert("Geen projectgegevens om te exporteren.");
+    if (!cachedProjects || cachedProjects.length === 0) return alert("Geen projectgegevens om te exporteren.");
 
-    const headers = ["ID", "Klant / Bedrijf", "Contactpersoon", "E-mailadres", "Domeinnaam", "Dienst", "Status", "Offertebedrag (EUR)", "Voltooide Taken", "Totale Taken", "Datum"];
+    const getPhaseTag = (status) => {
+        if (!status) return "Fase 1: Intake Voltooid";
+        if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Fase 1: Intake Voltooid";
+        if (status.includes("Wacht op Akkoord") || status.includes("Offerte")) return "Fase 2: Offerte & Akkoord";
+        if (status.includes("Design")) return "Fase 3: Design & Ontwerp";
+        if (status.includes("Ontwikkeling")) return "Fase 4: In Ontwikkeling";
+        if (status.includes("Mollie") || status.includes("Opgeleverd") || status.includes("Afgerond") || status.includes("Livegang")) return "Fase 5: Opgeleverd (Livegang)";
+        return "Fase 1: Intake Voltooid";
+    };
+
+    const headers = [
+        "Project ID",
+        "Klantnaam",
+        "Bedrijfsnaam",
+        "Contactpersoon",
+        "E-mailadres",
+        "Telefoonnummer",
+        "Domeinnaam",
+        "Dienst",
+        "Categorie",
+        "Huidige Fase",
+        "Status Omschrijving",
+        "Offertebedrag Excl BTW (EUR)",
+        "Offertebedrag Incl 21% BTW (EUR)",
+        "Doelstellingen & Scope",
+        "Design Voorkeuren / Thema",
+        "Voltooide Taken",
+        "Openstaande Taken",
+        "Totale Taken",
+        "Aanmaakdatum",
+        "Laatste Update"
+    ];
+
     const rows = cachedProjects.map(p => {
         const tasks = p.tasks || [];
         const doneTasks = tasks.filter(t => t.completed || t.status === 'done').length;
+        const openTasks = tasks.length - doneTasks;
+        
+        // Parse raw proposal price
+        const priceClean = (p.proposalPrice || "0").toString().replace(/[^0-9,.-]/g, '').replace('.', ',');
+        const numPrice = parseFloat((p.proposalPrice || "0").toString().replace(',', '.')) || 0;
+        const numWithVat = (numPrice * 1.21).toFixed(2).replace('.', ',');
+
         return [
             `"${p.id || ''}"`,
             `"${(p.client || p.companyName || '').replace(/"/g, '""')}"`,
-            `"${(p.contactName || '').replace(/"/g, '""')}"`,
+            `"${(p.companyName || p.client || '').replace(/"/g, '""')}"`,
+            `"${(p.contactName || p.client || '').replace(/"/g, '""')}"`,
             `"${(p.email || '').replace(/"/g, '""')}"`,
+            `"${(p.phone || p.telephone || '+31 6 12345678').replace(/"/g, '""')}"`,
             `"${(p.domainName || p.domain || '').replace(/"/g, '""')}"`,
             `"${(p.service || '').replace(/"/g, '""')}"`,
+            `"${(p.serviceCategory || p.category || 'MKB Web & Cloud').replace(/"/g, '""')}"`,
+            `"${getPhaseTag(p.status)}"`,
             `"${(p.status || '').replace(/"/g, '""')}"`,
-            `"${(p.proposalPrice || '0').replace(/"/g, '""')}"`,
+            `"${priceClean}"`,
+            `"${numWithVat}"`,
+            `"${(p.goals || p.projectGoals || '').replace(/"/g, '""')}"`,
+            `"${(p.design || p.designPreferences || '').replace(/"/g, '""')}"`,
             doneTasks,
+            openTasks,
             tasks.length,
-            `"${(p.date || '').replace(/"/g, '""')}"`
+            `"${(p.date || '25-08-2026').replace(/"/g, '""')}"`,
+            `"${new Date().toLocaleDateString('nl-NL')}"`
         ].join(";");
     });
 
-    const csvContent = "\uFEFF" + [headers.join(";"), ...rows].join("\r\n");
+    const csvContent = "\uFEFF" + [headers.map(h => `"${h}"`).join(";"), ...rows].join("\r\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `CreationAltFix_Projecten_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `CreationAltFix_CRM_Projecten_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

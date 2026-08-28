@@ -52,14 +52,18 @@ powershell -ExecutionPolicy Bypass -File scripts\backup-vimexx-server.ps1
 
 ## 🖥️ Desktop Backup Control Center App
 
-Je kunt het **Creation+Alt+Fix Backup & Server Control Center** direct openen vanaf je bureaublad:
-1. Dubbelklik op **`Creation+Alt+Fix Backup Manager.lnk`** of **`Start_Backup_Manager.bat`** op je bureaublad (`C:\Users\Admin\Desktop\`).
-2. Het dashboard toont direct:
-   - 🌐 **Vimexx Server Back-up:** Laatste run, bestandsgrootte (10.62 GB), geplande taak en SHA256 integriteit.
-   - 📚 **Pi-Boekhouding Back-up:** Laatste snapshot, SQLite databases en facturen.
-   - ⚡ **1-Klik Knoppen:** Direct back-up draaien voor Vimexx of Boekhouding.
-   - 📂 **1-Klik Mappen:** Direct openen van de archieflocaties in Windows Verkenner.
-   - 📋 **Historie & Inspectielog:** Overzicht van alle gemaakte back-up snapshots.
+Je kunt het **Creation+Alt+Fix Backup & Server Control Center** op 3 manieren openen:
+1. **Vanuit het CRM Instellingen Dashboard:** Klik onder *Cloud Infrastructure* op **`Start Desktop Backup Manager App`** (werkt direct in de browser via het geregistreerde `caf-backup://` protocol).
+2. **Vanaf je Bureaublad:** Dubbelklik op **`Creation+Alt+Fix Backup Manager.lnk`** of **`Start_Backup_Manager.bat`** op `C:\Users\Admin\Desktop\`.
+3. **Via PowerShell:** `powershell -STA -ExecutionPolicy Bypass -File scripts\backup-hub-gui.ps1`
+
+Het dashboard biedt direct:
+- 📊 **Exporteer CRM CSV:** 1-klik export van alle 13 CRM-klanten, actieve fasen, contactgegevens en offertes direct naar Excel-compatibel CSV-formaat (`C:\Users\Admin\Backups\CRM-Exports\`).
+- 🌐 **Vimexx Server Back-up:** Laatste run, bestandsgrootte (10.62 GB), geplande taak en SHA256 integriteit.
+- 📚 **Pi-Boekhouding Back-up:** Laatste snapshot, SQLite databases en facturen.
+- ⚡ **1-Klik Knoppen:** Direct back-up draaien voor Vimexx of Boekhouding.
+- 📂 **1-Klik Mappen:** Direct openen van de archieflocaties in Windows Verkenner.
+- 📋 **Historie & Inspectielog:** Overzicht van alle gemaakte back-up snapshots.
 
 ---
 
@@ -73,4 +77,5 @@ Wil je de tijden aanpassen? Voer uit:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\setup-auto-vimexx-backup.ps1 -Time "22:00" -Frequency "Daily"
 ```
+
 
