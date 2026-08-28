@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- HERO SECTIE (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design",
+    "spotlightNotifyTitle": "7-Laags AI Scrape Shield",
+    "spotlightNotifyDesc": "Ontdek hoe we kunstwerken van Arnold Doornbos beschermen tegen AI-training en webscraping.",
+    "spotlightNotifyBtn": "Lees het hele verhaal",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligente <span class=\"accent\">AI-Oplossingen</span> voor Jouw Bedrijf",
     "heroSubtitle": "Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.",
@@ -645,6 +648,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- HERO SECTION (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Layer AI Scrape Shield for Arnold Design",
+    "spotlightNotifyTitle": "7-Layer AI Scrape Shield",
+    "spotlightNotifyDesc": "Discover how we protect artworks by Arnold Doornbos from unauthorized AI training and scraping.",
+    "spotlightNotifyBtn": "Read the full story",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligent <span class=\"accent\">AI Solutions</span> for Your Business",
     "heroSubtitle": "We translate your idea into working software at lightning speed. From smart automation to complete websites, powered by AI.",

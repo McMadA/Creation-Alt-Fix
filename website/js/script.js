@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- HERO SECTIE (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design",
+    "spotlightNotifyTitle": "7-Laags AI Scrape Shield",
+    "spotlightNotifyDesc": "Ontdek hoe we kunstwerken van Arnold Doornbos beschermen tegen AI-training en webscraping.",
+    "spotlightNotifyBtn": "Lees het hele verhaal",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligente <span class=\"accent\">AI-Oplossingen</span> voor Jouw Bedrijf",
     "heroSubtitle": "Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.",
@@ -637,6 +640,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- HERO SECTION (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Layer AI Scrape Shield for Arnold Design",
+    "spotlightNotifyTitle": "7-Layer AI Scrape Shield",
+    "spotlightNotifyDesc": "Discover how we protect artworks by Arnold Doornbos from unauthorized AI training and scraping.",
+    "spotlightNotifyBtn": "Read the full story",
     "heroBadge": "AI-Powered Solutions",
     "heroHeadline": "Intelligent <span class=\"accent\">AI Solutions</span> for Your Business",
     "heroSubtitle": "We translate your idea into working software at lightning speed. From smart automation to complete websites, powered by AI.",
@@ -1426,6 +1432,29 @@ document.addEventListener('DOMContentLoaded', async function() {
                 showToast(translations[currentLanguage]['formErrorFillAll'], 'error');
             }
         });
+    }
+
+    // --- SPOTLIGHT FLOATING NOTIFICATION ---
+    var spotlight = document.getElementById('case-study-notification');
+    var closeSpotlightBtn = document.getElementById('close-spotlight-btn');
+    if (spotlight) {
+        var isDismissed = sessionStorage.getItem('spotlight_arnold_dismissed');
+        if (!isDismissed) {
+            setTimeout(function() {
+                spotlight.classList.add('is-visible');
+            }, 800);
+        }
+        if (closeSpotlightBtn) {
+            closeSpotlightBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                spotlight.classList.remove('is-visible');
+                spotlight.classList.add('is-closing');
+                sessionStorage.setItem('spotlight_arnold_dismissed', 'true');
+                setTimeout(function() {
+                    spotlight.remove();
+                }, 450);
+            });
+        }
     }
 
     // --- HAMBURGER MENU LOGIC ---
