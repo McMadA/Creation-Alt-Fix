@@ -3,3 +3,8 @@ experiments/
 .DS_Store
 Thumbs.db
 *.log
+*.credentials.json
+*.tar.gz
+*.sql
+*.backup
+scripts/vimexx-credentials.json

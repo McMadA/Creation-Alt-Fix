@@ -10,12 +10,12 @@
 | Metric | Status | Count |
 | :--- | :--- | :--- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked | **40 Active Epics & Tasks (1 Canceled)** |
-| **Completed Work Items** | ✅ Done | **25 Tasks (64%)** |
-| **Active / Backlog Items** | ⏳ In Queue | **14 Tasks (36%)** |
+| **Completed Work Items** | ✅ Done | **26 Tasks (67%)** |
+| **Active / Backlog Items** | ⏳ In Queue | **13 Tasks (33%)** |
 | **CI/CD Pipeline Status** | 🚀 Automated | **GitHub Actions FTP (`main.yml`)** |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░] 64% Complete`
+`[█████████████████░░░░░░░] 67% Complete`
 
 ---
 
@@ -92,10 +92,6 @@
   - **Acceptance Criteria**:
     - Volledige verhuizing van alle 12 domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
     - Cloud architectuur inrichten met geautomatiseerde GitHub Actions deployments per repository, gratis beheerde Azure SSL certificaten en gecentraliseerd Azure DNS zonebeheer.
-
-- [ ] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: BACKLOG]` **Vimexx Server Complete Back-up & Lokale/Cloud Archivering**
-  - **Scope**: DirectAdmin & Server Beheer
-  - **Tasks**: Volledige DirectAdmin server back-up genereren (alle 12 domeinen, MySQL databases, e-mailaccounts en DNS records) en veilig downloaden/archiveren op lokale opslag of cloud backup.
 
 - [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: BACKLOG]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
   - **Scope**: Vimexx DirectAdmin & Server Security
@@ -248,3 +244,7 @@
 - [x] `[TASK-816]` `[P3-MEDIUM]` `[STATUS: DONE]` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
   - **Scope**: `website/diensten/website-laten-maken/`, `crm/js/ai-engine.js`, `crm/js/pdf-generator.js`, `website/js/subpage.js`, `advies_hosting_tarieven_task816.md`
   - **Details**: Vaste 2-traps tariefstructuur geformaliseerd op basis van Pi-Boekhouding data: 1. Managed Cloud Hosting & Domein All-in (€ 150,-/jr excl. BTW voor NVMe hosting, .nl domein, SSL, 5 zakelijke mailboxen met SPF/DKIM/DMARC en dagelijkse backups), en 2. Jaarlijkse Website & Security APK (€ 350,-/jr incl. 2 uur strippenkaart @ € 65,-/u). Volledig geïmplementeerd in de AI Scope Generator (`items`), multi-line PDF Offerte & Factuur Generator (`resolveProposalItems`), en de openbare marketingpagina met 100% tweetalige vertaling.
+
+- [x] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: DONE]` **Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering**
+  - **Scope**: `scripts/backup-vimexx-server.ps1`, `scripts/backup-hub-gui.ps1`, `scripts/setup-auto-vimexx-backup.ps1`, `scripts/create-desktop-shortcut.ps1`, `scripts/README-BACKUP.md`, `C:\Users\Admin\Desktop\`, `.gitignore`
+  - **Details**: Volledige back-up suite ontwikkeld: 1. PowerShell DirectAdmin API engine (`scripts/backup-vimexx-server.ps1`) met live 10,62 GB Zstandard download (`backup-Aug-28-2026-2.tar.zst`), SHA256 checksumming en `tar.exe` integriteitsvalidatie over alle 12 domeinen; 2. Standalone Dark AI Desktop Control Center app (`scripts/backup-hub-gui.ps1`) met bureaubladsnelkoppelingen (`Creation+Alt+Fix Backup Manager.lnk` en `Start_Backup_Manager.bat`); 3. Geautomatiseerde Windows Taakplanner integratie (`Vimexx-Server-Complete-Backup` dagelijks om 21:30 en `Pi-Boekhouding-Backup` dagelijks om 21:00).
