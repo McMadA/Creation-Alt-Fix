@@ -532,8 +532,24 @@ if (auth) {
             if (!isAdmin) {
                 console.warn("Onbevoegde poging tot admin toegang door niet-beheerder account:", userEmail);
                 await signOut(auth);
-                alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
-                window.location.href = "../index.html";
+                const errDiv = document.getElementById('login-error');
+                if (errDiv) {
+                    errDiv.innerText = `Toegang geweigerd: Account "${userEmail}" heeft geen beheerdersrechten.`;
+                    errDiv.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // Zero-Password Policy: Beheerders MOETEN via Google OAuth (2FA) ingelogd zijn
+            const isGoogleAuth = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+            if (!isGoogleAuth) {
+                console.warn("Wachtwoordinlog geblokkeerd voor beheerder:", userEmail);
+                await signOut(auth);
+                const errDiv = document.getElementById('login-error');
+                if (errDiv) {
+                    errDiv.innerText = `Beveiligingswaarschuwing: Wachtwoordinlog is uitgeschakeld voor beheerders. Log verplicht in via de knop "Inloggen met Google".`;
+                    errDiv.classList.remove('hidden');
+                }
                 return;
             }
 
@@ -546,32 +562,10 @@ if (auth) {
         }
     });
 } else {
-    // Als auth faalt door dummy config, toon gewoon login scherm
     document.getElementById('auth-overlay').classList.remove('hidden');
 }
 
-// Login Form Handler
-document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const btn = e.target.querySelector('button');
-    const errDiv = document.getElementById('login-error');
-    
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
-    if (errDiv) errDiv.classList.add('hidden');
-    
-    const success = await API.login(email, password);
-    if (!success) {
-        btn.innerHTML = 'Inloggen met E-mail';
-        if (errDiv) {
-            errDiv.innerText = 'Ongeldig e-mailadres of wachtwoord. Controleer je gegevens.';
-            errDiv.classList.remove('hidden');
-        }
-    }
-});
-
-// Google Sign-In Handler voor Beheerder (TASK-818 Security Suite)
+// Google Sign-In Handler voor Beheerder (Zero-Password & 2FA Suite)
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
@@ -581,7 +575,7 @@ document.getElementById('btn-google-login')?.addEventListener('click', async () 
     if (errDiv) errDiv.classList.add('hidden');
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met Google...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifiëren bij Google...';
 
     try {
         const result = await signInWithPopup(auth, googleProvider);
@@ -599,18 +593,17 @@ document.getElementById('btn-google-login')?.addEventListener('click', async () 
         if (!isAdmin) {
             await signOut(auth);
             if (errDiv) {
-                errDiv.innerText = `Toegang geweigerd: Account "${userEmail}" heeft geen beheerdersrechten.`;
+                errDiv.innerText = `Toegang geweigerd: Google-account "${userEmail}" staat niet geregistreerd als beheerder.`;
                 errDiv.classList.remove('hidden');
             }
             btn.disabled = false;
             btn.innerHTML = oldHtml;
             return;
         }
-        // onAuthStateChanged toont automatisch het dashboard
     } catch (err) {
         console.error("Google Sign-In mislukt:", err);
         if (errDiv) {
-            errDiv.innerText = `Google Inloggen mislukt: ${err.message || 'Probeer het opnieuw'}`;
+            errDiv.innerText = `Google Inloggen mislukt: ${err.message || 'Venster gesloten of geannuleerd.'}`;
             errDiv.classList.remove('hidden');
         }
         btn.disabled = false;

@@ -14,27 +14,17 @@
 </head>
 <body>
 
-    <!-- Auth Overlay (Simple placeholder for Firebase Auth) -->
+    <!-- Auth Overlay (Exclusief Google Sign-In voor Beheerders) -->
     <div id="auth-overlay" class="auth-overlay">
-        <div class="auth-card">
-            <img src="/images/logo.png" alt="Logo" class="auth-logo">
-            <h2>Admin Login</h2>
-            <p>Log in om toegang te krijgen tot het dashboard.</p>
-            <form id="login-form">
-                <div id="login-error" class="hidden" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 12px;"></div>
-                <input type="email" id="email" placeholder="E-mailadres" required class="admin-input">
-                <input type="password" id="password" placeholder="Wachtwoord" required class="admin-input">
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Inloggen met E-mail</button>
-            </form>
+        <div class="auth-card" style="max-width: 440px; text-align: center; padding: 36px 28px;">
+            <img src="/images/logo.png" alt="Logo" class="auth-logo" style="margin: 0 auto 16px; height: 48px;">
+            <h2 style="font-size: 1.45rem; font-weight: 700; margin-bottom: 6px; color: #F8FAFC;">Beheerdersportaal</h2>
+            <p style="color: #94A3B8; font-size: 0.88rem; margin-bottom: 24px; line-height: 1.45;">Toegang is exclusief beveiligd voor geautoriseerde beheerders via Google authenticatie (met 2FA).</p>
+            
+            <div id="login-error" class="hidden" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; text-align: left; line-height: 1.4;"></div>
 
-            <div style="margin: 18px 0 14px; display: flex; align-items: center; gap: 10px;">
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                <span style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase;">of</span>
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-            </div>
-
-            <button type="button" id="btn-google-login" class="btn" style="width: 100%; background: #ffffff; color: #1f2937; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s ease;">
-                <svg width="18" height="18" viewBox="0 0 24 24">
+            <button type="button" id="btn-google-login" class="btn" style="width: 100%; padding: 13px 20px; font-size: 0.95rem; background: #ffffff; color: #1f2937; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.25); transition: all 0.2s ease; cursor: pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
                     <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
                     <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
@@ -42,6 +32,10 @@
                 </svg>
                 Inloggen met Google (Beheerder)
             </button>
+
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i class="fas fa-shield-alt" style="color: #10B981;"></i> Zero-Password Policy • Google 2FA Beveiligd
+            </div>
         </div>
     </div>
 
