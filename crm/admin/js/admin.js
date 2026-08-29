@@ -14,6 +14,7 @@ import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
 import { parseTodoMarkdown, mapTaskToProject, syncTodoToFirestore, exportKanbanToTodoMarkdown, PROJECT_PROFILES } from "../../js/todo-sync.js";
+import { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./project.js";
 
 
 
@@ -1023,6 +1024,45 @@ window.openProjectDetails = (id) => {
         `).join('');
     }
 
+    const info = getPiBoekhoudingInfo(p);
+    const currentPlanId = p.subscriptionPlanId || (info && info.currentPlanId) || 'managed_nl';
+    const currentPlan = SUBSCRIPTION_PLANS[currentPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+    const recPlanId = (info && info.recommendedPlanId) || 'managed_nl';
+    const recPlan = SUBSCRIPTION_PLANS[recPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+
+    let invoiceHtml = '';
+    if (info && info.latestInvoice) {
+        const inv = info.latestInvoice;
+        const totalFmt = Number(inv.totalExcl).toFixed(2).replace('.', ',');
+        const itemsList = (inv.items || []).map(it => `
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #cbd5e1; margin-top: 2px;">
+                <span>• ${it.qty}x ${escapeHtml(it.name)} ${it.desc ? '<span style="color:#64748b;">(' + escapeHtml(it.desc) + ')</span>' : ''}</span>
+                <span style="font-family: monospace; color: #e2e8f0;">€ ${(it.qty * it.price).toFixed(2).replace('.', ',')}</span>
+            </div>
+        `).join('');
+
+        invoiceHtml = `
+            <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 10px; margin-top: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <strong style="font-size: 0.78rem; color: #fff;"><i class="fas fa-receipt text-accent"></i> Laatste Factuur: ${escapeHtml(inv.number)} (${escapeHtml(inv.date)})</strong>
+                    <span class="badge badge-success" style="font-size: 0.65rem; padding: 2px 5px;">${escapeHtml(inv.status)}</span>
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #34d399;">
+                    € ${totalFmt} excl. BTW
+                </div>
+                <div style="border-top: 1px dashed rgba(255,255,255,0.08); margin-top: 4px; padding-top: 4px;">
+                    ${itemsList}
+                </div>
+            </div>
+        `;
+    } else {
+        invoiceHtml = `
+            <div style="background: rgba(0,0,0,0.25); border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 0.74rem; color: #94a3b8; font-style: italic;">
+                Geen historische facturen in Pi-Boekhouding geregistreerd voor dit project.
+            </div>
+        `;
+    }
+
     document.getElementById('modal-title').innerText = `Klantkaart: ${clientName}`;
     document.getElementById('modal-body').innerHTML = `
         <div class="klantkaart-container">
@@ -1043,7 +1083,6 @@ window.openProjectDetails = (id) => {
                 </div>
             </div>
 
-            <!-- Visual 5-Stage Phase Tracker (Clickable) -->
             <div class="admin-phase-tracker" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0 16px 0; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
                 <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 1)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 1 ? 'background: rgba(34, 211, 238, 0.2); border: 1px solid #22d3ee; color: #22d3ee; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 1 (Intake) te schakelen">
                     <i class="fas fa-clipboard-check"></i><br>Fase 1: Intake
@@ -1063,8 +1102,6 @@ window.openProjectDetails = (id) => {
             </div>
 
             <form id="edit-klantkaart-form">
-                <h4 class="actions-title" style="margin-top: 0;"><i class="fas fa-edit"></i> Klantgegevens & Intake Bewerken</h4>
-                
                 <div class="klantkaart-meta-grid">
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-building"></i> Bedrijfsnaam</div>
@@ -1076,32 +1113,35 @@ window.openProjectDetails = (id) => {
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-envelope"></i> E-mailadres</div>
-                        <input type="email" id="edit-email" class="admin-input" value="${s.email}" style="margin: 4px 0 0 0;" placeholder="info@bedrijf.nl" data-original-email="${s.email}">
+                        <input type="email" id="edit-email" class="admin-input" value="${s.email}" required style="margin: 4px 0 0 0;" data-original-email="${s.email}">
                     </div>
                     <div class="meta-box">
-                        <div class="meta-label"><i class="fas fa-globe"></i> Gewenste Domeinnaam</div>
-                        <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="www.bedrijf.nl">
+                        <div class="meta-label"><i class="fas fa-globe"></i> Domeinnaam</div>
+                        <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="bijv. www.klant.nl">
                     </div>
-                    <div class="meta-box" style="grid-column: 1 / -1;">
-                        <div class="meta-label"><i class="fas fa-concierge-bell"></i> Dienst</div>
-                        <input type="text" id="edit-service" class="admin-input" value="${s.service}" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop">
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-tag"></i> Geselecteerde Dienst</div>
+                        <input type="text" id="edit-service" class="admin-input" value="${s.service}" style="margin: 4px 0 0 0;">
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label"><i class="fas fa-euro-sign"></i> Offerte Investering (€)</div>
+                        <input type="text" id="edit-proposalPrice" class="admin-input" value="${escapeHtml(p.proposalPrice || '')}" style="margin: 4px 0 0 0;" placeholder="bijv. 650,00">
                     </div>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px;">
-                    <h4><i class="fas fa-bullseye"></i> Projectdoelen & Omschrijving</h4>
-                    <textarea id="edit-goals" class="admin-input" rows="4" style="margin: 4px 0 0 0;" placeholder="Omschrijving van het project en de doelen...">${s.goals}</textarea>
+                    <h4><i class="fas fa-bullseye"></i> Doelstellingen & Scope</h4>
+                    <textarea id="edit-goals" class="admin-input" rows="2" style="margin: 4px 0 0 0;">${s.goals}</textarea>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px;">
-                    <h4><i class="fas fa-palette"></i> Design & Stijlvoorkeuren</h4>
-                    <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;" placeholder="Kleuren, stijlvoorkeuren of opmerkingen...">${s.design}</textarea>
+                    <h4><i class="fas fa-paint-brush"></i> Stijl- & Designvoorkeuren</h4>
+                    <textarea id="edit-design" class="admin-input" rows="2" style="margin: 4px 0 0 0;">${s.design}</textarea>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px;">
                     <h4><i class="fas fa-drafting-compass"></i> Ontwerp / Figma Link (Fase 3)</h4>
                     <input type="url" id="edit-designUrl" class="admin-input" value="${s.designUrl}" style="margin: 4px 0 0 0;" placeholder="https://www.figma.com/design/... of preview URL">
-                    <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;"><i class="fas fa-info-circle"></i> Vul hier de link naar het ontwerp in. Gebruik de snelactie hieronder om het naar de klant te sturen.</p>
                 </div>
 
                 <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
@@ -1112,15 +1152,12 @@ window.openProjectDetails = (id) => {
                             ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
                             : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`}
                     </p>
-                    <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-bottom: 10px;">
-                        <i class="fas fa-info-circle"></i> Hiermee logt de klant in op <code>https://creationaltfix.nl/portal/</code> om live de projectstatus en bestanden in te zien.
-                    </p>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="button" class="btn btn-primary btn-sm" id="btn-activate-auth">
-                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Koppel Account in Auth' : 'Activeer Klantaccount & Stuur Inlog-Mail'}
+                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Koppel Account' : 'Activeer Klantaccount'}
                         </button>
                         <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-auth">
-                            <i class="fas fa-paper-plane"></i> Stuur Wachtwoord Reset E-mail
+                            <i class="fas fa-paper-plane"></i> Wachtwoord Reset
                         </button>
                     </div>
                 </div>
@@ -1137,23 +1174,56 @@ window.openProjectDetails = (id) => {
                 </div>
             </div>
 
+            <!-- CARD: Pi-Boekhouding, Abonnement & Facturen -->
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
-                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 12px 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-file-invoice-dollar" style="color: #34d399;"></i> Pi-Boekhouding &amp; Facturen
+                <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin: 0; font-size: 0.92rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-file-invoice-dollar" style="color: #34d399;"></i> Facturen &amp; Abonnement (Pi Live)
                         </h4>
-                        <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 700;">Tailscale LAN</span>
+                        <span style="font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 700; border: 1px solid rgba(52, 211, 153, 0.3);">Pi-Boekhouding</span>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                        <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-sm" style="background: #047857; color: #fff; text-decoration: none; border: 1px solid #10b981; font-weight: 600; padding: 6px 12px;">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.68rem; color: var(--color-text-secondary); text-transform: uppercase;">Huidig Abonnement</div>
+                            <div id="modal-sub-current" style="font-size: 0.82rem; font-weight: 600; color: #38bdf8; margin-top: 2px;">
+                                ${escapeHtml(p.subscriptionPlanName || (info && info.currentPlanName) || currentPlan.name + ' (€ ' + currentPlan.price + '/' + currentPlan.cycle + ')')}
+                            </div>
+                        </div>
+                        <div style="background: rgba(99,102,241,0.1); border-left: 3px solid #818cf8; padding: 8px 10px; border-radius: 4px;">
+                            <div style="font-size: 0.68rem; color: #c7d2fe; text-transform: uppercase; font-weight: 700;">Systeemadvies</div>
+                            <div style="font-size: 0.75rem; color: #e2e8f0; margin-top: 2px; line-height: 1.3;">
+                                <strong>${escapeHtml(recPlan.name)} (€ ${recPlan.price}/${recPlan.cycle})</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <select id="modal-select-subscription" class="admin-input" style="font-size: 0.78rem; padding: 6px 8px; margin: 0; flex: 1; cursor: pointer;">
+                            <option value="managed_nl" ${currentPlanId === 'managed_nl' ? 'selected' : ''}>🌐 Managed Cloud Hosting All-in (€ 150,-/jr)</option>
+                            <option value="managed_multi" ${currentPlanId === 'managed_multi' ? 'selected' : ''}>🌐 Managed Multi-Domein .nl + .com (€ 175,-/jr)</option>
+                            <option value="security_apk" ${currentPlanId === 'security_apk' ? 'selected' : ''}>🛡️ Jaarlijkse Website APK (€ 350,-/jr)</option>
+                            <option value="allin_apk" ${currentPlanId === 'allin_apk' ? 'selected' : ''}>🚀 Managed Hosting All-in + APK (€ 500,-/jr)</option>
+                            <option value="legacy_22" ${currentPlanId === 'legacy_22' ? 'selected' : ''}>⏳ Historisch / Oud Tarief (€ 22,-/jr)</option>
+                            <option value="none" ${currentPlanId === 'none' ? 'selected' : ''}>❌ Geen / Eenmalig Project (€ 0,-)</option>
+                        </select>
+                        <button type="button" id="btn-modal-save-sub" class="btn btn-primary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; white-space: nowrap;">
+                            <i class="fas fa-save"></i> Opslaan
+                        </button>
+                    </div>
+
+                    ${invoiceHtml}
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px;">
+                        <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-sm" style="background: #047857; color: #fff; text-decoration: none; border: 1px solid #10b981; font-weight: 600; padding: 6px 12px; font-size: 0.78rem;">
                             <i class="fas fa-external-link-alt"></i> Open Facturen Web (100.65.226.112:8888)
                         </a>
                         <button type="button" id="btn-modal-copy-facturen" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #cbd5e1; font-size: 0.78rem;">
                             <i class="fas fa-copy"></i> Kopieer Facturen Map
                         </button>
                     </div>
-                    <div style="font-family: monospace; font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+                    <div style="font-family: monospace; font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">
                         Locatie: C:\Users\Admin\Backups\Pi-Boekhouding
                     </div>
                 </div>
@@ -1161,17 +1231,13 @@ window.openProjectDetails = (id) => {
 
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties per Fase</h4>
-                <div class="action-buttons-grid" id="action-buttons-container">
-                    <!-- Buttons bound via event listeners below -->
-                </div>
+                <div class="action-buttons-grid" id="action-buttons-container"></div>
             </div>
 
             <div id="ai-email-container" class="hidden" style="padding: 15px; background: rgba(34, 211, 238, 0.08); border-radius: 8px; border: 1px solid rgba(34, 211, 238, 0.3);">
                 <p style="margin-bottom: 10px; font-weight: 600; color: var(--color-accent);"><i class="fas fa-magic"></i> AI Concept E-mail (Gepersonaliseerd op basis van intake):</p>
                 <textarea id="ai-email-body" class="admin-input" rows="7" style="font-family: var(--font-body);"></textarea>
-                <div style="display: flex; gap: 10px; margin-top: 10px;" id="ai-email-actions">
-                    <!-- Bound below -->
-                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;" id="ai-email-actions"></div>
             </div>
 
             <div id="proposal-link-container" class="hidden" style="padding: 15px; background: rgba(99,102,241,0.08); border-radius: 8px; border: 1px solid rgba(99,102,241,0.3);">
@@ -1182,14 +1248,52 @@ window.openProjectDetails = (id) => {
         </div>
     `;
 
-    // Bind form submit via event listener (not inline onsubmit) to avoid XSS via id injection
     document.getElementById('edit-klantkaart-form')?.addEventListener('submit', (e) => saveKlantkaartChanges(e, id));
-
-    // Bind Auth buttons
     document.getElementById('btn-activate-auth')?.addEventListener('click', () => createClientAuthAccount(id, document.getElementById('edit-email')?.value || email, contact));
     document.getElementById('btn-reset-auth')?.addEventListener('click', () => triggerAdminPasswordReset(document.getElementById('edit-email')?.value || email));
 
-    // Bind Copy Facturen Map button
+    document.getElementById('btn-modal-save-sub')?.addEventListener('click', async () => {
+        const select = document.getElementById('modal-select-subscription');
+        if (!select) return;
+        const planId = select.value;
+        const plan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
+        const saveBtn = document.getElementById('btn-modal-save-sub');
+        const origText = saveBtn.innerHTML;
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            if (db && id && String(id).length > 5) {
+                await updateDoc(doc(db, "projects", id), {
+                    subscriptionPlanId: plan.id,
+                    subscriptionPlanName: plan.name,
+                    subscriptionPrice: plan.price,
+                    subscriptionCycle: plan.cycle,
+                    subscriptionUpdatedAt: new Date().toISOString()
+                });
+            }
+            p.subscriptionPlanId = plan.id;
+            p.subscriptionPlanName = plan.name;
+            p.subscriptionPrice = plan.price;
+            p.subscriptionCycle = plan.cycle;
+
+            const currDisp = document.getElementById('modal-sub-current');
+            if (currDisp) currDisp.innerText = `${plan.name} (€ ${plan.price}/${plan.cycle})`;
+
+            saveBtn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i>';
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = origText;
+            }, 2000);
+        } catch (err) {
+            console.error("Fout bij opslaan abonnement in modal:", err);
+            alert("Kon abonnement niet opslaan: " + err.message);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = origText;
+        }
+    });
+
     document.getElementById('btn-modal-copy-facturen')?.addEventListener('click', () => {
         navigator.clipboard.writeText('C:\\Users\\Admin\\Backups\\Pi-Boekhouding');
         const btn = document.getElementById('btn-modal-copy-facturen');
@@ -1200,7 +1304,6 @@ window.openProjectDetails = (id) => {
         }
     });
 
-    // Bind action buttons via event listeners instead of inline onclick
     const actionContainer = document.getElementById('action-buttons-container');
     actionContainer.innerHTML = `
         <button class="btn btn-secondary btn-sm" data-action="ai-email"><i class="fas fa-robot"></i> AI Concept Mail (Fase 1)</button>

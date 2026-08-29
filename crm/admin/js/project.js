@@ -37,6 +37,179 @@ try {
 let currentProjectId = null;
 let currentProjectData = null;
 
+// --- [TASK-816] Vaste Abonnementen & Hosting Tarieven ---
+export const SUBSCRIPTION_PLANS = {
+    "managed_nl": { id: "managed_nl", name: "Managed Cloud Hosting & .nl Domein All-in", price: "150,00", cycle: "jaar", badge: "Aanbevolen", desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups" },
+    "managed_multi": { id: "managed_multi", name: "Managed Cloud Hosting Multi-Domein (.nl + .com)", price: "175,00", cycle: "jaar", badge: "Multi-domein", desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen" },
+    "security_apk": { id: "security_apk", name: "Jaarlijkse Website & Security APK", price: "350,00", cycle: "jaar", badge: "Onderhoud", desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart" },
+    "allin_apk": { id: "allin_apk", name: "Managed Hosting All-in + Security APK Totaal", price: "500,00", cycle: "jaar", badge: "Full Service", desc: "Managed hosting, domein, mailboxen + jaarlijkse APK & 2u strippenkaart" },
+    "legacy_22": { id: "legacy_22", name: "Historisch / Oud Tarief (€ 22,- / jr)", price: "22,00", cycle: "jaar", badge: "Oud Tarief", desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 2027)" },
+    "none": { id: "none", name: "Geen / Eenmalig Project (€ 0,-)", price: "0,00", cycle: "n.v.t.", badge: "Geen", desc: "Geen doorlopende hosting of onderhoudskosten" }
+};
+
+// --- Pi-Boekhouding Facturen & Klanten Database Snapshot ---
+export const PI_BOEKHOUDING_CLIENT_DATA = {
+    "angelastenekes.nl": {
+        clientName: "De Knipperij (Angela Stenekes)",
+        relatieId: 7,
+        kvk: "59520353",
+        currentPlanName: "Historisch Budget: € 22,00 / jr",
+        currentPlanId: "legacy_22",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Vaste tariefstructuur 2027: € 150,-/jr incl. NVMe hosting, SSL, SPF/DKIM en dagelijkse backups (TASK-817).",
+        latestInvoice: {
+            number: "2026-004",
+            date: "27-05-2026",
+            status: "Betaald",
+            totalExcl: 22.00,
+            items: [
+                { name: "Domein verlengen", desc: "per jaar", qty: 1, price: 10.00 },
+                { name: "Hosting verlengen", desc: "per maand", qty: 12, price: 1.00 }
+            ]
+        }
+    },
+    "scholte-elektrotechniek.nl": {
+        clientName: "Scholte Elektrotechniek (Gerjo Scholte)",
+        relatieId: 6,
+        kvk: "89192036",
+        currentPlanName: "Historisch Budget: € 22,00 / jr",
+        currentPlanId: "legacy_22",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Vaste tariefstructuur: € 150,-/jr incl. NVMe hosting, SSL, zakelijke mailbox en monitoring.",
+        latestInvoice: {
+            number: "2026-003",
+            date: "27-05-2026",
+            status: "Betaald",
+            totalExcl: 22.00,
+            items: [
+                { name: "Domein verlengen", desc: "per jaar", qty: 1, price: 10.00 },
+                { name: "Hosting verlengen", desc: "per maand", qty: 12, price: 1.00 }
+            ]
+        }
+    },
+    "stenekesrioolspecialist.nl": {
+        clientName: "Stenekes Riool & Grondwerk (Klaas Stenekes)",
+        relatieId: 8,
+        kvk: "02075792",
+        currentPlanName: "Historisch Budget: € 22,00 / jr",
+        currentPlanId: "legacy_22",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Vaste tariefstructuur: € 150,-/jr incl. NVMe hosting, SSL en storingsopvolging.",
+        latestInvoice: {
+            number: "2026-005",
+            date: "03-06-2026",
+            status: "Betaald",
+            totalExcl: 22.00,
+            items: [
+                { name: "Domein verlengen", desc: "per jaar", qty: 1, price: 10.00 },
+                { name: "Hosting verlengen", desc: "per maand", qty: 12, price: 1.00 }
+            ]
+        }
+    },
+    "ftruckstore.nl": {
+        clientName: "F-Truck Store (Ford Trucks)",
+        relatieId: 9,
+        kvk: "01145302",
+        currentPlanName: "Hosting & Multi-Domein: € 95,00 / jr",
+        currentPlanId: "legacy_22",
+        recommendedPlanId: "allin_apk",
+        recommendedReason: "Multi-domein (.nl + .com) webshop beheer + jaarlijkse security APK & supporturen (€ 500,-/jr).",
+        latestInvoice: {
+            number: "2026-008",
+            date: "22-07-2026",
+            status: "Betaald",
+            totalExcl: 305.00,
+            items: [
+                { name: "Hosting", desc: "per maand", qty: 12, price: 5.00 },
+                { name: ".nl domein", desc: "per jaar", qty: 1, price: 10.00 },
+                { name: ".com domein", desc: "per jaar", qty: 1, price: 25.00 },
+                { name: "Overzetten website", desc: "per uur", qty: 6, price: 35.00 }
+            ]
+        }
+    },
+    "bakkertjesieg.nl": {
+        clientName: "BakkertjeSieg (Sigrid Sneep)",
+        relatieId: 5,
+        kvk: "92124356",
+        currentPlanName: "Nieuwe Website Oplevering (Urenbasis)",
+        currentPlanId: "none",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Nieuwe website livegang: Managed Cloud Hosting & .nl domein All-in (€ 150,-/jr).",
+        latestInvoice: {
+            number: "2026-009",
+            date: "22-07-2026",
+            status: "Betaald",
+            totalExcl: 245.00,
+            items: [
+                { name: "Nieuwe website", desc: "in uren", qty: 7, price: 35.00 }
+            ]
+        }
+    },
+    "liviandesign.nl": {
+        clientName: "Livian Design (Lianne Steinfelder)",
+        relatieId: 1,
+        kvk: "98849794",
+        currentPlanName: "Eenmalig Maatwerk (€ 50,-)",
+        currentPlanId: "none",
+        recommendedPlanId: "none",
+        recommendedReason: "Eenmalig software realisatie project zonder doorlopende hosting.",
+        latestInvoice: {
+            number: "2026-001",
+            date: "24-03-2026",
+            status: "Betaald",
+            totalExcl: 50.00,
+            items: [
+                { name: "Software", desc: "realisatie", qty: 1, price: 50.00 }
+            ]
+        }
+    },
+    "besselinginstallatietechniek.nl": {
+        clientName: "Besseling Installatietechniek",
+        currentPlanName: "In Ontwikkeling (Fase 4)",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Bedrijfswebsite: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr) bij oplevering.",
+        latestInvoice: null
+    },
+    "arnolddesign.nl": {
+        clientName: "Arnold Design",
+        currentPlanName: "Design & AI Scrape Shield (Fase 3)",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Atelier Portfolio & AI Shield: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        latestInvoice: null
+    },
+    "vanderplaats.nl": {
+        clientName: "VAN DER PLAATS (Gerard Klusser)",
+        currentPlanName: "In Ontwikkeling (Fase 4)",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Klussersbedrijf website: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        latestInvoice: null
+    }
+};
+
+export function getPiBoekhoudingInfo(p) {
+    if (!p) return null;
+    const name = (p.client || p.companyName || '').toLowerCase();
+    const dom = (p.domainName || p.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+
+    for (const [domainKey, data] of Object.entries(PI_BOEKHOUDING_CLIENT_DATA)) {
+        if (dom && dom.includes(domainKey)) return data;
+        const cName = data.clientName.toLowerCase();
+        if (name && (name.includes(cName) || cName.includes(name))) return data;
+    }
+
+    return {
+        clientName: p.client || 'Klant',
+        currentPlanName: p.subscriptionPlanName || "Nog geen actief abonnement",
+        currentPlanId: p.subscriptionPlanId || "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Standaard advies: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr excl. BTW).",
+        latestInvoice: null
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     setupAuthAndPage();
     setupTabNavigation();
@@ -309,6 +482,104 @@ function renderProjectWorkspace(p) {
     renderAftercareQueue(p);
     renderTimelineAndNotes(p.internalNotes || [], p.auditLog || []);
     renderFilesList(p.files || []);
+    renderSubscriptionAndInvoiceCard(p);
+}
+
+// --- Pi-Boekhouding & Subscription Management Card ---
+function renderSubscriptionAndInvoiceCard(p) {
+    const info = getPiBoekhoudingInfo(p);
+    if (!info) return;
+
+    const currentPlanId = p.subscriptionPlanId || info.currentPlanId || 'managed_nl';
+    const currentPlan = SUBSCRIPTION_PLANS[currentPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+
+    const recPlanId = info.recommendedPlanId || 'managed_nl';
+    const recPlan = SUBSCRIPTION_PLANS[recPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+
+    // 1. Current Plan Display
+    const currentBadge = document.getElementById('subscription-status-badge');
+    if (currentBadge) {
+        currentBadge.innerText = currentPlan.badge || 'Actief';
+        if (currentPlanId === 'legacy_22') {
+            currentBadge.style.color = '#fbbf24';
+        } else if (currentPlanId === 'none') {
+            currentBadge.style.color = '#94a3b8';
+        } else {
+            currentBadge.style.color = '#34d399';
+        }
+    }
+
+    const currentDisplay = document.getElementById('subscription-current-display');
+    if (currentDisplay) {
+        if (p.subscriptionPlanName) {
+            currentDisplay.innerHTML = `<span style="color: #38bdf8;">${escapeHtml(p.subscriptionPlanName)}</span> &mdash; <strong style="color: #34d399;">€ ${escapeHtml(p.subscriptionPrice || currentPlan.price)}</strong> / ${escapeHtml(p.subscriptionCycle || currentPlan.cycle)}`;
+        } else if (info.currentPlanName) {
+            currentDisplay.innerHTML = `<span style="color: #e2e8f0;">${escapeHtml(info.currentPlanName)}</span>`;
+        } else {
+            currentDisplay.innerHTML = `<span style="color: #38bdf8;">${escapeHtml(currentPlan.name)}</span> &mdash; <strong style="color: #34d399;">€ ${currentPlan.price}</strong> / ${currentPlan.cycle}`;
+        }
+    }
+
+    // 2. Recommended Plan Display
+    const recDisplay = document.getElementById('subscription-recommended-display');
+    if (recDisplay) {
+        recDisplay.innerHTML = `<strong>${escapeHtml(recPlan.name)} (€ ${recPlan.price}/${recPlan.cycle})</strong><br><span style="color: #cbd5e1;">${escapeHtml(info.recommendedReason || recPlan.desc)}</span>`;
+    }
+
+    // 3. Dropdown Selector
+    const selectElem = document.getElementById('select-client-subscription');
+    if (selectElem) {
+        selectElem.value = currentPlanId;
+    }
+
+    // 4. Latest Invoice from Pi-Boekhouding
+    const invBadge = document.getElementById('pi-invoice-badge');
+    const invSummary = document.getElementById('pi-invoice-summary');
+    const invItems = document.getElementById('pi-invoice-items');
+
+    if (info.latestInvoice) {
+        const inv = info.latestInvoice;
+        if (invBadge) {
+            invBadge.innerText = inv.status || 'Betaald';
+            invBadge.className = inv.status === 'Betaald' ? 'badge badge-success' : 'badge badge-waiting';
+        }
+        if (invSummary) {
+            const formattedTotal = Number(inv.totalExcl).toFixed(2).replace('.', ',');
+            invSummary.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <strong style="color: #fff;"><i class="fas fa-file-invoice" style="color: #34d399;"></i> Factuur ${escapeHtml(inv.number)}</strong>
+                    <span style="color: #94a3b8; font-size: 0.72rem;">${escapeHtml(inv.date)}</span>
+                </div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #34d399;">
+                    € ${formattedTotal} excl. BTW <span style="font-size: 0.7rem; font-weight: 400; color: #94a3b8;">(Status: ${escapeHtml(inv.status)})</span>
+                </div>
+            `;
+        }
+        if (invItems && inv.items && inv.items.length > 0) {
+            invItems.innerHTML = `
+                <div style="font-size: 0.7rem; color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Afgenomen Regels:</div>
+                ${inv.items.map(it => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px; color: #cbd5e1;">
+                        <span>• ${it.qty}x ${escapeHtml(it.name)} ${it.desc ? '<span style="color:#64748b;">(' + escapeHtml(it.desc) + ')</span>' : ''}</span>
+                        <span style="font-family: monospace; color: #e2e8f0;">€ ${(it.qty * it.price).toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `).join('')}
+            `;
+        } else if (invItems) {
+            invItems.innerHTML = '';
+        }
+    } else {
+        if (invBadge) {
+            invBadge.innerText = 'Geen Factuur';
+            invBadge.className = 'badge badge-secondary';
+        }
+        if (invSummary) {
+            invSummary.innerHTML = `<span style="color: #94a3b8; font-style: italic;">Nog geen historische facturen geregistreerd in Pi-Boekhouding voor dit project.</span>`;
+        }
+        if (invItems) {
+            invItems.innerHTML = '';
+        }
+    }
 }
 
 // --- [TASK-602] Tasks & Checklist Management ---
@@ -1631,6 +1902,52 @@ function setupFormHandlers() {
             const orig = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i> Gekopieerd!';
             setTimeout(() => btn.innerHTML = orig, 2000);
+        }
+    });
+
+    // Action: Save Client Subscription Plan
+    document.getElementById('btn-save-subscription')?.addEventListener('click', async () => {
+        const select = document.getElementById('select-client-subscription');
+        if (!select || !currentProjectId) return;
+        const planId = select.value;
+        const plan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
+        const saveBtn = document.getElementById('btn-save-subscription');
+        const origText = saveBtn.innerHTML;
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opslaan...';
+
+        try {
+            const updatedFields = {
+                subscriptionPlanId: plan.id,
+                subscriptionPlanName: plan.name,
+                subscriptionPrice: plan.price,
+                subscriptionCycle: plan.cycle,
+                subscriptionUpdatedAt: new Date().toISOString()
+            };
+
+            if (db && currentProjectId) {
+                await updateDoc(doc(db, "projects", currentProjectId), updatedFields);
+            }
+
+            currentProjectData = { ...(currentProjectData || {}), ...updatedFields };
+
+            await logAuditEvent('subscription_updated', `Abonnement bijgewerkt naar: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
+
+            saveBtn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i> Opgeslagen!';
+            
+            // Re-render subscription card display
+            renderSubscriptionAndInvoiceCard(currentProjectData);
+
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = origText;
+            }, 2000);
+        } catch (err) {
+            console.error("Fout bij opslaan abonnement:", err);
+            alert("Kon abonnement niet opslaan: " + err.message);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = origText;
         }
     });
 
