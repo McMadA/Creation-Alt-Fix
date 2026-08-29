@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <title data-translate-key="crmCasePageTitle">Creation+Alt+Fix CRM & Portaal – Flagship Case Study | Creation+Alt+Fix</title>
+    <meta name="description" content="Case Study: Hoe Creation+Alt+Fix een zero-framework CRM & Klantenportaal bouwde met 5-fasen tracking, live concept staging annotaties, jsPDF offertes en Pi-Boekhouding sync." data-translate-key="crmCaseMetaDesc">
+    <meta name="keywords" content="CRM Klantenportaal, Live Staging Annotaties, Zero-Framework Vanilla JS, jsPDF Offerte Generator, Pi-Boekhouding Sync, Firebase Firestore, Creation+Alt+Fix">
+    <link rel="canonical" href="https://www.creationaltfix.nl/projects/crm-portal/">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.creationaltfix.nl/projects/crm-portal/">
+    <meta property="og:title" content="Creation+Alt+Fix CRM & Klantenportaal — Flagship Case Study">
+    <meta property="og:description" content="Ontdek de architectuur achter ons eigen realtime klantenportaal: live staging annotaties, jsPDF offertes en Pi-Boekhouding synchronisatie.">
+    <meta property="og:image" content="https://www.creationaltfix.nl/images/crm-dashboard-mockup.webp">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Creation+Alt+Fix CRM & Klantenportaal — Flagship Case Study">
+    <meta name="twitter:description" content="Ontdek de architectuur achter ons eigen realtime klantenportaal: live staging annotaties, jsPDF offertes en Pi-Boekhouding synchronisatie.">
+    <meta name="twitter:image" content="https://www.creationaltfix.nl/images/crm-dashboard-mockup.webp">
+
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/subpage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": "Creation+Alt+Fix CRM & Klantenportaal Case Study",
+        "headline": "Zero-Framework Real-time CRM & Client Portal Architecture",
+        "description": "Case Study over het custom CRM & Klantenportaal met 5-fasen projectpipeline, interactieve live staging emulator en Pi-Boekhouding integratie.",
+        "creator": {
+            "@type": "ProfessionalService",
+            "@id": "https://www.creationaltfix.nl/#organization"
+        },
+        "url": "https://www.creationaltfix.nl/projects/crm-portal/",
+        "image": "https://www.creationaltfix.nl/images/crm-dashboard-mockup.webp"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.creationaltfix.nl/" },
+            { "@type": "ListItem", "position": 2, "name": "Projecten", "item": "https://www.creationaltfix.nl/projecten.html" },
+            { "@type": "ListItem", "position": 3, "name": "CRM & Klantenportaal", "item": "https://www.creationaltfix.nl/projects/crm-portal/" }
+        ]
+    }
+    </script>
+
+    <style>
+        .feature-showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .feature-showcase-card {
+            background: var(--color-surface, rgba(255, 255, 255, 0.03));
+            border: 1px solid var(--color-border, rgba(99, 102, 241, 0.2));
+            border-radius: 16px;
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .feature-showcase-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+        .feature-icon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--gradient-accent, linear-gradient(135deg, #6366f1, #22d3ee));
+            color: #fff;
+            font-size: 1.15rem;
+            margin-bottom: 1.25rem;
+        }
+        .feature-showcase-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: #fff;
+            font-family: var(--font-heading);
+        }
+        .feature-showcase-card p {
+            font-size: 0.92rem;
+            color: var(--color-text-secondary, #94a3b8);
+            line-height: 1.6;
+        }
+        .feature-tech-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            font-size: 0.78rem;
+            font-family: monospace;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .pipeline-banner {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(34, 211, 238, 0.06));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        .pipeline-stat .stat-val {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: var(--gradient-accent, linear-gradient(135deg, #6366f1, #22d3ee));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .pipeline-stat .stat-lbl {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.35rem;
+        }
+        .interactive-preview-box {
+            background: #090d18;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        .mockup-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .mockup-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .mockup-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Direct naar inhoud</a>
+
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/" data-translate-key="breadcrumbHome">Home</a></li>
+                <li><a href="/projecten.html" data-translate-key="breadcrumbProjecten">Projecten</a></li>
+                <li aria-current="page"><span class="current" data-translate-key="breadcrumbCrmCase">Creation+Alt+Fix CRM Case Study</span></li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Hero Header -->
+    <header class="subpage-hero">
+        <div class="container">
+            <div class="hero-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.4rem 1rem; border-radius: 50px; color: #a5b4fc; font-size: 0.85rem; margin-bottom: 1.25rem;">
+                <i class="fas fa-cubes"></i> <span data-translate-key="crmHeroBadge">Flagship Software & CRM Architecture Case Study</span>
+            </div>
+            <h1 data-translate-key="crmH1">Creation+Alt+Fix CRM — <span>Real-time Portaal & Staging Suite</span></h1>
+            <p class="lead" data-translate-key="crmLead">
+                Hoe we een zero-framework, end-to-end CRM-ecosysteem ontwikkelden met realtime 5-fasen projecttracking, een interactieve staging feedback emulator, geautomatiseerde jsPDF offertes en Pi-Boekhouding synchronisatie.
+            </p>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- Intro Section -->
+        <section class="content-section">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 3rem; align-items: center;">
+                    <div>
+                        <h2 data-translate-key="crmChallengeTitle">De Uitdaging: Van 'Zwarte Doos' naar 100% Transparantie</h2>
+                        <p data-translate-key="crmChallengeP1">
+                            Bij traditionele webdevelopment- en IT-bureaus ervaren klanten vaak een 'zwarte doos': na de intake volgen trage e-mailketens, onduidelijke offertes en statische PDF-mockups waarbij feedback geven via screenshots frustrerend en inefficiënt is.
+                        </p>
+                        <p data-translate-key="crmChallengeP2">
+                            <strong>Onze Visie:</strong> Een op maat ontwikkeld, razendsnel CRM en Klantenportaal dat het complete traject van intake tot livegang en beheer digitaliseert. Klanten krijgen direct bij de intake een beveiligd account en kunnen live meekijken hoe hun project tot stand komt.
+                        </p>
+                        <p data-translate-key="crmChallengeP3">
+                            Geen logge frameworks met zware runtime-kosten, maar pure, schone Vanilla JavaScript gekoppeld aan Firebase Firestore voor sub-50ms synchronisatie en Pi-Boekhouding voor automatische factuurregels en vaste tariefmodellen (€ 150,-/jr All-in Cloud Hosting).
+                        </p>
+                    </div>
+                    <div>
+                        <div class="interactive-preview-box">
+                            <div class="mockup-header-bar">
+                                <div class="mockup-dots">
+                                    <span class="mockup-dot dot-red"></span>
+                                    <span class="mockup-dot dot-yellow"></span>
+                                    <span class="mockup-dot dot-green"></span>
+                                </div>
+                                <span>https://portal.creationaltfix.nl/status/</span>
+                                <span style="color: #34d399;"><i class="fas fa-lock"></i> SSL Secured</span>
+                            </div>
+                            <img src="/images/crm-dashboard-mockup.webp" alt="Creation+Alt+Fix CRM Klantenportaal Dashboard" style="width: 100%; height: auto; border-radius: 8px; display: block; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats banner -->
+                <div class="pipeline-banner">
+                    <div class="pipeline-stat">
+                        <span class="stat-val">5 Fasen</span>
+                        <span class="stat-lbl" data-translate-key="crmStat1">Volledig Geautomatiseerde Pipeline</span>
+                    </div>
+                    <div class="pipeline-stat">
+                        <span class="stat-val">&lt; 50ms</span>
+                        <span class="stat-lbl" data-translate-key="crmStat2">Real-time Firestore Synchronisatie</span>
+                    </div>
+                    <div class="pipeline-stat">
+                        <span class="stat-val">0 kB</span>
+                        <span class="stat-lbl" data-translate-key="crmStat3">Zero-Framework Client Overhead</span>
+                    </div>
+                    <div class="pipeline-stat">
+                        <span class="stat-val">100%</span>
+                        <span class="stat-lbl" data-translate-key="crmStat4">Transparantie in Offerte & Staging</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Architectural Pillars -->
+        <section class="content-section" style="background-color: var(--color-bg-secondary);">
+            <div class="container">
+                <div style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem;">
+                    <h2 data-translate-key="crmPillarsTitle">Vier Technische Paradepaardjes van het <span style="background: var(--gradient-accent); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Creation+Alt+Fix Ecosysteem</span></h2>
+                    <p style="color: #94a3b8;" data-translate-key="crmPillarsDesc">
+                        Het portaal combineert state-of-the-art webtechnologieën om een frictieloze, converterende en uiterst professionele ervaring te bieden:
+                    </p>
+                </div>
+
+                <div class="feature-showcase-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-showcase-card">
+                        <div class="feature-icon-badge"><i class="fas fa-crosshairs"></i></div>
+                        <h3 data-translate-key="crmF1Title">Live Staging & Point-and-Click Annotaties</h3>
+                        <p data-translate-key="crmF1Desc">
+                            Klanten schakelen binnen het portaal live tussen Desktop-, Tablet- en Mobiele weergaven. In 'Feedback Modus' klikken ze direct op elementen om pins te plaatsen met specifieke categorieën (Design, Tekst, Functionaliteit of Bug). Pins synchroniseren realtime met de admin werkplek.
+                        </p>
+                        <span class="feature-tech-tag">TASK-401 Staging Viewport & Annotator</span>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="feature-showcase-card">
+                        <div class="feature-icon-badge"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <h3 data-translate-key="crmF2Title">jsPDF Engine & Pi-Boekhouding Synchronisatie</h3>
+                        <p data-translate-key="crmF2Desc">
+                            Dynamische generatie van officiële PDF-offertes direct in de browser. Klanten accorderen met 1 klik digitaal. Gekoppeld aan onze Raspberry Pi Boekhouding database voor live statusinzicht, factuurregels en de vaste € 150,-/jr Cloud Hosting en € 350,-/jr APK abonnementen.
+                        </p>
+                        <span class="feature-tech-tag">jsPDF + AutoTable & Pi-Boekhouding API</span>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="feature-showcase-card">
+                        <div class="feature-icon-badge"><i class="fas fa-bolt"></i></div>
+                        <h3 data-translate-key="crmF3Title">Zero-Framework Vanilla JS Architectuur</h3>
+                        <p data-translate-key="crmF3Desc">
+                            Gebouwd zonder zware SPA-frameworks (zoals React of Angular). Pure ES6+ modules zorgen voor onmiddellijke laadtijden, zero bundler latency en 100/100 Google Lighthouse prestatiescores op zowel mobiel als desktop.
+                        </p>
+                        <span class="feature-tech-tag">ES6+ Modules, CSS Custom Properties</span>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="feature-showcase-card">
+                        <div class="feature-icon-badge"><i class="fas fa-shield-halved"></i></div>
+                        <h3 data-translate-key="crmF4Title">Multi-Step Intake met Contextuele Pre-Fill</h3>
+                        <p data-translate-key="crmF4Desc">
+                            De 5-staps onboarding wizard leest URL-parameters van de hoofdwebsite (bijv. <code>?service=ai-automation</code> of <code>?service=dashboards</code>). Bij afronding wordt direct een Firebase Auth klantaccount aangemaakt en een geautomatiseerde EmailJS welkomstmail verstuurd.
+                        </p>
+                        <span class="feature-tech-tag">Firebase Auth & EmailJS Webhook Engine</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5-Fasen Visual Pipeline Deep Dive -->
+        <section class="content-section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 1rem;" data-translate-key="crmPipelineTitle">De 5-Fasen Klantreis in het Portaal</h2>
+                <p style="text-align: center; color: var(--color-text-secondary); max-width: 700px; margin: 0 auto 2.5rem auto;" data-translate-key="crmPipelineDesc">
+                    Vanaf het moment van intake tot aan de livegang begeleidt het systeem de klant stap voor stap door het proces:
+                </p>
+
+                <div class="workflow-grid">
+                    <div class="workflow-card">
+                        <span class="workflow-step-badge">Fase 1</span>
+                        <div class="workflow-icon-wrap"><i class="fas fa-clipboard-check"></i></div>
+                        <h3 data-translate-key="wfStep1Title">1. Slimme Intake & Analyse</h3>
+                        <p data-translate-key="crmStep1Detail">Geautomatiseerde analyse van doelen, domeinstatus en stijlwensen. Direct account en Firestore document aanmaak.</p>
+                    </div>
+                    <div class="workflow-card">
+                        <span class="workflow-step-badge">Fase 2</span>
+                        <div class="workflow-icon-wrap"><i class="fas fa-file-signature"></i></div>
+                        <h3 data-translate-key="wfStep2Title">2. Transparante Offerte</h3>
+                        <p data-translate-key="crmStep2Detail">Inzage in deliverables en tarieven, digitaal akkoord via modal en directe download van de officiële PDF offerte.</p>
+                    </div>
+                    <div class="workflow-card">
+                        <span class="workflow-step-badge">Fase 3</span>
+                        <div class="workflow-icon-wrap"><i class="fas fa-palette"></i></div>
+                        <h3 data-translate-key="wfStep3Title">3. Design & Concept Review</h3>
+                        <p data-translate-key="crmStep3Detail">Interactieve wireframe- en Figma preview. Visuele goedkeuring alvorens over te gaan tot software-ontwikkeling.</p>
+                    </div>
+                    <div class="workflow-card highlight">
+                        <span class="workflow-step-badge">Fase 4 • Highlight</span>
+                        <div class="workflow-icon-wrap"><i class="fas fa-crosshairs"></i></div>
+                        <h3 data-translate-key="wfStep4Title">4. Live Staging & Feedback</h3>
+                        <p data-translate-key="crmStep4Detail">Live responsieve viewport emulator. Klanten plaatsen feedback-pins op knoppen, titels en afbeeldingen.</p>
+                    </div>
+                    <div class="workflow-card">
+                        <span class="workflow-step-badge">Fase 5</span>
+                        <div class="workflow-icon-wrap"><i class="fas fa-rocket"></i></div>
+                        <h3 data-translate-key="wfStep5Title">5. Livegang & Documentatie</h3>
+                        <p data-translate-key="crmStep5Detail">DNS-omzetting, Pi-facturen overzicht en koppeling met de live documentatiegids voor contentbeheer.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="content-section" style="background-color: var(--color-bg-secondary);">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 2.5rem;" data-translate-key="crmTechTitle">Toegepaste Technologieën & Stack</h2>
+                <div class="detail-cards">
+                    <div class="detail-card">
+                        <i class="fab fa-js-square"></i>
+                        <h4>Vanilla JS (ES6+)</h4>
+                        <p>Modulaire, dependency-vrije JavaScript met native DOM API's voor maximale snelheid en minimale geheugenbelasting.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-fire"></i>
+                        <h4>Firebase Firestore & Auth</h4>
+                        <p>Real-time NoSQL cloud database met instant snapshot listeners, veilige authenticatie en client sessie-isolatie.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-file-pdf"></i>
+                        <h4>jsPDF & AutoTable</h4>
+                        <p>Geavanceerde client-side PDF rendering engine voor offertes en facturen met exacte lay-out uitlijning en huisstijl.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-server"></i>
+                        <h4>Pi-Boekhouding Sync</h4>
+                        <p>Interne Raspberry Pi boekhouding microservice voor factuuroverzichten en jaarlijkse hosting/APK abonnementen.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <h4>EmailJS & Webhooks</h4>
+                        <p>Directe notificatie-dispatchers voor intake registraties, offerte-akkoorden en in-app supportberichten.</p>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-paint-brush"></i>
+                        <h4>Dark AI Design System</h4>
+                        <p>Uniform UI token-systeem met glassmorphism blur-filters, neon gradients en Space Grotesk typografie.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <h2 data-translate-key="crmCtaTitle">Wil je ook een op maat gemaakt platform of applicatie?</h2>
+                <p data-translate-key="crmCtaDesc">
+                    Creation+Alt+Fix ontwerpt en realiseert high-performance software, dashboards en portals die jouw bedrijfsprocessen transformeren.
+                </p>
+                <div class="cta-buttons">
+                    <a href="https://portal.creationaltfix.nl/intake/?service=software" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> <span data-translate-key="crmCtaIntakeBtn">Start Je Software Intake</span>
+                    </a>
+                    <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="color: #fff; border-color: #fff;">
+                        <i class="fas fa-external-link-alt"></i> <span data-translate-key="crmCtaLiveBtn">Ervaar het Klantenportaal</span>
+                    </a>
+                    <a href="mailto:info@creationaltfix.nl" class="btn btn-secondary" style="color: #fff; border-color: #fff;">
+                        <i class="fas fa-envelope"></i> <span data-translate-key="crmCtaContactBtn">Neem Contact Op</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/subpage.js" defer></script>
+    <script src="/js/cookie-consent.js"></script>
+</body>
+</html>

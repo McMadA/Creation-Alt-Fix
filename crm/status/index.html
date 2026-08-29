@@ -42,10 +42,19 @@
 
     <!-- Top Navigation Bar -->
     <header class="navbar">
-        <a href="../index.html" class="nav-brand">
-            <img src="/images/logo.webp" alt="Creation+Alt+Fix Logo">
-            <span>Creation+Alt+Fix</span>
-        </a>
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <a href="../index.html" class="nav-brand">
+                <img src="/images/logo.webp" alt="Creation+Alt+Fix Logo">
+                <span>Creation+Alt+Fix</span>
+            </a>
+            <span style="color: rgba(255,255,255,0.2);">|</span>
+            <a href="https://creationaltfix.nl" target="_blank" rel="noopener noreferrer" style="color: var(--color-text-secondary); text-decoration: none; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-arrow-left" style="font-size: 0.75rem;"></i> <span data-translate-key="statusNavMainSite">Hoofdwebsite</span>
+            </a>
+            <a href="https://creationaltfix.nl/diensten/" target="_blank" rel="noopener noreferrer" style="color: var(--color-text-secondary); text-decoration: none; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 5px;" data-translate-key="statusNavServices">
+                Diensten
+            </a>
+        </div>
         <div class="nav-user">
             <div class="portal-lang-switcher" id="language-switcher">
                 <button type="button" data-lang="nl" class="lang-btn">NL</button>
@@ -78,7 +87,7 @@
                 <a href="../intake/" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
                     <i class="fas fa-file-signature"></i> <span data-translate-key="statusNewIntakeBtn">Nieuwe Intake Invoeren</span>
                 </a>
-                <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20account." target="_blank" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.05); color: white; border-radius: 8px; text-decoration: none;">
+                <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20account." target="_blank" rel="noopener noreferrer" class="action-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.05); color: white; border-radius: 8px; text-decoration: none;">
                     <i class="fab fa-whatsapp" style="color: #25D366;"></i> <span data-translate-key="statusWhatsAppBtn">Neem contact op via WhatsApp</span>
                 </a>
             </div>
@@ -479,7 +488,7 @@
                     </button>
 
                     <!-- Contact via WhatsApp -->
-                    <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" class="action-card">
+                    <a href="https://wa.me/31619135453?text=Hallo%20Allard,%20ik%20heb%20een%20vraag%20over%20mijn%20project." target="_blank" rel="noopener noreferrer" class="action-card">
                         <i class="fab fa-whatsapp" style="color: #25D366;"></i>
                         <div>
                             <h4 data-translate-key="statusWhatsAppAllardTitle">WhatsApp met Allard</h4>

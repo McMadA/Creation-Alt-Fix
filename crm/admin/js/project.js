@@ -252,7 +252,17 @@ async function setupAuthAndPage() {
                 if (!isAdmin) {
                     await signOut(auth);
                     alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
-                    window.location.href = "../index.html";
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                // Zero-Password Policy: Beheerders MOETEN via Google OAuth (2FA) ingelogd zijn
+                const isGoogleAuth = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+                if (!isGoogleAuth) {
+                    console.warn("Wachtwoordinlog geblokkeerd voor beheerder:", userEmail);
+                    await signOut(auth);
+                    alert("Beveiligingswaarschuwing: Wachtwoordinlog is uitgeschakeld voor beheerders. Log verplicht in via Google.");
+                    window.location.href = "index.html";
                     return;
                 }
 

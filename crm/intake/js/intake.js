@@ -27,7 +27,11 @@ function generateTempPassword() {
 const translations = {
     nl: {
         intakePageTitle: "Klant Intake - Creation+Alt+Fix",
-        intakeCallBtn: "Liever direct ff bellen, bel hier ...",
+        intakeBackHome: "Terug naar Hoofdwebsite",
+        intakeNavServices: "Diensten",
+        intakeNavDocs: "Documentatie",
+        intakeWhatsAppBtn: "WhatsApp",
+        intakeCallBtn: "Direct Bellen",
         intakeStep1Badge: "Stap 1 van 5",
         intakeStep2Badge: "Stap 2 van 5",
         intakeStep3Badge: "Stap 3 van 5",
@@ -134,7 +138,11 @@ const translations = {
     },
     en: {
         intakePageTitle: "Client Intake - Creation+Alt+Fix",
-        intakeCallBtn: "Prefer to call directly? Call here ...",
+        intakeBackHome: "Back to Main Website",
+        intakeNavServices: "Services",
+        intakeNavDocs: "Documentation",
+        intakeWhatsAppBtn: "WhatsApp",
+        intakeCallBtn: "Call Direct",
         intakeStep1Badge: "Step 1 of 5",
         intakeStep2Badge: "Step 2 of 5",
         intakeStep3Badge: "Step 3 of 5",
@@ -447,9 +455,63 @@ function updateLiveSummary() {
     if (summaryStyle) summaryStyle.textContent = styleVal;
 }
 
+// --- Contextual URL Parameter Pre-Fill Engine ---
+function handleUrlPreFill() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceParam = (urlParams.get('service') || urlParams.get('type') || urlParams.get('dienst') || '').toLowerCase().trim();
+    
+    if (!serviceParam) return;
+
+    let targetValue = null;
+    let targetPlaceholder = null;
+
+    if (['websites', 'website', 'webshop', 'web', 'site'].includes(serviceParam)) {
+        targetValue = 'Website & Webshop';
+        targetPlaceholder = currentLang === 'en' 
+            ? 'E.g. We need a modern, high-converting corporate website with SEO optimization and booking flow...'
+            : 'Bijv. We willen een moderne, converterende bedrijfswebsite met SEO-optimalisatie en contactformulieren...';
+    } else if (['ai-automation', 'ai', 'automatisering', 'slimme-automatisering-ai', 'bot', 'workflow'].includes(serviceParam)) {
+        targetValue = 'Slimme Automatisering (AI)';
+        targetPlaceholder = currentLang === 'en'
+            ? 'E.g. Automate client onboarding emails, invoice generation and AI document processing...'
+            : 'Bijv. Automatiseer onze klant-onboarding, factuurverwerking en AI documentgeneratie...';
+    } else if (['dashboards', 'dashboard', 'data-dashboards', 'data', 'kpi'].includes(serviceParam)) {
+        targetValue = 'Data Dashboard';
+        targetPlaceholder = currentLang === 'en'
+            ? 'E.g. Real-time KPI dashboard integrating sales figures and CRM metrics in one visual overview...'
+            : 'Bijv. Real-time KPI dashboard dat verkoopcijfers en CRM data combineert in één overzicht...';
+    } else if (['software', 'maatwerk', 'it-support', 'support', 'it-support-beheer', 'anders', 'other'].includes(serviceParam)) {
+        targetValue = 'Anders';
+        targetPlaceholder = currentLang === 'en'
+            ? 'E.g. Custom web application with API integrations, IT infrastructure support and bespoke tools...'
+            : 'Bijv. Maatwerk webapplicatie met API-koppelingen, IT-systeemondersteuning en specifieke beheertools...';
+    }
+
+    if (targetValue) {
+        const serviceCards = document.querySelectorAll('#service-grid .choice-card');
+        const serviceInput = document.getElementById('serviceType');
+        
+        serviceCards.forEach(c => {
+            if (c.getAttribute('data-value') === targetValue) {
+                serviceCards.forEach(card => card.classList.remove('selected'));
+                c.classList.add('selected');
+                if (serviceInput) serviceInput.value = targetValue;
+            }
+        });
+
+        if (targetPlaceholder) {
+            const projectGoalsTextarea = document.getElementById('projectGoals');
+            if (projectGoalsTextarea && !projectGoalsTextarea.value.trim()) {
+                projectGoalsTextarea.placeholder = targetPlaceholder;
+            }
+        }
+    }
+}
+
 // --- DOM Initializations & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
     applyTranslations(currentLang);
+    handleUrlPreFill();
 
     // Language Switcher Buttons
     document.querySelectorAll('#language-switcher .lang-btn').forEach(btn => {
@@ -458,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lang) {
                 applyTranslations(lang);
                 localStorage.setItem('preferredLanguage', lang);
+                handleUrlPreFill();
             }
         });
     });

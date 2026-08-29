@@ -12,6 +12,16 @@ Options -Indexes
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
+# Privacy Protection: Guard admin & client status from search indexing
+<IfModule mod_headers.c>
+    <LocationMatch "^/(admin|status)/">
+        Header set X-Robots-Tag "noindex, nofollow, noarchive"
+    </LocationMatch>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
 # Browser Caching Headers
 <IfModule mod_expires.c>
     ExpiresActive On

@@ -10,13 +10,13 @@
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked     | **42 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **29 Tasks (69%)**                       |
+| **Completed Work Items**           | ✅ Done        | **30 Tasks (71%)**                       |
 | **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (12%)**                        |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **7 Tasks (17%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **6 Tasks (14%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░] 69% Complete (5 In Progress)`
+`[█████████████████░░░░░░░] 71% Complete (5 In Progress)`
 
 ---
 
@@ -33,10 +33,10 @@
   - **Tasks**: ProFTPD `TLSRequired on` forceren (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels instellen (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit/opschoning van overbodige FTP-accounts.
 
 - [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Mollie API Integratie & Webhook Listener Service**
-  - **Scope**: `crm/mollie_service.py`, `crm/Mollie_Integration_Guide.md`, `Boekhouding/app.py`
-  - **Tasks**: Python SDK module gebouwd; definitieve API-sleutels (`test_...` / `live_...`) en Tailscale webhook tunnel configureren in productie.
+  - **Scope**: `Boekhoudings/Boekhouding/app.py`, Mollie Python SDK & Webhook Endpoint
+  - **Tasks**: Offertebetalingen via iDEAL automatiseren en koppelen aan Pi-Boekhouding.
 
-- [ ] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: IN_PROGRESS]` **Creation+Alt+Fix Bedrijfscontinuïteitsplan & Digitaal Noodprotocol (Inclusief Overlijden)**
+- [ ] `[TASK-805]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Bedrijfscontinuïteitsplan & Noodprocedure Formalisering**
   - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
   - **Tasks**: Basisprotocol gedocumenteerd; fysieke noodenvelop voorbereiden (BitLocker sleutel, master accounts) en documenteren voor vertrouwenspersoon/nabestaanden.
 
@@ -47,10 +47,6 @@
 - [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek Projectafronding**
   - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
   - **Tasks**: Vervang decoratieve placeholders door echte projectfoto's van Maico, voeg Google Analytics tracking toe, integreer Google Reviews widget/link (Formulier backend, deployment, favicon en Over Mij e-mailadres reeds voltooid).
-
-- [ ] `[TASK-803]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Website Prototype**
-  - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`)
-  - **Tasks**: `angelastenekes.nl` vibecoden en interactief prototype ontwerpen.
 
 - [ ] `[TASK-817]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Klantafstemming 2027: Nieuwe Tarieven, Werkwijze via Klantenportaal & Gratis Website Vernieuwing**
   - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`), `crm/status/`, `crm/admin/`
@@ -273,3 +269,7 @@
 - [x] `[TASK-818]` `[P2-HIGH]` `[STATUS: DONE]` **Subdomein Routing & URL Structuur Fix (`portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)**
   - **Scope**: `crm/.htaccess`, `website/.htaccess`, DirectAdmin Let's Encrypt SSL SAN & DNS
   - **Details**: Standalone subdomein migratie 100% afgerond: DNS A-record gekoppeld, DirectAdmin Let's Encrypt SSL SAN geactiveerd, `crm/.htaccess` ingericht met HTTPS enforcement, `website/.htaccess` doorverwijzingen geconfigureerd, en alle marketinglinks, navigatie, documentatie, PDF generatoren en notificaties over de hele repository geharmoniseerd naar `https://portal.creationaltfix.nl/`.
+
+- [x] `[TASK-803]` `[P2-HIGH]` `[STATUS: DONE]` **Angela Stenekes Website Prototype & 2027 Upgrade**
+  - **Scope**: `c:\Users\Admin\Documents\GitHub\Websites\AngelaStenekes\`, Klantproject Angela Stenekes (`angelastenekes.nl`)
+  - **Details**: Volledige transformatie en 2027 boutique upgrade voltooid: 1. Alle 25 authentieke verhalen en 23 klantreacties geëxtraheerd van de live WordPress site en geïntegreerd in `js/blogs.js`; 2. Warm Kasjmier & Mauve luxe design system geïmplementeerd met `Plus Jakarta Sans` en `Playfair Display`; 3. Interactieve Behandelingscalculator gebouwd op `prijzen.html` en de homepage met dynamische prijscalculatie en 1-klik WhatsApp reservering; 4. Luxe REF Stockholm showcase met 6 kernwaarden-kaarten en Tapparfum geurbeleving op `producten.html`; 5. Client-side instant search, categorie-filters (`Alles`, `Blog`, `Verhaal`), leestijd-indicatoren, interactieve like-teller en comment submitter op `blog.html` en `blog-post.html`.

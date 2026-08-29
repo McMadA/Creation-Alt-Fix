@@ -19,6 +19,22 @@
     <meta property="og:description" content="Bekijk ons portfolio van websites, webshops, AI-tools en custom software. Gebouwd met de kracht van AI.">
     <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
 
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Projecten & Portfolio - Creation+Alt+Fix",
+      "description": "Portfolio van websites, webshops, AI-tools en maatwerk software gebouwd door Creation+Alt+Fix.",
+      "url": "https://www.creationaltfix.nl/projecten.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Creation+Alt+Fix",
+        "url": "https://www.creationaltfix.nl/"
+      }
+    }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
@@ -83,33 +99,34 @@
                     <div class="case-study-inner">
                         <div class="case-study-visual">
                             <div class="case-study-badge" data-translate-key="caseStudyFlagshipBadge">🏆 Flagship Project</div>
-                            <img src="/images/crm-dashboard-mockup.webp" alt="Creation+Alt+Fix CRM Admin Dashboard" loading="lazy" width="1920" height="1080" decoding="async">
+                            <a href="/projects/crm-portal/"><img src="/images/crm-dashboard-mockup.webp" alt="Creation+Alt+Fix CRM Admin Dashboard" loading="lazy" width="1920" height="1080" decoding="async"></a>
                         </div>
                         <div class="case-study-content">
-                            <div class="case-study-label" data-translate-key="projectenCaseLabel">Case Study — Intern Product</div>
+                            <div class="case-study-label" data-translate-key="projectenCaseLabel">Case Study — Intern Product & Systeem</div>
                             <h3 data-translate-key="projectenCaseTitle">Creation+Alt+Fix CRM & Klantenportaal</h3>
-                            <p data-translate-key="projectenCaseDesc">Een volledig zelfontwikkeld CRM-systeem dat het complete klanttraject automatiseert: van eerste intake tot oplevering en facturatie. Gebouwd met zero-framework Vanilla JavaScript en Firebase als real-time backend.</p>
+                            <p data-translate-key="projectenCaseDesc">Een volledig zelfontwikkeld end-to-end CRM en klantenportaal dat het complete traject automatiseert: van AI intake en jsPDF offertes tot een live staging emulator met point-and-click annotaties en Pi-Boekhouding facturatiesynchronisatie.</p>
 
                             <div class="case-study-features">
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF1">Real-time Firebase Tracking</span></div>
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF2">Digitale Offerte & Handtekening</span></div>
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF3">Geautomatiseerde Onboarding</span></div>
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF4">5-Fase Project Pipeline</span></div>
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF5">Klant Status Portaal</span></div>
-                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF6">Email & Push Notificaties</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF1">Real-time Firebase Firestore</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF2">Live Staging & Point-and-Click Pins</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF3">jsPDF Offerte & Digitaal Akkoord</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF4">Pi-Boekhouding Factuursync</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF5">5-Fase Interactieve Pipeline</span></div>
+                                <div class="cs-feature"><i class="fas fa-check-circle"></i> <span data-translate-key="projectenCaseF6">Multi-Project Switcher & Chat</span></div>
                             </div>
 
                             <div class="case-study-tech">
                                 <span class="tech-badge">Vanilla JS (ES6+)</span>
-                                <span class="tech-badge">Firebase Auth</span>
-                                <span class="tech-badge">Firestore</span>
-                                <span class="tech-badge">Firebase Storage</span>
-                                <span class="tech-badge">EmailJS</span>
-                                <span class="tech-badge">Dark AI CSS</span>
+                                <span class="tech-badge">Firestore Real-time</span>
+                                <span class="tech-badge"><i class="fas fa-crosshairs"></i> Point-and-Click Annotaties</span>
+                                <span class="tech-badge"><i class="fas fa-file-invoice-dollar"></i> Pi-Boekhouding</span>
+                                <span class="tech-badge">jsPDF Engine</span>
+                                <span class="tech-badge">Dark AI Glassmorphism</span>
                             </div>
 
-                            <div>
-                                <a href="https://portal.creationaltfix.nl/" class="btn btn-primary"><i class="fas fa-rocket"></i> <span data-translate-key="projectenCaseCta">Ervaar het Klantenportaal</span></a>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+                                <a href="/projects/crm-portal/" class="btn btn-primary"><i class="fas fa-file-alt"></i> <span data-translate-key="projectenCaseDeepDive">Bekijk Volledige Case Study</span></a>
+                                <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="color: #fff; border-color: rgba(255,255,255,0.3);"><i class="fas fa-external-link-alt"></i> <span data-translate-key="projectenCaseCta">Ervaar het Klantenportaal</span></a>
                             </div>
                         </div>
                     </div>

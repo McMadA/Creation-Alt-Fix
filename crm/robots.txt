@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /cgi-bin/
+Allow: /intake/
+Disallow: /admin/
+Disallow: /status/
 
 # AI Web Scraper & Crawler Directives (EU TDM Directive 2019/790)
 User-agent: GPTBot
@@ -21,4 +23,3 @@ Disallow: /
 User-agent: PetalBot
 Disallow: /
 
-Sitemap: https://www.creationaltfix.nl/sitemap.xml
