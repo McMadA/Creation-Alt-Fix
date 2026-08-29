@@ -211,9 +211,12 @@ export function getPiBoekhoudingInfo(p) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setupAuthAndPage();
-    setupTabNavigation();
-    setupFormHandlers();
+    // Only run workspace initialization if on project.html
+    if (window.location.pathname.includes('project.html') || document.getElementById('project-title-display')) {
+        setupAuthAndPage();
+        setupTabNavigation();
+        setupFormHandlers();
+    }
 });
 
 // --- URL Parameter & Authentication ---
