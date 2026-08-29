@@ -125,7 +125,7 @@
          `public_html/` Root                      `public_html/portal/` Subdomain
                        │                                           │
                        ▼                                           ▼
-            https://creationaltfix.nl                   https://creationaltfix.nl/portal/
+            https://creationaltfix.nl                   https://portal.creationaltfix.nl
             (Public Marketing Site)                     (Client Portal & Admin Hub)
 ```
 

@@ -427,7 +427,7 @@ export async function generateProposalPDF(p, isSigned = false) {
         doc.setTextColor(100, 116, 139);
         doc.text("Je kunt deze offerte met één klik digitaal accepteren via je persoonlijke klantenportaal:", margin + 6, y + 13);
         doc.setTextColor(99, 102, 241);
-        doc.text(`https://creationaltfix.nl/portal/status/`, margin + 6, y + 18.5);
+        doc.text(`https://portal.creationaltfix.nl/status/`, margin + 6, y + 18.5);
         doc.setTextColor(100, 116, 139);
         doc.text("Na acceptatie wordt dit document automatisch gewaarmerkt en start Fase 3 (Design & Ontwerp).", margin + 6, y + 23.5);
     }

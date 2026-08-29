@@ -107,7 +107,7 @@ function formatNotificationText(data, docId) {
         ``,
         `🆔 *ID:* \`${docId || 'N/A'}\``,
         `🔗 *Bekijk Klantkaart in Admin Dashboard:*`,
-        `https://creationaltfix.nl/portal/admin/`
+        `https://portal.creationaltfix.nl/admin/`
     ].join('\n');
 }
 
@@ -131,7 +131,7 @@ async function dispatchFormSubmit(data, docId) {
         "Designvoorkeuren": data.design || 'Geen specifieke voorkeuren',
         "Datum Intake": data.date || new Date().toLocaleDateString('nl-NL'),
         "Firestore Document ID": docId || 'N/A',
-        "Admin Dashboard Link": "https://creationaltfix.nl/portal/admin/"
+        "Admin Dashboard Link": "https://portal.creationaltfix.nl/admin/"
     };
 
     const res = await fetch(url, {
@@ -249,7 +249,7 @@ async function dispatchClientWelcomeEmailJS(data) {
             contact_name: data.contactName || data.client || "klant",
             client_email: data.email,
             service: data.service || "software & web services",
-            portal_url: "https://creationaltfix.nl/portal/",
+            portal_url: "https://portal.creationaltfix.nl/",
             to_email: data.email
         }
     };

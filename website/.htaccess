@@ -3,14 +3,18 @@
     RewriteEngine On
     RewriteBase /
 
-    # ============ SUBDOMEIN CANONICAL ROUTING (TASK-818) ============
-    # 1. Stroomlijn portal.creationaltfix.nl -> https://creationaltfix.nl/portal/
-    RewriteCond %{HTTP_HOST} ^portal\.creationaltfix\.nl$ [NC]
-    RewriteRule ^(.*)$ https://creationaltfix.nl/portal/$1 [R=301,L]
+    # ============ 1. FORCE HTTPS ============
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-    # 2. Stroomlijn hbi.creationaltfix.nl -> https://creationaltfix.nl/projects/home-buyer-intelligence/
+    # ============ 2. SUBDOMEIN CANONICAL ROUTING ============
+    # Stroomlijn legacy /portal/* paden op hoofddomein naar het officiële subdomein portal.creationaltfix.nl
+    RewriteCond %{HTTP_HOST} ^(www\.)?creationaltfix\.nl$ [NC]
+    RewriteRule ^portal(?:/(.*))?$ https://portal.creationaltfix.nl/$1 [R=301,L]
+
+    # Stroomlijn hbi.creationaltfix.nl -> https://creationaltfix.nl/projects/home-buyer-intelligence/
     RewriteCond %{HTTP_HOST} ^hbi\.creationaltfix\.nl$ [NC]
-    RewriteRule ^(.*)$ https://creationaltfix.nl/projects/home-buyer-intelligence/$1 [R=301,L]
+    RewriteRule ^(?:projects/home-buyer-intelligence/)?(.*)$ https://creationaltfix.nl/projects/home-buyer-intelligence/$1 [R=301,L]
 </IfModule>
 
 # Custom 404 Error Page

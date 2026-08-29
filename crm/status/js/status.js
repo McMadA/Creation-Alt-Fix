@@ -617,7 +617,7 @@ function renderDashboard(data) {
     if (docsBtn) {
         const domainVal = data.domainName || data.domain || '';
         const clientVal = clientName;
-        docsBtn.href = `../../docs/index.html?domain=${encodeURIComponent(domainVal)}&client=${encodeURIComponent(clientVal)}`;
+        docsBtn.href = `https://creationaltfix.nl/docs/?domain=${encodeURIComponent(domainVal)}&client=${encodeURIComponent(clientVal)}`;
     }
 }
 

@@ -230,7 +230,7 @@ def register_mollie_routes(app, mollie_svc: MollieService):
         factuurnummer = data.get("factuurnummer")
         bedrag = float(data.get("bedrag", 0.0))
         beschrijving = data.get("beschrijving", f"Factuur {factuurnummer}")
-        redirect_url = data.get("redirect_url", "https://creationaltfix.nl/portal/")
+        redirect_url = data.get("redirect_url", "https://portal.creationaltfix.nl/")
         webhook_url = data.get("webhook_url", "https://creationaltfix.nl/api/mollie/webhook")
         klant_naam = data.get("klant_naam", "")
 
