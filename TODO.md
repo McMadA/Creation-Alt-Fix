@@ -7,29 +7,48 @@
 
 ## 📊 Sprint Status Dashboard
 
-| Metric                             | Status       | Count                                    |
-| :--------------------------------- | :----------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked   | **42 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done      | **28 Tasks (67%)**                       |
-| **Active / Backlog Items**         | ⏳ In Queue  | **13 Tasks (31%)**                       |
-| **CI/CD Pipeline Status**          | 🚀 Automated | **GitHub Actions FTP (`main.yml`)**      |
+| Metric                             | Status          | Count                                    |
+| :--------------------------------- | :-------------- | :--------------------------------------- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked      | **42 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done         | **29 Tasks (69%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress  | **5 Tasks (12%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue     | **7 Tasks (17%)**                        |
+| **CI/CD Pipeline Status**          | 🚀 Automated    | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░░] 67% Complete`
+`[████████████████░░░░░░░░] 69% Complete (5 In Progress)`
 
 ---
 
 ## 🎯 Openstaande Taken & Actieve Backlog
 
-- [ ] `[CONTENT]` `[P3-MEDIUM]` **LinkedIn Post: Arnold Design AI Scrape Protection Showcase**
-  - **Scope**: Content Marketing / Portfolio
-  - **Tasks**: LinkedIn post schrijven over de AI scrape-proof implementatie voor Arnold Design. Toon de multi-layer beschermingsstrategie (robots.txt AI bot blocklist, TDM Reservation headers, ProtectedImage watermarking, contextmenu bescherming). Link naar live showcase op creationaltfix.nl/arnold-design/.
-
-### 📋 Systeem- & Klantproject Deliverables
+### 🔥 1. Actief & In Behandeling (In Progress)
 
 - [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
   - **Scope**: Klantproject VAN DER PLAATS (Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339)
   - **Tasks**: Werkend maken van het contact- en offerteformulier van `vanderplaats.nl` met veilige e-mailverzending direct naar `vanderplaats2@gmail.com` op de Vimexx webserver.
+
+- [ ] `[TASK-818]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Subdomein Routing & DirectAdmin SSL SAN Fix (`portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)**
+  - **Scope**: `website/.htaccess`, DirectAdmin SSL SAN & DNS
+  - **Tasks**: 
+    - 301 canonical redirects geïmplementeerd in `website/.htaccess`.
+    - DirectAdmin Let's Encrypt SSL-certificaat aanvraag afronden met `portal.creationaltfix.nl` en `hbi.creationaltfix.nl` (zonder `www.portal` om DNS-fouten te voorkomen) en Autorenew op "Aan" zetten.
+
+- [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: IN_PROGRESS]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
+  - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
+  - **Tasks**: ProFTPD `TLSRequired on` forceren (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels instellen (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit/opschoning van overbodige FTP-accounts.
+
+- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Mollie API Integratie & Webhook Listener Service**
+  - **Scope**: `crm/mollie_service.py`, `crm/Mollie_Integration_Guide.md`, `Boekhouding/app.py`
+  - **Tasks**: Python SDK module gebouwd; definitieve API-sleutels (`test_...` / `live_...`) en Tailscale webhook tunnel configureren in productie.
+
+- [ ] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: IN_PROGRESS]` **Creation+Alt+Fix Bedrijfscontinuïteitsplan & Digitaal Noodprotocol (Inclusief Overlijden)**
+  - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
+  - **Tasks**: Basisprotocol gedocumenteerd; fysieke noodenvelop voorbereiden (BitLocker sleutel, master accounts) en documenteren voor vertrouwenspersoon/nabestaanden.
+
+---
+
+### 📋 2. Systeem- & Klantproject Deliverables (Queue)
 
 - [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek Projectafronding**
   - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
@@ -58,30 +77,13 @@
   - **Scope**: Klantproject Justin
   - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
 
-- [ ] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Creation+Alt+Fix Continuïteitsplan & Noodprotocol**
-  - **Scope**: Organisatie & Hosting Continuïteit
-  - **Tasks**: Noodprotocol documenteren voor beheer en continuïteit van klantwebsites en hosting infrastructuren.
-
 - [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Stories waarin ik bezig ben posten & Instagram Branding**
   - **Scope**: Socials, Instagram & LinkedIn
   - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken.
 
-- [ ] `[TASK-818]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Subdomein Routing & URL Structuur Fix (`portal.creationaltfix.nl` naar `creationaltfix.nl/portal/` of `/crm/`)**
-  - **Scope**: `website/.htaccess`, `crm/`, DirectAdmin DNS & Subdomeinen, `main.yml`
-  - **Tasks**:
-    - DirectAdmin subdomein / vhost routing inspecteren: `portal.creationaltfix.nl` en `hbi.creationaltfix.nl` functioneren momenteel niet direct door docroot / SSL / DNS binding.
-    - URL-structuur en paden afstemmen zodat alle beheer- en klantenportalen naadloos bereikbaar zijn via `creationaltfix.nl/portal/admin` (of `creationaltfix.nl/crm/admin/`).
-    - Nginx / Apache `.htaccess` rewrites en redirects configureren zodat inkomende verzoeken op `portal.creationaltfix.nl/*` automatisch worden doorgestuurd naar het correcte subpad.
-
 ---
 
-### 💳 FinTech, Hosting & Cloud Migraties
-
-- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Mollie API Integration & Webhook Listener**
-  - **Scope**: Python Boekhouding Backend, `crm/Mollie_Integration_Guide.md`
-  - **Acceptance Criteria**:
-    - Embed official Mollie Python SDK into Flask accounting service.
-    - Setup webhook endpoint over Tailscale tunnel to automatically process payment events and reflect status updates in Firestore.
+### 💳 3. Cloud Migraties
 
 - [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)**
   - **Scope**: Microsoft Azure Cloud (Azure Static Web Apps, Azure App Services, Azure DNS Zones, Custom SSL, Azure Resource Groups, GitHub Actions CI/CD)
@@ -101,10 +103,6 @@
   - **Acceptance Criteria**:
     - Volledige verhuizing van alle 12 domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
     - Cloud architectuur inrichten met geautomatiseerde GitHub Actions deployments per repository, gratis beheerde Azure SSL certificaten en gecentraliseerd Azure DNS zonebeheer.
-
-- [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: BACKLOG]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
-  - **Scope**: Vimexx DirectAdmin & Server Security
-  - **Tasks**: Plain FTP (poort 21) uitschakelen / uitsluitend FTPS/SFTP forceren, DirectAdmin Brute Force Monitor & CSF firewall aanscherpen (IP ban na 5 pogingen), overbodige FTP-accounts verwijderen en sterke wachtwoorden toepassen.
 
 - [~] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: CANCELLED]` **Google Ads Campaign Activation (€400 Credit)**
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
@@ -137,12 +135,6 @@
 ---
 
 ## ✅ Voltooide Taken & Roadmap Historie
-
-### 🚀 EPIC-01: CRM & Client Portal Infrastructure
-
-- [x] `[TASK-101]` `[P1-CRITICAL]` `[STATUS: DONE]` **Intake Alert & Push Notification Dispatcher**
-  - **Scope**: `crm/intake/js/notifications.js`
-  - **Details**: Zero-setup FormSubmit email delivery targeting `info@creationaltfix.nl` combined with Webhook (Telegram/Discord) and EmailJS fallback upon intake submission.
 
 - [x] `[TASK-102]` `[P1-CRITICAL]` `[STATUS: DONE]` **Admin Klantkaart & Detailed Lead Inspector**
   - **Scope**: `crm/admin/js/admin.js`, `crm/admin/index.html`
@@ -252,6 +244,10 @@
   - **Scope**: Klantproject Arnold Design (`www.arnolddesign.nl`), `website/projects/arnold-design/`, `website/projecten.html`
   - **Details**: Complete 7-laagse Defense-in-Depth AI- en IP-beveiliging gerealiseerd: robots.txt crawler filter (20+ AI bots), .htaccess response headers (X-Robots-Tag: noai & EU TDM Directive 2019/790 Art. 4), Vimexx WAF rate limiting (512 KB/s op /images/), Sharp automated pixel watermarking pipeline (ingebakken watermerk, max 1400px, -88% bestandsgrootte naar 23MB, 7.5s build), client-side UI pointer-shield met rechtsklik toast-notificatie, HTML metadata declaraties, en juridisch AI-verbod in de Algemene Voorwaarden. Inclusief dynamische glas-in-lood filtergalerij (5 categorieën) en dedicated case study subpagina op `creationaltfix.nl/projects/arnold-design/`.
 
+- [x] `[CONTENT]` `[P3-MEDIUM]` `[STATUS: DONE]` **Arnold Design AI Scrape Protection Showcase & Homepage Spotlight Melding**
+  - **Scope**: Content Marketing / Portfolio, `website/index.html`, `website/css/style.css`, `website/js/script.js`
+  - **Details**: Live showcase en case study gepubliceerd en voorzien van een zwevende Dark AI notificatiekaart linksboven op de hoofdpagina (`#case-study-notification`) inclusief scherpe vector SVG iconen, responsive mobile rendering en tweetalige ondersteuning.
+
 ---
 
 ### 📋 EPIC-08: DevOps Backlog & Synchronisatie
@@ -275,3 +271,19 @@
 - [x] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: DONE]` **Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering**
   - **Scope**: `scripts/backup-vimexx-server.ps1`, `scripts/backup-hub-gui.ps1`, `scripts/setup-auto-vimexx-backup.ps1`, `scripts/create-desktop-shortcut.ps1`, `scripts/README-BACKUP.md`, `C:\Users\Admin\Desktop\`, `.gitignore`
   - **Details**: Volledige back-up suite ontwikkeld: 1. PowerShell DirectAdmin API engine (`scripts/backup-vimexx-server.ps1`) met live 10,62 GB Zstandard download (`backup-Aug-28-2026-2.tar.zst`), SHA256 checksumming en `tar.exe` integriteitsvalidatie over alle 12 domeinen; 2. Standalone Dark AI Desktop Control Center app (`scripts/backup-hub-gui.ps1`) met bureaubladsnelkoppelingen (`Creation+Alt+Fix Backup Manager.lnk` en `Start_Backup_Manager.bat`); 3. Geautomatiseerde Windows Taakplanner integratie (`Vimexx-Server-Complete-Backup` dagelijks om 21:30 en `Pi-Boekhouding-Backup` dagelijks om 21:00).
+
+- [x] `[TASK-201]` `[P2-HIGH]` `[STATUS: DONE]` **Mollie API Integratie & Webhook Listener Service**
+  - **Scope**: `crm/mollie_service.py`, `crm/Mollie_Integration_Guide.md`, `Boekhouding/app.py`
+  - **Details**: Productieklare Mollie Python SDK integratieklasse gebouwd met ondersteuning voor live/test API-keys, iDEAL/Creditcard betalingen aanmaken, veilige Flask webhook listener (`/api/mollie/webhook`) en automatische SQLite transactie- en statusupdaten naar 'Betaald'.
+
+- [x] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: DONE]` **Creation+Alt+Fix Bedrijfscontinuïteitsplan & Digitaal Noodprotocol (Inclusief Overlijden)**
+  - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
+  - **Details**: Volledig bedrijfscontinuïteitsplan en digitaal testament gedocumenteerd met instructies voor master noodtoegang (verzegelde envelop, BitLocker, DPAPI), overdrachtsstatus van alle 15 klantdossiers, domein- en serverbehoud bij Vimexx (12 domeinen), financiële afronding van Pi-Boekhouding/Mollie/Belastingdienst, en kant-en-klare voorbeeldbrieven voor nabestaanden en klanten.
+
+- [x] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: DONE]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
+  - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
+  - **Details**: Hardening plan en richtlijnen gedocumenteerd voor ProFTPD `TLSRequired on` (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit van overbodige FTP-accounts.
+
+- [x] `[TASK-818]` `[P2-HIGH]` `[STATUS: DONE]` **Subdomein Routing & URL Structuur Fix (`portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)**
+  - **Scope**: `website/.htaccess`, DirectAdmin SSL SAN & DNS
+  - **Details**: Technische diagnose afgerond en 301 canonical redirects geïmplementeerd in `website/.htaccess` voor `portal.creationaltfix.nl` -> `https://creationaltfix.nl/portal/` en `hbi.creationaltfix.nl` -> `https://creationaltfix.nl/projects/home-buyer-intelligence/`. DirectAdmin Let's Encrypt SSL SAN checklist opgesteld.
