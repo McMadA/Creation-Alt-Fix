@@ -28,12 +28,6 @@
   - **Scope**: Klantproject VAN DER PLAATS (Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339)
   - **Tasks**: Werkend maken van het contact- en offerteformulier van `vanderplaats.nl` met veilige e-mailverzending direct naar `vanderplaats2@gmail.com` op de Vimexx webserver.
 
-- [ ] `[TASK-818]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Subdomein Routing & DirectAdmin SSL SAN Fix (`portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)**
-  - **Scope**: `website/.htaccess`, DirectAdmin SSL SAN & DNS
-  - **Tasks**: 
-    - 301 canonical redirects geïmplementeerd in `website/.htaccess`.
-    - DirectAdmin Let's Encrypt SSL-certificaat aanvraag afronden met `portal.creationaltfix.nl` en `hbi.creationaltfix.nl` (zonder `www.portal` om DNS-fouten te voorkomen) en Autorenew op "Aan" zetten.
-
 - [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: IN_PROGRESS]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
   - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
   - **Tasks**: ProFTPD `TLSRequired on` forceren (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels instellen (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit/opschoning van overbodige FTP-accounts.
@@ -276,14 +270,6 @@
   - **Scope**: `crm/mollie_service.py`, `crm/Mollie_Integration_Guide.md`, `Boekhouding/app.py`
   - **Details**: Productieklare Mollie Python SDK integratieklasse gebouwd met ondersteuning voor live/test API-keys, iDEAL/Creditcard betalingen aanmaken, veilige Flask webhook listener (`/api/mollie/webhook`) en automatische SQLite transactie- en statusupdaten naar 'Betaald'.
 
-- [x] `[TASK-805]` `[P3-MEDIUM]` `[STATUS: DONE]` **Creation+Alt+Fix Bedrijfscontinuïteitsplan & Digitaal Noodprotocol (Inclusief Overlijden)**
-  - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
-  - **Details**: Volledig bedrijfscontinuïteitsplan en digitaal testament gedocumenteerd met instructies voor master noodtoegang (verzegelde envelop, BitLocker, DPAPI), overdrachtsstatus van alle 15 klantdossiers, domein- en serverbehoud bij Vimexx (12 domeinen), financiële afronding van Pi-Boekhouding/Mollie/Belastingdienst, en kant-en-klare voorbeeldbrieven voor nabestaanden en klanten.
-
-- [x] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: DONE]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
-  - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
-  - **Details**: Hardening plan en richtlijnen gedocumenteerd voor ProFTPD `TLSRequired on` (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit van overbodige FTP-accounts.
-
 - [x] `[TASK-818]` `[P2-HIGH]` `[STATUS: DONE]` **Subdomein Routing & URL Structuur Fix (`portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)**
-  - **Scope**: `website/.htaccess`, DirectAdmin SSL SAN & DNS
-  - **Details**: Technische diagnose afgerond en 301 canonical redirects geïmplementeerd in `website/.htaccess` voor `portal.creationaltfix.nl` -> `https://creationaltfix.nl/portal/` en `hbi.creationaltfix.nl` -> `https://creationaltfix.nl/projects/home-buyer-intelligence/`. DirectAdmin Let's Encrypt SSL SAN checklist opgesteld.
+  - **Scope**: `crm/.htaccess`, `website/.htaccess`, DirectAdmin Let's Encrypt SSL SAN & DNS
+  - **Details**: Standalone subdomein migratie 100% afgerond: DNS A-record gekoppeld, DirectAdmin Let's Encrypt SSL SAN geactiveerd, `crm/.htaccess` ingericht met HTTPS enforcement, `website/.htaccess` doorverwijzingen geconfigureerd, en alle marketinglinks, navigatie, documentatie, PDF generatoren en notificaties over de hele repository geharmoniseerd naar `https://portal.creationaltfix.nl/`.

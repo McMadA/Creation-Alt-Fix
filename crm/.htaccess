@@ -8,10 +8,6 @@ Options -Indexes
     # 1. Force HTTPS on portal subdomain
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-
-    # 2. Prevent and fix duplicate /portal/ subfolder prefixes on portal.creationaltfix.nl
-    RewriteCond %{HTTP_HOST} ^portal\.creationaltfix\.nl$ [NC]
-    RewriteRule ^portal/(.*)$ https://portal.creationaltfix.nl/$1 [R=301,L]
 </IfModule>
 
 # Browser Caching Headers
