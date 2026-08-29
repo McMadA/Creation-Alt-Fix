@@ -1623,6 +1623,17 @@ function setupFormHandlers() {
         }
     });
 
+    // Action: Copy Pi-Boekhouding Facturen Folder Path
+    document.getElementById('btn-copy-facturen-path')?.addEventListener('click', () => {
+        navigator.clipboard.writeText('C:\\Users\\Admin\\Backups\\Pi-Boekhouding');
+        const btn = document.getElementById('btn-copy-facturen-path');
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i> Gekopieerd!';
+            setTimeout(() => btn.innerHTML = orig, 2000);
+        }
+    });
+
     // 8. Action: Send Design to Client (Opens Phase 3 Design Studio Modal)
     const openPhase3Modal = () => {
         const modal = document.getElementById('phase3-design-modal');

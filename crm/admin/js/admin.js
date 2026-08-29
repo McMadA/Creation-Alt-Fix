@@ -1138,6 +1138,28 @@ window.openProjectDetails = (id) => {
             </div>
 
             <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0; font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-file-invoice-dollar" style="color: #34d399;"></i> Pi-Boekhouding &amp; Facturen
+                        </h4>
+                        <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 700;">Tailscale LAN</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-sm" style="background: #047857; color: #fff; text-decoration: none; border: 1px solid #10b981; font-weight: 600; padding: 6px 12px;">
+                            <i class="fas fa-external-link-alt"></i> Open Facturen Web (100.65.226.112:8888)
+                        </a>
+                        <button type="button" id="btn-modal-copy-facturen" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #cbd5e1; font-size: 0.78rem;">
+                            <i class="fas fa-copy"></i> Kopieer Facturen Map
+                        </button>
+                    </div>
+                    <div style="font-family: monospace; font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+                        Locatie: C:\Users\Admin\Backups\Pi-Boekhouding
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--color-border); padding-top: 15px; margin-top: 10px;">
                 <h4 class="actions-title"><i class="fas fa-bolt"></i> Werkstroom & Snelacties per Fase</h4>
                 <div class="action-buttons-grid" id="action-buttons-container">
                     <!-- Buttons bound via event listeners below -->
@@ -1167,6 +1189,17 @@ window.openProjectDetails = (id) => {
     document.getElementById('btn-activate-auth')?.addEventListener('click', () => createClientAuthAccount(id, document.getElementById('edit-email')?.value || email, contact));
     document.getElementById('btn-reset-auth')?.addEventListener('click', () => triggerAdminPasswordReset(document.getElementById('edit-email')?.value || email));
 
+    // Bind Copy Facturen Map button
+    document.getElementById('btn-modal-copy-facturen')?.addEventListener('click', () => {
+        navigator.clipboard.writeText('C:\\Users\\Admin\\Backups\\Pi-Boekhouding');
+        const btn = document.getElementById('btn-modal-copy-facturen');
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i> Gekopieerd!';
+            setTimeout(() => btn.innerHTML = orig, 2000);
+        }
+    });
+
     // Bind action buttons via event listeners instead of inline onclick
     const actionContainer = document.getElementById('action-buttons-container');
     actionContainer.innerHTML = `
@@ -1176,6 +1209,7 @@ window.openProjectDetails = (id) => {
         <button class="btn btn-secondary btn-sm" data-action="design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
         <button class="btn btn-secondary btn-sm" data-action="mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie (Fase 5)</button>
         <button class="btn btn-secondary btn-sm" data-action="download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
+        <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399; text-decoration: none;"><i class="fas fa-file-invoice-dollar"></i> Pi-Boekhouding Web</a>
         <button class="btn btn-secondary btn-sm" data-action="checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in (Fase 5)</button>
     `;
     actionContainer.querySelector('[data-action="ai-email"]').addEventListener('click', () => generateAiEmail(id));
