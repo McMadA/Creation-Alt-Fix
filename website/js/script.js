@@ -1737,9 +1737,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentYearSpan.textContent = new Date().getFullYear();
     }
 
-    // Modern scroll-driven reveal observer
+    // High-impact 3D scroll-driven reveal observer
     var fadeInElements = document.querySelectorAll('.fade-in, .reveal-up');
-    var observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
+    var observerOptions = { root: null, rootMargin: '0px 0px -75px 0px', threshold: 0.08 };
     var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -1750,6 +1750,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, observerOptions);
     window.__cafScrollObserver = observer;
     fadeInElements.forEach(function(el) { observer.observe(el); });
+
+    // Subtle scroll-driven parallax for hero orbs
+    var orb1 = document.querySelector('.hero-orb-1');
+    var orb2 = document.querySelector('.hero-orb-2');
+    var orb3 = document.querySelector('.hero-orb-3');
+    if (orb1 || orb2 || orb3) {
+        var ticking = false;
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                    if (scrollY < 1200) {
+                        if (orb1) orb1.style.transform = 'translate3d(0, ' + (scrollY * 0.18) + 'px, 0)';
+                        if (orb2) orb2.style.transform = 'translate3d(0, ' + (scrollY * -0.12) + 'px, 0)';
+                        if (orb3) orb3.style.transform = 'translate3d(0, ' + (scrollY * 0.08) + 'px, 0)';
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
 
     // Toast notification system
     function showToast(message, type) {
@@ -1994,7 +2016,7 @@ function renderRepos(repos) {
     repos.forEach(function(repo, index) {
         var repoCard = document.createElement('div');
         repoCard.className = 'repo-card fade-in';
-        repoCard.style.transitionDelay = (index * 0.08) + 's';
+        repoCard.style.transitionDelay = (index * 0.12) + 's';
 
         var description = repo.description || 'Geen beschrijving opgegeven.';
         if (description.length > 120) {

@@ -1369,76 +1369,77 @@ footer .footer-links {
     color: inherit;
 }
 
-/* ============ MODERN SCROLL REVEAL & FLY-UP ANIMATION ============ */
+/* ============ HIGH-IMPACT 3D SCROLL REVEAL & FLY-UP ANIMATION ============ */
 .fade-in,
 .reveal-up {
     opacity: 0;
-    transform: translate3d(0, 24px, 0) scale(0.988);
-    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: perspective(1200px) translate3d(0, 80px, 0) scale(0.92) rotateX(6deg);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
+    transform-origin: center bottom;
 }
 
 .fade-in.visible,
 .reveal-up.visible {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: perspective(1200px) translate3d(0, 0, 0) scale(1) rotateX(0deg);
 }
 
-/* Staggered cascading entrances for homepage grids */
-.services-grid .service-card.fade-in:nth-child(1) { transition-delay: 0.04s; }
-.services-grid .service-card.fade-in:nth-child(2) { transition-delay: 0.12s; }
-.services-grid .service-card.fade-in:nth-child(3) { transition-delay: 0.20s; }
-.services-grid .service-card.fade-in:nth-child(4) { transition-delay: 0.28s; }
+/* Staggered cascading wave entrances for homepage grids */
+.services-grid .service-card.fade-in:nth-child(1) { transition-delay: 0.05s; }
+.services-grid .service-card.fade-in:nth-child(2) { transition-delay: 0.18s; }
+.services-grid .service-card.fade-in:nth-child(3) { transition-delay: 0.30s; }
+.services-grid .service-card.fade-in:nth-child(4) { transition-delay: 0.42s; }
 
-.usp-grid .usp-item.fade-in:nth-child(1) { transition-delay: 0.04s; }
-.usp-grid .usp-item.fade-in:nth-child(2) { transition-delay: 0.12s; }
-.usp-grid .usp-item.fade-in:nth-child(3) { transition-delay: 0.20s; }
-.usp-grid .usp-item.fade-in:nth-child(4) { transition-delay: 0.28s; }
+.usp-grid .usp-item.fade-in:nth-child(1) { transition-delay: 0.05s; }
+.usp-grid .usp-item.fade-in:nth-child(2) { transition-delay: 0.18s; }
+.usp-grid .usp-item.fade-in:nth-child(3) { transition-delay: 0.30s; }
+.usp-grid .usp-item.fade-in:nth-child(4) { transition-delay: 0.42s; }
 
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(1) { transition-delay: 0.03s; }
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(2) { transition-delay: 0.07s; }
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(3) { transition-delay: 0.11s; }
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(4) { transition-delay: 0.15s; }
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(5) { transition-delay: 0.19s; }
-.ai-benefits-list .ai-benefit-item.fade-in:nth-child(6) { transition-delay: 0.23s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(1) { transition-delay: 0.04s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(2) { transition-delay: 0.10s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(3) { transition-delay: 0.16s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(4) { transition-delay: 0.22s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(5) { transition-delay: 0.28s; }
+.ai-benefits-list .ai-benefit-item.fade-in:nth-child(6) { transition-delay: 0.34s; }
 
-.workflow-grid .workflow-card.fade-in:nth-child(1) { transition-delay: 0.04s; }
-.workflow-grid .workflow-card.fade-in:nth-child(2) { transition-delay: 0.12s; }
-.workflow-grid .workflow-card.fade-in:nth-child(3) { transition-delay: 0.20s; }
-.workflow-grid .workflow-card.fade-in:nth-child(4) { transition-delay: 0.28s; }
-.workflow-grid .workflow-card.fade-in:nth-child(5) { transition-delay: 0.36s; }
+.workflow-grid .workflow-card.fade-in:nth-child(1) { transition-delay: 0.05s; }
+.workflow-grid .workflow-card.fade-in:nth-child(2) { transition-delay: 0.18s; }
+.workflow-grid .workflow-card.fade-in:nth-child(3) { transition-delay: 0.30s; }
+.workflow-grid .workflow-card.fade-in:nth-child(4) { transition-delay: 0.42s; }
+.workflow-grid .workflow-card.fade-in:nth-child(5) { transition-delay: 0.54s; }
 
-.showcase-grid .showcase-item.fade-in:nth-child(odd) { transition-delay: 0.05s; }
-.showcase-grid .showcase-item.fade-in:nth-child(even) { transition-delay: 0.14s; }
+.showcase-grid .showcase-item.fade-in:nth-child(odd) { transition-delay: 0.06s; }
+.showcase-grid .showcase-item.fade-in:nth-child(even) { transition-delay: 0.20s; }
 
-.faq-grid .faq-item.fade-in:nth-child(1) { transition-delay: 0.04s; }
-.faq-grid .faq-item.fade-in:nth-child(2) { transition-delay: 0.12s; }
-.faq-grid .faq-item.fade-in:nth-child(3) { transition-delay: 0.20s; }
+.faq-grid .faq-item.fade-in:nth-child(1) { transition-delay: 0.06s; }
+.faq-grid .faq-item.fade-in:nth-child(2) { transition-delay: 0.20s; }
+.faq-grid .faq-item.fade-in:nth-child(3) { transition-delay: 0.34s; }
 
-#repo-container .repo-card.fade-in:nth-child(1) { transition-delay: 0.04s; }
-#repo-container .repo-card.fade-in:nth-child(2) { transition-delay: 0.10s; }
-#repo-container .repo-card.fade-in:nth-child(3) { transition-delay: 0.16s; }
-#repo-container .repo-card.fade-in:nth-child(4) { transition-delay: 0.22s; }
-#repo-container .repo-card.fade-in:nth-child(5) { transition-delay: 0.28s; }
-#repo-container .repo-card.fade-in:nth-child(6) { transition-delay: 0.34s; }
+#repo-container .repo-card.fade-in:nth-child(1) { transition-delay: 0.06s; }
+#repo-container .repo-card.fade-in:nth-child(2) { transition-delay: 0.16s; }
+#repo-container .repo-card.fade-in:nth-child(3) { transition-delay: 0.26s; }
+#repo-container .repo-card.fade-in:nth-child(4) { transition-delay: 0.36s; }
+#repo-container .repo-card.fade-in:nth-child(5) { transition-delay: 0.46s; }
+#repo-container .repo-card.fade-in:nth-child(6) { transition-delay: 0.56s; }
 
 /* Hero Entrance Sequence on Page Load */
 .hero-content > * {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
-    animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: perspective(1200px) translate3d(0, 45px, 0) scale(0.95);
+    animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .hero-content .hero-spotlight-link { animation-delay: 0.06s; }
-.hero-content .hero-badge { animation-delay: 0.15s; }
-.hero-content .hero-headline { animation-delay: 0.25s; }
-.hero-content .hero-subtitle { animation-delay: 0.36s; }
-.hero-content .hero-ctas { animation-delay: 0.48s; }
+.hero-content .hero-badge { animation-delay: 0.16s; }
+.hero-content .hero-headline { animation-delay: 0.28s; }
+.hero-content .hero-subtitle { animation-delay: 0.40s; }
+.hero-content .hero-ctas { animation-delay: 0.54s; }
 
 @keyframes heroFadeUp {
     to {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: perspective(1200px) translate3d(0, 0, 0) scale(1);
     }
 }
 
