@@ -64,3 +64,25 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+
+      - name: 🔥 Deploy Firestore Rules to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MYTHICAL_CIDER_475118_E5 }}
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ] || [ -n "$FIREBASE_TOKEN" ]; then
+            echo "🚀 Deploying updated firestore.rules to Firebase (mythical-cider-475118-e5)..."
+            npm install -g firebase-tools
+            if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+              echo "$FIREBASE_SERVICE_ACCOUNT" > gcp-key.json
+              export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp-key.json
+              firebase deploy --only firestore:rules --project mythical-cider-475118-e5 --non-interactive
+              rm -f gcp-key.json
+            else
+              firebase deploy --only firestore:rules --project mythical-cider-475118-e5 --token "$FIREBASE_TOKEN" --non-interactive
+            fi
+            echo "✅ Firestore rules successfully deployed to Firebase!"
+          else
+            echo "ℹ️ Firebase credentials (FIREBASE_TOKEN of FIREBASE_SERVICE_ACCOUNT_MYTHICAL_CIDER_475118_E5) niet gevonden in GitHub Secrets. Handmatige/lokale CLI deployment blijft actief."
+          fi
+
