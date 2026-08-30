@@ -70,8 +70,12 @@
                 if (translations[lang][key]) el.textContent = translations[lang][key];
             });
         }
+        const redirectUrl = "../status/index.html" + window.location.search;
+        const redirectBtn = document.querySelector('a[data-translate-key="offerteRedirectBtn"]');
+        if (redirectBtn) redirectBtn.href = redirectUrl;
+
         setTimeout(() => {
-            window.location.href = "../status/index.html";
+            window.location.href = redirectUrl;
         }, 1500);
     </script>
 </body>

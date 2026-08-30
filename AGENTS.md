@@ -2,6 +2,11 @@
 
 ## Recent Insights
 
+- **[2026-08-30] Creation+Alt+Fix Backlog & Openstaande Taken Status (TODO.md Audit)**: Volledige statusanalyse uitgevoerd van de centrale engineering backlog in `TODO.md` en `crm/TODO.md`. De sprint staat op 71% voltooid (30 van de 42 taken gereed, 1 geannuleerd). Er zijn momenteel 11 openstaande taken:
+  1. *Actief & In Behandeling (4)*: `[TASK-808]` (VAN DER PLAATS formulier backend `vanderplaats2@gmail.com`), `[TASK-812]` (Webserver FTP hardening `TLSRequired on` & CSF/LFD firewall bans), `[TASK-201]` (Mollie live API-keys & webhook tunnel afronding), en `[TASK-805]` (Bedrijfscontinuïteitsplan fysieke noodenvelop).
+  2. *Queue / Klantdeliverables (6)*: `[TASK-801]` (Besseling echte projectfoto's & review widget), `[TASK-817]` (Angela Stenekes 2027 tarievenakkoord via portaal & overstap naar 100% remote service), `[TASK-804]` (Home Buyer Intelligence AI Revisor & local mode), `[TASK-809]` (F-Truck Store follow-up & webshop features), `[TASK-810]` (Justin prototype & offerte), en `[TASK-807]` (Instagram & LinkedIn project stories / AI Scrape Shield branding).
+  3. *Cloud Migratie (1)*: `[TASK-503]` (12-domeinen Azure Static Web Apps / DNS / SSL migratie).
+
 - **[2026-08-30] GitHub Actions CI/CD Pipeline Uitbreiding met Firebase Firestore Rules Deployment**: In `.github/workflows/main.yml` is een geautomatiseerde deployment stap (`🔥 Deploy Firestore Rules to Firebase`) toegevoegd na de FTP synchronisaties. Deze stap detecteert automatisch repository secrets (`FIREBASE_SERVICE_ACCOUNT_MYTHICAL_CIDER_475118_E5` of `FIREBASE_TOKEN`) en voert bij elke push naar `main` automatisch een non-interactieve deployment uit (`firebase deploy --only firestore:rules --project mythical-cider-475118-e5`). Indien de secrets ontbreken, logt de pipeline een overzichtelijke informatieve melding zonder de build te breken.
 
 

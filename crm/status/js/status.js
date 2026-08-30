@@ -519,20 +519,30 @@ async function loadClientProjects(email, uid) {
         content.classList.remove('hidden');
         loader.classList.add('hidden');
 
+        // Check if a specific project was requested via URL query param (?id=... or ?project=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedId = urlParams.get('id') || urlParams.get('project');
+        let activeProject = clientProjectsList[0];
+        if (requestedId) {
+            const match = clientProjectsList.find(p => p.id === requestedId);
+            if (match) activeProject = match;
+        }
+
         if (clientProjectsList.length > 1) {
             multiSelector.classList.remove('hidden');
             projectDropdown.innerHTML = clientProjectsList.map((p, idx) => {
                 const name = escapeHtml(p.data.client || p.data.companyName || `Project #${idx + 1}`);
                 const service = escapeHtml(p.data.service || 'Dienst');
-                return `<option value="${escapeHtml(p.id)}">${name} - ${service}</option>`;
+                const isSelected = p.id === activeProject.id ? 'selected' : '';
+                return `<option value="${escapeHtml(p.id)}" ${isSelected}>${name} - ${service}</option>`;
             }).join('');
 
-            currentProjectDocId = clientProjectsList[0].id;
-            renderDashboard(clientProjectsList[0].data);
+            currentProjectDocId = activeProject.id;
+            renderDashboard(activeProject.data);
         } else {
             multiSelector.classList.add('hidden');
-            currentProjectDocId = clientProjectsList[0].id;
-            renderDashboard(clientProjectsList[0].data);
+            currentProjectDocId = activeProject.id;
+            renderDashboard(activeProject.data);
         }
 
     } catch (error) {

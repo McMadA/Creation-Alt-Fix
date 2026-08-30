@@ -485,6 +485,28 @@ function renderProjectWorkspace(p) {
         document.getElementById('proposal-link-input').value = link;
         document.getElementById('proposal-visit-btn').href = link;
         document.getElementById('proposal-link-box').classList.remove('hidden');
+
+        const signedBadge = document.getElementById('proposal-signed-badge');
+        const signedText = document.getElementById('proposal-signed-text');
+        const pdfDlBtn = document.getElementById('proposal-pdf-download-btn');
+
+        if (p.proposalAcceptedAt || p.proposalSignedBy) {
+            if (signedBadge) signedBadge.classList.remove('hidden');
+            if (signedText) {
+                const signer = p.proposalSignedBy ? `door ${escapeHtml(p.proposalSignedBy)}` : 'Digitaal Akkoord';
+                const dateStr = p.proposalAcceptedAt ? new Date(p.proposalAcceptedAt).toLocaleDateString('nl-NL') : '';
+                signedText.innerHTML = `Akkoord ${signer} ${dateStr ? '(' + dateStr + ')' : ''}`;
+            }
+            if (pdfDlBtn && p.proposalPdfUrl) {
+                pdfDlBtn.href = p.proposalPdfUrl;
+                pdfDlBtn.classList.remove('hidden');
+            } else if (pdfDlBtn) {
+                pdfDlBtn.classList.add('hidden');
+            }
+        } else {
+            if (signedBadge) signedBadge.classList.add('hidden');
+            if (pdfDlBtn) pdfDlBtn.classList.add('hidden');
+        }
     }
 
     // Render Sub-Components
