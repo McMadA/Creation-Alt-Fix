@@ -2,6 +2,10 @@
 
 ## Recent Insights
 
+- **[2026-08-30] Dropdown Menu Hover Gap & Hover Bridge Oplossing (`.dropdown-menu::before`)**: Het probleem waarbij dropdown menu's op desktop direct dichtklappen zodra de cursor vanaf de toggle-knop naar beneden richting de items beweegt, is opgelost:
+  1. **Oorzaak**: Tussen de toggle knop (`.nav-link`) en het dropdown paneel (`.dropdown-menu`) zat een fysieke marge/afstand van 6px (`top: calc(100% + 6px)`). Zodra de muis deze leegte doorkruiste, verloor de browser de `:hover` pseudo-class op de parent container, waardoor het menu abrupt sloot voordat een link aangeklikt kon worden.
+  2. **Oplossing**: (a) De positionering is veranderd naar `top: 100%` met `translateY(2px)`, (b) Een onzichtbare interactieve hover bridge (`.dropdown-menu::before` met `top: -16px; height: 16px;`) overbrugt het gehele transitiegebied zodat de muis continu binnen het hover-oppervlak blijft, (c) Een subtiele `transition-delay: 0.12s` bij het sluiten vangt snelle of diagonale muisbewegingen soepel op, (d) Op mobiele schermen (≤ 1024px) is de bridge uitgeschakeld om het accordion-gedrag zuiver te houden.
+
 - **[2026-08-30] Header & Navigatie Architectuur Herstructurering (Dropdowns & Home/Subpagina Unificatie)**: De website navigatiebalk (`website/components/navbar.html`, `website/css/style.css`, `website/js/script.js`, `website/js/subpage.js`, `website/docs/js/docs.js`) is volledig geherstructureerd:
   1. **Top-Level Consolidering (6 Duidelijke Pijlers)**: De voorheen verwarrende mix van losse links en anchors is gereduceerd tot 6 heldere hoofditems: *Home*, *Diensten* (Dropdown), *Werkwijze* (Dropdown), *Projecten* (Dropdown), *Over Ons* (Dropdown), en *Contact*.
   2. **Duidelijke Scheiding Pagina's vs Home Secties**: Elk dropdownmenu heeft nu een heldere visuele verdeling met labels tussen (a) losse deep-dive subpagina's (`/diensten/*`, `/projecten.html`, `/over-mij.html`, `/docs/`, case studies) en (b) directe anchor jumps naar homepage secties (`/#ai-services`, `/#werkwijze`, `/#projects`, `/#over-mij`, `/#faq`).
