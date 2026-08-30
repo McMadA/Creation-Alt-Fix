@@ -1,6 +1,17 @@
 # Creation+Alt+Fix Portal Subdomain Configuration
 Options -Indexes
 
+# ============ SECURITY & SENSITIVE FILES BLOCK ============
+<FilesMatch "\.(clixml|db|sqlite|env|json|sql|yml|yaml|md|log|ps1|sh)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -12,11 +23,10 @@ Options -Indexes
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
-# Privacy Protection: Guard admin & client status from search indexing
+# Security & EU TDM AI Shield Headers
 <IfModule mod_headers.c>
-    <LocationMatch "^/(admin|status)/">
-        Header set X-Robots-Tag "noindex, nofollow, noarchive"
-    </LocationMatch>
+    Header set X-Robots-Tag "noai, noimageai"
+    Header set TDM-Reservation "1"
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
@@ -32,3 +42,4 @@ Options -Indexes
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
 </IfModule>
+

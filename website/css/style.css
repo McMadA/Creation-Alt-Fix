@@ -434,8 +434,8 @@ a:hover {
     content: '';
     position: absolute;
     inset: 0;
-    background: url('/images/ChatGPT Image.png') no-repeat center center/cover;
-    opacity: 0.06;
+    background: url('/images/hero-bg.webp') no-repeat center center/cover;
+    opacity: 0.07;
     pointer-events: none;
     z-index: 0;
 }
@@ -1393,7 +1393,7 @@ footer .footer-links {
         padding-top: 110px;
     }
     #hero::after {
-        background-image: url('/images/ChatGPT Image phone.png');
+        background-image: url('/images/hero-bg-mobile.webp');
     }
     .text-section p {
         font-size: 1rem;

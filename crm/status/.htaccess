@@ -1,0 +1,7 @@
+# Disable Directory Browsing
+Options -Indexes
+
+# Privacy: Prevent Search Indexing of Client Status Area
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow, noarchive"
+</IfModule>
