@@ -435,7 +435,40 @@
                 </form>
             </section>
 
-            <!-- Demo & Factuur Links & Direct Contact -->
+            <!-- Mijn Hosting & Abonnement (TASK-816) -->
+            <section id="subscription-card" class="card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(99, 102, 241, 0.25);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 4px; font-size: 1.25rem;">
+                            <i class="fas fa-server text-accent"></i> <span data-translate-key="statusSubTitle">Mijn Hosting & Cloud Abonnement</span>
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;" data-translate-key="statusSubDesc">
+                            Overzicht van jouw actieve cloud hosting, domeinregistratie en onderhoudspakket bij Creation+Alt+Fix.
+                        </p>
+                    </div>
+                    <div id="client-sub-badge" style="background: rgba(34, 211, 238, 0.12); border: 1px solid var(--color-accent); color: var(--color-accent); font-weight: 700; font-size: 0.82rem; padding: 4px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-check-circle"></i> <span id="client-sub-badge-text">Actief Pakket</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;" data-translate-key="statusSubPlanLabel">Actueel Pakket</div>
+                        <div id="client-sub-plan-name" style="font-weight: 700; color: #fff; font-size: 1.05rem;">Managed Cloud Hosting All-in</div>
+                        <div id="client-sub-plan-price" style="color: #34d399; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">€ 150,- <span style="font-size: 0.78rem; color: var(--text-muted);">/ jaar excl. BTW</span></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;" data-translate-key="statusSubDomainLabel">Gekoppeld Domein</div>
+                        <div id="client-sub-domain-display" style="font-weight: 700; color: #fff; font-size: 1.05rem;">-</div>
+                        <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;" data-translate-key="statusSubDomainIncluded">Inclusief DNS & SSL Certificaat</div>
+                    </div>
+                </div>
+
+                <div id="client-sub-features-list" style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.82rem; color: #cbd5e1;">
+                    <!-- Features rendered dynamically -->
+                </div>
+            </section>
+
             <!-- Systeem Overdracht & Documentatie Gids (TASK-402) -->
             <section id="handover-card" class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.05)); border: 1px solid rgba(99, 102, 241, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">

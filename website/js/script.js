@@ -673,6 +673,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- 404 PAGE ---
     "error404PageTitle": "404 - Pagina niet gevonden | Creation+Alt+Fix",
+    "error404MetaDesc": "Oeps! Deze pagina bestaat niet of is verplaatst. Keer terug naar Creation+Alt+Fix home.",
     "error404Title": "404 - <span>Pagina niet gevonden</span>",
     "error404Desc": "De pagina die u zoekt bestaat niet of is verplaatst.",
     "error404HomeBtn": "Terug naar Home",
@@ -1389,6 +1390,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- 404 PAGE ---
     "error404PageTitle": "404 - Page Not Found | Creation+Alt+Fix",
+    "error404MetaDesc": "Oops! This page does not exist or has been moved. Return to Creation+Alt+Fix home.",
     "error404Title": "404 - <span>Page Not Found</span>",
     "error404Desc": "The page you are looking for does not exist or has been moved.",
     "error404HomeBtn": "Back to Home",

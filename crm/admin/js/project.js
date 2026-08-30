@@ -478,6 +478,35 @@ function renderProjectWorkspace(p) {
         ? `€ ${proposalPrice} (Offerte klaargezet)` 
         : 'Nog geen offerte';
 
+    const goalsEl = document.getElementById('quick-goals-display');
+    if (goalsEl) {
+        goalsEl.innerText = p.goals || p.projectGoals || 'Geen specifieke doelen opgegeven';
+    }
+
+    const styleEl = document.getElementById('quick-style-display');
+    if (styleEl) {
+        styleEl.innerText = p.design || p.designPreferences || 'Standaard Dark AI / Modern';
+    }
+
+    // Design Approval feedback in action button
+    const designActionBtn = document.getElementById('btn-action-design');
+    if (designActionBtn) {
+        if (p.designAcceptedAt) {
+            const accDate = new Date(p.designAcceptedAt).toLocaleDateString('nl-NL');
+            designActionBtn.innerHTML = `<i class="fas fa-check-circle" style="color: #34d399;"></i> Design Akkoord (${accDate})`;
+            designActionBtn.style.borderColor = '#10b981';
+            designActionBtn.style.color = '#34d399';
+        } else if (p.designUrl || p.figmaUrl) {
+            designActionBtn.innerHTML = `<i class="fas fa-palette"></i> Design Review Actief (Fase 3)`;
+            designActionBtn.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+            designActionBtn.style.color = '#c084fc';
+        } else {
+            designActionBtn.innerHTML = `<i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)`;
+            designActionBtn.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+            designActionBtn.style.color = '#c084fc';
+        }
+    }
+
     // Populate Proposal Box if already generated
     if (proposalPrice || p.proposalGeneratedAt) {
         const baseUrl = window.location.origin;

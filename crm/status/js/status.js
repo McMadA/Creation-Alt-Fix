@@ -173,7 +173,12 @@ const translations = {
         statusNavDocs: "Documentatie",
         statusHandoverTitle: "Systeem Overdracht & Documentatie",
         statusHandoverDesc: "Bekijk de officiële documentatiegids voor contentbeheer, DNS-instellingen, videohandleidingen en SEO-richtlijnen.",
-        statusOpenDocsBtn: "Open Documentatie Gids"
+        statusOpenDocsBtn: "Open Documentatie Gids",
+        statusSubTitle: "Mijn Hosting & Cloud Abonnement",
+        statusSubDesc: "Overzicht van jouw actieve cloud hosting, domeinregistratie en onderhoudspakket bij Creation+Alt+Fix.",
+        statusSubPlanLabel: "Actueel Pakket",
+        statusSubDomainLabel: "Gekoppeld Domein",
+        statusSubDomainIncluded: "Inclusief DNS & SSL Certificaat"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -321,7 +326,12 @@ const translations = {
         statusNavDocs: "Documentation",
         statusHandoverTitle: "System Handover & Documentation",
         statusHandoverDesc: "View the official documentation guide for content management, DNS settings, video tutorials, and SEO guidelines.",
-        statusOpenDocsBtn: "Open Documentation Guide"
+        statusOpenDocsBtn: "Open Documentation Guide",
+        statusSubTitle: "My Hosting & Cloud Subscription",
+        statusSubDesc: "Overview of your active cloud hosting, domain registration, and maintenance package with Creation+Alt+Fix.",
+        statusSubPlanLabel: "Active Plan",
+        statusSubDomainLabel: "Connected Domain",
+        statusSubDomainIncluded: "Includes DNS & SSL Certificate"
     }
 };
 
@@ -632,6 +642,54 @@ function renderDashboard(data) {
         const domainVal = data.domainName || data.domain || '';
         const clientVal = clientName;
         docsBtn.href = `https://creationaltfix.nl/docs/?domain=${encodeURIComponent(domainVal)}&client=${encodeURIComponent(clientVal)}`;
+    }
+
+    // Render Subscription & Hosting Transparency Card (TASK-816)
+    renderSubscriptionSection(data);
+}
+
+const SUBSCRIPTION_PLANS = {
+    "managed_nl": { id: "managed_nl", name: "Managed Cloud Hosting & .nl Domein All-in", price: "150,00", cycle: "jaar", badge: "Aanbevolen", desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups" },
+    "managed_multi": { id: "managed_multi", name: "Managed Cloud Hosting Multi-Domein (.nl + .com)", price: "175,00", cycle: "jaar", badge: "Multi-domein", desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen" },
+    "security_apk": { id: "security_apk", name: "Jaarlijkse Website & Security APK", price: "350,00", cycle: "jaar", badge: "Onderhoud", desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart" },
+    "allin_apk": { id: "allin_apk", name: "Managed Hosting All-in + Security APK Totaal", price: "500,00", cycle: "jaar", badge: "Full Service", desc: "Managed hosting, domein, mailboxen + jaarlijkse APK & 2u strippenkaart" },
+    "legacy_22": { id: "legacy_22", name: "Historisch / Oud Tarief (€ 22,- / jr)", price: "22,00", cycle: "jaar", badge: "Oud Tarief", desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 2027)" },
+    "none": { id: "none", name: "Geen / Eenmalig Project (€ 0,-)", price: "0,00", cycle: "n.v.t.", badge: "Geen", desc: "Geen doorlopende hosting of onderhoudskosten" }
+};
+
+function renderSubscriptionSection(data) {
+    const subCard = document.getElementById('subscription-card');
+    if (!subCard) return;
+
+    const planId = data.subscriptionPlanId || 'managed_nl';
+    const plan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
+    const domainVal = data.domainName || data.domain || (data.client ? data.client.toLowerCase().replace(/[^a-z0-9]/g, '') + '.nl' : '-');
+
+    const nameEl = document.getElementById('client-sub-plan-name');
+    const priceEl = document.getElementById('client-sub-plan-price');
+    const domainEl = document.getElementById('client-sub-domain-display');
+    const badgeText = document.getElementById('client-sub-badge-text');
+    const featuresList = document.getElementById('client-sub-features-list');
+
+    if (nameEl) nameEl.innerText = data.subscriptionPlanName || plan.name;
+    if (priceEl) {
+        if (plan.price === "0,00") {
+            priceEl.innerHTML = `€ 0,- <span style="font-size: 0.78rem; color: var(--text-muted);">${currentLang === 'en' ? '/ one-off project' : '/ eenmalig project'}</span>`;
+        } else {
+            priceEl.innerHTML = `€ ${data.subscriptionPrice || plan.price} <span style="font-size: 0.78rem; color: var(--text-muted);">${currentLang === 'en' ? '/ year excl. VAT' : '/ jaar excl. BTW'}</span>`;
+        }
+    }
+    if (domainEl) domainEl.innerText = domainVal;
+    if (badgeText) badgeText.innerText = plan.badge || (currentLang === 'en' ? 'Active' : 'Actief');
+
+    if (featuresList) {
+        const features = [
+            '<i class="fas fa-bolt text-accent"></i> ' + (currentLang === 'en' ? 'Ultra-fast NVMe Cloud Storage' : 'Snelle NVMe Cloud Opslag'),
+            '<i class="fas fa-lock text-accent"></i> ' + (currentLang === 'en' ? 'Free SSL / HTTPS Security' : 'SSL / HTTPS Beveiliging'),
+            '<i class="fas fa-envelope text-accent"></i> ' + (currentLang === 'en' ? '5 Professional Mailboxes (SPF/DKIM)' : '5 Zakelijke Mailboxen (SPF/DKIM)'),
+            '<i class="fas fa-shield-alt text-accent"></i> ' + (currentLang === 'en' ? 'Daily Cloud Backups' : 'Dagelijkse Cloud Back-ups')
+        ];
+        featuresList.innerHTML = features.map(f => `<span style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">${f}</span>`).join('');
     }
 }
 
