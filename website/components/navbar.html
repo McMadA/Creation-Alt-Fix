@@ -5,16 +5,169 @@
             <i class="fas fa-bars"></i>
         </button>
         <div class="nav-menu-items" id="nav-menu-items">
-            <ul>
-                <li><a href="/" data-translate-key="navHome">Home</a></li>
-                <li><a href="/#ai-services" data-translate-key="navAIServices">AI Services</a></li>
-                <li><a href="/#web-design" data-translate-key="navWebDesign">Web Design & Tech</a></li>
-                <li><a href="/projecten.html" data-translate-key="navProjects">Projecten</a></li>
-                <li><a href="/over-mij.html" data-translate-key="navAbout">Over mij</a></li>
-                <li><a href="/#contact" data-translate-key="navContact">Contact</a></li>
+            <ul class="nav-list">
+                <!-- 1. Home -->
+                <li class="nav-item">
+                    <a href="/" class="nav-link" data-translate-key="navHome">Home</a>
+                </li>
+
+                <!-- 2. Diensten Dropdown -->
+                <li class="nav-item nav-dropdown">
+                    <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="Diensten menu">
+                        <span data-translate-key="navServices">Diensten</span>
+                        <i class="fas fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navServicesPagesHeader">Diensten & Specialisaties</span>
+                            <a href="/diensten/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-th-list"></i></span>
+                                <span class="dropdown-text" data-translate-key="navServiceAll">Alle Diensten Overzicht</span>
+                            </a>
+                            <a href="/diensten/slimme-automatisering-ai/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-brain"></i></span>
+                                <span class="dropdown-text" data-translate-key="navServiceAI">Slimme Automatisering & AI</span>
+                            </a>
+                            <a href="/diensten/website-laten-maken/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-laptop-code"></i></span>
+                                <span class="dropdown-text" data-translate-key="navServiceWeb">Websites & Webshops</span>
+                            </a>
+                            <a href="/diensten/data-dashboards/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-chart-pie"></i></span>
+                                <span class="dropdown-text" data-translate-key="navServiceDashboards">Data Dashboards & Inzichten</span>
+                            </a>
+                            <a href="/diensten/it-support-beheer/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-tools"></i></span>
+                                <span class="dropdown-text" data-translate-key="navServiceIT">Software Support & Beheer</span>
+                            </a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navServicesHomeHeader">Op de Hoofdpagina</span>
+                            <a href="/#ai-services" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-sparkles"></i></span>
+                                <span class="dropdown-text" data-translate-key="navAIServicesSection">AI-Gedreven Oplossingen</span>
+                            </a>
+                            <a href="/#web-design" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-shield-alt"></i></span>
+                                <span class="dropdown-text" data-translate-key="navWhyUsSection">Waarom Creation+Alt+Fix?</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- 3. Werkwijze Dropdown -->
+                <li class="nav-item nav-dropdown">
+                    <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="Werkwijze menu">
+                        <span data-translate-key="navWorkflow">Werkwijze</span>
+                        <i class="fas fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navWorkflowDropdownHeader">Werkwijze & Portaal</span>
+                            <a href="/#werkwijze" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-layer-group"></i></span>
+                                <span class="dropdown-text" data-translate-key="navWorkflowSection">5-Stappen Aanpak (Home)</span>
+                            </a>
+                            <a href="/projects/crm-portal/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-desktop"></i></span>
+                                <span class="dropdown-text" data-translate-key="navPortalCase">Klantenportaal Case Study</span>
+                            </a>
+                            <a href="/docs/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-book-bookmark"></i></span>
+                                <span class="dropdown-text" data-translate-key="navDocsLink">DevOps & AI Documentatie</span>
+                            </a>
+                            <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-external-link-alt"></i></span>
+                                <span class="dropdown-text" data-translate-key="navPortalDirect">Direct naar Klantenportaal</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- 4. Projecten Dropdown -->
+                <li class="nav-item nav-dropdown">
+                    <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="Projecten menu">
+                        <span data-translate-key="navProjects">Projecten</span>
+                        <i class="fas fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navProjectsPagesHeader">Portfolio & Cases</span>
+                            <a href="/projecten.html" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-th-large"></i></span>
+                                <span class="dropdown-text" data-translate-key="navProjectsAll">Alle Projecten (14+)</span>
+                            </a>
+                            <a href="/projects/arnold-design/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-shield-virus"></i></span>
+                                <span class="dropdown-text" data-translate-key="navCaseArnold">Arnold Design (AI Shield)</span>
+                            </a>
+                            <a href="/projects/home-buyer-intelligence/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-home"></i></span>
+                                <span class="dropdown-text" data-translate-key="navCaseHBI">Home Buyer Intelligence</span>
+                            </a>
+                            <a href="/projects/wind/" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                                <span class="dropdown-text" data-translate-key="navCaseWind">Wind Cloud Sync Tools</span>
+                            </a>
+                            <a href="/live-demo.html" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-play-circle"></i></span>
+                                <span class="dropdown-text" data-translate-key="navLiveDemo">Interactieve Live Demo</span>
+                            </a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navProjectsHomeHeader">Op de Hoofdpagina</span>
+                            <a href="/#projects" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-star"></i></span>
+                                <span class="dropdown-text" data-translate-key="navProjectsSection">Website Showcase</span>
+                            </a>
+                            <a href="/#github-projects" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fab fa-github"></i></span>
+                                <span class="dropdown-text" data-translate-key="navGithubSection">Open Source & GitHub</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- 5. Over Ons Dropdown -->
+                <li class="nav-item nav-dropdown">
+                    <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="Over ons menu">
+                        <span data-translate-key="navAbout">Over Ons</span>
+                        <i class="fas fa-chevron-down dropdown-caret"></i>
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-group">
+                            <span class="dropdown-header" data-translate-key="navAboutDropdownHeader">Over Creation+Alt+Fix</span>
+                            <a href="/over-mij.html" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-user-tie"></i></span>
+                                <span class="dropdown-text" data-translate-key="navAboutPage">Over Allard & Achtergrond</span>
+                            </a>
+                            <a href="/#over-mij" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-id-card"></i></span>
+                                <span class="dropdown-text" data-translate-key="navAboutSection">Introductie (Home)</span>
+                            </a>
+                            <a href="/#faq" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon"><i class="fas fa-question-circle"></i></span>
+                                <span class="dropdown-text" data-translate-key="navFaqSection">Veelgestelde Vragen (FAQ)</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- 6. Contact -->
+                <li class="nav-item">
+                    <a href="/#contact" class="nav-link" data-translate-key="navContact">Contact</a>
+                </li>
             </ul>
+
             <div class="nav-right-cluster">
-                <a href="https://portal.creationaltfix.nl/intake/" class="nav-cta-btn"><i class="fas fa-rocket"></i> <span data-translate-key="navIntake">Intake</span></a>
+                <a href="https://portal.creationaltfix.nl/intake/" class="nav-cta-btn">
+                    <i class="fas fa-rocket"></i> <span data-translate-key="navIntake">Intake</span>
+                </a>
+                <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="nav-portal-link" title="Naar Klantenportaal" aria-label="Klantenportaal Login">
+                    <i class="fas fa-user-circle"></i> <span data-translate-key="navPortalLogin">Portaal</span>
+                </a>
                 <div class="nav-social-icons">
                     <a href="https://www.instagram.com/creationaltfix?igsh=MXQyNHhhczgxMXl3eA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram CreationAltFix" data-translate-key-aria="ariaInstagram">
                         <i class="fab fa-instagram"></i>

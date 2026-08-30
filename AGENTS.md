@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-08-30] Header & Navigatie Architectuur Herstructurering (Dropdowns & Home/Subpagina Unificatie)**: De website navigatiebalk (`website/components/navbar.html`, `website/css/style.css`, `website/js/script.js`, `website/js/subpage.js`, `website/docs/js/docs.js`) is volledig geherstructureerd:
+  1. **Top-Level Consolidering (6 Duidelijke Pijlers)**: De voorheen verwarrende mix van losse links en anchors is gereduceerd tot 6 heldere hoofditems: *Home*, *Diensten* (Dropdown), *Werkwijze* (Dropdown), *Projecten* (Dropdown), *Over Ons* (Dropdown), en *Contact*.
+  2. **Duidelijke Scheiding Pagina's vs Home Secties**: Elk dropdownmenu heeft nu een heldere visuele verdeling met labels tussen (a) losse deep-dive subpagina's (`/diensten/*`, `/projecten.html`, `/over-mij.html`, `/docs/`, case studies) en (b) directe anchor jumps naar homepage secties (`/#ai-services`, `/#werkwijze`, `/#projects`, `/#over-mij`, `/#faq`).
+  3. **Responsieve Accordion & Toegankelijkheid (Desktop & Mobiel)**: Glassmorphism dropdowns met hover/focus-within ondersteuning op desktop, en soepele geanimeerde accordions op mobiele apparaten (<= 1024px) met ARIA `aria-expanded` en `Escape`-toets ondersteuning.
+  4. **Smooth Scroll & Cross-Page Routing Engine**: Clicks op `/#...` anchors op de homepage scrollen direct soepel rekening houdend met de sticky header offset. Bij navigatie vanaf een subpagina naar `/#...` zorgt een automatische hash-listener voor een vloeiende transitie naar het doelelement.
+  5. **Volledige Tweetaligheid & Active State**: Alle dropdown items en categorie-headers zijn 100% tweetalig gesynchroniseerd (NL & EN) en markeren actieve subpagina's en homepage secties (ScrollSpy) met dynamische styling.
+
 - **[2026-08-30] Volledige Klantdossier & CRM Backlog Unificatie (17 Klanten in Admin Dashboard & CSV Export)**: Oorzaak van het ontbreken van historische/portfolio klanten in de admin tabel gediagnosticeerd en permanent opgelost:
   1. **Oorzaak**: `crm/admin/js/admin.js` bevatte in `getMockProjects()` slechts 10 van de 17 bekende klant- en portfoliodossiers. Tevens controleerde `getProjects()` in Firestore slechts op 3 specifieke projecten, waardoor historische en opgeleverde klanten (zoals *Scholte Elektrotechniek*, *Capybara Culture*, *Naaiatelier Willa*, *PompPop Festival*, *Qolipa Webshop & Brand*, *Livian Design* en *Home Buyer Intelligence*) niet in de admin tabel en statistiekenkaarten verschenen.
   2. **Automatische Seeding & Sync**: `getProjects()` in `admin.js` synchroniseert nu automatisch alle 17 dossiers met Firestore en `projectsList`. Ontbrekende projecten worden direct geladen en op de achtergrond geseëd naar Firestore.

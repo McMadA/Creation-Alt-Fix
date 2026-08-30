@@ -20,16 +20,56 @@ document.addEventListener('DOMContentLoaded', async function() {
     // --- ALGEMEEN & NAVIGATIE ---
     "pageTitle": "Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen",
     "navHome": "Home",
-    "navAIServices": "AI Services",
-    "navWebDesign": "Web Design & Tech",
+    "navServices": "Diensten",
+    "navWorkflow": "Werkwijze",
     "navProjects": "Projecten",
-    "navAbout": "Over mij",
+    "navAbout": "Over Ons",
     "navContact": "Contact",
     "navIntake": "Intake",
+    "navPortalLogin": "Portaal",
+    "navAIServices": "AI Services",
+    "navWebDesign": "Web Design & Tech",
     "ariaInstagram": "Instagram CreationAltFix",
     "ariaLinkedIn": "LinkedIn CreationAltFix",
     "ariaToggleNav": "Navigatie in-/uitklappen",
     "skipToContent": "Direct naar inhoud",
+
+    // Dropdown Headers
+    "navServicesPagesHeader": "Diensten & Specialisaties",
+    "navServicesHomeHeader": "Op de Hoofdpagina",
+    "navWorkflowDropdownHeader": "Werkwijze & Portaal",
+    "navProjectsPagesHeader": "Portfolio & Cases",
+    "navProjectsHomeHeader": "Op de Hoofdpagina",
+    "navAboutDropdownHeader": "Over Creation+Alt+Fix",
+
+    // Dropdown Items (Diensten)
+    "navServiceAll": "Alle Diensten Overzicht",
+    "navServiceAI": "Slimme Automatisering & AI",
+    "navServiceWeb": "Websites & Webshops",
+    "navServiceDashboards": "Data Dashboards & Inzichten",
+    "navServiceIT": "Software Support & Beheer",
+    "navAIServicesSection": "AI-Gedreven Oplossingen",
+    "navWhyUsSection": "Waarom Creation+Alt+Fix?",
+
+    // Dropdown Items (Werkwijze)
+    "navWorkflowSection": "5-Stappen Aanpak (Home)",
+    "navPortalCase": "Klantenportaal Case Study",
+    "navDocsLink": "DevOps & AI Documentatie",
+    "navPortalDirect": "Direct naar Klantenportaal",
+
+    // Dropdown Items (Projecten)
+    "navProjectsAll": "Alle Projecten (14+)",
+    "navCaseArnold": "Arnold Design (AI Shield)",
+    "navCaseHBI": "Home Buyer Intelligence",
+    "navCaseWind": "Wind Cloud Sync Tools",
+    "navLiveDemo": "Interactieve Live Demo",
+    "navProjectsSection": "Website Showcase",
+    "navGithubSection": "Open Source & GitHub",
+
+    // Dropdown Items (Over Ons)
+    "navAboutPage": "Over Allard & Achtergrond",
+    "navAboutSection": "Introductie (Home)",
+    "navFaqSection": "Veelgestelde Vragen (FAQ)",
 
     // --- HERO SECTIE (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design",
@@ -726,16 +766,56 @@ document.addEventListener('DOMContentLoaded', async function() {
     // --- GENERAL & NAVIGATION ---
     "pageTitle": "Creation+Alt+Fix - Intelligent AI Solutions & IT Services Groningen",
     "navHome": "Home",
-    "navAIServices": "AI Services",
-    "navWebDesign": "Web Design & Tech",
+    "navServices": "Services",
+    "navWorkflow": "Workflow",
     "navProjects": "Projects",
-    "navAbout": "About me",
+    "navAbout": "About Us",
     "navContact": "Contact",
     "navIntake": "Intake",
+    "navPortalLogin": "Portal",
+    "navAIServices": "AI Services",
+    "navWebDesign": "Web Design & Tech",
     "ariaInstagram": "Instagram CreationAltFix",
     "ariaLinkedIn": "LinkedIn CreationAltFix",
     "ariaToggleNav": "Toggle navigation",
     "skipToContent": "Skip to content",
+
+    // Dropdown Headers
+    "navServicesPagesHeader": "Services & Specializations",
+    "navServicesHomeHeader": "On the Homepage",
+    "navWorkflowDropdownHeader": "Workflow & Portal",
+    "navProjectsPagesHeader": "Portfolio & Cases",
+    "navProjectsHomeHeader": "On the Homepage",
+    "navAboutDropdownHeader": "About Creation+Alt+Fix",
+
+    // Dropdown Items (Services)
+    "navServiceAll": "All Services Overview",
+    "navServiceAI": "Smart Automation & AI",
+    "navServiceWeb": "Websites & Webshops",
+    "navServiceDashboards": "Data Dashboards & Insights",
+    "navServiceIT": "Software Support & Management",
+    "navAIServicesSection": "AI-Driven Solutions",
+    "navWhyUsSection": "Why Creation+Alt+Fix?",
+
+    // Dropdown Items (Workflow)
+    "navWorkflowSection": "5-Step Approach (Home)",
+    "navPortalCase": "Client Portal Case Study",
+    "navDocsLink": "DevOps & AI Documentation",
+    "navPortalDirect": "Go to Client Portal",
+
+    // Dropdown Items (Projects)
+    "navProjectsAll": "All Projects (14+)",
+    "navCaseArnold": "Arnold Design (AI Shield)",
+    "navCaseHBI": "Home Buyer Intelligence",
+    "navCaseWind": "Wind Cloud Sync Tools",
+    "navLiveDemo": "Interactive Live Demo",
+    "navProjectsSection": "Website Showcase",
+    "navGithubSection": "Open Source & GitHub",
+
+    // Dropdown Items (About Us)
+    "navAboutPage": "About Allard & Background",
+    "navAboutSection": "Introduction (Home)",
+    "navFaqSection": "Frequently Asked Questions (FAQ)",
 
     // --- HERO SECTION (HOME) ---
     "heroSpotlight": "🛡️ Case Study: 7-Layer AI Scrape Shield for Arnold Design",
@@ -1532,9 +1612,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         yearSpan.textContent = new Date().getFullYear();
     }
 
-    // Hamburger menu
+    // --- ACTIVE PAGE HIGHLIGHTING (SUBPAGES) ---
+    var currentPath = window.location.pathname;
+    document.querySelectorAll('#navbar .dropdown-item').forEach(function(item) {
+        var href = item.getAttribute('href');
+        if (href && href !== '/' && currentPath.includes(href)) {
+            item.classList.add('nav-active');
+            var parentDropdown = item.closest('.nav-dropdown');
+            if (parentDropdown) {
+                var toggle = parentDropdown.querySelector('.nav-dropdown-toggle');
+                if (toggle) toggle.classList.add('nav-active');
+            }
+        }
+    });
+    document.querySelectorAll('#navbar .nav-link').forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href !== '/' && currentPath.includes(href)) {
+            link.classList.add('nav-active');
+        }
+    });
+
+    // --- HAMBURGER MENU & DROPDOWN ACCORDION LOGIC ---
     var hamburgerBtn = document.getElementById('hamburger-menu');
     var navMenuItems = document.getElementById('nav-menu-items');
+    var navDropdowns = document.querySelectorAll('.nav-dropdown');
+
     if (hamburgerBtn && navMenuItems) {
         var hamburgerIcon = hamburgerBtn.querySelector('i');
         hamburgerBtn.addEventListener('click', function() {
@@ -1547,7 +1649,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
 
-        navMenuItems.querySelectorAll('a').forEach(function(link) {
+        navMenuItems.querySelectorAll('a:not(.nav-dropdown-toggle)').forEach(function(link) {
             link.addEventListener('click', function() {
                 if (navMenuItems.classList.contains('active')) {
                     navMenuItems.classList.remove('active');
@@ -1560,6 +1662,52 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
+
+    // Dropdown toggle click handlers (mobile accordion + desktop toggle)
+    navDropdowns.forEach(function(dropdown) {
+        var toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var isAlreadyActive = dropdown.classList.contains('active');
+                
+                // Close other dropdowns
+                navDropdowns.forEach(function(d) {
+                    if (d !== dropdown) {
+                        d.classList.remove('active');
+                        var btn = d.querySelector('.nav-dropdown-toggle');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                dropdown.classList.toggle('active', !isAlreadyActive);
+                toggleBtn.setAttribute('aria-expanded', (!isAlreadyActive).toString());
+            });
+        }
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-dropdown')) {
+            navDropdowns.forEach(function(d) {
+                d.classList.remove('active');
+                var btn = d.querySelector('.nav-dropdown-toggle');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+
+    // Keyboard navigation (Escape closes dropdowns)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            navDropdowns.forEach(function(d) {
+                d.classList.remove('active');
+                var btn = d.querySelector('.nav-dropdown-toggle');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
 
     // Fade-in on scroll for subpages
     var fadeInElements = document.querySelectorAll('.fade-in');

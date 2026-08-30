@@ -60,6 +60,93 @@ export function applyDocsLanguage(lang) {
     document.documentElement.lang = lang;
 }
 
+const navTranslations = {
+    nl: {
+        navHome: "Home",
+        navServices: "Diensten",
+        navWorkflow: "Werkwijze",
+        navProjects: "Projecten",
+        navAbout: "Over Ons",
+        navContact: "Contact",
+        navIntake: "Intake",
+        navPortalLogin: "Portaal",
+        navAIServices: "AI Services",
+        navWebDesign: "Web Design & Tech",
+        ariaInstagram: "Instagram CreationAltFix",
+        ariaLinkedIn: "LinkedIn CreationAltFix",
+        ariaToggleNav: "Navigatie in-/uitklappen",
+        navServicesPagesHeader: "Diensten & Specialisaties",
+        navServicesHomeHeader: "Op de Hoofdpagina",
+        navWorkflowDropdownHeader: "Werkwijze & Portaal",
+        navProjectsPagesHeader: "Portfolio & Cases",
+        navProjectsHomeHeader: "Op de Hoofdpagina",
+        navAboutDropdownHeader: "Over Creation+Alt+Fix",
+        navServiceAll: "Alle Diensten Overzicht",
+        navServiceAI: "Slimme Automatisering & AI",
+        navServiceWeb: "Websites & Webshops",
+        navServiceDashboards: "Data Dashboards & Inzichten",
+        navServiceIT: "Software Support & Beheer",
+        navAIServicesSection: "AI-Gedreven Oplossingen",
+        navWhyUsSection: "Waarom Creation+Alt+Fix?",
+        navWorkflowSection: "5-Stappen Aanpak (Home)",
+        navPortalCase: "Klantenportaal Case Study",
+        navDocsLink: "DevOps & AI Documentatie",
+        navPortalDirect: "Direct naar Klantenportaal",
+        navProjectsAll: "Alle Projecten (14+)",
+        navCaseArnold: "Arnold Design (AI Shield)",
+        navCaseHBI: "Home Buyer Intelligence",
+        navCaseWind: "Wind Cloud Sync Tools",
+        navLiveDemo: "Interactieve Live Demo",
+        navProjectsSection: "Website Showcase",
+        navGithubSection: "Open Source & GitHub",
+        navAboutPage: "Over Allard & Achtergrond",
+        navAboutSection: "Introductie (Home)",
+        navFaqSection: "Veelgestelde Vragen (FAQ)"
+    },
+    en: {
+        navHome: "Home",
+        navServices: "Services",
+        navWorkflow: "Workflow",
+        navProjects: "Projects",
+        navAbout: "About Us",
+        navContact: "Contact",
+        navIntake: "Intake",
+        navPortalLogin: "Portal",
+        navAIServices: "AI Services",
+        navWebDesign: "Web Design & Tech",
+        ariaInstagram: "Instagram CreationAltFix",
+        ariaLinkedIn: "LinkedIn CreationAltFix",
+        ariaToggleNav: "Toggle navigation",
+        navServicesPagesHeader: "Services & Specializations",
+        navServicesHomeHeader: "On the Homepage",
+        navWorkflowDropdownHeader: "Workflow & Portal",
+        navProjectsPagesHeader: "Portfolio & Cases",
+        navProjectsHomeHeader: "On the Homepage",
+        navAboutDropdownHeader: "About Creation+Alt+Fix",
+        navServiceAll: "All Services Overview",
+        navServiceAI: "Smart Automation & AI",
+        navServiceWeb: "Websites & Webshops",
+        navServiceDashboards: "Data Dashboards & Insights",
+        navServiceIT: "Software Support & Management",
+        navAIServicesSection: "AI-Driven Solutions",
+        navWhyUsSection: "Why Creation+Alt+Fix?",
+        navWorkflowSection: "5-Step Approach (Home)",
+        navPortalCase: "Client Portal Case Study",
+        navDocsLink: "DevOps & AI Documentation",
+        navPortalDirect: "Go to Client Portal",
+        navProjectsAll: "All Projects (14+)",
+        navCaseArnold: "Arnold Design (AI Shield)",
+        navCaseHBI: "Home Buyer Intelligence",
+        navCaseWind: "Wind Cloud Sync Tools",
+        navLiveDemo: "Interactive Live Demo",
+        navProjectsSection: "Website Showcase",
+        navGithubSection: "Open Source & GitHub",
+        navAboutPage: "About Allard & Background",
+        navAboutSection: "Introduction (Home)",
+        navFaqSection: "Frequently Asked Questions (FAQ)"
+    }
+};
+
 // --- 2. Dynamic Component Loader (Navbar & Footer) ---
 async function loadComponents() {
     try {
@@ -71,22 +158,121 @@ async function loadComponents() {
         if (navRes.ok) {
             const navHtml = await navRes.text();
             const navPlaceholder = document.getElementById('navbar-placeholder');
-            if (navPlaceholder) navPlaceholder.innerHTML = navHtml;
+            if (navPlaceholder) navPlaceholder.outerHTML = navHtml;
         }
 
         if (footRes.ok) {
             const footHtml = await footRes.text();
             const footPlaceholder = document.getElementById('footer-placeholder');
-            if (footPlaceholder) footPlaceholder.innerHTML = footHtml;
+            if (footPlaceholder) footPlaceholder.outerHTML = footHtml;
         }
+
+        // Apply translations to navbar items
+        const dict = navTranslations[currentLang] || navTranslations.nl;
+        document.querySelectorAll('#navbar [data-translate-key]').forEach(el => {
+            const key = el.getAttribute('data-translate-key');
+            if (dict[key]) el.textContent = dict[key];
+        });
 
         // Setup language toggle buttons if present
         document.querySelectorAll('.lang-btn, [data-lang]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const targetLang = btn.getAttribute('data-lang') || (currentLang === 'nl' ? 'en' : 'nl');
                 applyDocsLanguage(targetLang);
+                const updatedDict = navTranslations[targetLang] || navTranslations.nl;
+                document.querySelectorAll('#navbar [data-translate-key]').forEach(el => {
+                    const key = el.getAttribute('data-translate-key');
+                    if (updatedDict[key]) el.textContent = updatedDict[key];
+                });
             });
         });
+
+        // Active page highlighting for Docs
+        document.querySelectorAll('#navbar .dropdown-item').forEach(item => {
+            if (item.getAttribute('href') === '/docs/') {
+                item.classList.add('nav-active');
+                const parent = item.closest('.nav-dropdown');
+                if (parent) {
+                    const toggle = parent.querySelector('.nav-dropdown-toggle');
+                    if (toggle) toggle.classList.add('nav-active');
+                }
+            }
+        });
+
+        // Hamburger & Dropdown logic
+        const hamburgerBtn = document.getElementById('hamburger-menu');
+        const navMenuItems = document.getElementById('nav-menu-items');
+        const navDropdowns = document.querySelectorAll('.nav-dropdown');
+
+        if (hamburgerBtn && navMenuItems) {
+            const hamburgerIcon = hamburgerBtn.querySelector('i');
+            hamburgerBtn.addEventListener('click', () => {
+                navMenuItems.classList.toggle('active');
+                const isActive = navMenuItems.classList.contains('active');
+                hamburgerBtn.setAttribute('aria-expanded', isActive.toString());
+                if (hamburgerIcon) {
+                    hamburgerIcon.classList.toggle('fa-bars', !isActive);
+                    hamburgerIcon.classList.toggle('fa-times', isActive);
+                }
+            });
+
+            navMenuItems.querySelectorAll('a:not(.nav-dropdown-toggle)').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navMenuItems.classList.contains('active')) {
+                        navMenuItems.classList.remove('active');
+                        hamburgerBtn.setAttribute('aria-expanded', 'false');
+                        if (hamburgerIcon) {
+                            hamburgerIcon.classList.remove('fa-times');
+                            hamburgerIcon.classList.add('fa-bars');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Dropdown toggle click handlers
+        navDropdowns.forEach(dropdown => {
+            const toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const isAlreadyActive = dropdown.classList.contains('active');
+                    navDropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                            const btn = d.querySelector('.nav-dropdown-toggle');
+                            if (btn) btn.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                    dropdown.classList.toggle('active', !isAlreadyActive);
+                    toggleBtn.setAttribute('aria-expanded', (!isAlreadyActive).toString());
+                });
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                navDropdowns.forEach(d => {
+                    d.classList.remove('active');
+                    const btn = d.querySelector('.nav-dropdown-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        // Escape key closes dropdowns
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                navDropdowns.forEach(d => {
+                    d.classList.remove('active');
+                    const btn = d.querySelector('.nav-dropdown-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
     } catch (err) {
         console.warn("Kon externe navbar/footer componenten niet laden:", err);
     }
