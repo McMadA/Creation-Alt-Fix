@@ -409,6 +409,34 @@ function initProjectPersonalization() {
     }
 }
 
+// --- 9. Modern Scroll Reveal ---
+function initScrollReveal() {
+    const revealSelectors = '.docs-section, .checklist-item, .docs-tip-box, .docs-warning-box, .docs-card';
+    const elements = document.querySelectorAll(revealSelectors);
+    if (elements.length === 0) return;
+
+    elements.forEach(el => {
+        if (!el.classList.contains('fade-in')) {
+            el.classList.add('fade-in');
+        }
+    });
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.08 });
+
+        elements.forEach(el => observer.observe(el));
+    } else {
+        elements.forEach(el => el.classList.add('visible'));
+    }
+}
+
 // Initialize on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', async () => {
     await loadComponents();
@@ -419,4 +447,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCodeCopy();
     initPrintTrigger();
     initProjectPersonalization();
+    initScrollReveal();
 });

@@ -1737,9 +1737,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentYearSpan.textContent = new Date().getFullYear();
     }
 
-    // Fade-in on scroll
-    var fadeInElements = document.querySelectorAll('.fade-in');
-    var observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    // Modern scroll-driven reveal observer
+    var fadeInElements = document.querySelectorAll('.fade-in, .reveal-up');
+    var observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
     var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -1748,6 +1748,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
     }, observerOptions);
+    window.__cafScrollObserver = observer;
     fadeInElements.forEach(function(el) { observer.observe(el); });
 
     // Toast notification system
@@ -1990,9 +1991,10 @@ function renderRepos(repos) {
         repoContainer.innerHTML = '<p class="error">Geen publieke repositories gevonden.</p>';
         return;
     }
-    repos.forEach(function(repo) {
+    repos.forEach(function(repo, index) {
         var repoCard = document.createElement('div');
-        repoCard.className = 'repo-card fade-in visible';
+        repoCard.className = 'repo-card fade-in';
+        repoCard.style.transitionDelay = (index * 0.08) + 's';
 
         var description = repo.description || 'Geen beschrijving opgegeven.';
         if (description.length > 120) {
@@ -2012,6 +2014,12 @@ function renderRepos(repos) {
             '<span><i class="fas fa-code-branch"></i> ' + repo.forks_count + '</span>' +
             '</div>';
         repoContainer.appendChild(repoCard);
+
+        if (window.__cafScrollObserver) {
+            window.__cafScrollObserver.observe(repoCard);
+        } else {
+            repoCard.classList.add('visible');
+        }
     });
 }
 

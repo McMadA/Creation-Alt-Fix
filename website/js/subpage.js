@@ -1709,11 +1709,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    // Fade-in on scroll for subpages
-    var fadeInElements = document.querySelectorAll('.fade-in');
+    // Fade-in on scroll for subpages (Modern Subtle Fly-Up)
+    var autoFadeSelectors = '.fade-in, .reveal-up, .detail-card, .step-item, .related-card, .tech-category, .faq-list-item, .service-portal-usp-box, .content-section h2, .cta-section h2, .project-card, .doc-card';
+    var fadeInElements = document.querySelectorAll(autoFadeSelectors);
     if (fadeInElements.length > 0) {
+        fadeInElements.forEach(function(el) {
+            if (!el.classList.contains('fade-in') && !el.classList.contains('reveal-up')) {
+                el.classList.add('fade-in');
+            }
+        });
+
         if ('IntersectionObserver' in window) {
-            var observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            var observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
             var observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
