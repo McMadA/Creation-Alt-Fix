@@ -3,208 +3,667 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title data-translate-key="liveDemoPageTitle">Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix</title>
-    <meta name="description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript." data-translate-key="liveDemoMetaDesc">
+    <title data-translate-key="liveDemoPageTitle">Interactieve Live Demo & Tech Lab - Creation+Alt+Fix</title>
+    <meta name="description" content="Ervaar hands-on hoe Creation+Alt+Fix moderne web-applicaties bouwt: interactieve code studio, 7-laags AI Scrape Shield, CRM live staging annotator en AI prompt sandboxes." data-translate-key="liveDemoMetaDesc">
+    <meta name="keywords" content="live demo, interactive code studio, AI Scrape Shield, CRM live staging, web development sandbox, Creation+Alt+Fix, Groningen">
+    <link rel="canonical" href="https://www.creationaltfix.nl/live-demo.html">
 
-    <!-- Google Fonts: Inter -->
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Source+Code+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome (voor iconen) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
-    <!-- Onze eigen CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/live-demo.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/subpage.css">
+    <link rel="stylesheet" href="/css/live-demo.css">
+
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.creationaltfix.nl/live-demo.html">
-    <meta property="og:title" content="Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix">
-    <meta property="og:description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
-    <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
+    <meta property="og:title" content="Interactieve Live Demo & Tech Lab - Creation+Alt+Fix">
+    <meta property="og:description" content="Ervaar hands-on hoe we moderne web-applicaties, AI-automatiseringen, 7-laags Scrape Shields en CRM staging tools bouwen.">
+    <meta property="og:image" content="https://www.creationaltfix.nl/images/hero-bg.webp">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Live Demo: Hoe een Website Gebouwd Wordt - Creation+Alt+Fix">
-    <meta name="twitter:description" content="Een live, interactieve tijdlijn die laat zien hoe een website wordt opgebouwd van pure HTML, via CSS styling tot interactief JavaScript.">
-    <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
-    <link rel="canonical" href="https://www.creationaltfix.nl/live-demo.html">
+    <meta name="twitter:title" content="Interactieve Live Demo & Tech Lab - Creation+Alt+Fix">
+    <meta name="twitter:description" content="Ervaar hands-on hoe we moderne web-applicaties, AI-automatiseringen, 7-laags Scrape Shields en CRM staging tools bouwen.">
+    <meta name="twitter:image" content="https://www.creationaltfix.nl/images/hero-bg.webp">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Live Demo - Creation+Alt+Fix",
-      "description": "Interactieve live demo die de constructie van een webapplicatie toont.",
+      "@type": "WebApplication",
+      "name": "Creation+Alt+Fix Interactive Tech Lab",
+      "operatingSystem": "All modern web browsers",
+      "applicationCategory": "DeveloperApplication",
+      "description": "Interactieve live demo en code studio die demonstraties toont van web development, AI Scrape Shields, realtime CRM staging annotaties en software architecturen.",
       "url": "https://www.creationaltfix.nl/live-demo.html",
-      "publisher": {
+      "author": {
         "@type": "Organization",
         "name": "Creation+Alt+Fix",
         "url": "https://www.creationaltfix.nl/"
       }
     }
     </script>
-
-    <style>
-        .demo-top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .demo-lang-switcher {
-            display: flex;
-            gap: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .demo-lang-switcher .lang-btn {
-            background: none;
-            border: none;
-            color: #cbd5e1;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .demo-lang-switcher .lang-btn.active {
-            background: var(--color-accent, #6366f1);
-            color: #fff;
-        }
-    </style>
 </head>
 <body class="theme-dark">
     <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
 
-    <div class="demo-top-bar">
-        <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> <span data-translate-key="liveDemoBackBtn">Terug naar de hoofdpagina</span></a>
-        <div class="demo-lang-switcher" id="language-switcher">
-            <button type="button" data-lang="nl" class="lang-btn">NL</button>
-            <button type="button" data-lang="en" class="lang-btn">EN</button>
-        </div>
-    </div>
+    <!-- Navbar Dynamic Inclusion -->
+    <div id="navbar-placeholder"></div>
 
-    <header class="demo-header">
+    <!-- Tech Lab Hero -->
+    <header class="subpage-hero tech-lab-hero">
         <div class="container">
-            <h1 data-translate-key="liveDemoH1">De Geboorte van een <span>Website</span></h1>
-            <p data-translate-key="liveDemoSubtitle">Scroll naar beneden om te zien hoe een simpele tekst transformeert in een interactieve webpagina.</p>
+            <div class="breadcrumbs">
+                <ol>
+                    <li><a href="/" data-translate-key="navHome">Home</a></li>
+                    <li><a href="/projecten.html" data-translate-key="navProjects">Projecten</a></li>
+                    <li><span class="current" data-translate-key="liveDemoBreadcrumb">Tech Lab & Live Demo</span></li>
+                </ol>
+            </div>
+
+            <div class="tech-lab-badge">
+                <i class="fas fa-flask"></i>
+                <span data-translate-key="liveDemoHeroBadge">Creation+Alt+Fix Interactive Tech Lab</span>
+            </div>
+
+            <h1 class="main-title" data-translate-key="liveDemoH1">Interactieve <span class="accent">Live Demo & Studio</span></h1>
+            <p class="subtitle" data-translate-key="liveDemoSubtitle" style="max-width: 850px; margin: 0 auto 1.5rem;">
+                Ervaar hands-on hoe we web-applicaties, AI-automatiseringen, 7-laags security shields en realtime CRM staging tools bouwen. Test met live sliders, interactieve annotaties en code-inspectie.
+            </p>
         </div>
     </header>
 
-    <main id="main-content" class="timeline-container">
-        <!-- STAP 1: HTML -->
-        <section id="step-html" class="timeline-step">
-            <div class="timeline-content">
-                <div class="timeline-milestone">1</div>
-                <h2 data-translate-key="liveDemoStep1Title">De Blauwdruk: Pure HTML</h2>
-                <p data-translate-key="liveDemoStep1Desc">Alles begint met HTML (HyperText Markup Language). Dit is het skelet van de pagina. Het definieert de structuur en de inhoud, zoals koppen, paragrafen en knoppen, maar zonder enige opmaak.</p>
-                <pre><code class="language-html">&lt;h1&gt;Mijn Product&lt;/h1&gt;
-&lt;p&gt;Dit is een geweldig product.&lt;/p&gt;
-&lt;button&gt;Koop nu&lt;/button&gt;</code></pre>
+    <!-- Sticky Module Switcher -->
+    <nav class="lab-nav-sticky" aria-label="Tech Lab Modules">
+        <div class="container">
+            <div class="lab-nav-pills">
+                <a href="#studio-section" class="lab-nav-pill active" data-tab="studio">
+                    <i class="fas fa-code"></i> <span data-translate-key="labTabStudio">1. Live Code & Build Studio</span>
+                </a>
+                <a href="#shield-section" class="lab-nav-pill" data-tab="shield">
+                    <i class="fas fa-shield-virus"></i> <span data-translate-key="labTabShield">2. 7-Laags AI Scrape Shield</span>
+                </a>
+                <a href="#staging-section" class="lab-nav-pill" data-tab="staging">
+                    <i class="fas fa-map-pin"></i> <span data-translate-key="labTabStaging">3. CRM Live Staging Annotator</span>
+                </a>
+                <a href="#ai-section" class="lab-nav-pill" data-tab="ai">
+                    <i class="fas fa-brain"></i> <span data-translate-key="labTabAI">4. AI Prompt & Data Sandbox</span>
+                </a>
+                <a href="#radar-section" class="lab-nav-pill" data-tab="radar">
+                    <i class="fas fa-layer-group"></i> <span data-translate-key="labTabRadar">5. Technologie Matrix (25+)</span>
+                </a>
             </div>
-            <div class="timeline-preview">
-                <div class="preview-box" id="preview-box-html">
-                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
-                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
-                </div>
-            </div>
-        </section>
+        </div>
+    </nav>
 
-        <!-- STAP 2: Basis CSS -->
-        <section id="step-css1" class="timeline-step">
-            <div class="timeline-content">
-                <div class="timeline-milestone">2</div>
-                <h2 data-translate-key="liveDemoStep2Title">De Eerste Verflaag: Basis CSS</h2>
-                <p data-translate-key="liveDemoStep2Desc">Met CSS (Cascading Style Sheets) voegen we stijl toe. We beginnen met de basis: lettertypes, kleuren en wat opvulling (padding) om de tekst leesbaarder te maken en het er netter uit te laten zien.</p>
-                <pre><code class="language-css">body {
-  font-family: 'Inter', sans-serif;
-  background-color: #f0f0f0;
-}
-.preview-box {
-  padding: 20px;
+    <main id="main-content">
+        <!-- ============================================================
+             MODULE 1: LIVE CODE & BUILD STUDIO
+             ============================================================ -->
+        <section id="studio-section" class="lab-section">
+            <div class="container">
+                <div class="lab-section-header">
+                    <div class="lab-section-tag"><i class="fas fa-layer-group"></i> <span data-translate-key="labTag1">Modulaire Architectuur</span></div>
+                    <h2 data-translate-key="studioH2">De 4 Bouwstenen van een <span>Moderne Web-App</span></h2>
+                    <p data-translate-key="studioDesc">Klik op een bouwfase om links de broncode te inspecteren en rechts live de interactieve transformatie in de render-engine te ervaren.</p>
+                </div>
+
+                <div class="studio-grid">
+                    <!-- Left: Interactive Steps Selector -->
+                    <div class="studio-steps-col">
+                        <!-- Step 1 -->
+                        <div class="studio-step-card active" data-step="1">
+                            <div class="studio-step-header">
+                                <span class="studio-step-num">1</span>
+                                <h3 class="studio-step-title" data-translate-key="step1Title">Semantische HTML5 Blueprint</h3>
+                            </div>
+                            <p class="studio-step-desc" data-translate-key="step1Desc">De zuivere structuur en inhoud: semantische tags, SEO metadata en accessibility landmarks (WCAG 2.1) zonder visuele ruis.</p>
+                            <pre class="studio-code-snippet"><code><span class="tag">&lt;article</span> <span class="attr">class=</span><span class="string">"product-card"</span> <span class="attr">aria-labelledby=</span><span class="string">"p-title"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3</span> <span class="attr">id=</span><span class="string">"p-title"</span><span class="tag">&gt;</span>Managed Cloud Hosting<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p&gt;</span>NVMe opslag, 99.9% uptime &amp; SSL certificaat.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">type=</span><span class="string">"button"</span><span class="tag">&gt;</span>Kies Pakket<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/article&gt;</span></code></pre>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="studio-step-card" data-step="2">
+                            <div class="studio-step-header">
+                                <span class="studio-step-num">2</span>
+                                <h3 class="studio-step-title" data-translate-key="step2Title">Modern Glassmorphism & Design Tokens</h3>
+                            </div>
+                            <p class="studio-step-desc" data-translate-key="step2Desc">Styling met CSS Custom Properties, backdrop-filter blur, subtiele gradient borders en glow effects in onze Dark AI stijl.</p>
+                            <pre class="studio-code-snippet"><code><span class="keyword">.product-card</span> {
+  <span class="attr">background</span>: <span class="string">rgba(26, 31, 53, 0.75)</span>;
+  <span class="attr">backdrop-filter</span>: <span class="keyword">blur</span>(<span class="string">16px</span>);
+  <span class="attr">border</span>: <span class="string">1px solid var(--color-border)</span>;
+  <span class="attr">box-shadow</span>: <span class="string">0 20px 40px rgba(0,0,0,0.4)</span>;
 }</code></pre>
-            </div>
-            <div class="timeline-preview">
-                <div class="preview-box" id="preview-box-css-1">
-                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
-                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
-                </div>
-            </div>
-        </section>
+                        </div>
 
-        <!-- STAP 3: Geavanceerde CSS -->
-        <section id="step-css2" class="timeline-step">
-            <div class="timeline-content">
-                <div class="timeline-milestone">3</div>
-                <h2 data-translate-key="liveDemoStep3Title">Design & Layout: Meer CSS</h2>
-                <p data-translate-key="liveDemoStep3Desc">Nu maken we het visueel aantrekkelijk. We centreren de inhoud, geven de "box" een mooie schaduw en stijlen de knop zodat hij uitnodigend is om op te klikken. Dit is waar het design echt tot leven komt.</p>
-                <pre><code class="language-css">.preview-box {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-button {
-  background-color: #007AFF;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
+                        <!-- Step 3 -->
+                        <div class="studio-step-card" data-step="3">
+                            <div class="studio-step-header">
+                                <span class="studio-step-num">3</span>
+                                <h3 class="studio-step-title" data-translate-key="step3Title">ES6+ Reactive State & Micro-Interacties</h3>
+                            </div>
+                            <p class="studio-step-desc" data-translate-key="step3Desc">Dynamische logica zonder zware frameworks: realtime prijsberekening, kortingscodes en soepele feedback toasts.</p>
+                            <pre class="studio-code-snippet"><code><span class="keyword">const</span> state = { billing: <span class="string">'annual'</span>, discount: <span class="string">0.20</span> };
+<span class="keyword">function</span> <span class="tag">recalculate</span>(base) {
+  <span class="keyword">return</span> state.billing === <span class="string">'annual'</span> ? base * <span class="string">12</span> * (<span class="string">1</span> - state.discount) : base;
 }</code></pre>
-            </div>
-            <div class="timeline-preview">
-                <div class="preview-box" id="preview-box-css-2">
-                    <h1 data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
-                    <p data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button data-translate-key="liveDemoPreviewBtn">Koop nu</button>
-                </div>
-            </div>
-        </section>
+                        </div>
 
-        <!-- STAP 4: JavaScript -->
-        <section id="step-js" class="timeline-step">
-            <div class="timeline-content">
-                <div class="timeline-milestone">4</div>
-                <h2 data-translate-key="liveDemoStep4Title">De Magie: JavaScript</h2>
-                <p data-translate-key="liveDemoStep4Desc">JavaScript voegt interactiviteit toe. Het is het brein van de pagina. Hier maken we de knop functioneel. Klik op de "Koop nu" knop in het voorbeeld om te zien wat er gebeurt!</p>
-                <pre><code class="language-js">const button = document.getElementById('js-button');
-const text = document.getElementById('js-text');
-
-button.addEventListener('click', () => {
-  text.textContent = 'Bedankt voor uw aankoop!';
+                        <!-- Step 4 -->
+                        <div class="studio-step-card" data-step="4">
+                            <div class="studio-step-header">
+                                <span class="studio-step-num">4</span>
+                                <h3 class="studio-step-title" data-translate-key="step4Title">Cloud Sync & AI Intelligence Injection</h3>
+                            </div>
+                            <p class="studio-step-desc" data-translate-key="step4Desc">Sub-50ms realtime database synchronisatie via Firebase Firestore en intelligente AI productverrijking via Gemini API.</p>
+                            <pre class="studio-code-snippet"><code><span class="comment">// Realtime listener + AI enrichment</span>
+<span class="tag">onSnapshot</span>(<span class="tag">doc</span>(db, <span class="string">"projects"</span>, id), (snap) => {
+  <span class="tag">updateLiveMetrics</span>(snap.<span class="tag">data</span>());
 });</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Render Studio Preview -->
+                    <div class="studio-preview-col">
+                        <div class="studio-preview-window">
+                            <div class="studio-window-bar">
+                                <div class="studio-window-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="studio-window-title" id="studio-stage-title">preview://stage-1-raw-html.dom</div>
+                                <div class="studio-window-badge" id="studio-stage-badge">HTML5 Engine</div>
+                            </div>
+
+                            <div class="studio-preview-body" id="studio-preview-canvas">
+                                <!-- CSS Control Panel (Only visible in Stage 2) -->
+                                <div class="studio-control-panel" id="studio-css-controls">
+                                    <div class="control-row">
+                                        <span class="control-label"><i class="fas fa-palette"></i> <span data-translate-key="ctrlColor">Accent Thema:</span></span>
+                                        <div class="color-pills">
+                                            <button type="button" class="color-pill active" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></button>
+                                            <button type="button" class="color-pill" data-color="#22d3ee" style="background:#22d3ee;" title="Cyan"></button>
+                                            <button type="button" class="color-pill" data-color="#a855f7" style="background:#a855f7;" title="Purple"></button>
+                                            <button type="button" class="color-pill" data-color="#10b981" style="background:#10b981;" title="Emerald"></button>
+                                        </div>
+                                    </div>
+                                    <div class="control-row">
+                                        <span class="control-label"><i class="fas fa-adjust"></i> <span data-translate-key="ctrlBlur">Blur Kracht:</span></span>
+                                        <input type="range" class="control-slider" id="slider-blur" min="0" max="30" value="16">
+                                    </div>
+                                    <div class="control-row">
+                                        <span class="control-label"><i class="fas fa-vector-square"></i> <span data-translate-key="ctrlRadius">Border Radius:</span></span>
+                                        <input type="range" class="control-slider" id="slider-radius" min="0" max="32" value="16">
+                                    </div>
+                                </div>
+
+                                <!-- The Live Target Component Box -->
+                                <div class="live-target-box stage-html" id="studio-live-box">
+                                    <div class="card-product-header">
+                                        <span class="card-badge" id="live-card-badge" data-translate-key="cardBadgeStandard">Managed Cloud Service</span>
+                                    </div>
+                                    <h3 id="live-card-title" data-translate-key="cardTitleHosting">Managed Cloud Hosting All-in</h3>
+                                    <p id="live-card-desc" data-translate-key="cardDescHosting">Complete enterprise webhosting inclusief NVMe SSD opslag, automatische dagelijkse back-ups, 5 zakelijke mailboxen en gratis SSL.</p>
+                                    
+                                    <div class="billing-toggle-wrapper" id="live-billing-wrapper" style="display:none;">
+                                        <span data-translate-key="billingPeriod">Facturatie:</span>
+                                        <div>
+                                            <button type="button" class="billing-switch-btn active" data-period="monthly" data-translate-key="btnMonthly">Maandelijks</button>
+                                            <button type="button" class="billing-switch-btn" data-period="annual" data-translate-key="btnAnnual">Jaarlijks (-20%)</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-price-row" id="live-price-row" style="display:none;">
+                                        <span class="card-price" id="live-price-val">€ 15,00</span>
+                                        <span class="card-period" id="live-period-text" data-translate-key="perMonth">/ maand</span>
+                                    </div>
+
+                                    <ul class="card-features-list" id="live-features-list" style="display:none;">
+                                        <li><i class="fas fa-check-circle"></i> <span data-translate-key="feat1">10 GB Snelle NVMe Opslag</span></li>
+                                        <li><i class="fas fa-check-circle"></i> <span data-translate-key="feat2">99.9% Uptime SLA &amp; DirectAdmin</span></li>
+                                        <li><i class="fas fa-check-circle"></i> <span data-translate-key="feat3">Real-time DDoS &amp; AI Scrape Shield</span></li>
+                                    </ul>
+
+                                    <div class="card-actions-row">
+                                        <button type="button" class="btn-interactive-action" id="btn-live-action">
+                                            <i class="fas fa-arrow-right"></i> <span id="btn-live-text" data-translate-key="btnSelectPlan">Pakket Kiezen</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Realtime Toast Notification inside Preview -->
+                                <div class="studio-toast" id="studio-toast">
+                                    <i class="fas fa-check-circle"></i> <span id="studio-toast-text" data-translate-key="toastSuccess">Pakket succesvol geconfigureerd!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="timeline-preview">
-                <div class="preview-box" id="preview-box-js">
-                    <h1 id="js-title" data-translate-key="liveDemoPreviewTitle">Mijn Product</h1>
-                    <p id="js-text" data-translate-key="liveDemoPreviewText">Dit is een geweldig product dat je leven zal veranderen. Gemaakt met de beste materialen en ontworpen voor duurzaamheid.</p>
-                    <button id="js-button" data-translate-key="liveDemoPreviewBtn">Koop nu</button>
+        </section>
+
+        <!-- ============================================================
+             MODULE 2: 7-LAYER AI SCRAPE SHIELD SIMULATOR
+             ============================================================ -->
+        <section id="shield-section" class="lab-section">
+            <div class="container">
+                <div class="lab-section-header">
+                    <div class="lab-section-tag"><i class="fas fa-shield-alt"></i> <span data-translate-key="labTag2">Security &amp; Privacy Shield</span></div>
+                    <h2 data-translate-key="shieldH2">7-Laags <span>AI Scrape Shield Simulator</span></h2>
+                    <p data-translate-key="shieldDesc">Gebaseerd op ons productiesysteem voor kunstenaars &amp; bedrijven (o.a. Arnold Design). Bescherm afbeeldingen en intellectueel eigendom tegen ongewenste AI webscraping.</p>
+                </div>
+
+                <div class="shield-grid">
+                    <!-- Left: Interactive Artwork Visualizer -->
+                    <div class="shield-demo-container">
+                        <div class="shield-artwork-frame" id="shield-canvas-frame">
+                            <img src="/images/arnolddesign.webp" alt="Arnold Design Kunstwerk Beveiliging Demo" id="shield-target-img">
+                            <div class="shield-noise-overlay active" id="shield-noise-layer"></div>
+                            <div class="shield-watermark-overlay" id="shield-watermark-layer">
+                                <i class="fas fa-lock"></i><br>
+                                <span data-translate-key="watermarkText">EU TDM Art. 4 Opt-Out<br>Machine-Readable Protection Active</span>
+                            </div>
+                        </div>
+
+                        <div class="shield-controls">
+                            <!-- Toggle 1: TDM Headers -->
+                            <div class="shield-toggle-row">
+                                <div class="shield-toggle-info">
+                                    <i class="fas fa-file-contract"></i>
+                                    <div class="shield-toggle-text">
+                                        <strong data-translate-key="shieldTdmTitle">EU TDM Art. 4 &amp; No-AI Headers</strong>
+                                        <span data-translate-key="shieldTdmSub">Directive 2019/790 tdm-reservation: 1 headers</span>
+                                    </div>
+                                </div>
+                                <input type="checkbox" id="toggle-tdm" class="switch-input" checked>
+                                <label for="toggle-tdm" class="switch-label"></label>
+                            </div>
+
+                            <!-- Toggle 2: Noise Layer & Watermark -->
+                            <div class="shield-toggle-row">
+                                <div class="shield-toggle-info">
+                                    <i class="fas fa-eye-slash"></i>
+                                    <div class="shield-toggle-text">
+                                        <strong data-translate-key="shieldNoiseTitle">Canvas Watermark &amp; CSS Noise Glitch</strong>
+                                        <span data-translate-key="shieldNoiseSub">Verstoort AI-scrapers zonder menselijke kijkhinder</span>
+                                    </div>
+                                </div>
+                                <input type="checkbox" id="toggle-noise" class="switch-input" checked>
+                                <label for="toggle-noise" class="switch-label"></label>
+                            </div>
+
+                            <!-- Toggle 3: Honeypot & Rate Limiting -->
+                            <div class="shield-toggle-row">
+                                <div class="shield-toggle-info">
+                                    <i class="fas fa-bug"></i>
+                                    <div class="shield-toggle-text">
+                                        <strong data-translate-key="shieldHoneypotTitle">Honeypot Trap &amp; CSF/LFD IP Ban</strong>
+                                        <span data-translate-key="shieldHoneypotSub">Blokkeert agressieve bots direct op serverniveau</span>
+                                    </div>
+                                </div>
+                                <input type="checkbox" id="toggle-honeypot" class="switch-input" checked>
+                                <label for="toggle-honeypot" class="switch-label"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Terminal Log Simulator -->
+                    <div class="shield-terminal-col">
+                        <div class="terminal-box">
+                            <div class="terminal-header">
+                                <div class="studio-window-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="terminal-title">security-monitor@creationaltfix:~# live-shield-log</div>
+                                <div class="studio-window-badge" style="background:rgba(16,185,129,0.15); color:#10b981;">Active</div>
+                            </div>
+                            <div class="terminal-body" id="shield-terminal-logs">
+                                <div class="terminal-log-entry"><span class="log-time">[SYSTEM]</span> AI Scrape Shield engine initialized. Listening on HTTP/2...</div>
+                                <div class="terminal-log-entry"><span class="log-time">[STATUS]</span> TDM Directive 2019/790 compliance headers: ACTIVE</div>
+                                <div class="terminal-log-entry"><span class="log-time">[STATUS]</span> Canvas dynamic noise injection: ARMED</div>
+                                <div class="terminal-log-entry"><span class="log-time">[STATUS]</span> Honeypot /secret-ai-crawler-trap/: MONITORING</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-test-bot" id="btn-simulate-bot">
+                            <i class="fas fa-robot"></i> <span data-translate-key="btnSimulateBot">Simuleer AI Scraper Aanval</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MODULE 3: CRM LIVE STAGING ANNOTATOR SIMULATOR
+             ============================================================ -->
+        <section id="staging-section" class="lab-section">
+            <div class="container">
+                <div class="lab-section-header">
+                    <div class="lab-section-tag"><i class="fas fa-desktop"></i> <span data-translate-key="labTag3">Creation+Alt+Fix Klantenportaal</span></div>
+                    <h2 data-translate-key="stagingH2">Real-Time <span>Staging Annotator Simulator</span></h2>
+                    <p data-translate-key="stagingDesc">In ons eigen ontwikkelde CRM plaatsen klanten visuele feedback-pins direct op het live prototype. Geen lange e-mails, maar directe visuele communicatie.</p>
+                </div>
+
+                <div class="staging-grid">
+                    <!-- Left: Interactive Staging Viewport -->
+                    <div class="staging-browser-mockup">
+                        <div class="staging-browser-bar">
+                            <div class="studio-window-dots">
+                                <span class="dot-red"></span>
+                                <span class="dot-yellow"></span>
+                                <span class="dot-green"></span>
+                            </div>
+                            <div class="staging-url-bar">
+                                <i class="fas fa-lock" style="font-size:0.7rem; color:#10b981;"></i> https://staging.creationaltfix.nl/client-concept-v3
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--color-text-secondary);"><i class="fas fa-mobile-alt"></i> / <i class="fas fa-desktop"></i></div>
+                        </div>
+
+                        <div class="staging-interactive-canvas" id="staging-canvas">
+                            <div class="staging-mock-content">
+                                <h2 data-translate-key="mockTitle">Boutique Schoonheidssalon &amp; Wellness</h2>
+                                <p data-translate-key="mockP">Ervaar rust, exclusieve natuurlijke haarverzorging en pure ontspanning in het hart van Groningen.</p>
+                                <span class="staging-mock-btn" data-translate-key="mockBtn">Afspraak Plannen</span>
+                            </div>
+                            <div class="staging-canvas-hint">
+                                <i class="fas fa-hand-pointer"></i> <span data-translate-key="canvasHint">Klik ergens op het scherm om een Feedback Pin te plaatsen!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Annotations Backlog & PDF Proposal Button -->
+                    <div class="staging-backlog-panel">
+                        <div class="staging-backlog-header">
+                            <h3><i class="fas fa-clipboard-list" style="color:var(--color-accent);"></i> <span data-translate-key="notesHeader">Feedback Pins</span> (<span id="pins-count">2</span>)</h3>
+                            <button type="button" class="billing-switch-btn" id="btn-clear-pins" style="font-size:0.75rem; padding:3px 8px;" data-translate-key="btnClearPins">Wissen</button>
+                        </div>
+
+                        <div class="staging-notes-list" id="staging-notes-list">
+                            <!-- Preset Pin 1 -->
+                            <div class="staging-note-item" data-pin-id="1">
+                                <span class="note-pin-num">1</span>
+                                <div class="note-content-text">
+                                    <strong>Koptekst aanscherpen</strong>
+                                    <span>Positie: (38%, 24%) • Status: Open</span>
+                                </div>
+                                <button type="button" class="note-delete-btn" title="Verwijder"><i class="fas fa-times"></i></button>
+                            </div>
+                            <!-- Preset Pin 2 -->
+                            <div class="staging-note-item" data-pin-id="2">
+                                <span class="note-pin-num">2</span>
+                                <div class="note-content-text">
+                                    <strong>Knopkleur afstemmen op huisstijl</strong>
+                                    <span>Positie: (50%, 65%) • Status: In Behandeling</span>
+                                </div>
+                                <button type="button" class="note-delete-btn" title="Verwijder"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-open-pdf-modal" id="btn-open-pdf-modal">
+                            <i class="fas fa-file-signature"></i> <span data-translate-key="btnOpenPdf">Genereer PDF Offerte &amp; Handtekening</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MODULE 4: AI PROMPT & DATA AUTOMATION SANDBOX
+             ============================================================ -->
+        <section id="ai-section" class="lab-section">
+            <div class="container">
+                <div class="lab-section-header">
+                    <div class="lab-section-tag"><i class="fas fa-brain"></i> <span data-translate-key="labTag4">Intelligente Automatisering</span></div>
+                    <h2 data-translate-key="aiH2">AI Prompt &amp; <span>Data Transform Engine</span></h2>
+                    <p data-translate-key="aiDesc">Ontdek hoe we Google Gemini 2.0 / 3.7 en OpenAI inzetten voor gestructureerde dataverwerking, automatische SEO teksten en slimme bedrijfsprocessen.</p>
+                </div>
+
+                <div class="ai-sandbox-grid">
+                    <!-- Left: Prompt Configurator -->
+                    <div class="ai-prompt-card">
+                        <div class="ai-usecase-pills" id="ai-usecase-pills">
+                            <button type="button" class="ai-usecase-pill active" data-usecase="seo">1. SEO &amp; Copywriter</button>
+                            <button type="button" class="ai-usecase-pill" data-usecase="json">2. Factuur Data Extractor</button>
+                            <button type="button" class="ai-usecase-pill" data-usecase="ticket">3. Klantenservice Classifier</button>
+                            <button type="button" class="ai-usecase-pill" data-usecase="code">4. Performance Refactor</button>
+                        </div>
+
+                        <div class="lab-form-group">
+                            <label for="ai-prompt-input" data-translate-key="lblPromptInput">Invoer / Bedrijfsinformatie:</label>
+                            <textarea id="ai-prompt-input" rows="4" placeholder="Typ trefwoorden of plak ongestructureerde tekst...">Bedrijf: Scholte Elektrotechniek Groningen. Doelgroep: Particulieren &amp; MKB. Diensten: Zonnepanelen, groepenkasten, laadpalen, 24/7 storingsdienst.</textarea>
+                        </div>
+
+                        <button type="button" class="btn-interactive-action" id="btn-run-ai">
+                            <i class="fas fa-bolt"></i> <span data-translate-key="btnRunAI">Voer AI Transformatie Uit</span>
+                        </button>
+                    </div>
+
+                    <!-- Right: JSON / Formatted Output Terminal -->
+                    <div class="ai-output-card">
+                        <div class="ai-output-header">
+                            <div class="studio-window-dots">
+                                <span class="dot-red"></span>
+                                <span class="dot-yellow"></span>
+                                <span class="dot-green"></span>
+                            </div>
+                            <span style="font-family:monospace; font-size:0.8rem; color:var(--color-accent);" id="ai-model-tag">gemini-2.0-flash // structured-json</span>
+                        </div>
+                        <div class="ai-output-content" id="ai-output-text">
+{
+  "status": "ready",
+  "message": "Klik op 'Voer AI Transformatie Uit' om een live LLM synthese te genereren."
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MODULE 5: TECHNOLOGY MATRIX & SKILLS RADAR
+             ============================================================ -->
+        <section id="radar-section" class="lab-section">
+            <div class="container">
+                <div class="lab-section-header">
+                    <div class="lab-section-tag"><i class="fas fa-tools"></i> <span data-translate-key="labTag5">Onze Technologie Stack</span></div>
+                    <h2 data-translate-key="radarH2">Technologie Matrix &amp; <span>Skills Radar</span></h2>
+                    <p data-translate-key="radarDesc">Een selectie van de beproefde frameworks, talen, cloud infrastructuren en security tools waarmee Creation+Alt+Fix dagelijks bouwt.</p>
+                </div>
+
+                <div class="radar-filter-bar" id="radar-filters">
+                    <button type="button" class="radar-filter-btn active" data-filter="all" data-translate-key="filterAll">Alles (20+)</button>
+                    <button type="button" class="radar-filter-btn" data-filter="frontend" data-translate-key="filterFront">Frontend &amp; UI</button>
+                    <button type="button" class="radar-filter-btn" data-filter="ai" data-translate-key="filterAI">AI &amp; Data</button>
+                    <button type="button" class="radar-filter-btn" data-filter="cloud" data-translate-key="filterCloud">Cloud &amp; Backend</button>
+                    <button type="button" class="radar-filter-btn" data-filter="devops" data-translate-key="filterDevops">DevOps &amp; Tools</button>
+                    <button type="button" class="radar-filter-btn" data-filter="security" data-translate-key="filterSec">Security</button>
+                </div>
+
+                <div class="radar-grid" id="radar-grid">
+                    <!-- Tech 1: Vanilla JS ES6+ -->
+                    <div class="radar-card" data-category="frontend">
+                        <div class="radar-card-icon"><i class="fab fa-js"></i></div>
+                        <h4>Vanilla JS (ES6+ Modules)</h4>
+                        <p>Ultrasnelle, zero-framework architectuur met native custom events, component modulariteit en sub-milliseconde render tijden.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Zero-Bloat</span>
+                            <span class="radar-tag">Lighthouse 98+</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 2: Google Gemini & OpenAI API -->
+                    <div class="radar-card" data-category="ai">
+                        <div class="radar-card-icon"><i class="fas fa-brain"></i></div>
+                        <h4>Google Gemini &amp; OpenAI LLMs</h4>
+                        <p>Geavanceerde prompt engineering, structured JSON schemas, document parsing en contextuele chatbots.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Gemini 2.0 / 3.7</span>
+                            <span class="radar-tag">Structured Output</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 3: Firebase Firestore -->
+                    <div class="radar-card" data-category="cloud">
+                        <div class="radar-card-icon"><i class="fas fa-fire"></i></div>
+                        <h4>Firebase Firestore</h4>
+                        <p>Real-time NoSQL cloud database met sub-50ms reactive synchronisatie, security rules en multi-project isolatie.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Real-Time Sync</span>
+                            <span class="radar-tag">CRM Portaal</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 4: 7-Layer AI Scrape Shield -->
+                    <div class="radar-card" data-category="security">
+                        <div class="radar-card-icon"><i class="fas fa-shield-virus"></i></div>
+                        <h4>7-Layer AI Scrape Shield</h4>
+                        <p>EU TDM Art. 4 machine-declaraties, dynamische onzichtbare canvas watermerken, honeypots en CSF/LFD rate limiting.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Arnold Design</span>
+                            <span class="radar-tag">Anti-Bot</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 5: GitHub Actions & CI/CD -->
+                    <div class="radar-card" data-category="devops">
+                        <div class="radar-card-icon"><i class="fab fa-github"></i></div>
+                        <h4>GitHub Actions CI/CD</h4>
+                        <p>Geautomatiseerde deployment pipelines, multi-target FTP synchronisaties, geautomatiseerde Firestore rules releases en integriteitstests.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Auto-Deploy</span>
+                            <span class="radar-tag">Live CI/CD</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 6: Azure Boards & DevOps CLI -->
+                    <div class="radar-card" data-category="devops">
+                        <div class="radar-card-icon"><i class="fas fa-diagram-project"></i></div>
+                        <h4>Azure Boards &amp; CLI</h4>
+                        <p>Geautomatiseerde backlog sync via `az boards`, agile work item tracking en directe integratie met IDE AI agents.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Azure CLI</span>
+                            <span class="radar-tag">AI Workflows</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 7: Modern CSS3 & Glassmorphism -->
+                    <div class="radar-card" data-category="frontend">
+                        <div class="radar-card-icon"><i class="fab fa-css3-alt"></i></div>
+                        <h4>Modern CSS3 &amp; Glassmorphism</h4>
+                        <p>Custom design tokens, CSS Grid &amp; Flexbox, 3D transform fly-in physics en geavanceerde micro-interacties.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">Design System</span>
+                            <span class="radar-tag">Dark AI Theme</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 8: Apache & Server Hardening -->
+                    <div class="radar-card" data-category="security">
+                        <div class="radar-card-icon"><i class="fas fa-server"></i></div>
+                        <h4>Apache &amp; .htaccess Hardening</h4>
+                        <p>Content-Security-Policy (CSP Level 3), HSTS headers, X-Robots tag isolatie, DirectAdmin beheer en Let's Encrypt SSL.</p>
+                        <div class="radar-card-tags">
+                            <span class="radar-tag">CSP Level 3</span>
+                            <span class="radar-tag">DirectAdmin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             FINAL CALL TO ACTION SECTION
+             ============================================================ -->
+        <section class="container">
+            <div class="lab-cta-box">
+                <h2 data-translate-key="ctaTitle">Klaar om jouw idee om te zetten in krachtige software?</h2>
+                <p data-translate-key="ctaSubtitle">Van een bliksemsnelle website of AI-tool tot een custom portaal op maat. Start vandaag nog een vrijblijvende intake.</p>
+                <div class="lab-cta-actions">
+                    <a href="https://portal.creationaltfix.nl/intake/" class="btn-lab-primary">
+                        <i class="fas fa-rocket"></i> <span data-translate-key="btnStartIntake">Start Project Intake</span>
+                    </a>
+                    <a href="/projecten.html" class="btn-lab-secondary">
+                        <i class="fas fa-th-large"></i> <span data-translate-key="btnViewPortfolio">Bekijk Portfolio (14+)</span>
+                    </a>
+                    <a href="/#contact" class="btn-lab-secondary">
+                        <i class="fas fa-envelope"></i> <span data-translate-key="btnContactUs">Neem Contact Op</span>
+                    </a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="demo-footer">
-        <p data-translate-key="liveDemoFooterText">Dit is het eindresultaat: een gestileerde en interactieve webcomponent.</p>
-        <p class="footer-legal" style="font-size: 0.85em; margin-top: 10px; color: #ccc;">
-            <span data-translate-key="footerKvk">KVK: 99986191</span> | <span data-translate-key="footerBtw">BTW: NL005423147B16</span>
-        </p>
-        <a href="/" class="btn-back" style="margin-top: 10px; display: inline-block;"><i class="fas fa-arrow-left"></i> <span data-translate-key="liveDemoFooterBack">Terug naar Creation+Alt+Fix</span></a>
-    </footer>
+    <!-- Modal: Feedback Pin Note Form -->
+    <div class="lab-modal-overlay" id="pin-modal-overlay">
+        <div class="lab-modal-card">
+            <div class="lab-modal-header">
+                <h3 data-translate-key="pinModalTitle"><i class="fas fa-map-pin" style="color:#ef4444;"></i> Nieuwe Feedback Pin Toevoegen</h3>
+                <button type="button" class="lab-modal-close" id="btn-close-pin-modal">&times;</button>
+            </div>
+            <div class="lab-form-group">
+                <label for="pin-title-input" data-translate-key="lblPinTitle">Wat wil je hier aanpassen?</label>
+                <input type="text" id="pin-title-input" placeholder="Bijv. Tekst verhelderen, foto wisselen, knopkleur...">
+            </div>
+            <div class="lab-form-group">
+                <label for="pin-desc-input" data-translate-key="lblPinDesc">Toelichting (optioneel):</label>
+                <textarea id="pin-desc-input" rows="2" placeholder="Beschrijf je wens in detail..."></textarea>
+            </div>
+            <button type="button" class="btn-interactive-action" id="btn-save-pin">
+                <i class="fas fa-check"></i> <span data-translate-key="btnSavePin">Pin Opslaan</span>
+            </button>
+        </div>
+    </div>
 
-    <script src="js/live-demo.js"></script>
-    <script src="js/cookie-consent.js"></script>
+    <!-- Modal: PDF Offerte & Handtekening Simulator -->
+    <div class="lab-modal-overlay" id="pdf-modal-overlay">
+        <div class="lab-modal-card">
+            <div class="lab-modal-header">
+                <h3 data-translate-key="pdfModalTitle"><i class="fas fa-file-invoice-dollar" style="color:var(--color-accent);"></i> Offerte &amp; Akkoord Simulator</h3>
+                <button type="button" class="lab-modal-close" id="btn-close-pdf-modal">&times;</button>
+            </div>
+            <p style="font-size:0.88rem; color:var(--color-text-secondary); margin-bottom:1rem;" data-translate-key="pdfModalDesc">
+                In het echte Creation+Alt+Fix portaal wordt direct een rechtsgeldige PDF gegenereerd via jsPDF met live status updates.
+            </p>
+            <div class="lab-form-group">
+                <label data-translate-key="lblDigitalSig">Plaats hier een digitale handtekening (teken met muis / vinger):</label>
+                <div class="signature-pad-container">
+                    <canvas class="signature-pad-canvas" id="signature-canvas"></canvas>
+                    <button type="button" class="signature-clear-btn" id="btn-clear-signature" data-translate-key="btnClearSig">Wissen</button>
+                </div>
+            </div>
+            <button type="button" class="btn-interactive-action" id="btn-sign-proposal">
+                <i class="fas fa-signature"></i> <span data-translate-key="btnSignProposal">Offerte Digitaal Ondertekenen</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Dynamic Inclusion -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="/js/subpage.js"></script>
+    <script src="/js/live-demo.js"></script>
+    <script src="/js/cookie-consent.js"></script>
 </body>
 </html>
