@@ -2,6 +2,9 @@
 
 ## Recent Insights
 
+- **[2026-08-30] Volledige Tweeweg Data- & Functionaliteit-Synergie (Klantportaal <-> Admin Werkplek)**: Audit en verrijking uitgevoerd op de wederzijdse benutting van ingevoerde informatie tussen klant en beheerder: 1. **Hosting & Abonnement Transparantie voor de Klant**: In `crm/status/index.html` en `crm/status/js/status.js` de sectie *Mijn Hosting & Cloud Abonnement* geïmplementeerd. De klant ziet direct het door de admin ingestelde hostingpakket (`subscriptionPlanId` / `subscriptionPlanName`, bijv. *Managed Cloud Hosting All-in € 150,-/jr*), gekoppeld domein, tarief en inbegrepen features (NVMe opslag, SSL, 5 zakelijke mailboxen, dagelijkse back-ups). 2. **Intake Wensen & Design Vibe in Admin Header**: In `crm/admin/project.html` en `crm/admin/js/project.js` worden de door de klant ingevoerde doelen (`p.goals`) en gewenste stijl (`p.design`) nu direct getoond in de *Snelle Info* zijbalk van de admin werkplek. 3. **Design Akkoord Feedback in Admin Toolbar**: Zodra een klant in Fase 3 het concept goedkeurt (`p.designAcceptedAt`), toont de admin toolbar direct `✅ Design Akkoord ([Datum])` in plaats van een generieke knop.
+
+
 - **[2026-08-30] Deep Codebase Alignment & UX Zero-Defect Audit**: Volledige geautomatiseerde scan uitgevoerd over alle 26 HTML-templates, 16 JavaScript ES6 modules en serverconfiguraties: 1. **ES6 Module & Import Integriteit**: 100% van alle ES6 imports en geëxporteerde methoden gevalideerd op geldigheid en handtekeningen. 2. **Interactieve Elementen & Handlers**: Alle formulier- en knop-ID's zijn gekoppeld aan actieve event listeners zonder zwevende handlers. 3. **Asset & Image Referenties**: Alle relatieve en root-relatieve bronnen zijn geverifieerd. 4. **SEO & Metadata**: Volledige OpenGraph, canonical links en JSON-LD gestructureerde data aangevuld op `website/404.html` en `website/landing.html`.
 
 
