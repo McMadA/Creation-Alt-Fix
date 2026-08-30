@@ -186,6 +186,62 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         recommendedPlanId: "managed_nl",
         recommendedReason: "Klussersbedrijf website: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
         latestInvoice: null
+    },
+    "capybaraculture.com": {
+        clientName: "Capybara Culture",
+        currentPlanName: "Community Platform & Merchandise",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_multi",
+        recommendedReason: "Internationaal platform: Managed Cloud Hosting & Domeinbeheer (€ 250,-/jr).",
+        latestInvoice: null
+    },
+    "naaiatelier-willa.nl": {
+        clientName: "Naaiatelier Willa",
+        currentPlanName: "MKB Portfolio & Atelier",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Atelier website: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        latestInvoice: null
+    },
+    "pomppop.nl": {
+        clientName: "PompPop Festival (Stichting PompPop)",
+        currentPlanName: "Festival Platform & Ticket Hub",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Evenementen platform: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        latestInvoice: null
+    },
+    "qolipa.nl": {
+        clientName: "Qolipa Webshop & Brand",
+        currentPlanName: "E-Commerce & Multi-Domein",
+        currentPlanId: "managed_multi",
+        recommendedPlanId: "allin_apk",
+        recommendedReason: "Webshop multi-domein (.nl + .com) + jaarlijkse security APK & updates (€ 500,-/jr).",
+        latestInvoice: null
+    },
+    "justin.nl": {
+        clientName: "Justin Web Projects",
+        currentPlanName: "Nieuwe Lead (Fase 1)",
+        currentPlanId: "none",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Bij oplevering: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        latestInvoice: null
+    },
+    "creationaltfix.nl": {
+        clientName: "Creation+Alt+Fix (Eigen Platform)",
+        currentPlanName: "In-House Cloud Infrastructuur",
+        currentPlanId: "managed_multi",
+        recommendedPlanId: "managed_multi",
+        recommendedReason: "Interne AI tooling, CRM cluster & 12 domeinen beheer.",
+        latestInvoice: null
+    },
+    "hbi.creationaltfix.nl": {
+        clientName: "Home Buyer Intelligence (HBI)",
+        currentPlanName: "AI Tooling & Cloud Platform",
+        currentPlanId: "managed_nl",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Vastgoed AI analyse applicatie & cloud hosting.",
+        latestInvoice: null
     }
 };
 

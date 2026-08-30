@@ -62,12 +62,12 @@ if ($Email -and $Password) {
             returnSecureToken = $true
         } | ConvertTo-Json
 
-        $authRes = Invoke-RestMethod -Uri $authUrl -Method Post -Body $authBody -ContentType "application/json"
+        $authRes = Invoke-RestMethod -Uri $authUrl -Method Post -Body $authBody -ContentType "application/json" -TimeoutSec 5
         if ($authRes.idToken) {
             $idToken = $authRes.idToken
             $firestoreUrl = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/projects"
             $headers = @{ Authorization = "Bearer $idToken" }
-            $firestoreRes = Invoke-RestMethod -Uri $firestoreUrl -Method Get -Headers $headers -ContentType "application/json"
+            $firestoreRes = Invoke-RestMethod -Uri $firestoreUrl -Method Get -Headers $headers -ContentType "application/json" -TimeoutSec 5
             
             if ($firestoreRes.documents -and $firestoreRes.documents.Count -gt 0) {
                 $isLive = $true
@@ -482,6 +482,50 @@ if ($projects.Count -eq 0) {
             TotaleTaken = 4
             DatumAangemaakt = "02-08-2026"
             LaatsteUpdate = "15-08-2026"
+        },
+        [PSCustomObject]@{
+            Id = "16"
+            Klantnaam = "Livian Design (Lianne Steinfelder)"
+            Bedrijfsnaam = "Livian Design"
+            Contactpersoon = "Lianne Steinfelder"
+            Email = "info@liviandesign.nl"
+            Telefoon = "+31 6 34567891"
+            Domeinnaam = "creationaltfix.nl/liviandesign/"
+            Dienst = "Interieurportfolio & Showcase"
+            Categorie = "Portfolio & Design"
+            Fase = "Fase 5: Opgeleverd (Livegang)"
+            Status = "Opgeleverd (Livegang)"
+            OfferteExclBTW = "50,00"
+            OfferteInclBTW = "60,50"
+            DoelenEnScope = "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794)."
+            DesignThema = "Stijlvol, minimalistisch, warm interieur design."
+            VoltooideTaken = 4
+            OpenstaandeTaken = 0
+            TotaleTaken = 4
+            DatumAangemaakt = "24-03-2026"
+            LaatsteUpdate = "24-03-2026"
+        },
+        [PSCustomObject]@{
+            Id = "17"
+            Klantnaam = "Home Buyer Intelligence (HBI)"
+            Bedrijfsnaam = "Home Buyer Intelligence"
+            Contactpersoon = "HBI Platform Beheer"
+            Email = "hbi@creationaltfix.nl"
+            Telefoon = "+31 6 12345678"
+            Domeinnaam = "hbi.creationaltfix.nl"
+            Dienst = "AI Vastgoed & Aankoop Analyse Platform"
+            Categorie = "AI Tooling & Cloud SaaS"
+            Fase = "Fase 4: In Ontwikkeling"
+            Status = "In Ontwikkeling"
+            OfferteExclBTW = "1200,00"
+            OfferteInclBTW = "1452,00"
+            DoelenEnScope = "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen."
+            DesignThema = "Modern data-dashboard thema met interactieve visualisaties."
+            VoltooideTaken = 3
+            OpenstaandeTaken = 1
+            TotaleTaken = 4
+            DatumAangemaakt = "25-08-2026"
+            LaatsteUpdate = "28-08-2026"
         }
     )
 }

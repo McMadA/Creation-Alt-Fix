@@ -96,41 +96,26 @@ const API = {
                 projectsList.push({ id: doc.id, ...doc.data() });
             });
 
-            // Ensure our own website, CRM & Foodtruck Store exist in Firestore for testing
-            const hasOwnSite = projectsList.some(p => (p.client && p.client.includes("Hoofdwebsite")) || (p.domainName && p.domainName.includes("creationaltfix.nl") && !p.client?.includes("CRM")));
-            const hasOwnCrm = projectsList.some(p => (p.client && p.client.includes("CRM")) || (p.domainName && p.domainName.includes("portal.creationaltfix.nl")));
-            const hasFtruck = projectsList.some(p => (p.client && p.client.includes("Foodtruck")) || (p.domainName && p.domainName.includes("ftruckstore")));
+            // Ensure ALL clients & historical projects from the portfolio / CRM exports exist in active list
             const mockList = this.getMockProjects();
+            for (const m of mockList) {
+                const mName = (m.client || m.companyName || '').toLowerCase();
+                const mDom = (m.domainName || m.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+                const exists = projectsList.some(p => {
+                    const pName = (p.client || p.companyName || '').toLowerCase();
+                    const pDom = (p.domainName || p.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+                    if (mName && pName && (pName.includes(mName) || mName.includes(pName))) return true;
+                    if (mDom && pDom && (pDom.includes(mDom) || mDom.includes(pDom))) return true;
+                    return false;
+                });
 
-            if (!hasOwnSite || !hasOwnCrm || !hasFtruck) {
-                if (!hasOwnSite) {
-                    const siteObj = mockList.find(m => m.id === 6);
-                    if (siteObj) {
-                        const { id, ...siteData } = siteObj;
+                if (!exists) {
+                    const { id, ...dataToSeed } = m;
+                    projectsList.push({ id: `seed_${m.id}`, ...dataToSeed });
+                    if (db) {
                         try {
-                            const ref = await addDoc(collection(db, "projects"), siteData);
-                            projectsList.push({ id: ref.id, ...siteData });
-                        } catch (err) { console.warn("Kon testproject website niet seeden:", err); }
-                    }
-                }
-                if (!hasOwnCrm) {
-                    const crmObj = mockList.find(m => m.id === 7);
-                    if (crmObj) {
-                        const { id, ...crmData } = crmObj;
-                        try {
-                            const ref = await addDoc(collection(db, "projects"), crmData);
-                            projectsList.push({ id: ref.id, ...crmData });
-                        } catch (err) { console.warn("Kon testproject CRM niet seeden:", err); }
-                    }
-                }
-                if (!hasFtruck) {
-                    const ftruckObj = mockList.find(m => m.id === 12);
-                    if (ftruckObj) {
-                        const { id, ...ftData } = ftruckObj;
-                        try {
-                            const ref = await addDoc(collection(db, "projects"), ftData);
-                            projectsList.push({ id: ref.id, ...ftData });
-                        } catch (err) { console.warn("Kon project Foodtruck Store niet seeden:", err); }
+                            addDoc(collection(db, "projects"), dataToSeed).catch(console.warn);
+                        } catch (e) {}
                     }
                 }
             }
@@ -499,6 +484,160 @@ const API = {
                 ],
                 auditLog: [
                     { id: 'jus_l1', timestamp: '2026-08-27T09:00:00Z', type: 'lead_created', description: 'Lead toegevoegd vanuit backlog.', actor: 'Allard Veldman' }
+                ]
+            },
+            {
+                id: 15,
+                client: "Scholte Elektrotechniek",
+                companyName: "Scholte Elektrotechniek",
+                contactName: "Gerjo Scholte",
+                email: "info@scholte-elektrotechniek.nl",
+                domainName: "www.scholte-elektrotechniek.nl",
+                domain: "www.scholte-elektrotechniek.nl",
+                service: "Elektrotechniek & Duurzaamheid Website",
+                goals: "Professionele one-pager website voor elektrotechnische installaties, meterkasten en zonnepanelen in Groningen (KvK: 89192036).",
+                design: "Strak, betrouwbaar, blauw/grijs modern zakelijk thema.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "19-08-2026",
+                proposalPrice: "550,00",
+                tasks: [
+                    { id: 'sch_1', title: 'Intake, functionele briefing & wensenanalyse', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-05' },
+                    { id: 'sch_2', title: 'UI/UX Design & responsive one-page template ontwikkeling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                    { id: 'sch_3', title: 'Content, formulieren & mobiele optimalisatie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-15' },
+                    { id: 'sch_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-19' }
+                ]
+            },
+            {
+                id: 16,
+                client: "Capybara Culture",
+                companyName: "Capybara Culture",
+                contactName: "Capybara Culture Team",
+                email: "info@capybaraculture.com",
+                domainName: "capybaraculture.com",
+                domain: "capybaraculture.com",
+                service: "Community & Merchandise Platform",
+                goals: "Webplatform voor internationale capybara community, digitale kunst showcase en merchandise webshop.",
+                design: "Vrolijk, speels, modern en responsive.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "20-08-2026",
+                proposalPrice: "450,00",
+                tasks: [
+                    { id: 'cap_1', title: 'Community platform structuur & branding', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                    { id: 'cap_2', title: 'Merchandise showcase & productcatalogus', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-14' },
+                    { id: 'cap_3', title: 'Web3 & community links integratie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-18' },
+                    { id: 'cap_4', title: 'Livegang, hosting en DNS configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' }
+                ]
+            },
+            {
+                id: 17,
+                client: "Naaiatelier Willa",
+                companyName: "Naaiatelier Willa",
+                contactName: "Willa",
+                email: "info@naaiatelier-willa.nl",
+                domainName: "www.naaiatelier-willa.nl",
+                domain: "www.naaiatelier-willa.nl",
+                service: "Kledingreparatie & Atelier Website",
+                goals: "Eigentijdse website voor kledingreparaties, maatkleding en atelier diensten met prijslijst en fotogalerij.",
+                design: "Warm, elegant, ambachtelijk met responsive portfolio galerij.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "22-08-2026",
+                proposalPrice: "500,00",
+                tasks: [
+                    { id: 'wil_1', title: 'Intake & dienstenpakket structureren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                    { id: 'wil_2', title: 'Fotogalerij van creaties & maatkleding ontwerpen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
+                    { id: 'wil_3', title: 'Prijslijst en contactformulier implementeren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-19' },
+                    { id: 'wil_4', title: 'Livegang, domeinnaam koppeling & hosting oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' }
+                ]
+            },
+            {
+                id: 18,
+                client: "PompPop Festival",
+                companyName: "Stichting PompPop",
+                contactName: "PompPop Organisatie",
+                email: "info@pomppop.nl",
+                domainName: "www.pomppop.nl",
+                domain: "www.pomppop.nl",
+                service: "Festival Website & Line-up Programma",
+                goals: "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren en ticketlinks.",
+                design: "Energiek, festival sfeer, donker met felle neon accenten.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "24-08-2026",
+                proposalPrice: "650,00",
+                tasks: [
+                    { id: 'pop_1', title: 'Festival branding & line-up overzicht inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                    { id: 'pop_2', title: 'Dynamisch tijdschema & artiestenpagina’s ontwikkelen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 'pop_3', title: 'Sponsorenoverzicht & ticketverkoop links koppelen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-22' },
+                    { id: 'pop_4', title: 'Livegang, performance caching & SSL oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' }
+                ]
+            },
+            {
+                id: 19,
+                client: "Qolipa Webshop & Brand",
+                companyName: "Qolipa",
+                contactName: "Qolipa Beheer",
+                email: "info@qolipa.nl",
+                domainName: "qolipa.nl / qolipa.com",
+                domain: "qolipa.nl",
+                service: "Brand Portfolio & Webshop",
+                goals: "Merkpositionering en webshop integratie voor lifestyle producten.",
+                design: "Luxe, minimalistisch, strak en SEO-geoptimaliseerd.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "15-08-2026",
+                proposalPrice: "950,00",
+                tasks: [
+                    { id: 'qol_1', title: 'Merkidentiteit & e-commerce architectuur ontwerpen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-02' },
+                    { id: 'qol_2', title: 'Productcatalogus & betalingsgateway inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' },
+                    { id: 'qol_3', title: 'SEO-optimalisatie & multi-domein configuratie (.nl + .com)', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-12' },
+                    { id: 'qol_4', title: 'Livegang en managed hosting oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' }
+                ]
+            },
+            {
+                id: 20,
+                client: "Livian Design (Lianne Steinfelder)",
+                companyName: "Livian Design",
+                contactName: "Lianne Steinfelder",
+                email: "info@liviandesign.nl",
+                domainName: "creationaltfix.nl/liviandesign/",
+                domain: "creationaltfix.nl/liviandesign/",
+                service: "Interieurportfolio & Showcase",
+                goals: "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794).",
+                design: "Stijlvol, minimalistisch, warm interieur design.",
+                status: "Opgeleverd (Livegang)",
+                statusClass: "success",
+                date: "24-03-2026",
+                proposalPrice: "50,00",
+                tasks: [
+                    { id: 'liv_1', title: 'Interieurportfolio architectuur & showcase opzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-15' },
+                    { id: 'liv_2', title: 'Sfeerbeelden & projectfotografie optimaliseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-20' },
+                    { id: 'liv_3', title: 'Contactformulier & SEO inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-03-22' },
+                    { id: 'liv_4', title: 'Oplevering & software realisatie afronding', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-24' }
+                ]
+            },
+            {
+                id: 21,
+                client: "Home Buyer Intelligence (HBI)",
+                companyName: "Home Buyer Intelligence",
+                contactName: "HBI Platform Beheer",
+                email: "hbi@creationaltfix.nl",
+                domainName: "hbi.creationaltfix.nl",
+                domain: "hbi.creationaltfix.nl",
+                service: "AI Vastgoed & Aankoop Analyse Platform",
+                goals: "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen.",
+                design: "Modern data-dashboard thema met interactieve visualisaties.",
+                status: "In Ontwikkeling",
+                statusClass: "active",
+                date: "25-08-2026",
+                proposalPrice: "1200,00",
+                tasks: [
+                    { id: 'hbi_1', title: 'AI analyse engine & vastgoed evaluatie algoritme', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                    { id: 'hbi_2', title: 'Interactief dashboard UI & responsive layout', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                    { id: 'hbi_3', title: 'PDF export & aankooprapportage generator', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-28' },
+                    { id: 'hbi_4', title: '[TASK-804] Home Buyer Intelligence AI Revisor & Local Mode integratie', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-06' }
                 ]
             }
         ];

@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- PORTFOLIO (HOME) ---
     "portfolioTitle": "Bekijk onze <span>Websites!</span>",
-    "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die ik recentelijk heb ontwikkeld. Dit geeft een idee van wat ik voor u kan realiseren.",
-    "project1Title": "Creation+Alt+Fix CRM",
+    "portfolioSubtitle": "Hieronder een selectie van websites en applicaties die wij recentelijk hebben ontwikkeld (zoals de portfolio-website van Arnold Design). Dit is een selecte greep uit ons complete portfolio om u een beeld te geven van wat wij voor u kunnen realiseren.",
+    "project1Title": "Creation+Alt+Fix CRM & Klantenportaal",
     "project1P": "Een volledig custom CRM & Klantenportaal. Real-time Firebase tracking, digitale offertes, geautomatiseerde onboarding en statusportaal.",
     "project1Btn": "Bekijk Case Study",
     "projectArnoldTitle": "Arnold Design — AI Scrape Shield",
@@ -130,15 +130,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     "project4Title": "Bakkertje Sieg Webshop",
     "project4P": "Volledige E-Commerce webshop met WordPress & WooCommerce. Inclusief receptencatalogus, winkelwagen en online betaalintegratie.",
     "project4Btn": "Ontdek de Webshop!",
+    "project5Title": "Angela Stenekes",
+    "project5P": "Moderne, responsive bedrijfswebsite voor een lokale knipperij met schrijfambities. Inclusief verhalenblog, behandelingsprijzen en afsprakencontact.",
+    "project5Btn": "Ontdek de Website!",
     "liveDemoBtn": "Bekijk de live demo hoe een website tot stand komt!",
-    "allProjectsBtn": "Bekijk alle projecten & portfolio",
+    "allProjectsBtn": "Bekijk alle projecten & volledig portfolio (14+)",
 
     // --- FAQ (HOME) ---
     "faqTitle": "Veelgestelde Vragen: <span>Snelle Websites</span>",
     "faq1Q": "Kan ik echt binnen een dag een website hebben?",
     "faq1A": "Ja, voor simpele websites zoals een online visitekaartje, een landingspagina, of een basis informatieve site is dit vaak mogelijk. Neem contact op met uw wensen, dan geven we direct een inschatting.",
     "faq2Q": "Wat kost het om snel een simpele website te laten maken?",
-    "faq2A": "De kosten voor een snelle, simpele website zijn aanzienlijk lager dan voor complexe maatwerkprojecten. We bieden transparante pakketten vanaf €99. Vraag een vrijblijvende offerte voor uw specifieke situatie.",
+    "faq2A": "De kosten voor een snelle, professionele website zijn afhankelijk van uw wensen, maar altijd transparant en scherp geprijsd. Vraag gerust een vrijblijvende offerte aan voor uw specifieke situatie.",
     "faq3Q": "Welke informatie hebben jullie nodig om mijn website snel te kunnen bouwen?",
     "faq3A": "Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.",
 
@@ -817,8 +820,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // --- PORTFOLIO (HOME) ---
     "portfolioTitle": "Check Out Our <span>Websites!</span>",
-    "portfolioSubtitle": "Below is a selection of websites and applications I have recently developed. This gives an idea of what I can build for you.",
-    "project1Title": "Creation+Alt+Fix CRM",
+    "portfolioSubtitle": "Below is a selection of websites and applications we have recently developed (such as the Arnold Design portfolio). This represents a select snapshot of our complete portfolio to give you an idea of what we can realize for you.",
+    "project1Title": "Creation+Alt+Fix CRM & Client Portal",
     "project1P": "A full custom CRM & Client Portal. Real-time Firebase tracking, digital proposals, automated onboarding and status portal.",
     "project1Btn": "View Case Study",
     "projectArnoldTitle": "Arnold Design — AI Scrape Shield",
@@ -833,15 +836,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     "project4Title": "Bakkertje Sieg Webshop",
     "project4P": "Full E-Commerce webshop with WordPress & WooCommerce. Featuring recipe catalog, shopping cart and online payment integration.",
     "project4Btn": "Discover the Webshop!",
+    "project5Title": "Angela Stenekes",
+    "project5P": "Modern, responsive website for a local salon with creative writing stories. Featuring stories blog, treatment pricing and appointment booking.",
+    "project5Btn": "Discover the Website!",
     "liveDemoBtn": "Watch the live demo of how a website is built!",
-    "allProjectsBtn": "View all projects & portfolio",
+    "allProjectsBtn": "View all projects & full portfolio (14+)",
 
     // --- FAQ (HOME) ---
     "faqTitle": "Frequently Asked Questions: <span>Quick Websites</span>",
     "faq1Q": "Can I really have a website within a day?",
     "faq1A": "Yes, for simple websites like an online business card, a landing page, or a basic informative site, this is often possible. Contact us with your requirements for an instant estimate.",
     "faq2Q": "How much does it cost to quickly create a simple website?",
-    "faq2A": "The costs for a fast, simple website are significantly lower than for complex custom projects. We offer transparent packages starting from €99. Request a non-binding quote for your situation.",
+    "faq2A": "The costs for a fast, professional website depend on your specific needs, but are always transparent and competitively priced. Feel free to request a non-binding quote for your situation.",
     "faq3Q": "What information do you need to quickly build my website?",
     "faq3A": "To deliver quickly, we need your basic texts, logo (if any), and desired color scheme. We also have templates and examples to speed up the process if you don't have content yet.",
 
