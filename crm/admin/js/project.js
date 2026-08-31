@@ -1262,14 +1262,23 @@ let activeAdminPinsFilter = 'all';
 
 function resolveAdminStagingUrl(p) {
     if (!p) return null;
-    let url = p.domainName || p.domain || p.demoUrl || p.stagingUrl || p.designUrl;
+    let url = p.stagingUrl || p.demoUrl || p.designUrl || p.domainName || p.domain;
     if (!url || typeof url !== 'string') return null;
     url = url.trim();
     if (url === '' || url.toLowerCase() === 'n.v.t.' || url.toLowerCase() === 'geen' || url.toLowerCase() === 'nog geen domein') {
         return null;
     }
+    if (url.includes(' / ')) {
+        url = url.split(' / ')[0].trim();
+    }
     if (!/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
+    }
+    if (url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
+    }
+    if (/bakkertjesieg\.nl(\/)?$/i.test(url)) {
+        url = url.replace(/\/+$/, '') + '/new/';
     }
     return url;
 }
@@ -2618,8 +2627,10 @@ function getMockProjects() {
             companyName: "BakkertjeSieg",
             contactName: "Siegert",
             email: "bakkertjesieg@gmail.com",
-            domainName: "www.bakkertjesieg.nl",
-            domain: "www.bakkertjesieg.nl",
+            domainName: "www.bakkertjesieg.nl/new/",
+            domain: "www.bakkertjesieg.nl/new/",
+            stagingUrl: "https://www.bakkertjesieg.nl/new/",
+            demoUrl: "https://www.bakkertjesieg.nl/new/",
             service: "Webshop & Digitaal Bestelsysteem",
             goals: "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen en nieuwsbriefintegratie.",
             projectGoals: "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen en nieuwsbriefintegratie.",

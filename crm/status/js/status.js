@@ -1501,15 +1501,27 @@ function setupChatListeners() {
 
 export function resolveStagingUrl(p) {
     if (!p) return null;
-    let url = p.domainName || p.domain || p.demoUrl || p.stagingUrl || p.designUrl;
+    let url = p.stagingUrl || p.demoUrl || p.designUrl || p.domainName || p.domain;
     if (!url || typeof url !== 'string') return null;
     url = url.trim();
     if (url === '' || url.toLowerCase() === 'n.v.t.' || url.toLowerCase() === 'geen' || url.toLowerCase() === 'nog geen domein') {
         return null;
     }
+    if (url.includes(' / ')) {
+        url = url.split(' / ')[0].trim();
+    }
     // Prefix https:// if protocol is missing
     if (!/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
+    }
+    // Enforce HTTPS to prevent Mixed Content blocking in modern browsers
+    if (url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
+    }
+    // Fix for Bakkertje Sieg: the root domain https://www.bakkertjesieg.nl issues a 301 redirect to insecure http://www.bakkertjesieg.nl/new/
+    // Direct link to https://www.bakkertjesieg.nl/new/ bypasses mixed content blocking and loads the live store securely
+    if (/bakkertjesieg\.nl(\/)?$/i.test(url)) {
+        url = url.replace(/\/+$/, '') + '/new/';
     }
     return url;
 }
