@@ -4,11 +4,13 @@ service cloud.firestore {
 
     // ============================================================
     // Helper: Check if the authenticated user is an admin
-    // Requires a document in the 'admins' collection with the user's UID as doc ID
+    // Authenticated via admin email whitelist OR exists in 'admins' collection
     // ============================================================
     function isAdmin() {
-      return request.auth != null &&
-             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return request.auth != null && (
+        (request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
     }
 
     // ============================================================

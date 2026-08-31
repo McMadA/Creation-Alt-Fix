@@ -10,7 +10,7 @@
  */
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
@@ -307,8 +307,14 @@ async function setupAuthAndPage() {
 
                 if (!isAdmin) {
                     await signOut(auth);
-                    alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
-                    window.location.href = "index.html";
+                    const errDiv = document.getElementById('login-error');
+                    if (errDiv) {
+                        errDiv.innerText = `Toegang geweigerd: Account "${userEmail}" heeft geen beheerdersrechten.`;
+                        errDiv.classList.remove('hidden');
+                    } else {
+                        alert("Toegang geweigerd: Dit account heeft geen beheerdersrechten.");
+                        window.location.href = "index.html";
+                    }
                     return;
                 }
 
@@ -317,8 +323,14 @@ async function setupAuthAndPage() {
                 if (!isGoogleAuth) {
                     console.warn("Wachtwoordinlog geblokkeerd voor beheerder:", userEmail);
                     await signOut(auth);
-                    alert("Beveiligingswaarschuwing: Wachtwoordinlog is uitgeschakeld voor beheerders. Log verplicht in via Google.");
-                    window.location.href = "index.html";
+                    const errDiv = document.getElementById('login-error');
+                    if (errDiv) {
+                        errDiv.innerText = `Beveiligingswaarschuwing: Wachtwoordinlog is uitgeschakeld voor beheerders. Log verplicht in via de knop "Inloggen met Google".`;
+                        errDiv.classList.remove('hidden');
+                    } else {
+                        alert("Beveiligingswaarschuwing: Wachtwoordinlog is uitgeschakeld voor beheerders. Log verplicht in via Google.");
+                        window.location.href = "index.html";
+                    }
                     return;
                 }
 
@@ -334,24 +346,52 @@ async function setupAuthAndPage() {
         document.getElementById('auth-overlay').classList.remove('hidden');
     }
 
-    // Login Form handler
-    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const errDiv = document.getElementById('login-error');
-        const btn = e.target.querySelector('button');
+    // Google Sign-In Handler voor Beheerder
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+    document.getElementById('btn-google-login')?.addEventListener('click', async () => {
+        const errDiv = document.getElementById('login-error');
+        const btn = document.getElementById('btn-google-login');
         if (errDiv) errDiv.classList.add('hidden');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifiëren bij Google...';
+        }
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const result = await signInWithPopup(auth, googleProvider);
+            const userEmail = (result.user.email || '').toLowerCase();
+            
+            let isAdmin = isAdminEmail(userEmail);
+            if (!isAdmin && db) {
+                try {
+                    const qAdmin = query(collection(db, "admins"), where("email", "==", userEmail));
+                    const snapAdmin = await getDocs(qAdmin);
+                    if (!snapAdmin.empty) { isAdmin = true; }
+                } catch (e) { }
+            }
+
+            if (!isAdmin) {
+                await signOut(auth);
+                if (errDiv) {
+                    errDiv.innerText = `Toegang geweigerd: Google-account "${userEmail}" staat niet geregistreerd als beheerder.`;
+                    errDiv.classList.remove('hidden');
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Inloggen met Google (Beheerder)';
+                }
+            }
         } catch (err) {
-            btn.innerHTML = 'Inloggen';
+            console.error("Google Sign-In Fout:", err);
             if (errDiv) {
-                errDiv.innerText = 'Ongeldig e-mailadres of wachtwoord.';
+                errDiv.innerText = `Inlogfout: ${err.message || 'Authenticatie geannuleerd of mislukt.'}`;
                 errDiv.classList.remove('hidden');
+            }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Inloggen met Google (Beheerder)';
             }
         }
     });
@@ -390,17 +430,43 @@ async function loadProjectData(projectId) {
     }
 
     try {
+        let projectFound = false;
         const docRef = doc(db, "projects", projectId);
-        const docSnap = await getDoc(docRef);
+        try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                currentProjectData = { id: docSnap.id, ...docSnap.data() };
+                projectFound = true;
+            }
+        } catch (getErr) {
+            console.warn("Directe doc() lookup via ID gaf melding:", getErr.message);
+        }
 
-        if (docSnap.exists()) {
-            currentProjectData = { id: docSnap.id, ...docSnap.data() };
+        // Fallback: Als directe document-ID lookup niets oplevert, zoek op 'id' veld in collectie
+        if (!projectFound) {
+            try {
+                const numId = Number(projectId);
+                const queryVal = isNaN(numId) ? projectId : numId;
+                const q = query(collection(db, "projects"), where("id", "==", queryVal));
+                const qSnap = await getDocs(q);
+                if (!qSnap.empty) {
+                    const foundDoc = qSnap.docs[0];
+                    currentProjectId = foundDoc.id;
+                    currentProjectData = { id: foundDoc.id, ...foundDoc.data() };
+                    projectFound = true;
+                }
+            } catch (qErr) {
+                console.warn("Query fallback gaf melding:", qErr.message);
+            }
+        }
+
+        if (projectFound && currentProjectData) {
             // Filter out canceled TASK-501 if present in Firestore
             if (currentProjectData.tasks && Array.isArray(currentProjectData.tasks)) {
                 const origLen = currentProjectData.tasks.length;
                 currentProjectData.tasks = currentProjectData.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
-                if (currentProjectData.tasks.length !== origLen && db && projectId) {
-                    updateDoc(doc(db, "projects", projectId), { tasks: currentProjectData.tasks }).catch(console.warn);
+                if (currentProjectData.tasks.length !== origLen && db && currentProjectId) {
+                    updateDoc(doc(db, "projects", currentProjectId), { tasks: currentProjectData.tasks }).catch(console.warn);
                 }
             }
 
@@ -409,30 +475,45 @@ async function loadProjectData(projectId) {
                 const mock = getMockProject(projectId);
                 if (mock && mock.tasks && mock.tasks.length > 0) {
                     currentProjectData.tasks = mock.tasks;
-                    if (db && projectId) {
-                        updateDoc(doc(db, "projects", projectId), { tasks: mock.tasks }).catch(console.warn);
+                    if (db && currentProjectId) {
+                        updateDoc(doc(db, "projects", currentProjectId), { tasks: mock.tasks }).catch(console.warn);
                     }
                 } else {
                     const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live');
                     const defaultTasks = [
                         { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
                         { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template ontwikkeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
-                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: currentProjectData.date || '2025-01-01' },
+                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'medium', dueDate: currentProjectData.date || '2025-01-01' },
                         { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' }
                     ];
                     currentProjectData.tasks = defaultTasks;
-                    if (db && projectId) {
-                        updateDoc(doc(db, "projects", projectId), { tasks: defaultTasks }).catch(console.warn);
+                    if (db && currentProjectId) {
+                        updateDoc(doc(db, "projects", currentProjectId), { tasks: defaultTasks }).catch(console.warn);
                     }
                 }
             }
             renderProjectWorkspace(currentProjectData);
         } else {
-            alert("Project niet gevonden in Firestore.");
-            window.location.href = "index.html";
+            // Document niet in Firestore; controleer of project bekend is in de mock/portfolio database
+            const mock = getMockProject(projectId);
+            if (mock) {
+                console.warn(`Project document "${projectId}" niet in Firestore, mock profiel geladen.`, mock);
+                currentProjectData = mock;
+                renderProjectWorkspace(currentProjectData);
+            } else {
+                alert("Project niet gevonden in Firestore.");
+                window.location.href = "index.html";
+            }
         }
     } catch (err) {
         console.error("Fout bij laden van project:", err);
+        const mock = getMockProject(projectId);
+        if (mock) {
+            console.warn("Fout bij Firestore ophalen, teruggevallen op mock database:", mock);
+            currentProjectData = mock;
+            renderProjectWorkspace(currentProjectData);
+            return;
+        }
         alert("Fout bij ophalen van projectgegevens: " + err.message);
     }
 }
@@ -2297,10 +2378,68 @@ function setupFormHandlers() {
     });
 }
 
-// Fallback Mock Projects
-function getMockProject(id) {
-    if (String(id) === "6" || String(id).includes("Hoofdwebsite") || String(id).includes("website")) {
-        return {
+// Fallback Mock Projects Database (Comprehensive Portfolio & Backlog Suite)
+function getMockProjects() {
+    return [
+        {
+            id: 3,
+            client: "Stenekes Riool & Grondwerk",
+            companyName: "Stenekes Riool & Grondwerk",
+            contactName: "Klaas Stenekes",
+            email: "info@stenekes-riool.nl",
+            domainName: "www.stenekes-riool.nl",
+            domain: "www.stenekes-riool.nl",
+            service: "Website Laten Maken",
+            goals: "Lokale vindbaarheid en spoedklus formulier.",
+            projectGoals: "Lokale vindbaarheid en spoedklus formulier met directe routering naar telefonisch contact en storingsdienst.",
+            design: "Donker thema met fel gele accenten.",
+            designPreferences: "Donker thema met fel gele accenten.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "08-08-2026",
+            proposalPrice: "550,00",
+            tasks: [
+                { id: 't3_1', title: 'Livegang en Google Bedrijfsprofiel koppeling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' },
+                { id: 't3_2', title: 'Spoedservice contactformulier & WhatsApp knop integratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' }
+            ],
+            internalNotes: [
+                { id: 't3_n1', text: 'Project succesvol opgeleverd en actief op www.stenekes-riool.nl.', createdAt: '2026-08-08T12:00:00Z', author: 'Allard Veldman' }
+            ],
+            auditLog: [
+                { id: 't3_l1', timestamp: '2026-08-08T12:00:00Z', type: 'status_updated', description: 'Project status gewijzigd naar Opgeleverd (Livegang).', actor: 'Allard Veldman' }
+            ]
+        },
+        {
+            id: 5,
+            client: "Arnold Doornbos (Arnold Design)",
+            companyName: "Arnold Doornbos (Arnold Design)",
+            contactName: "Arnold Doornbos",
+            email: "arnolddesign2024@gmail.com",
+            domainName: "www.arnolddesign.nl",
+            domain: "www.arnolddesign.nl",
+            service: "Kunstenaarsportfolio & Webapplicatie",
+            goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
+            projectGoals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
+            design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
+            designPreferences: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
+            status: "Design & Ontwerp (Fase 3)",
+            statusClass: "active",
+            date: "25-08-2026",
+            proposalPrice: "750,00",
+            tasks: [
+                { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-30' },
+                { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: true, status: 'done', priority: 'high', dueDate: '2026-09-02' },
+                { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-09-05' }
+            ],
+            internalNotes: [
+                { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
+            ],
+            auditLog: [
+                { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Design & Ontwerp (Fase 3)', actor: 'Allard' }
+            ]
+        },
+        {
             id: 6,
             client: "Creation+Alt+Fix (Hoofdwebsite)",
             companyName: "Creation+Alt+Fix (Hoofdwebsite)",
@@ -2335,11 +2474,8 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'web_l1', timestamp: '2026-08-25T18:30:00Z', type: 'status_updated', description: 'Hoofdwebsite succesvol live gezet op Vimexx public_html/', actor: 'Allard Veldman' }
             ]
-        };
-    }
-
-    if (String(id) === "7" || String(id).includes("CRM") || String(id).includes("portal")) {
-        return {
+        },
+        {
             id: 7,
             client: "Creation+Alt+Fix (CRM & Portaal)",
             companyName: "Creation+Alt+Fix (CRM & Portaal)",
@@ -2387,11 +2523,8 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'crm_l1', timestamp: '2026-08-25T20:30:00Z', type: 'data_updated', description: 'CRM systeem bijgewerkt met Sprint 1 Roadmap features.', actor: 'Allard Veldman' }
             ]
-        };
-    }
-
-    if (String(id) === "8" || String(id).includes("Besseling") || String(id).includes("besseling")) {
-        return {
+        },
+        {
             id: 8,
             client: "Besseling Installatietechniek",
             companyName: "Besseling Installatietechniek",
@@ -2401,12 +2534,15 @@ function getMockProject(id) {
             domain: "www.besselinginstallatietechniek.nl",
             service: "Installatie & Elektra Website",
             goals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
+            projectGoals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
             design: "Modern, fris wit met blauw/oranje accenten.",
+            designPreferences: "Modern, fris wit met blauw/oranje accenten.",
             status: "In Ontwikkeling",
             statusClass: "active",
             date: "25-08-2026",
             proposalPrice: "650,00",
             tasks: [
+                { id: 'bes_0', title: '[TASK-801] Besseling Installatietechniek Projectafronding', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
                 { id: 'bes_1', title: "Echte foto's — Vervang decoratieve placeholders door foto's van Maico & projecten", completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
                 { id: 'bes_2', title: 'Formulier backend koppelen aan Formspree / Netlify / API', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
                 { id: 'bes_3', title: 'Deployment — Push naar GitHub en deploy via hosting', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' },
@@ -2421,11 +2557,8 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'bes_l1', timestamp: '2026-08-25T15:00:00Z', type: 'data_updated', description: 'Besseling taken gesynchroniseerd vanuit Microsoft To Do.', actor: 'Allard' }
             ]
-        };
-    }
-
-    if (String(id) === "9" || String(id).includes("Angela") || String(id).includes("angelastenekes")) {
-        return {
+        },
+        {
             id: 9,
             client: "Angela Stenekes",
             companyName: "Angela Stenekes",
@@ -2435,12 +2568,15 @@ function getMockProject(id) {
             domain: "www.angelastenekes.nl",
             service: "Website Laten Maken & Vibecoding",
             goals: "Persoonlijke website en showcase portfolio.",
+            projectGoals: "Persoonlijke website en showcase portfolio.",
             design: "Stijlvol, minimalistisch, modern.",
+            designPreferences: "Stijlvol, minimalistisch, modern.",
             status: "Nieuwe Lead",
             statusClass: "concept",
             date: "25-08-2026",
+            proposalPrice: "500,00",
             tasks: [
-                { id: 'ang_1', title: 'angelastenekes.nl vibecoden & interactief prototype bouwen', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
+                { id: 'ang_1', title: '[TASK-803] Angela Stenekes Website Prototype & vibecoden', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-03' }
             ],
             internalNotes: [
                 { id: 'ang_n1', text: 'Toegevoegd via Microsoft To Do backlog.', createdAt: '2026-08-25T16:00:00Z', author: 'Allard' }
@@ -2448,11 +2584,8 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'ang_l1', timestamp: '2026-08-25T16:00:00Z', type: 'lead_created', description: 'Lead aangemaakt vanuit Microsoft To Do.', actor: 'Allard' }
             ]
-        };
-    }
-
-    if (String(id) === "10" || String(id).includes("Home Buyer") || String(id).includes("hbi")) {
-        return {
+        },
+        {
             id: 10,
             client: "Home Buyer Intelligence",
             companyName: "Home Buyer Intelligence (PropTech AI)",
@@ -2462,10 +2595,13 @@ function getMockProject(id) {
             domain: "hbi.creationaltfix.nl",
             service: "PropTech AI Webapplicatie",
             goals: "Intelligente vastgoeddata analyse en geautomatiseerde aankoopadviezen met AI Revisor agent in local mode.",
+            projectGoals: "Intelligente vastgoeddata analyse en geautomatiseerde aankoopadviezen met AI Revisor agent in local mode.",
             design: "Modern dashboard, 3D architectuur visualisatie, real-time filters.",
+            designPreferences: "Modern dashboard, 3D architectuur visualisatie, real-time filters.",
             status: "In Ontwikkeling",
             statusClass: "active",
             date: "25-08-2026",
+            proposalPrice: "1200,00",
             tasks: [
                 { id: 'hbi_1', title: 'Home Buyer Intelligence afmaken (AI Revisor & Local Mode)', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-15' }
             ],
@@ -2475,12 +2611,47 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'hbi_l1', timestamp: '2026-08-25T17:00:00Z', type: 'data_updated', description: 'Project deliverables gesynchroniseerd.', actor: 'Allard' }
             ]
-        };
-    }
-
-    if (String(id) === '12' || (typeof id === 'string' && id.toLowerCase().includes('ftruck'))) {
-        return {
-            id: id,
+        },
+        {
+            id: 11,
+            client: "BakkertjeSieg",
+            companyName: "BakkertjeSieg",
+            contactName: "Siegert",
+            email: "bakkertjesieg@gmail.com",
+            domainName: "www.bakkertjesieg.nl",
+            domain: "www.bakkertjesieg.nl",
+            service: "Webshop & Digitaal Bestelsysteem",
+            goals: "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen en nieuwsbriefintegratie.",
+            projectGoals: "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen en nieuwsbriefintegratie.",
+            design: "Warm, gastvrij, ambachtelijk.",
+            designPreferences: "Warm, gastvrij, ambachtelijk.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "25-08-2026",
+            proposalPrice: "750,00",
+            tasks: [
+                { id: 'bs_1', title: 'Downloads klaarzetten na betaling in klantaccounts', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                { id: 'bs_2', title: 'Betalingen & iDEAL koppeling regelen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                { id: 'bs_3', title: 'Instagram plugin werkend maken ipv statische afbeeldingen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-14' },
+                { id: 'bs_4', title: 'Contactformulier routeren naar bakkertjesieg@gmail.com', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' },
+                { id: 'bs_5', title: 'Nieuwsbrief formulier API check uitvoeren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-16' },
+                { id: 'bs_6', title: 'Factuur sturen & administratieve afronding', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                { id: 'bs_7', title: 'Beoordelingen checken en placeholders verwijderen', completed: true, status: 'done', priority: 'low', dueDate: '2026-08-19' },
+                { id: 'bs_8', title: 'Verzendkosten configuratie toevoegen aan checkout', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                { id: 'bs_9', title: 'Password reset custom email fixen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-21' },
+                { id: 'bs_10', title: 'Nieuwsbrief MailerLite integratie migreren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-22' },
+                { id: 'bs_11', title: 'Offertes laten genereren met bestelling in de mail', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-23' },
+                { id: 'bs_12', title: 'Admin portal updaten met nieuwe functies', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' }
+            ],
+            internalNotes: [
+                { id: 'bs_n1', text: 'Alle 12 projectdeliverables zijn succesvol opgeleverd (12/12 af).', createdAt: '2026-08-25T17:30:00Z', author: 'Allard' }
+            ],
+            auditLog: [
+                { id: 'bs_l1', timestamp: '2026-08-25T17:30:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Opgeleverd (Livegang) - Alle 12 taken voltooid.', actor: 'Allard' }
+            ]
+        },
+        {
+            id: 12,
             client: "F-Truck Store",
             companyName: "F-Truck Store (ftruckstore.nl)",
             contactName: "F-Truck Store Beheer",
@@ -2511,12 +2682,9 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'ft_l1', timestamp: '2026-08-25T18:00:00Z', type: 'status_updated', description: 'Migratie succesvol afgerond en live op managed hosting (5/5 taken voltooid).', actor: 'Allard Veldman' }
             ]
-        };
-    }
-
-    if (String(id) === '13' || (typeof id === 'string' && (id.toLowerCase().includes('vanderplaats') || id.toLowerCase().includes('gerard')))) {
-        return {
-            id: id,
+        },
+        {
+            id: 13,
             client: "VAN DER PLAATS (Gerard Klusser)",
             companyName: "VAN DER PLAATS (Gerard Klusser)",
             contactName: "Gerard Klusser",
@@ -2541,12 +2709,9 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'vdp_l1', timestamp: '2026-08-26T10:00:00Z', type: 'lead_created', description: 'Project aangemaakt vanuit TODO.md DevOps backlog.', actor: 'Allard Veldman' }
             ]
-        };
-    }
-
-    if (String(id) === '14' || (typeof id === 'string' && id.toLowerCase().includes('justin'))) {
-        return {
-            id: id,
+        },
+        {
+            id: 14,
             client: "Justin",
             companyName: "Justin",
             contactName: "Justin",
@@ -2571,32 +2736,197 @@ function getMockProject(id) {
             auditLog: [
                 { id: 'jus_l1', timestamp: '2026-08-27T09:00:00Z', type: 'lead_created', description: 'Lead toegevoegd vanuit backlog.', actor: 'Allard Veldman' }
             ]
-        };
-    }
-
-    return {
-        id: id,
-        client: "Arnold Doornbos (Arnold Design)",
-        contactName: "Arnold Doornbos",
-        email: "arnolddesign2024@gmail.com",
-        domainName: "www.arnolddesign.nl",
-        service: "Kunstenaarsportfolio & Webapplicatie",
-        goals: "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood vakmanschap.",
-        design: "Eigentijds, donker atelier-thema, lichte glasaccenten, minimalistische typografie.",
-        status: "Design & Ontwerp (Fase 3)",
-        statusClass: "active",
-        date: "25-08-2026",
-        tasks: [
-            { id: 't5_1', title: 'React + Vite + Tailwind architectuur inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
-            { id: 't5_2', title: 'Glas-in-lood galerij & dynamische filter categorieën', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-30' },
-            { id: 't5_3', title: 'Arnold foto AI scrape-proof maken (Watermarking / Glaze / Protect)', completed: true, status: 'done', priority: 'high', dueDate: '2026-09-02' },
-            { id: 't5_4', title: 'Portfolio showcase op Creation+Alt+Fix website integreren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-09-05' }
-        ],
-        internalNotes: [
-            { id: 't5_n1', text: 'Klant was zeer te spreken over de donkere atelier stijl en snelle laadtijd.', createdAt: '2026-08-25T14:00:00Z', author: 'Allard' }
-        ],
-        auditLog: [
-            { id: 't5_l1', timestamp: '2026-08-25T12:00:00Z', type: 'status_updated', description: 'Status bijgewerkt naar Design & Ontwerp (Fase 3)', actor: 'Allard' }
-        ]
-    };
+        },
+        {
+            id: 15,
+            client: "Scholte Elektrotechniek",
+            companyName: "Scholte Elektrotechniek",
+            contactName: "Gerjo Scholte",
+            email: "info@scholte-elektrotechniek.nl",
+            domainName: "www.scholte-elektrotechniek.nl",
+            domain: "www.scholte-elektrotechniek.nl",
+            service: "Elektrotechniek & Duurzaamheid Website",
+            goals: "Professionele one-pager website voor elektrotechnische installaties, meterkasten en zonnepanelen in Groningen (KvK: 89192036).",
+            projectGoals: "Professionele one-pager website voor elektrotechnische installaties, meterkasten en zonnepanelen in Groningen (KvK: 89192036).",
+            design: "Strak, betrouwbaar, blauw/grijs modern zakelijk thema.",
+            designPreferences: "Strak, betrouwbaar, blauw/grijs modern zakelijk thema.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "19-08-2026",
+            proposalPrice: "550,00",
+            tasks: [
+                { id: 'sch_1', title: 'Intake, functionele briefing & wensenanalyse', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-05' },
+                { id: 'sch_2', title: 'UI/UX Design & responsive one-page template ontwikkeling', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                { id: 'sch_3', title: 'Content, formulieren & mobiele optimalisatie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-15' },
+                { id: 'sch_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-19' }
+            ]
+        },
+        {
+            id: 16,
+            client: "Capybara Culture",
+            companyName: "Capybara Culture",
+            contactName: "Capybara Culture Team",
+            email: "info@capybaraculture.com",
+            domainName: "capybaraculture.com",
+            domain: "capybaraculture.com",
+            service: "Community & Merchandise Platform",
+            goals: "Webplatform voor internationale capybara community, digitale kunst showcase en merchandise webshop.",
+            projectGoals: "Webplatform voor internationale capybara community, digitale kunst showcase en merchandise webshop.",
+            design: "Vrolijk, speels, modern en responsive.",
+            designPreferences: "Vrolijk, speels, modern en responsive.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "20-08-2026",
+            proposalPrice: "450,00",
+            tasks: [
+                { id: 'cap_1', title: 'Community platform structuur & branding', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-10' },
+                { id: 'cap_2', title: 'Merchandise showcase & productcatalogus', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-14' },
+                { id: 'cap_3', title: 'Web3 & community links integratie', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-18' },
+                { id: 'cap_4', title: 'Livegang, hosting en DNS configuratie', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' }
+            ]
+        },
+        {
+            id: 17,
+            client: "Naaiatelier Willa",
+            companyName: "Naaiatelier Willa",
+            contactName: "Willa",
+            email: "info@naaiatelier-willa.nl",
+            domainName: "www.naaiatelier-willa.nl",
+            domain: "www.naaiatelier-willa.nl",
+            service: "Kledingreparatie & Atelier Website",
+            goals: "Eigentijdse website voor kledingreparaties, maatkleding en atelier diensten met prijslijst en fotogalerij.",
+            projectGoals: "Eigentijdse website voor kledingreparaties, maatkleding en atelier diensten met prijslijst en fotogalerij.",
+            design: "Warm, elegant, ambachtelijk met responsive portfolio galerij.",
+            designPreferences: "Warm, elegant, ambachtelijk met responsive portfolio galerij.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "22-08-2026",
+            proposalPrice: "500,00",
+            tasks: [
+                { id: 'wil_1', title: 'Intake & dienstenpakket structureren', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-12' },
+                { id: 'wil_2', title: 'Fotogalerij van creaties & maatkleding ontwerpen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-16' },
+                { id: 'wil_3', title: 'Prijslijst en contactformulier implementeren', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-19' },
+                { id: 'wil_4', title: 'Livegang, domeinnaam koppeling & hosting oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-22' }
+            ]
+        },
+        {
+            id: 18,
+            client: "PompPop Festival",
+            companyName: "Stichting PompPop",
+            contactName: "PompPop Organisatie",
+            email: "info@pomppop.nl",
+            domainName: "www.pomppop.nl",
+            domain: "www.pomppop.nl",
+            service: "Festival Website & Line-up Programma",
+            goals: "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren en ticketlinks.",
+            projectGoals: "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren en ticketlinks.",
+            design: "Energiek, festival sfeer, donker met felle neon accenten.",
+            designPreferences: "Energiek, festival sfeer, donker met felle neon accenten.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "24-08-2026",
+            proposalPrice: "650,00",
+            tasks: [
+                { id: 'pop_1', title: 'Festival branding & line-up overzicht inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-18' },
+                { id: 'pop_2', title: 'Dynamisch tijdschema & artiestenpagina’s ontwikkelen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                { id: 'pop_3', title: 'Sponsorenoverzicht & ticketverkoop links koppelen', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-22' },
+                { id: 'pop_4', title: 'Livegang, performance caching & SSL oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-24' }
+            ]
+        },
+        {
+            id: 19,
+            client: "Qolipa Webshop & Brand",
+            companyName: "Qolipa",
+            contactName: "Qolipa Beheer",
+            email: "info@qolipa.nl",
+            domainName: "qolipa.nl / qolipa.com",
+            domain: "qolipa.nl",
+            service: "Brand Portfolio & Webshop",
+            goals: "Merkpositionering en webshop integratie voor lifestyle producten.",
+            projectGoals: "Merkpositionering en webshop integratie voor lifestyle producten.",
+            design: "Luxe, minimalistisch, strak en SEO-geoptimaliseerd.",
+            designPreferences: "Luxe, minimalistisch, strak en SEO-geoptimaliseerd.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "15-08-2026",
+            proposalPrice: "950,00",
+            tasks: [
+                { id: 'qol_1', title: 'Merkidentiteit & e-commerce architectuur ontwerpen', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-02' },
+                { id: 'qol_2', title: 'Productcatalogus & betalingsgateway inrichten', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-08' },
+                { id: 'qol_3', title: 'SEO-optimalisatie & multi-domein configuratie (.nl + .com)', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-12' },
+                { id: 'qol_4', title: 'Livegang en managed hosting oplevering', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-15' }
+            ]
+        },
+        {
+            id: 20,
+            client: "Livian Design (Lianne Steinfelder)",
+            companyName: "Livian Design",
+            contactName: "Lianne Steinfelder",
+            email: "info@liviandesign.nl",
+            domainName: "creationaltfix.nl/liviandesign/",
+            domain: "creationaltfix.nl/liviandesign/",
+            service: "Interieurportfolio & Showcase",
+            goals: "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794).",
+            projectGoals: "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794).",
+            design: "Stijlvol, minimalistisch, warm interieur design.",
+            designPreferences: "Stijlvol, minimalistisch, warm interieur design.",
+            status: "Opgeleverd (Livegang)",
+            statusClass: "success",
+            date: "24-03-2026",
+            proposalPrice: "50,00",
+            tasks: [
+                { id: 'liv_1', title: 'Interieurportfolio architectuur & showcase opzetten', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-15' },
+                { id: 'liv_2', title: 'Sfeerbeelden & projectfotografie optimaliseren', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-20' },
+                { id: 'liv_3', title: 'Contactformulier & SEO inrichten', completed: true, status: 'done', priority: 'medium', dueDate: '2026-03-22' },
+                { id: 'liv_4', title: 'Oplevering & software realisatie afronding', completed: true, status: 'done', priority: 'high', dueDate: '2026-03-24' }
+            ]
+        },
+        {
+            id: 21,
+            client: "Home Buyer Intelligence (HBI)",
+            companyName: "Home Buyer Intelligence",
+            contactName: "HBI Platform Beheer",
+            email: "hbi@creationaltfix.nl",
+            domainName: "hbi.creationaltfix.nl",
+            domain: "hbi.creationaltfix.nl",
+            service: "AI Vastgoed & Aankoop Analyse Platform",
+            goals: "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen.",
+            projectGoals: "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen.",
+            design: "Modern data-dashboard thema met interactieve visualisaties.",
+            designPreferences: "Modern data-dashboard thema met interactieve visualisaties.",
+            status: "In Ontwikkeling",
+            statusClass: "active",
+            date: "25-08-2026",
+            proposalPrice: "1200,00",
+            tasks: [
+                { id: 'hbi_1', title: 'AI analyse engine & vastgoed evaluatie algoritme', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-20' },
+                { id: 'hbi_2', title: 'Interactief dashboard UI & responsive layout', completed: true, status: 'done', priority: 'high', dueDate: '2026-08-25' },
+                { id: 'hbi_3', title: 'PDF export & aankooprapportage generator', completed: true, status: 'done', priority: 'medium', dueDate: '2026-08-28' },
+                { id: 'hbi_4', title: '[TASK-804] Home Buyer Intelligence AI Revisor & Local Mode integratie', completed: false, status: 'inprogress', priority: 'high', dueDate: '2026-09-06' }
+            ]
+        }
+    ];
 }
+
+// Fallback Mock Project Resolver
+function getMockProject(id) {
+    if (!id) return null;
+    const strId = String(id).toLowerCase().trim();
+    const all = getMockProjects();
+
+    // 1. Exact or Seed ID Match (e.g. 3, '3', 'seed_3')
+    const matchById = all.find(p => String(p.id).toLowerCase() === strId || `seed_${p.id}` === strId);
+    if (matchById) return JSON.parse(JSON.stringify(matchById));
+
+    // 2. Query / Keyword / Domain / Client Match
+    const matchByQuery = all.find(p => {
+        const pName = (p.client || p.companyName || '').toLowerCase();
+        const pDom = (p.domainName || p.domain || '').toLowerCase();
+        return pName.includes(strId) || strId.includes(pName) || (pDom && pDom.includes(strId));
+    });
+    if (matchByQuery) return JSON.parse(JSON.stringify(matchByQuery));
+
+    // 3. Fallback to first available template
+    return JSON.parse(JSON.stringify(all[0]));
+}
+
