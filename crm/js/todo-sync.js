@@ -119,7 +119,7 @@ export const PROJECT_PROFILES = {
     },
     BAKKERTJESIEG: {
         id: "11",
-        matchKeys: ["bakkertjesieg", "siegert"],
+        matchKeys: ["bakkertjesieg", "siegert", "task-820"],
         client: "BakkertjeSieg",
         companyName: "BakkertjeSieg",
         contactName: "Siegert",
@@ -134,6 +134,23 @@ export const PROJECT_PROFILES = {
         statusClass: "success",
         date: "25-08-2026",
         proposalPrice: "750,00"
+    },
+    POMPPOP: {
+        id: "18",
+        matchKeys: ["pomppop", "pomp", "stichting pomppop", "task-819"],
+        client: "PompPop Festival",
+        companyName: "Stichting PompPop",
+        contactName: "PompPop Organisatie",
+        email: "info@pomppop.nl",
+        domainName: "www.pomppop.nl",
+        domain: "www.pomppop.nl",
+        service: "Festival Website & Ticketverkoop",
+        goals: "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren, online ticketverkoop en geautomatiseerde QR ticketverwerking.",
+        design: "Energiek, festival sfeer, donker met felle neon accenten.",
+        status: "Opgeleverd (Livegang)",
+        statusClass: "success",
+        date: "24-08-2026",
+        proposalPrice: "650,00"
     },
     FTRUCK: {
         id: "12",

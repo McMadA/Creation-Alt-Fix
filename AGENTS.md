@@ -2,6 +2,39 @@
 
 ## Recent Insights
 
+- **[2026-09-01] CRM 100% End-to-End Verificatie & Bug-Sweep ([TASK-810] Justin Lead Gereedheid)**:
+  1. **Intake Syntax & Encoding Fix**: In `crm/intake/js/intake.js` (regel 163) een corrupte byte-reeks (`,\x82\xac99).",`) verholpen die ES-module parsing blokkeerde (`SyntaxError: Unexpected token ','`). Tevens vertaaltekens (`financiële`, `software-ideeën`, `één`) hersteld naar zuiver UTF-8.
+  2. **Intake Funnel Flow & SecondaryAuth**: 5-stappen wizard (`/crm/intake/`) end-to-end geverifieerd (dienstkeuze, domein onthulling, doelen tags, stijlkeuze en samenvattingskaart). Tweetalige switch (NL/EN) en veilige klantprovisie via `SecondaryAuth` + wachtwoord-reset email gevalideerd.
+  3. **Admin Workspace & AI Engine (`ai-engine.js`)**: Beheerdersdashboard (`/crm/admin/` & `project.html`) getest inclusief alle 17 portfoliodossiers, KPI-tellers, AI Scope Generator (Gemini + offline heuristiek fallback) en uurtarief/prijscalculator. Veilige `typeof localStorage !== 'undefined'` checks toegevoegd.
+  4. **Offerte & PDF Signing Flow (`pdf-generator.js` & `status.js`)**: jsPDF sjabloon (1:1 conform officieel factuursjabloon), HTML5 digitaal tekenpad in `#proposal-signing-modal`, Firestore statusupdate naar `"Wacht op Design & Ontwerp"` en definitieve ondertekende PDF met **✓ DIGITAAL AKKOORD** certificaatblok en SHA authenticatiestempel 100% gevalideerd.
+  5. **Asset Optimalisatie**: Beheerderslogo in `admin/index.html` en `admin/project.html` geüpgraded van `logo.png` (1.15 MB) naar `logo.webp` (17.4 KB) voor snellere laadtijden.
+
+- **[2026-09-01] Backlog Roadmap & Focus voor Vandaag**: Klant- en projectstatussen bijgewerkt op basis van actuele operationele besluiten:
+  1. **Geparkeerd / Later**: `[TASK-819]` Pomppop (feest september 2026 valt ruim voor maart 2027), `[TASK-808]` Vanderplaats (wachten op akkoord productie), `[TASK-801]` Besseling (klant reageert niet), `[TASK-820]` BakkertjeSieg (inplannen voor dedicated testsessie), `[TASK-804]` HBI (gecanceld).
+  2. **Direct Uitvoerbare Focuspunten voor Vandaag**:
+     - **CRM 100% Verificatie & Polish**: End-to-end verificatie van het CRM Portaal (intake, offerte AI generator, PDF ondertekening en status tracker) zodat de lead voor **Justin (`[TASK-810]`)** direct live verzonden kan worden.
+     - **`[TASK-805]` Bedrijfscontinuïteitsplan & Noodprotocol**: Formalisering van het noodprotocol (`docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`) en fysieke noodenvelop checklist.
+     - **`[TASK-812]` Webserver FTP Hardening**: ProFTPD TLS en CSF firewall preventie afronden.
+     - **Portfolio SEO & Metadata Quick-Sweep**: Robots.txt, sitemaps en Open Graph tags toevoegen aan de overige actieve sites.
+
+
+
+- **[2026-09-01] Firebase Extensions Deprecatie Backlog Taken (`TASK-819` & `TASK-820`) & CRM Kanban Sync**:
+  1. **Backlog Taken Aangemaakt**: Twee formele DevOps deliverables toegevoegd aan [TODO.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/TODO.md) en [crm/TODO.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/TODO.md):
+     - `[TASK-819]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2** (Vervang `firestore-send-email` door directe `nodemailer` integratie met `defineSecret('SMTP_PASS')` in `sendConfirmationEmail`).
+     - `[TASK-820]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie** (Vervang `firestore-send-email` door native Cloud Functions v2 voor contactberichten, welkomstmails en periodieke nieuwsbrieven).
+  2. **CRM Kanban Project Mapping (`todo-sync.js`)**: `POMPPOP` (id 18) toegevoegd aan `PROJECT_PROFILES` en matchKey `task-820` gekoppeld aan `BAKKERTJESIEG` in `crm/js/todo-sync.js`.
+  3. **Verificatie & Sync**: CLI synchronisatietest (`node scripts/sync-todo.mjs`) succesvol uitgevoerd: alle 44 taken worden 100% accuraat geparsed en toegewezen aan 11 projecten in het CRM Kanban bord. Sprintstatus staat op 44 taken (30 voltooid, 5 in progress, 8 in queue).
+
+- **[2026-09-01] Firebase Extensions Deprecatie Audit & Migratie Advies**: Google heeft officieel aangekondigd dat de Firebase Extensions dienst per **31 maart 2027** wordt stopgezet. Na een audit van alle 12 repositories in de workspace is de impact als volgt vastgesteld:
+  1. **Impact Repositories (`pomppop` & `BakkertjeSieg`)**: Beide projecten maken momenteel gebruik van de "Trigger Email from Firestore" extensie (`firestore-send-email`) voor transactionele mails, contactformulieren en nieuwsbrieven via de `mail` collectie.
+  2. **Risico & Urgentie**: Na 31 maart 2027 kunnen extensies niet meer worden geconfigureerd of geüpdatet via de console/CLI. Wijzigingen in SMTP-inloggegevens, certificaten (zoals bij Vimexx) of sjablonen worden hierdoor geblokkeerd.
+  3. **Migratiestrategie**: Vervanging van de tussenliggende `mail` Firestore collectie door native Firebase Functions v2 met directe `nodemailer` / Resend integratie en beveiligde geheimen via Google Cloud Secret Manager (`defineSecret`).
+  4. **Veilige Repositories**: De overige 10 repositories (`Creation-Alt-Fix`, `willa-handmade-studio`, `AngelaStenekes`, etc.) maken geen gebruik van Firebase Extensions en lopen geen risico.
+
+
+
+
 - **[2026-08-31] BakkertjeSieg Live Concept Staging Mixed Content Iframe Fix**: Oorzaak en oplossing voor het niet laden van `www.bakkertjesieg.nl` in het *Live Concept Staging & Visuele Feedback Pins* iframe:
   1. **Oorzaak (Mixed Content Blocking)**: Wanneer `https://www.bakkertjesieg.nl` via een HTTPS iframe wordt ingeladen, reageert de webserver met een `HTTP 301 Moved Permanently` redirect naar `http://www.bakkertjesieg.nl/new/` (onbeveiligde `http://`). Moderne browsers (Chrome, Edge, Firefox, Safari) blokkeren dit direct wegens *Mixed Content* restricties.
   2. **Directe HTTPS Resolutie**: Het subpad `https://www.bakkertjesieg.nl/new/` levert direct `HTTP 200 OK` via HTTPS over poort 443 met een geldig SSL certificaat en zonder iframe headers-blokkade.

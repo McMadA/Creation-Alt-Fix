@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **42 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **30 Tasks (71%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (12%)**                        |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **6 Tasks (14%)**                        |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **44 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **30 Tasks (68%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (11%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (18%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[█████████████████░░░░░░░] 71% Complete (5 In Progress)`
+`[████████████████░░░░░░░] 68% Complete (5 In Progress, 8 in Queue)`
 
 ---
 
@@ -24,29 +24,30 @@
 
 ### 🔥 1. Actief & In Behandeling (In Progress)
 
-- [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
-  - **Scope**: Klantproject VAN DER PLAATS (Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339)
-  - **Tasks**: Werkend maken van het contact- en offerteformulier van `vanderplaats.nl` met veilige e-mailverzending direct naar `vanderplaats2@gmail.com` op de Vimexx webserver.
-
 - [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: IN_PROGRESS]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
   - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
   - **Tasks**: ProFTPD `TLSRequired on` forceren (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels instellen (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit/opschoning van overbodige FTP-accounts.
-
-- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Mollie API Integratie & Webhook Listener Service**
-  - **Scope**: `Boekhoudings/Boekhouding/app.py`, Mollie Python SDK & Webhook Endpoint
-  - **Tasks**: Offertebetalingen via iDEAL automatiseren en koppelen aan Pi-Boekhouding.
 
 - [ ] `[TASK-805]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Bedrijfscontinuïteitsplan & Noodprocedure Formalisering**
   - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
   - **Tasks**: Basisprotocol gedocumenteerd; fysieke noodenvelop voorbereiden (BitLocker sleutel, master accounts) en documenteren voor vertrouwenspersoon/nabestaanden.
 
+- [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: ON_HOLD]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
+  - **Scope**: Klantproject VAN DER PLAATS (Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339)
+  - **Status Note**: Wachten op akkoord van Gerard voor livegang op productie. Formulier backend staat klaar.
+
+- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Mollie API Integratie & Webhook Listener Service**
+  - **Scope**: `Boekhoudings/Boekhouding/app.py`, Mollie Python SDK & Webhook Endpoint
+  - **Tasks**: Offertebetalingen via iDEAL automatiseren en koppelen aan Pi-Boekhouding.
+
 ---
 
 ### 📋 2. Systeem- & Klantproject Deliverables (Queue)
 
-- [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek Projectafronding**
-  - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
-  - **Tasks**: Vervang decoratieve placeholders door echte projectfoto's van Maico, voeg Google Analytics tracking toe, integreer Google Reviews widget/link (Formulier backend, deployment, favicon en Over Mij e-mailadres reeds voltooid).
+- [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
+  - **Scope**: Klantproject Justin
+  - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
+  - **Status Note**: Lead wordt verzonden zodra het CRM portaal 100% geverifieerd en beproefd is.
 
 - [ ] `[TASK-817]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Klantafstemming 2027: Nieuwe Tarieven, Werkwijze via Klantenportaal & Gratis Website Vernieuwing**
   - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`), `crm/status/`, `crm/admin/`
@@ -55,17 +56,25 @@
     - Gratis vernieuwde, moderne website (`angelastenekes.nl`) aanbieden als loyaliteitsbonus / redesign upgrade.
     - Professionele communicatie over de nieuwe werkwijze: fysieke service op locatie bij de knipperij stopt; support, updates en wijzigingsverzoeken verlopen vanaf heden 100% digitaal via het klantenportaal en remote service.
 
-- [ ] `[TASK-804]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Home Buyer Intelligence (PropTech AI) Afronding**
+- [ ] `[TASK-819]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2**
+  - **Scope**: `pomppop/functions/index.js`, `pomppop/functions/package.json`, Vimexx SMTP, Cloud Functions v2
+  - **Status Note**: Festival editie sept 2026 valt ruim vóór de Firebase deprecation (maart 2027). Migratie gepland voor editie 2027.
+
+- [ ] `[TASK-820]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie**
+  - **Scope**: `BakkertjeSieg/functions/index.js`, `BakkertjeSieg/src/services/contactService.js`, `BakkertjeSieg/functions/package.json`
+  - **Status Note**: Inplannen voor een dedicated testsessie met uitvoerige verificatie van bestellingen en nieuwsbrieven.
+
+- [ ] `[TASK-801]` `[P3-LOW]` `[STATUS: ON_HOLD]` **Besseling Installatietechniek Projectafronding**
+  - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
+  - **Status Note**: On hold / gepauzeerd in afwachting van klantreactie.
+
+- [~] `[TASK-804]` `[P3-LOW]` `[STATUS: CANCELLED]` **Home Buyer Intelligence (PropTech AI) Afronding**
   - **Scope**: Platform showcase Home Buyer Intelligence (`hbi.creationaltfix.nl`)
-  - **Tasks**: AI Revisor agent en local mode architectuur finaliseren.
+  - **Details**: Gecanceld door beheerder in roadmap prioritering, blijft op backlog als architectuurreferentie.
 
 - [ ] `[TASK-809]` `[P2-HIGH]` `[STATUS: BACKLOG]` **F-Truck Store (ftruckstore.nl / ftruckstore.com) Follow-Up & Klantafstemming**
   - **Scope**: Klantbeheer, DirectAdmin & Status Portal
   - **Tasks**: Follow-up uitvoeren met F-Truck Store (Ford Trucks), inventariseren van gewenste features / webshop uitbreiding en status updaten in het CRM.
-
-- [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
-  - **Scope**: Klantproject Justin
-  - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
 
 - [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Stories waarin ik bezig ben posten & Instagram Branding**
   - **Scope**: Socials, Instagram & LinkedIn

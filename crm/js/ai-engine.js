@@ -16,10 +16,12 @@ export const AVAILABLE_MODELS = [
 ];
 
 export function getGeminiApiKey() {
+    if (typeof localStorage === 'undefined') return '';
     return localStorage.getItem(GEMINI_STORAGE_KEY) || '';
 }
 
 export function setGeminiApiKey(key) {
+    if (typeof localStorage === 'undefined') return;
     if (!key || typeof key !== 'string') {
         localStorage.removeItem(GEMINI_STORAGE_KEY);
     } else {
@@ -28,10 +30,12 @@ export function setGeminiApiKey(key) {
 }
 
 export function getGeminiModel() {
+    if (typeof localStorage === 'undefined') return DEFAULT_GEMINI_MODEL;
     return localStorage.getItem(GEMINI_MODEL_STORAGE_KEY) || DEFAULT_GEMINI_MODEL;
 }
 
 export function setGeminiModel(modelId) {
+    if (typeof localStorage === 'undefined') return;
     if (modelId && typeof modelId === 'string') {
         localStorage.setItem(GEMINI_MODEL_STORAGE_KEY, modelId.trim());
     }
