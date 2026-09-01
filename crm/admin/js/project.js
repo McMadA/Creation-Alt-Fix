@@ -40,7 +40,9 @@ let currentProjectData = null;
 // --- [TASK-816] Vaste Abonnementen & Hosting Tarieven ---
 export const SUBSCRIPTION_PLANS = {
     "managed_nl": { id: "managed_nl", name: "Managed Cloud Hosting & .nl Domein All-in", price: "150,00", cycle: "jaar", badge: "Aanbevolen", desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups" },
+    "managed_com": { id: "managed_com", name: "Managed Cloud Hosting & .com Domein All-in", price: "165,00", cycle: "jaar", badge: ".com Domein", desc: "NVMe hosting, 1x .com domein, SSL, 5 mailboxen, dagelijkse backups" },
     "managed_multi": { id: "managed_multi", name: "Managed Cloud Hosting Multi-Domein (.nl + .com)", price: "175,00", cycle: "jaar", badge: "Multi-domein", desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen" },
+    "managed_custom": { id: "managed_custom", name: "Managed Cloud Hosting & Custom TLD", price: "175,00", cycle: "jaar", badge: "Custom TLD", desc: "NVMe hosting, internationale TLD registratie (.eu, .de, .org), SSL, 5 mailboxen" },
     "security_apk": { id: "security_apk", name: "Jaarlijkse Website & Security APK", price: "350,00", cycle: "jaar", badge: "Onderhoud", desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart" },
     "allin_apk": { id: "allin_apk", name: "Managed Hosting All-in + Security APK Totaal", price: "500,00", cycle: "jaar", badge: "Full Service", desc: "Managed hosting, domein, mailboxen + jaarlijkse APK & 2u strippenkaart" },
     "legacy_22": { id: "legacy_22", name: "Historisch / Oud Tarief (€ 22,- / jr)", price: "22,00", cycle: "jaar", badge: "Oud Tarief", desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 2027)" },
@@ -256,12 +258,24 @@ export function getPiBoekhoudingInfo(p) {
         if (name && (name.includes(cName) || cName.includes(name))) return data;
     }
 
+    // Dynamic detection based on TLD / domain
+    let recPlanId = "managed_nl";
+    let recReason = "Standaard advies: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr excl. BTW).";
+
+    if (p.domainTld === '.com' || dom.endsWith('.com')) {
+        recPlanId = "managed_com";
+        recReason = "Advies voor .com domein: Managed Cloud Hosting & .com Domein All-in (€ 165,-/jr excl. BTW).";
+    } else if (p.domainTld && p.domainTld !== '.nl' && !dom.endsWith('.nl')) {
+        recPlanId = "managed_custom";
+        recReason = `Advies voor ${p.domainTld} domein: Managed Cloud Hosting & Custom TLD All-in (€ 175,-/jr excl. BTW).`;
+    }
+
     return {
         clientName: p.client || 'Klant',
-        currentPlanName: p.subscriptionPlanName || "Nog geen actief abonnement",
-        currentPlanId: p.subscriptionPlanId || "managed_nl",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Standaard advies: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr excl. BTW).",
+        currentPlanName: p.subscriptionPlanName || (recPlanId === 'managed_com' ? 'Managed Cloud Hosting & .com Domein All-in' : 'Managed Cloud Hosting & .nl Domein All-in'),
+        currentPlanId: p.subscriptionPlanId || recPlanId,
+        recommendedPlanId: recPlanId,
+        recommendedReason: recReason,
         latestInvoice: null
     };
 }

@@ -239,15 +239,49 @@
                                 </div>
                             </div>
                             
-                            <div class="action-buttons-grid" style="margin-bottom: 25px;">
-                                <button class="btn btn-secondary" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
-                                <button class="btn btn-primary" id="btn-trigger-ai-scope" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;"><i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Offerte & Scope (Fase 2)</button>
-                                <button class="btn btn-secondary" id="btn-action-download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
-                                <button class="btn btn-secondary" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
-                                <button class="btn btn-secondary" id="btn-action-mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie Link (Fase 5)</button>
-                                <button class="btn btn-secondary" id="btn-action-download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
-                                <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-secondary" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399; text-decoration: none;"><i class="fas fa-file-invoice-dollar"></i> Pi-Boekhouding Web</a>
-                                <button class="btn btn-secondary" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> Nazorg & Check-in (Fase 5)</button>
+                            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 25px;">
+                                <!-- Fase 1: Intake & E-mail -->
+                                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">Fase 1: Intake &amp; Eerste Contact</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">AI Welkomstmail of intake-wensen afstemmen</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
+                                </div>
+
+                                <!-- Fase 2: Offerte & Scope -->
+                                <div style="background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: #818cf8; font-weight: 700;">Fase 2: Offerte &amp; Projectscope</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">AI scope genereren en officiële offerte (PDF) downloaden</div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <button class="btn btn-primary btn-sm" id="btn-trigger-ai-scope" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;"><i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Offerte &amp; Scope</button>
+                                        <button class="btn btn-secondary btn-sm" id="btn-action-download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
+                                    </div>
+                                </div>
+
+                                <!-- Fase 3: Design Review -->
+                                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: #c084fc; font-weight: 700;">Fase 3: Design &amp; Ontwerp</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">Prototype, Figma of live staging review opleveren aan de klant</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
+                                </div>
+
+                                <!-- Fase 5: Livegang, Factuur & Nazorg -->
+                                <div style="background: rgba(34,211,238,0.05); border: 1px solid rgba(34,211,238,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-accent); font-weight: 700;">Fase 5: Livegang, Facturatie &amp; Nazorg</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">Mollie betaallink koppelen, factuur downloaden en 14-dagen review check-in</div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <button class="btn btn-secondary btn-sm" id="btn-action-mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie Link</button>
+                                        <button class="btn btn-secondary btn-sm" id="btn-action-download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
+                                        <button class="btn btn-secondary btn-sm" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in Wachtrij</button>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Proposal Status Box -->
@@ -643,8 +677,10 @@
                                     Abonnement Aanpassen / Kiezen:
                                 </label>
                                 <select id="select-client-subscription" class="admin-input" style="font-size: 0.8rem; padding: 6px 8px; margin: 0 0 8px 0; width: 100%; cursor: pointer;">
-                                    <option value="managed_nl">🌐 Managed Cloud Hosting All-in (€ 150,-/jr)</option>
+                                    <option value="managed_nl">🌐 Managed Cloud Hosting &amp; .nl Domein (€ 150,-/jr)</option>
+                                    <option value="managed_com">🌐 Managed Cloud Hosting &amp; .com Domein (€ 165,-/jr)</option>
                                     <option value="managed_multi">🌐 Managed Multi-Domein .nl + .com (€ 175,-/jr)</option>
+                                    <option value="managed_custom">🌐 Managed Cloud Hosting &amp; Custom TLD (€ 175,-/jr)</option>
                                     <option value="security_apk">🛡️ Jaarlijkse Website APK (€ 350,-/jr)</option>
                                     <option value="allin_apk">🚀 Managed Hosting All-in + APK (€ 500,-/jr)</option>
                                     <option value="legacy_22">⏳ Historisch / Oud Tarief (€ 22,-/jr)</option>
