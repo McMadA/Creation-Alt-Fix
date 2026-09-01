@@ -7,16 +7,16 @@
 
 ## 📊 Sprint Status Dashboard
 
-| Metric                             | Status          | Count                                    |
-| :--------------------------------- | :-------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked      | **44 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done         | **30 Tasks (68%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress  | **4 Tasks (9%)**                         |
-| **Backlog Items in Queue**         | ⏳ In Queue     | **9 Tasks (20%)**                        |
-| **CI/CD Pipeline Status**          | 🚀 Automated    | **GitHub Actions FTP (`main.yml`)**      |
+| Metric                             | Status         | Count                                    |
+| :--------------------------------- | :------------- | :--------------------------------------- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **50 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **36 Tasks (72%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (10%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (16%)**                        |
+| **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[████████████████░░░░░░░] 68% Complete (4 In Progress, 9 in Queue)`
+`[█████████████████░░░░░░░] 72% Complete (5 In Progress, 8 in Queue)`
 
 ---
 
@@ -60,9 +60,13 @@
   - **Scope**: `pomppop/functions/index.js`, `pomppop/functions/package.json`, Vimexx SMTP, Cloud Functions v2
   - **Status Note**: Festival editie sept 2026 valt ruim vóór de Firebase deprecation (maart 2027). Migratie gepland voor editie 2027.
 
-- [ ] `[TASK-820]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie**
-  - **Scope**: `BakkertjeSieg/functions/index.js`, `BakkertjeSieg/src/services/contactService.js`, `BakkertjeSieg/functions/package.json`
-  - **Status Note**: Inplannen voor een dedicated testsessie met uitvoerige verificatie van bestellingen en nieuwsbrieven.
+- [ ] `[TASK-820]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie**
+  - **Scope**: `BakkertjeSieg/functions/index.js`, `BakkertjeSieg/functions/package.json`, Cloud Functions v2
+  - **Status Note**: Migratie inplannen tijdens dedicated testsessie met live iDEAL / webshop bestellingen.
+
+- [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Elektrotechniek Website & Klantafstemming (besselingelektrotechniek@gmail.com)**
+  - **Scope**: Klantproject Besseling Elektrotechniek (Tim Besseling, Tel: `+31 6 36246473`, KvK: 91522201)
+  - **Status Note**: Klant reageert momenteel niet. Vervolgactie gepland voor latere datum.
 
 - [ ] `[TASK-801]` `[P3-LOW]` `[STATUS: ON_HOLD]` **Besseling Installatietechniek Projectafronding**
   - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
@@ -78,7 +82,7 @@
 
 - [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Stories waarin ik bezig ben posten & Instagram Branding**
   - **Scope**: Socials, Instagram & LinkedIn
-  - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken.
+  - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken. Arnold AI blocker bijvoorbeeld
 
 ---
 
@@ -282,3 +286,31 @@
 - [x] `[TASK-803]` `[P2-HIGH]` `[STATUS: DONE]` **Angela Stenekes Website Prototype & 2027 Upgrade**
   - **Scope**: `c:\Users\Admin\Documents\GitHub\Websites\AngelaStenekes\`, Klantproject Angela Stenekes (`angelastenekes.nl`)
   - **Details**: Volledige transformatie en 2027 boutique upgrade voltooid: 1. Alle 25 authentieke verhalen en 23 klantreacties geëxtraheerd van de live WordPress site en geïntegreerd in `js/blogs.js`; 2. Warm Kasjmier & Mauve luxe design system geïmplementeerd met `Plus Jakarta Sans` en `Playfair Display`; 3. Interactieve Behandelingscalculator gebouwd op `prijzen.html` en de homepage met dynamische prijscalculatie en 1-klik WhatsApp reservering; 4. Luxe REF Stockholm showcase met 6 kernwaarden-kaarten en Tapparfum geurbeleving op `producten.html`; 5. Client-side instant search, categorie-filters (`Alles`, `Blog`, `Verhaal`), leestijd-indicatoren, interactieve like-teller en comment submitter op `blog.html` en `blog-post.html`.
+
+---
+
+### 🚀 EPIC-09: CRM & Intake 33-Punten Optimalisatie Suite
+
+- [x] `[TASK-821]` `[P1-HIGH]` `[STATUS: DONE]` **CRM & Intake Flow Verbeteringen: Wachtwoord Reset Branded URL, Timing Offerte-aanmaak & TLD Hosting Selectie (Punten 1, 4, 6)**
+  - **Scope**: `crm/intake/js/intake.js`, `crm/intake/index.html`, `crm/status/js/status.js`, Firebase Auth
+  - **Details**: Branded `actionCodeSettings` met `https://portal.creationaltfix.nl/crm/index.html?resetSuccess=true` geïmplementeerd voor password reset emails. Dynamische domein-TLD parser toegevoegd met indicatieve hosting selectie en kostennotitie. Fase 1 offerte-indicatie verfijnd naar "In voorbereiding".
+
+- [x] `[TASK-822]` `[P1-HIGH]` `[STATUS: DONE]` **Klantportaal Gefaseerde Weergave, Type-Afhankelijke Modules & Realtime Firestore Sync (`onSnapshot`) (Punten 2, 3, 5, 16, 24, 26)**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `website/docs/`
+  - **Details**: Realtime Firestore `onSnapshot` listener geïmplementeerd waardoor project- en offertemutaties direct updaten zonder page refresh. Live Staging en Design modules worden pas zichtbaar vanaf Fase 3 (Design) of 4 (Ontwikkeling) en zijn verborgen voor niet-web projecten.
+
+- [x] `[TASK-823]` `[P1-HIGH]` `[STATUS: DONE]` **Offerte & PDF Signing Verfijning: Excl. BTW, Algemene Voorwaarden Link, PDF Bestandsnaam & Model Badges (Punten 11, 12, 13, 14, 15, 17, 18, 19, 20, 21)**
+  - **Scope**: `crm/js/pdf-generator.js`, `crm/status/index.html`, `crm/status/js/status.js`, `crm/admin/project.html`, `crm/admin/js/project.js`
+  - **Details**: Terminologie uniform gestroomlijnd naar "Offerte & Projectscope", dynamic AI Model badge gekoppeld aan `getGeminiModel()`, "Excl. 21% BTW" weergave en directe hyperlink naar `terms.html` in de akkoordmodal toegevoegd, en PDF bestandsnamen gestandaardiseerd naar `Offerte-CreationAltFix-[Klant]-[Nummer].pdf`.
+
+- [x] `[TASK-824]` `[P2-HIGH]` `[STATUS: DONE]` **Berichten & Ticket Synchronisatie: Ticket Statuskoppeling, Draad-Filter & Categorieën (Punten 8, 9, 10)**
+  - **Scope**: `crm/admin/js/project.js`, `crm/status/js/status.js`, `crm/status/index.html`, `crm/admin/project.html`
+  - **Details**: Klantberichten voorzien van unieke `ticketId`. Wanneer beheerder reageert met status "Opgelost", worden bijbehorende open klanttickets automatisch gemarkeerd als `resolved`. Categorieën en statusbadges gestroomlijnd.
+
+- [x] `[TASK-825]` `[P2-HIGH]` `[STATUS: DONE]` **Admin Werkstroom & Snelacties: Schone Lead Milestones, Deadline Weergave, Fase 3 Design Status & Mollie Modal (Punten 7, 22, 23, 25, 27, 28, 31)**
+  - **Scope**: `crm/admin/js/project.js`, `crm/admin/project.html`, `crm/status/js/status.js`, `crm/status/index.html`
+  - **Details**: Schone relatieve mijlpaaltaken (`today + 2/6/12/18 dagen`) voor nieuwe leads i.p.v. verlopen 2025 data. Opleverdeadline (`targetDeliveryDate`) zichtbaar in admin en portaalheader. Dynamische Fase 3 statusknoppen ("🎨 Verstuur Design", "⏳ Ontwerp Verzonden", "✅ Design Akkoord"), interactieve Mollie Plink configuratiemodal (`#mollie-config-modal`), en robuuste Staging URL resolver met alert feedback.
+
+- [x] `[TASK-826]` `[P2-HIGH]` `[STATUS: DONE]` **Klantportaal Factuur Download & Self-Service Profielbeheer (Adres, Postcode, KvK & BTW) (Punten 29, 30, 32, 33)**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/intake/js/intake.js`, `crm/admin/js/project.js`, `crm/js/pdf-generator.js`
+  - **Details**: Officiële Factuur PDF downloadknop in het statusportaal via `generateInvoicePDF`. Bedrijfsnaamweergave in de header en "⚙️ Mijn Gegevens" modal voor adres-, KvK- en btw-beheer met realtime tweeweg synchronisatie naar Firestore en het Admin Dashboard.

@@ -161,6 +161,28 @@
                                         <div class="meta-label"><i class="fas fa-concierge-bell"></i> Gevraagde Dienst</div>
                                         <input type="text" id="edit-service" class="admin-input" style="margin: 4px 0 0 0;" placeholder="Bijv. Website & Webshop of AI Automatisering">
                                     </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-map-marker-alt"></i> Factuuradres (Straat + Huisnr)</div>
+                                        <input type="text" id="edit-street" class="admin-input" style="margin: 4px 0 0 0;" placeholder="Bijv. Hoofdstraat 123">
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-mail-bulk"></i> Postcode & Plaats</div>
+                                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 6px; margin-top: 4px;">
+                                            <input type="text" id="edit-postalCode" class="admin-input" style="margin: 0;" placeholder="1234 AB">
+                                            <input type="text" id="edit-city" class="admin-input" style="margin: 0;" placeholder="Plaats">
+                                        </div>
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-id-card"></i> KvK & BTW-nummer</div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
+                                            <input type="text" id="edit-kvk" class="admin-input" style="margin: 0;" placeholder="KvK: 12345678">
+                                            <input type="text" id="edit-vat" class="admin-input" style="margin: 0;" placeholder="BTW: NL000000000B01">
+                                        </div>
+                                    </div>
+                                    <div class="meta-box">
+                                        <div class="meta-label"><i class="fas fa-calendar-alt"></i> Verwachte Opleverdeadline</div>
+                                        <input type="date" id="edit-targetDeliveryDate" class="admin-input" style="margin: 4px 0 0 0;">
+                                    </div>
                                 </div>
 
                                 <div class="intake-box" style="margin-top: 18px;">
@@ -228,19 +250,19 @@
                                 <button class="btn btn-secondary" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> Nazorg & Check-in (Fase 5)</button>
                             </div>
 
-                            <!-- Proposal Link Display -->
-                            <div id="proposal-link-box" class="hidden" style="padding: 18px; background: rgba(99,102,241,0.08); border-radius: 10px; border: 1px solid rgba(99,102,241,0.3); margin-bottom: 20px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
-                                    <h4 style="color: #818cf8; margin: 0;"><i class="fas fa-link"></i> Gegenereerde Online Offerte Link</h4>
-                                    <div id="proposal-signed-badge" class="hidden" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
-                                        <i class="fas fa-file-signature"></i> <span id="proposal-signed-text">Digitaal Akkoord</span>
+                            <!-- Proposal Status Box -->
+                            <div id="proposal-link-box" class="hidden" style="padding: 16px 20px; background: rgba(99,102,241,0.08); border-radius: 10px; border: 1px solid rgba(99,102,241,0.3); margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <h4 style="color: #818cf8; margin: 0; font-size: 0.95rem;"><i class="fas fa-file-contract"></i> Actieve Offerte Status</h4>
+                                        <div id="proposal-signed-badge" class="hidden" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; font-size: 0.78rem; font-weight: 700; padding: 2px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="fas fa-file-signature"></i> <span id="proposal-signed-text">Digitaal Akkoord</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <input type="text" id="proposal-link-input" class="admin-input" readonly style="flex: 1; min-width: 260px; margin: 0;">
-                                    <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Bekijk Offerte</a>
-                                    <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-proposal-link"><i class="fas fa-copy"></i> Kopiëren</button>
-                                    <a id="proposal-pdf-download-btn" href="#" target="_blank" class="btn btn-secondary btn-sm hidden" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399;"><i class="fas fa-file-pdf"></i> Ondertekende PDF</a>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <a id="proposal-visit-btn" href="#" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Inzien in Klantenportaal</a>
+                                        <a id="proposal-pdf-download-btn" href="#" target="_blank" class="btn btn-secondary btn-sm hidden" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399;"><i class="fas fa-file-pdf"></i> Ondertekende PDF</a>
+                                    </div>
                                 </div>
                             </div>
 
@@ -252,7 +274,7 @@
                                             <i class="fas fa-brain"></i> AI Gegenereerde Projectscope & Deliverables
                                         </h4>
                                         <span style="font-size: 0.78rem; color: var(--color-text-secondary);" id="ai-generator-model-tag">
-                                            Aangedreven door Gemini 1.5 & Creation+Alt+Fix Heuristics
+                                            Aangedreven door Live Gemini AI & Creation+Alt+Fix Heuristics Engine
                                         </span>
                                     </div>
                                     <div style="display: flex; gap: 8px;">
@@ -779,6 +801,31 @@
                 <button type="button" id="btn-confirm-send-design" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #a855f7, #6366f1); border: none; font-weight: 700; padding: 8px 18px;">
                     <i class="fas fa-paper-plane"></i> 🚀 Design Opleveren (Fase 3 Activeren)
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Mollie Factuurlink Invoeren / Configureren (TASK-825) -->
+    <div id="mollie-config-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="workspace-card" style="max-width: 520px; width: 90%; background: #0f172a; border: 1px solid rgba(34,211,238,0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8); padding: 24px;">
+            <div class="workspace-card-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.15rem; color: #fff;"><i class="fas fa-euro-sign text-accent"></i> Mollie Betaallink Koppelen (Fase 5)</h3>
+                <button type="button" id="btn-close-mollie-modal" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 14px;">
+                Koppel een officiële Mollie / iDEAL betaallink (bijv. van Plink of Mollie Dashboard) aan dit project. De klant kan direct via het portaal afrekenen.
+            </p>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Mollie Plink Betaal-URL *</label>
+                <input type="url" id="modal-mollie-url-input" class="admin-input" placeholder="https://useplink.com/2/..." style="margin-top: 4px;">
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Factuurbedrag (Optioneel ter verificatie)</label>
+                <input type="text" id="modal-mollie-amount-input" class="admin-input" placeholder="Bijv. € 499,-" style="margin-top: 4px;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" id="btn-cancel-mollie-modal" class="btn btn-secondary">Annuleren</button>
+                <button type="button" id="btn-save-mollie-link" class="btn btn-primary"><i class="fas fa-save"></i> Opslaan & Activeren</button>
             </div>
         </div>
     </div>

@@ -222,11 +222,32 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.text(clientName, margin, y + 6);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
-    doc.text(`T.a.v. ${contactName}`, margin, y + 11);
-    doc.text(email, margin, y + 16);
-    doc.text(`Domein: ${domain}`, margin, y + 21);
+    let addrY = y + 10.5;
+    if (contactName && contactName !== clientName) {
+        doc.text(`T.a.v. ${contactName}`, margin, addrY);
+        addrY += 4.5;
+    }
+    const street = p.streetAndNumber || p.address;
+    const cityLine = [p.postalCode, p.city].filter(Boolean).join(' ');
+    if (street) {
+        doc.text(street, margin, addrY);
+        addrY += 4.5;
+    }
+    if (cityLine) {
+        doc.text(cityLine, margin, addrY);
+        addrY += 4.5;
+    }
+    if (p.kvkNumber || p.kvk) {
+        doc.text(`KVK: ${p.kvkNumber || p.kvk}`, margin, addrY);
+        addrY += 4.5;
+    }
+    doc.text(email, margin, addrY);
+    addrY += 4.5;
+    if (domain && domain !== '—' && !domain.startsWith('Nieuw')) {
+        doc.text(`Domein: ${domain}`, margin, addrY);
+    }
 
     // Right: Afzender (Official Creation+Alt+Fix)
     doc.setFont("helvetica", "bold");
@@ -394,23 +415,24 @@ export async function generateProposalPDF(p, isSigned = false) {
     y += totalsHeight + 6;
     if (isSigned || p.proposalAcceptedAt) {
         doc.setFillColor(240, 253, 244); // #f0fdf4 Green
-        doc.roundedRect(margin, y, contentWidth, 32, 2, 2, 'F');
+        doc.roundedRect(margin, y, contentWidth, 36, 2, 2, 'F');
         doc.setDrawColor(34, 197, 94); // #22c55e
         doc.setLineWidth(0.6);
-        doc.roundedRect(margin, y, contentWidth, 32, 2, 2, 'S');
+        doc.roundedRect(margin, y, contentWidth, 36, 2, 2, 'S');
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10.5);
         doc.setTextColor(22, 101, 52); // #166534
-        doc.text("✓ DIGITAAL AKKOORD & ONDERTEKEND", margin + 6, y + 7);
+        doc.text("✓ DIGITAAL AKKOORD & ONDERTEKEND", margin + 6, y + 6.5);
 
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
+        doc.setFontSize(8.2);
         doc.setTextColor(21, 128, 61);
-        doc.text(`Ondertekend door: ${contactName} (${email})`, margin + 6, y + 13.5);
-        doc.text(`Tijdstempel: ${new Date(p.proposalAcceptedAt || docDate).toISOString()}`, margin + 6, y + 19);
-        doc.text(`Authenticatie-ID: SHA-CAF-AUTH-${docDate.getTime()}-${String(p.id || '101').toUpperCase()}`, margin + 6, y + 24.5);
-        doc.text(`Status: Dit document is rechtsgeldig digitaal ondertekend via het Creation+Alt+Fix Klantenportaal.`, margin + 6, y + 29);
+        doc.text(`Ondertekend door: ${contactName} (${email})`, margin + 6, y + 12.5);
+        doc.text(`Tijdstempel: ${new Date(p.proposalAcceptedAt || docDate).toISOString()}`, margin + 6, y + 17.5);
+        doc.text(`Plaats van akkoord: Online via Klantenportaal (IP / SHA geverifieerd)`, margin + 6, y + 22.5);
+        doc.text(`Authenticatie-ID: SHA-CAF-AUTH-${docDate.getTime()}-${String(p.id || '101').toUpperCase()}`, margin + 6, y + 27.5);
+        doc.text(`Status: Rechtsgeldig digitaal akkoord conform de Algemene Voorwaarden van Creation+Alt+Fix.`, margin + 6, y + 32.5);
     } else {
         doc.setFillColor(248, 250, 252);
         doc.roundedRect(margin, y, contentWidth, 26, 2, 2, 'F');
@@ -458,7 +480,8 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.text("Voor vragen over deze offerte kun je direct contact opnemen via info@creationaltfix.nl of telefonisch.", margin, footerY + 16);
     doc.text("Creation+Alt+Fix • Algemene Voorwaarden gedeponeerd bij KVK Groningen • creationaltfix.nl", margin, footerY + 22);
 
-    const filename = `Offerte_${clientName.replace(/[^a-zA-Z0-9]/g, '_')}_${quoteNumber}.pdf`;
+    const safeClient = (clientName || 'Klant').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 30);
+    const filename = `Offerte-CreationAltFix-${safeClient}-${quoteNumber}.pdf`;
     const blob = doc.output('blob');
 
     return { doc, blob, filename, quoteNumber };
@@ -576,11 +599,36 @@ export async function generateInvoicePDF(p) {
     doc.text(clientName, margin, y + 6);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
-    doc.text(`T.a.v. ${contactName}`, margin, y + 11);
-    doc.text(email, margin, y + 16);
-    if (domain && domain !== '—') doc.text(`Domein: ${domain}`, margin, y + 21);
+    let invAddrY = y + 10.5;
+    if (contactName && contactName !== clientName) {
+        doc.text(`T.a.v. ${contactName}`, margin, invAddrY);
+        invAddrY += 4.5;
+    }
+    const invStreet = p.streetAndNumber || p.address;
+    const invCityLine = [p.postalCode, p.city].filter(Boolean).join(' ');
+    if (invStreet) {
+        doc.text(invStreet, margin, invAddrY);
+        invAddrY += 4.5;
+    }
+    if (invCityLine) {
+        doc.text(invCityLine, margin, invAddrY);
+        invAddrY += 4.5;
+    }
+    if (p.kvkNumber || p.kvk) {
+        doc.text(`KVK: ${p.kvkNumber || p.kvk}`, margin, invAddrY);
+        invAddrY += 4.5;
+    }
+    if (p.vatNumber || p.btwNummer) {
+        doc.text(`BTW: ${p.vatNumber || p.btwNummer}`, margin, invAddrY);
+        invAddrY += 4.5;
+    }
+    doc.text(email, margin, invAddrY);
+    invAddrY += 4.5;
+    if (domain && domain !== '—' && !domain.startsWith('Nieuw')) {
+        doc.text(`Domein: ${domain}`, margin, invAddrY);
+    }
 
     // Right: Afzender (Official Creation+Alt+Fix)
     doc.setFont("helvetica", "bold");
@@ -778,7 +826,8 @@ export async function generateInvoicePDF(p) {
         doc.text("Creation+Alt+Fix • Algemene Voorwaarden gedeponeerd bij KVK Groningen • creationaltfix.nl", margin, footerY + 28);
     }
 
-    const filename = `Factuur_${clientName.replace(/[^a-zA-Z0-9]/g, '_')}_${invoiceNumber}.pdf`;
+    const safeClient = (clientName || 'Klant').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 30);
+    const filename = `Factuur-CreationAltFix-${safeClient}-${invoiceNumber}.pdf`;
     const blob = doc.output('blob');
 
     return { doc, blob, filename, invoiceNumber };

@@ -480,11 +480,17 @@ async function loadProjectData(projectId) {
                     }
                 } else {
                     const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live');
+                    const now = new Date();
+                    const addDaysIso = (days) => {
+                        const d = new Date(now.getTime() + days * 86400000);
+                        return d.toISOString().split('T')[0];
+                    };
+
                     const defaultTasks = [
-                        { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
-                        { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template ontwikkeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' },
-                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'medium', dueDate: currentProjectData.date || '2025-01-01' },
-                        { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: currentProjectData.date || '2025-01-01' }
+                        { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(2) },
+                        { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template concept', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(6) },
+                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, functionaliteit & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(12) },
+                        { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(18) }
                     ];
                     currentProjectData.tasks = defaultTasks;
                     if (db && currentProjectId) {
@@ -586,6 +592,12 @@ function renderProjectWorkspace(p) {
     document.getElementById('edit-goals').value = goals;
     document.getElementById('edit-design').value = design;
     document.getElementById('edit-designUrl').value = designUrl;
+    if (document.getElementById('edit-street')) document.getElementById('edit-street').value = p.streetAndNumber || p.address || '';
+    if (document.getElementById('edit-postalCode')) document.getElementById('edit-postalCode').value = p.postalCode || '';
+    if (document.getElementById('edit-city')) document.getElementById('edit-city').value = p.city || '';
+    if (document.getElementById('edit-kvk')) document.getElementById('edit-kvk').value = p.kvkNumber || p.kvk || '';
+    if (document.getElementById('edit-vat')) document.getElementById('edit-vat').value = p.vatNumber || p.btwNummer || '';
+    if (document.getElementById('edit-targetDeliveryDate')) document.getElementById('edit-targetDeliveryDate').value = p.targetDeliveryDate || '';
 
     // Populate Auth Info Box
     document.getElementById('auth-email-display').innerText = email || 'Geen e-mailadres ingesteld';
@@ -1197,7 +1209,14 @@ async function sendAdminMessage(category, messageText, ticketStatus) {
         readByClient: false
     };
 
-    const updatedMessages = [...(currentProjectData.messages || []), newMsg];
+    // If marked resolved, update matching client tickets to resolved as well
+    let updatedMessages = (currentProjectData.messages || []).map(m => {
+        if (m.sender === 'client' && (m.category === category || category === 'general') && ticketStatus === 'resolved') {
+            return { ...m, status: 'resolved' };
+        }
+        return m;
+    });
+    updatedMessages.push(newMsg);
     currentProjectData.messages = updatedMessages;
 
     renderAdminMessages(updatedMessages);
@@ -1205,7 +1224,7 @@ async function sendAdminMessage(category, messageText, ticketStatus) {
     if (db && currentProjectId) {
         try {
             await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
-            await logAuditEvent('message_sent', `Reactie gestuurd naar klant (${category}): "${newMsg.message.slice(0, 45)}${newMsg.message.length > 45 ? '...' : ''}"`);
+            await logAuditEvent('message_sent', `Reactie gestuurd naar klant (${category}): "${newMsg.message.slice(0, 45)}${newMsg.message.length > 45 ? '...' : ''}" (Status: ${ticketStatus})`);
         } catch (err) {
             console.error("Fout bij versturen admin bericht:", err);
             alert("Fout bij opslaan bericht: " + err.message);
@@ -1607,7 +1626,16 @@ function setupFormHandlers() {
             design: document.getElementById('edit-design').value,
             designPreferences: document.getElementById('edit-design').value,
             designUrl: document.getElementById('edit-designUrl').value.trim(),
-            figmaUrl: document.getElementById('edit-designUrl').value.trim()
+            figmaUrl: document.getElementById('edit-designUrl').value.trim(),
+            streetAndNumber: document.getElementById('edit-street')?.value.trim() || '',
+            address: document.getElementById('edit-street')?.value.trim() || '',
+            postalCode: document.getElementById('edit-postalCode')?.value.trim() || '',
+            city: document.getElementById('edit-city')?.value.trim() || '',
+            kvkNumber: document.getElementById('edit-kvk')?.value.trim() || '',
+            kvk: document.getElementById('edit-kvk')?.value.trim() || '',
+            vatNumber: document.getElementById('edit-vat')?.value.trim() || '',
+            btwNummer: document.getElementById('edit-vat')?.value.trim() || '',
+            targetDeliveryDate: document.getElementById('edit-targetDeliveryDate')?.value || ''
         };
 
         currentProjectData = { ...currentProjectData, ...updatedData };
@@ -2193,9 +2221,9 @@ function setupFormHandlers() {
     // Preset: Live Staging Prototype
     document.getElementById('btn-modal-use-staging')?.addEventListener('click', () => {
         const p = currentProjectData || {};
-        const clientDomain = p.domainName || p.domain || '';
-        const stagingUrl = p.stagingUrl || p.demoUrl || (clientDomain ? `https://${clientDomain}` : 'https://creationaltfix.nl');
-        document.getElementById('modal-design-url').value = stagingUrl;
+        const resolved = resolveAdminStagingUrl(p) || `https://demo.creationaltfix.nl/${encodeURIComponent((p.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
+        document.getElementById('modal-design-url').value = resolved;
+        alert(`✓ Live staging prototype link gekoppeld: ${resolved}`);
     });
 
     // Preset: Generate AI Concept & Google Imagen / Banana Prompt
@@ -2328,25 +2356,46 @@ function setupFormHandlers() {
         });
     });
 
-    // 9. Action: Invoice + Mollie
-    document.getElementById('btn-action-mollie')?.addEventListener('click', async () => {
+    // 9. Action: Invoice + Mollie (Open Modal)
+    document.getElementById('btn-action-mollie')?.addEventListener('click', () => {
+        const modal = document.getElementById('mollie-config-modal');
+        if (!modal) return;
+        const p = currentProjectData || {};
+        document.getElementById('modal-mollie-url-input').value = p.mollieLink || '';
+        document.getElementById('modal-mollie-amount-input').value = p.proposalPrice ? `€ ${p.proposalPrice}` : '';
+        modal.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-mollie-modal')?.addEventListener('click', () => {
+        document.getElementById('mollie-config-modal')?.classList.add('hidden');
+    });
+    document.getElementById('btn-cancel-mollie-modal')?.addEventListener('click', () => {
+        document.getElementById('mollie-config-modal')?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-save-mollie-link')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
-        const mockMollieLink = "https://useplink.com/payment/xyz123";
+        const mollieUrl = document.getElementById('modal-mollie-url-input')?.value.trim();
+        if (!mollieUrl) {
+            alert("Voer een geldige Mollie Plink / betaal-URL in.");
+            return;
+        }
 
         try {
             const updated = {
                 status: "Opgeleverd (Betaling via Mollie)",
                 statusClass: "concept",
-                mollieLink: mockMollieLink
+                mollieLink: mollieUrl
             };
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             currentProjectData = { ...currentProjectData, ...updated };
 
-            await logAuditEvent('mollie_generated', `Mollie betaallink klaargezet (${mockMollieLink}) en status gewijzigd naar Opgeleverd.`);
-            alert(`Factuurverzoek klaargezet!\n\nBetaallink:\n${mockMollieLink}`);
+            await logAuditEvent('mollie_generated', `Mollie betaallink gekoppeld (${mollieUrl}) en status gewijzigd naar Opgeleverd.`);
+            document.getElementById('mollie-config-modal')?.classList.add('hidden');
+            alert(`✓ Mollie factuurverzoek is succesvol klaargezet in het klantenportaal!\n\nBetaallink:\n${mollieUrl}`);
             renderProjectWorkspace(currentProjectData);
         } catch (err) {
-            alert("Fout bij factuur: " + err.message);
+            alert("Fout bij opslaan Mollie link: " + err.message);
         }
     });
 

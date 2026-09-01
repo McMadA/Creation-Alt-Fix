@@ -682,22 +682,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const tempPassword = generateTempPassword();
         let clientUid = null;
 
+        const actionCodeSettings = {
+            url: 'https://portal.creationaltfix.nl/crm/index.html?resetSuccess=true',
+            handleCodeInApp: false
+        };
+
         // Provision Firebase Auth Client Account
         try {
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, emailInput, tempPassword);
             clientUid = userCred.user.uid;
             console.log("✅ Client account successfully created in Firebase Auth:", clientUid);
 
-            // Trigger password setup email
-            await sendPasswordResetEmail(secondaryAuth, emailInput);
+            // Trigger password setup email with branded redirect URL
+            await sendPasswordResetEmail(secondaryAuth, emailInput, actionCodeSettings);
             console.log("✅ Password setup email dispatched to:", emailInput);
         } catch (authErr) {
             console.warn("Client Auth account provision note:", authErr.message);
             try {
-                await sendPasswordResetEmail(secondaryAuth, emailInput);
+                await sendPasswordResetEmail(secondaryAuth, emailInput, actionCodeSettings);
             } catch (rErr) {
                 console.warn("Reset email warning:", rErr.message);
             }
+        }
+
+        // Detect TLD and recommended hosting plan
+        let detectedTld = '.nl';
+        if (finalDomain && typeof finalDomain === 'string') {
+            const cleanDomainMatch = finalDomain.match(/\.([a-z0-9-]+)(?:\/|$)/i);
+            if (cleanDomainMatch) {
+                detectedTld = '.' + cleanDomainMatch[1].toLowerCase();
+            }
+        }
+
+        let recommendedPlan = 'managed_nl';
+        let recommendedPlanName = 'Managed Cloud Hosting & .nl Domein All-in';
+        let recommendedPrice = '150,00';
+        let domainCostNote = 'Standaard .nl domeinregistratie is inbegrepen in het basistarief (€ 150,-/jr).';
+
+        if (detectedTld === '.com') {
+            recommendedPlan = 'managed_com';
+            recommendedPlanName = 'Managed Cloud Hosting & .com Domein All-in';
+            recommendedPrice = '165,00';
+            domainCostNote = 'Geschat hosting- & domeintarief (indicatief i.v.m. .com registratiekosten).';
+        } else if (detectedTld !== '.nl' && !finalDomain.startsWith('Nieuw') && !finalDomain.startsWith('Bestaand') && !finalDomain.startsWith('Niet')) {
+            recommendedPlan = 'managed_custom';
+            recommendedPlanName = `Managed Cloud Hosting & ${detectedTld} Domein`;
+            recommendedPrice = '175,00';
+            domainCostNote = `Geschat hosting- & domeintarief (indicatief i.v.m. ${detectedTld} registratiekosten).`;
         }
 
         // Gather Data Payload
@@ -709,6 +740,11 @@ document.addEventListener('DOMContentLoaded', () => {
             isClientAccount: true,
             service: serviceInputVal,
             domainName: finalDomain,
+            domainTld: detectedTld,
+            subscriptionPlanId: recommendedPlan,
+            subscriptionPlanName: recommendedPlanName,
+            subscriptionPlanPrice: recommendedPrice,
+            domainCostNote: domainCostNote,
             goals: finalGoals,
             design: finalDesign,
             status: "Intake Voltooid",

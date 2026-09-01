@@ -17,7 +17,7 @@ import { escapeHtml } from "./firebase-config.js";
 export const PROJECT_PROFILES = {
     CRM_PORTAL: {
         id: "7",
-        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "task-813", "task-814", "task-815", "task-816", "task-818"],
+        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826"],
         client: "Creation+Alt+Fix (CRM & Portaal)",
         companyName: "Creation+Alt+Fix (CRM & Portaal)",
         contactName: "Allard Veldman",

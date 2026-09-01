@@ -7,10 +7,10 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { firebaseConfig, escapeHtml } from "../../js/firebase-config.js";
-import { generateProposalPDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
+import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 
 let app, auth, db, storage;
 try {
@@ -178,7 +178,24 @@ const translations = {
         statusSubDesc: "Overzicht van jouw actieve cloud hosting, domeinregistratie en onderhoudspakket bij Creation+Alt+Fix.",
         statusSubPlanLabel: "Actueel Pakket",
         statusSubDomainLabel: "Gekoppeld Domein",
-        statusSubDomainIncluded: "Inclusief DNS & SSL Certificaat"
+        statusSubDomainIncluded: "Inclusief DNS & SSL Certificaat",
+        statusMyProfileBtn: "Mijn Gegevens",
+        statusDeadlineLabel: "Verwachte Oplevering:",
+        statusDownloadFactuurTitle: "Download Factuur (PDF)",
+        statusDownloadFactuurDesc: "Download direct de officiële factuur van dit project",
+        statusProfileModalTitle: "Mijn Bedrijfs- & Contactgegevens",
+        statusProfileModalSubtitle: "Beheer je contactinformatie, factuuradres en KvK-gegevens voor officiële documenten.",
+        statusProfileCompanyLabel: "Bedrijfsnaam / Organisatie",
+        statusProfileContactLabel: "Contactpersoon",
+        statusProfilePhoneLabel: "Telefoonnummer",
+        statusProfileEmailLabel: "E-mailadres (Account)",
+        statusProfileStreetLabel: "Factuuradres (Straat + Huisnummer)",
+        statusProfilePostalLabel: "Postcode",
+        statusProfileCityLabel: "Plaats",
+        statusProfileKvkLabel: "KvK-nummer",
+        statusProfileVatLabel: "BTW-identificatienummer",
+        statusProfileCancelBtn: "Sluiten",
+        statusProfileSaveBtn: "Gegevens Opslaan"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -331,7 +348,24 @@ const translations = {
         statusSubDesc: "Overview of your active cloud hosting, domain registration, and maintenance package with Creation+Alt+Fix.",
         statusSubPlanLabel: "Active Plan",
         statusSubDomainLabel: "Connected Domain",
-        statusSubDomainIncluded: "Includes DNS & SSL Certificate"
+        statusSubDomainIncluded: "Includes DNS & SSL Certificate",
+        statusMyProfileBtn: "My Profile",
+        statusDeadlineLabel: "Target Delivery:",
+        statusDownloadFactuurTitle: "Download Invoice (PDF)",
+        statusDownloadFactuurDesc: "Directly download the official invoice for this project in PDF format",
+        statusProfileModalTitle: "My Company & Contact Details",
+        statusProfileModalSubtitle: "Manage your contact info, billing address, and Chamber of Commerce data for official documents.",
+        statusProfileCompanyLabel: "Company / Organization Name",
+        statusProfileContactLabel: "Contact Person",
+        statusProfilePhoneLabel: "Phone Number",
+        statusProfileEmailLabel: "Email Address (Account)",
+        statusProfileStreetLabel: "Billing Address (Street + Number)",
+        statusProfilePostalLabel: "Postal Code",
+        statusProfileCityLabel: "City",
+        statusProfileKvkLabel: "Chamber of Commerce (KvK)",
+        statusProfileVatLabel: "VAT Identification Number",
+        statusProfileCancelBtn: "Close",
+        statusProfileSaveBtn: "Save Details"
     }
 };
 
@@ -484,6 +518,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+let currentDocUnsubscribe = null;
+
+function subscribeToProjectDoc(docId) {
+    if (currentDocUnsubscribe) {
+        currentDocUnsubscribe();
+        currentDocUnsubscribe = null;
+    }
+    if (!db || !docId) return;
+
+    try {
+        const projectRef = doc(db, "projects", docId);
+        currentDocUnsubscribe = onSnapshot(projectRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const updatedData = docSnap.data();
+                const idx = clientProjectsList.findIndex(p => p.id === docId);
+                if (idx !== -1) {
+                    clientProjectsList[idx].data = updatedData;
+                }
+                if (currentProjectDocId === docId) {
+                    renderDashboard(updatedData);
+                }
+            }
+        }, (err) => {
+            console.warn("Realtime project snapshot warning:", err);
+        });
+    } catch (e) {
+        console.warn("Could not attach onSnapshot listener:", e);
+    }
+}
+
 async function loadClientProjects(email, uid) {
     const loader = document.getElementById('loader');
     const content = document.getElementById('dashboard-content');
@@ -548,10 +612,12 @@ async function loadClientProjects(email, uid) {
             }).join('');
 
             currentProjectDocId = activeProject.id;
+            subscribeToProjectDoc(activeProject.id);
             renderDashboard(activeProject.data);
         } else {
             multiSelector.classList.add('hidden');
             currentProjectDocId = activeProject.id;
+            subscribeToProjectDoc(activeProject.id);
             renderDashboard(activeProject.data);
         }
 
@@ -569,6 +635,26 @@ function renderDashboard(data) {
 
     document.getElementById('client-name-display').innerText = clientName;
     document.getElementById('service-name-display').innerText = serviceName;
+
+    // Header company name
+    const headerCompany = document.getElementById('header-company-name');
+    if (headerCompany) {
+        headerCompany.innerText = clientName;
+    }
+
+    // Deadline badge
+    const deadlineBadge = document.getElementById('project-deadline-badge');
+    const deadlineText = document.getElementById('project-deadline-text');
+    if (deadlineBadge && deadlineText) {
+        if (data.targetDeliveryDate) {
+            const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
+            const d = new Date(data.targetDeliveryDate);
+            deadlineText.innerText = isNaN(d.getTime()) ? data.targetDeliveryDate : d.toLocaleDateString(localeStr, { day: 'numeric', month: 'short', year: 'numeric' });
+            deadlineBadge.classList.remove('hidden');
+        } else {
+            deadlineBadge.classList.add('hidden');
+        }
+    }
 
     // Render Status Badge & Timeline Progress
     const badge = document.getElementById('status-badge');
@@ -646,6 +732,10 @@ function renderDashboard(data) {
 
     // Render Subscription & Hosting Transparency Card (TASK-816)
     renderSubscriptionSection(data);
+
+    // Setup invoice download card & profile modal
+    setupInvoiceDownload(data);
+    setupProfileModal();
 }
 
 const SUBSCRIPTION_PLANS = {
@@ -1445,6 +1535,7 @@ function setupChatListeners() {
 
                 const newMsg = {
                     id: 'msg_' + Date.now(),
+                    ticketId: 'tkt_' + Date.now(),
                     sender: 'client',
                     senderName: clientName,
                     senderEmail: clientEmail,
@@ -1496,7 +1587,7 @@ function setupChatListeners() {
 }
 
 // ===========================================
-// LIVE STAGING & VISUAL ANNOTATION SUITE (TASK-401)
+// LIVE STAGING & VISUAL ANNOTATION SUITE (TASK-401 & TASK-822)
 // ===========================================
 
 export function resolveStagingUrl(p) {
@@ -1519,7 +1610,6 @@ export function resolveStagingUrl(p) {
         url = url.replace('http://', 'https://');
     }
     // Fix for Bakkertje Sieg: the root domain https://www.bakkertjesieg.nl issues a 301 redirect to insecure http://www.bakkertjesieg.nl/new/
-    // Direct link to https://www.bakkertjesieg.nl/new/ bypasses mixed content blocking and loads the live store securely
     if (/bakkertjesieg\.nl(\/)?$/i.test(url)) {
         url = url.replace(/\/+$/, '') + '/new/';
     }
@@ -1534,6 +1624,22 @@ function renderStagingSection(data) {
     const t = translations[currentLang] || translations.nl;
     const stagingCard = document.getElementById('staging-card');
     if (!stagingCard) return;
+
+    const statusText = data.status || '';
+    const isPhase1Or2 = Boolean(
+        statusText === "Nieuwe Lead" ||
+        statusText === "Intake Voltooid" ||
+        statusText === "Wacht op Akkoord"
+    );
+
+    const isNonWeb = /(consultancy|advies|backend|data analytics)/i.test(data.service || '') && !/(website|webshop|frontend|portaal|app|software)/i.test(data.service || '');
+
+    if (isPhase1Or2 || isNonWeb) {
+        stagingCard.classList.add('hidden');
+        return;
+    }
+
+    stagingCard.classList.remove('hidden');
 
     const resolvedUrl = resolveStagingUrl(data);
     const iframe = document.getElementById('staging-iframe');
@@ -1578,6 +1684,152 @@ function renderStagingSection(data) {
 
     // Wire up Device Switcher and Annotation Engine
     setupStagingControls(data);
+}
+
+function setupInvoiceDownload(data) {
+    const invCard = document.getElementById('btn-download-factuur-card');
+    if (!invCard) return;
+
+    const statusText = data.status || '';
+    const isDeliveredOrMollie = Boolean(
+        statusText.includes('Mollie') ||
+        statusText.includes('Opgeleverd') ||
+        statusText === 'Afgerond' ||
+        data.invoicePdfUrl
+    );
+
+    if (isDeliveredOrMollie) {
+        invCard.classList.remove('hidden');
+        invCard.onclick = async () => {
+            if (data.invoicePdfUrl) {
+                window.open(data.invoicePdfUrl, '_blank');
+                return;
+            }
+            const origHtml = invCard.innerHTML;
+            invCard.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: var(--color-accent);"></i> <div><h4>Factuur Genereren...</h4><p>Een ogenblik geduld alstublieft</p></div>';
+            try {
+                const projData = { ...data, id: currentProjectDocId };
+                const { doc: invDoc, filename } = await generateInvoicePDF(projData);
+                invDoc.save(filename);
+            } catch (err) {
+                console.error("Fout bij factuur download:", err);
+                alert("Kon factuur PDF niet genereren.");
+            } finally {
+                invCard.innerHTML = origHtml;
+            }
+        };
+    } else {
+        invCard.classList.add('hidden');
+    }
+}
+
+function setupProfileModal() {
+    const btnOpen = document.getElementById('btn-open-client-profile');
+    const modal = document.getElementById('client-profile-modal');
+    const btnCloseX = document.getElementById('btn-close-profile-modal-x');
+    const btnCancel = document.getElementById('btn-cancel-profile-modal');
+    const btnSave = document.getElementById('btn-save-client-profile');
+    const feedback = document.getElementById('prof-save-feedback');
+
+    if (!btnOpen || !modal) return;
+
+    btnOpen.onclick = () => {
+        const activeProj = clientProjectsList.find(p => p.id === currentProjectDocId);
+        const data = activeProj ? activeProj.data : {};
+
+        document.getElementById('prof-company-name').value = data.client || data.companyName || '';
+        document.getElementById('prof-contact-name').value = data.contactName || '';
+        document.getElementById('prof-phone').value = data.phone || '';
+        document.getElementById('prof-email').value = data.email || (auth?.currentUser?.email || '');
+        document.getElementById('prof-street').value = data.streetAndNumber || data.address || '';
+        document.getElementById('prof-postal-code').value = data.postalCode || '';
+        document.getElementById('prof-city').value = data.city || '';
+        document.getElementById('prof-kvk').value = data.kvkNumber || data.kvk || '';
+        document.getElementById('prof-vat').value = data.vatNumber || data.btwNummer || '';
+
+        if (feedback) {
+            feedback.className = 'hidden';
+            feedback.innerText = '';
+        }
+        modal.classList.remove('hidden');
+    };
+
+    const closeModal = () => {
+        modal.classList.add('hidden');
+    };
+
+    if (btnCloseX) btnCloseX.onclick = closeModal;
+    if (btnCancel) btnCancel.onclick = closeModal;
+
+    if (btnSave && !btnSave.dataset.bound) {
+        btnSave.dataset.bound = "true";
+        btnSave.onclick = async () => {
+            if (!currentProjectDocId || !db) return;
+            const origHtml = btnSave.innerHTML;
+            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opslaan...';
+            btnSave.disabled = true;
+
+            const companyName = document.getElementById('prof-company-name').value.trim();
+            const contactName = document.getElementById('prof-contact-name').value.trim();
+            const phone = document.getElementById('prof-phone').value.trim();
+            const streetAndNumber = document.getElementById('prof-street').value.trim();
+            const postalCode = document.getElementById('prof-postal-code').value.trim();
+            const city = document.getElementById('prof-city').value.trim();
+            const kvkNumber = document.getElementById('prof-kvk').value.trim();
+            const vatNumber = document.getElementById('prof-vat').value.trim();
+
+            const updatePayload = {
+                client: companyName || 'Klant',
+                companyName: companyName,
+                contactName: contactName,
+                phone: phone,
+                streetAndNumber: streetAndNumber,
+                address: streetAndNumber,
+                postalCode: postalCode,
+                city: city,
+                kvkNumber: kvkNumber,
+                kvk: kvkNumber,
+                vatNumber: vatNumber,
+                btwNummer: vatNumber,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                const projectRef = doc(db, "projects", currentProjectDocId);
+                await updateDoc(projectRef, updatePayload);
+
+                const activeProj = clientProjectsList.find(p => p.id === currentProjectDocId);
+                if (activeProj) {
+                    Object.assign(activeProj.data, updatePayload);
+                    renderDashboard(activeProj.data);
+                }
+
+                if (feedback) {
+                    feedback.className = '';
+                    feedback.style.background = 'rgba(16, 185, 129, 0.15)';
+                    feedback.style.border = '1px solid rgba(16, 185, 129, 0.35)';
+                    feedback.style.color = '#34d399';
+                    feedback.innerHTML = '<i class="fas fa-check-circle"></i> Gegevens succesvol bijgewerkt en gesynchroniseerd!';
+                }
+
+                setTimeout(() => {
+                    closeModal();
+                }, 1200);
+            } catch (err) {
+                console.error("Fout bij opslaan profiel:", err);
+                if (feedback) {
+                    feedback.className = '';
+                    feedback.style.background = 'rgba(239, 68, 68, 0.15)';
+                    feedback.style.border = '1px solid rgba(239, 68, 68, 0.35)';
+                    feedback.style.color = '#f87171';
+                    feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Kon gegevens niet opslaan: ' + err.message;
+                }
+            } finally {
+                btnSave.innerHTML = origHtml;
+                btnSave.disabled = false;
+            }
+        };
+    }
 }
 
 function generateFallbackPrototype(p) {
