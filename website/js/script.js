@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "wfStep1Pill": "Real-time Account",
     "wfStep2Badge": "Fase 2",
     "wfStep2Title": "2. Transparante Offerte",
-    "wfStep2Desc": "Gespecificeerd investeringsvoorstel inclusief hosting (€ 150,-/jr) zonder verborgen kosten. 1-klik digitaal akkoord & directe PDF download.",
+    "wfStep2Desc": "Gespecificeerde offerte inclusief hosting (€ 150,-/jr) zonder verborgen kosten. 1-klik digitaal akkoord & directe PDF download.",
     "wfStep2Pill": "Digitaal Akkoord & PDF",
     "wfStep3Badge": "Fase 3",
     "wfStep3Title": "3. Design & Concept Review",

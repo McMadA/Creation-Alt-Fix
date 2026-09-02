@@ -1962,7 +1962,7 @@ function setupFormHandlers() {
             currentProjectData = { ...currentProjectData, ...updated };
 
             await logAuditEvent('ai_scope_saved', `AI Scope opgeslagen (€ ${price}) en offerte online geactiveerd (Status -> Wacht op Akkoord).`);
-            alert("Investeringsvoorstel en deliverables zijn succesvol opgeslagen en geactiveerd in het klantenportaal!");
+            alert("Offerte en projectscope zijn succesvol opgeslagen en geactiveerd in het klantenportaal!");
             renderProjectWorkspace(currentProjectData);
 
         } catch (err) {
@@ -2056,7 +2056,7 @@ function setupFormHandlers() {
     // 10. Action: Generate Proposal (Legacy Quick Prompt)
     document.getElementById('btn-action-proposal')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
-        const priceInput = prompt("Wat is de geoffreerde investering voor dit project? (bijv. 450,00)");
+        const priceInput = prompt("Wat is het geoffreerde offertebedrag (excl. 21% BTW) voor dit project? (bijv. 450,00)");
         if (!priceInput) return;
 
         try {
@@ -2069,7 +2069,7 @@ function setupFormHandlers() {
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             currentProjectData = { ...currentProjectData, ...updated };
 
-            await logAuditEvent('proposal_generated', `Offerte gegenereerd met investering van € ${priceInput.trim()} (Status -> Wacht op Akkoord)`);
+            await logAuditEvent('proposal_generated', `Offerte gegenereerd met offertebedrag van € ${priceInput.trim()} (Status -> Wacht op Akkoord)`);
             alert("Offerte is gegenereerd en online klaargezet voor de klant!");
             renderProjectWorkspace(currentProjectData);
         } catch (err) {

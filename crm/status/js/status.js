@@ -45,7 +45,7 @@ const translations = {
         stage1Desc: "Aanvraag ontvangen en wensen in kaart gebracht.",
         stage2Number: "Fase 2",
         stage2Title: "Offerte & Akkoord",
-        stage2Desc: "Investeringsvoorstel en digitaal akkoord.",
+        stage2Desc: "Offerte en digitaal akkoord.",
         stage3Number: "Fase 3",
         stage3Title: "Design & Ontwerp",
         stage3Desc: "Visuele stijl en kleurenschema afstemmen.",
@@ -55,8 +55,8 @@ const translations = {
         stage5Number: "Fase 5",
         stage5Title: "Livegang",
         stage5Desc: "Eindcontrole en domein overdracht.",
-        statusOfferteTitle: "Project Offerte & Investeringsvoorstel",
-        statusProposalSub: "Investeringsvoorstel",
+        statusOfferteTitle: "Offerte & Projectscope",
+        statusProposalSub: "Offerte & Specificaties",
         statusOffertePending: "In behandeling",
         statusOfferteAcceptedTitle: "Offerte Geaccepteerd!",
         statusOfferteAcceptedOn: "Je hebt op",
@@ -87,15 +87,15 @@ const translations = {
         statusAgreeBtn: "Digitaal Akkoord Geven & Starten",
         statusOpenSignModalBtn: "✍️ Definitief Digitaal Akkoord Geven",
         statusPreviewPdfBtn: "📄 Offerte & PDF Inzien",
-        statusPreviewPdfDesc: "Bekijk de officiële offerte specificaties, leveringsvoorwaarden en investering in PDF.",
+        statusPreviewPdfDesc: "Bekijk de officiële offerte specificaties, leveringsvoorwaarden en projectscope in PDF.",
         statusSigningModalTitle: "Definitief Digitaal Akkoord & Ondertekening",
         statusSigningModalSubtitle: "Controleer onderstaande gegevens en bevestig je digitale handtekening om het project direct te starten.",
         statusSigningProjectLabel: "Project / Offerte",
-        statusSigningTotalLabel: "Totaal Investering",
+        statusSigningTotalLabel: "Totaalbedrag Offerte (excl. 21% BTW)",
         statusSigningSignerNameLabel: "Naam ondertekenaar (gemachtigde) *",
         statusSigningSignerEmailLabel: "E-mailadres ter verificatie",
         statusSigningDateLabel: "Datum van akkoord",
-        statusSigningCheckboxLabel: "Ik verklaar bevoegd te zijn om namens de opdrachtgever akkoord te geven op dit investeringsvoorstel en de deliverables, en ga akkoord met de algemene voorwaarden van Creation+Alt+Fix.",
+        statusSigningCheckboxLabel: "Ik verklaar bevoegd te zijn om namens de opdrachtgever akkoord te geven op deze offerte en de projectscope, en ga akkoord met de algemene voorwaarden van Creation+Alt+Fix.",
         statusSigningConfirmBtn: "Definitief Ondertekenen & Starten",
         statusSigningCancelBtn: "Annuleren",
         statusSigningCheckboxRequired: "Vink de akkoordverklaring aan om digitaal te kunnen ondertekenen.",
@@ -114,7 +114,7 @@ const translations = {
         statusDesignProcessing: "Bezig met verwerken...",
         statusDesignSuccessAlert: "Top! Je design-akkoord is geregistreerd. We starten nu met de ontwikkeling van jouw project.",
         statusDesignErrorAlert: "Er is een fout opgetreden bij het verwerken van je design-akkoord.",
-        statusProposalPrepDesc: "Bedankt voor het invullen van de intake!\n\nCreation+Alt+Fix is momenteel jouw projectwensen aan het analyseren om een passend investeringsvoorstel op te stellen.\n\nZodra Allard de offerte heeft klaargezet, verschijnt de definitieve prijs en scope hier direct en kun je deze met één klik digitaal accepteren.",
+        statusProposalPrepDesc: "Bedankt voor het invullen van de intake!\n\nCreation+Alt+Fix is momenteel jouw projectwensen aan het analyseren om een passende offerte en scope op te stellen.\n\nZodra Allard de offerte heeft klaargezet, verschijnt de definitieve prijs en scope hier direct en kun je deze met één klik digitaal accepteren.",
         statusProposalPrepBtn: "Offerte wordt opgesteld door Creation+Alt+Fix...",
         statusProposalPrepHelp: "Vragen of spoed? Neem gerust direct contact op via WhatsApp of E-mail hieronder.",
         statusDesignPrepBtn: "Creation+Alt+Fix werkt aan het visuele ontwerp...",
@@ -215,7 +215,7 @@ const translations = {
         stage1Desc: "Requirements received and scope initialized.",
         stage2Number: "Stage 2",
         stage2Title: "Proposal & Approval",
-        stage2Desc: "Investment proposal and digital acceptance.",
+        stage2Desc: "Quotation and digital acceptance.",
         stage3Number: "Stage 3",
         stage3Title: "Design & Wireframe",
         stage3Desc: "Visual identity and styling alignment.",
@@ -225,8 +225,8 @@ const translations = {
         stage5Number: "Stage 5",
         stage5Title: "Deployment & Launch",
         stage5Desc: "Final review and domain cutover.",
-        statusOfferteTitle: "Project Proposal & Quotation",
-        statusProposalSub: "Investment Proposal",
+        statusOfferteTitle: "Quotation & Project Scope",
+        statusProposalSub: "Quotation & Specifications",
         statusOffertePending: "Pending review",
         statusOfferteAcceptedTitle: "Proposal Accepted!",
         statusOfferteAcceptedOn: "You accepted this proposal on",
@@ -257,11 +257,11 @@ const translations = {
         statusAgreeBtn: "Accept Proposal Digitally & Start",
         statusOpenSignModalBtn: "✍️ Give Final Digital Acceptance",
         statusPreviewPdfBtn: "📄 Preview Proposal & PDF",
-        statusPreviewPdfDesc: "Review official quotation specifications, deliverables, and investment in PDF format.",
+        statusPreviewPdfDesc: "Review official quotation specifications, deliverables, and project scope in PDF format.",
         statusSigningModalTitle: "Final Digital Acceptance & Signature",
         statusSigningModalSubtitle: "Review the project specifications below and confirm your digital signature to start development.",
         statusSigningProjectLabel: "Project / Quotation",
-        statusSigningTotalLabel: "Total Investment",
+        statusSigningTotalLabel: "Total Price (excl. 21% VAT)",
         statusSigningSignerNameLabel: "Signer Name (Authorized Person) *",
         statusSigningSignerEmailLabel: "Verification Email",
         statusSigningDateLabel: "Date of Acceptance",
@@ -284,7 +284,7 @@ const translations = {
         statusDesignProcessing: "Processing approval...",
         statusDesignSuccessAlert: "Awesome! Your design approval is recorded. We are now building your project.",
         statusDesignErrorAlert: "An error occurred while recording your design approval.",
-        statusProposalPrepDesc: "Thank you for submitting your project intake!\n\nCreation+Alt+Fix is currently analyzing your project specifications to prepare a tailored investment proposal.\n\nAs soon as Allard has prepared your quotation, the finalized pricing and scope will appear here immediately for 1-click digital acceptance.",
+        statusProposalPrepDesc: "Thank you for submitting your project intake!\n\nCreation+Alt+Fix is currently analyzing your project specifications to prepare a tailored quotation and project scope.\n\nAs soon as Allard has prepared your quotation, the finalized pricing and scope will appear here immediately for 1-click digital acceptance.",
         statusProposalPrepBtn: "Proposal is being prepared by Creation+Alt+Fix...",
         statusProposalPrepHelp: "Questions or urgent timeline? Feel free to contact Allard directly via WhatsApp or Email below.",
         statusDesignPrepBtn: "Creation+Alt+Fix is crafting the visual design...",
@@ -1778,8 +1778,10 @@ function setupProfileModal() {
             const kvkNumber = document.getElementById('prof-kvk').value.trim();
             const vatNumber = document.getElementById('prof-vat').value.trim();
 
+            const activeProj = clientProjectsList.find(p => p.id === currentProjectDocId);
+
             const updatePayload = {
-                client: companyName || 'Klant',
+                client: companyName || contactName || 'Klant',
                 companyName: companyName,
                 contactName: contactName,
                 phone: phone,
@@ -1794,11 +1796,14 @@ function setupProfileModal() {
                 updatedAt: new Date().toISOString()
             };
 
+            if (auth?.currentUser?.uid && activeProj && !activeProj.data?.clientUid) {
+                updatePayload.clientUid = auth.currentUser.uid;
+            }
+
             try {
                 const projectRef = doc(db, "projects", currentProjectDocId);
                 await updateDoc(projectRef, updatePayload);
 
-                const activeProj = clientProjectsList.find(p => p.id === currentProjectDocId);
                 if (activeProj) {
                     Object.assign(activeProj.data, updatePayload);
                     renderDashboard(activeProj.data);

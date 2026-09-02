@@ -112,7 +112,7 @@ export function resolveProposalItems(p) {
 }
 
 /**
- * Generates an official Offerte / Investeringsvoorstel PDF
+ * Generates an official Offerte & Projectscope PDF
  * Styled 1:1 matching factuursjabloon.html
  * 
  * @param {Object} p - Project data object
@@ -405,7 +405,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(99, 102, 241); // #6366f1
-    doc.text("Totaal Investering", totalsX + 6, y + 26);
+    doc.text("Totaal (incl. BTW)", totalsX + 6, y + 26);
     doc.setTextColor(10, 14, 26);
     doc.text(formatEuro(totalPrice), pageWidth - margin - 6, y + 26, { align: "right" });
 

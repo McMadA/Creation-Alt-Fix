@@ -102,7 +102,7 @@ export async function generateProposalScope(projectData) {
     if (hasGeminiApiKey()) {
         try {
             const systemPrompt = `Je bent een ervaren IT & Software Consultant bij Creation+Alt+Fix (Allard Veldman).
-Je schrijft overtuigende, professionele en technisch onderbouwde investeringsvoorstellen en projectscopes voor klanten in het Nederlands.
+Je schrijft overtuigende, professionele en technisch onderbouwde offertes en projectscopes voor klanten in het Nederlands.
 Hanteer hierbij de vaste tariefstructuur van Creation+Alt+Fix:
 - Web & Software Ontwikkeling: Marktconform per project (bijv. € 550 - € 850)
 - Managed Cloud Hosting & Domein All-in: Vaste prijs € 150,00 per jaar (inclusief NVMe hosting, .nl domeinnaam, SSL, 5 zakelijke mailboxen met SPF/DKIM/DMARC en dagelijkse backups)
@@ -141,7 +141,7 @@ Geef je antwoord ALTIJD uitsluitend als geldig JSON object in het volgende forma
   "termsSummary": "Vaste prijsafspraak inclusief 14 dagen nazorg. Managed Cloud Hosting (€ 150,-/jr excl. BTW) wordt na 12 maanden stilzwijgend verlengd met een opzegtermijn van 1 maand."
 }`;
 
-            const userPrompt = `Genereer een compleet investeringsvoorstel en deliverables scope voor het volgende project:
+            const userPrompt = `Genereer een complete offerte en deliverables projectscope voor het volgende project:
 - Bedrijfsnaam: ${client}
 - Contactpersoon: ${contact}
 - Dienst / Projecttype: ${service}

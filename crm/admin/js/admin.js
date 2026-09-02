@@ -1265,7 +1265,7 @@ window.openProjectDetails = (id) => {
                         <input type="text" id="edit-service" class="admin-input" value="${s.service}" style="margin: 4px 0 0 0;">
                     </div>
                     <div class="meta-box">
-                        <div class="meta-label"><i class="fas fa-euro-sign"></i> Offerte Investering (€)</div>
+                        <div class="meta-label"><i class="fas fa-euro-sign"></i> Offertebedrag (excl. 21% BTW) (€)</div>
                         <input type="text" id="edit-proposalPrice" class="admin-input" value="${escapeHtml(p.proposalPrice || '')}" style="margin: 4px 0 0 0;" placeholder="bijv. 650,00">
                     </div>
                 </div>
