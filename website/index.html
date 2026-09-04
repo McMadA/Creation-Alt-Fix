@@ -1,514 +1,1226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none';">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title data-translate-key="pageTitle">Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen</title>
-    <meta name="description" content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI.">
-    <meta name="keywords" content="AI oplossingen, software support groningen, webdesign, data dashboards, AI transformatie, betaalbare software">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen">
-    <meta property="og:description" content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.creationaltfix.nl/">
-    <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.webp">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none';"
+    />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <title data-translate-key="pageTitle">
+      Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen
+    </title>
+    <meta
+      name="description"
+      content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI."
+    />
+    <meta
+      name="keywords"
+      content="AI oplossingen, software support groningen, webdesign, data dashboards, AI transformatie, betaalbare software"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta
+      property="og:title"
+      content="Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen"
+    />
+    <meta
+      property="og:description"
+      content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.creationaltfix.nl/" />
+    <meta
+      property="og:image"
+      content="https://www.creationaltfix.nl/images/logo.webp"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.webp" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+    />
+
     <!-- Preload critical images -->
-    <link rel="preload" as="image" href="/images/hero-bg.webp" type="image/webp">
-    <link rel="preload" as="image" href="/images/hero-bg-mobile.webp" type="image/webp">
+    <link
+      rel="preload"
+      as="image"
+      href="/images/hero-bg.webp"
+      type="image/webp"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/hero-bg-mobile.webp"
+      type="image/webp"
+    />
 
     <script type="application/ld+json">
-    {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "@id": "https://www.creationaltfix.nl/#organization",
-    "name": "Creation+Alt+Fix",
-    "image": "https://www.creationaltfix.nl/images/logo.webp",
-    "url": "https://www.creationaltfix.nl/",
-    "telephone": "+31619135453",
-    "email": "info@creationaltfix.nl",
-    "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Groningen",
-        "addressCountry": "NL"
-    },
-    "description": "Software support, slimme automatisering, webdesign en data dashboards in Groningen. Snel, betaalbaar, toekomstgericht.",
-    "openingHoursSpecification": [
-        {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday"
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "@id": "https://www.creationaltfix.nl/#organization",
+        "name": "Creation+Alt+Fix",
+        "image": "https://www.creationaltfix.nl/images/logo.webp",
+        "url": "https://www.creationaltfix.nl/",
+        "telephone": "+31619135453",
+        "email": "info@creationaltfix.nl",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Groningen",
+          "addressCountry": "NL"
+        },
+        "description": "Software support, slimme automatisering, webdesign en data dashboards in Groningen. Snel, betaalbaar, toekomstgericht.",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "09:00",
+            "closes": "17:00"
+          }
         ],
-        "opens": "09:00",
-        "closes": "17:00"
-        }
-    ],
-    "sameAs": [
-        "https://www.instagram.com/creationaltfix",
-        "https://www.linkedin.com/in/kingofholland"
-    ]
-    }
+        "sameAs": [
+          "https://www.instagram.com/creationaltfix",
+          "https://www.linkedin.com/in/kingofholland"
+        ]
+      }
     </script>
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen">
-    <meta name="twitter:description" content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI.">
-    <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
-    <link rel="canonical" href="https://www.creationaltfix.nl/">
-</head>
-<body>
-    <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Creation+Alt+Fix - Intelligente AI-Oplossingen & IT-Services Groningen"
+    />
+    <meta
+      name="twitter:description"
+      content="Creation+Alt+Fix: AI-gedreven oplossingen, software support, webdesign en data dashboards in Groningen. Wij vertalen uw idee razendsnel naar werkende software met de kracht van AI."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.creationaltfix.nl/images/logo.webp"
+    />
+    <link rel="canonical" href="https://www.creationaltfix.nl/" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link" data-translate-key="skipToContent"
+      >Skip to content</a
+    >
 
     <!-- Navbar -->
     <div id="navbar-placeholder"></div>
 
     <!-- Spotlight Notification (Top-Left Floating Case Study Toast) -->
-    <aside id="case-study-notification" class="spotlight-notification" aria-label="Nieuwe Case Study Melding">
-        <button type="button" class="spotlight-close-btn" id="close-spotlight-btn" aria-label="Sluit melding">&times;</button>
-        <div class="spotlight-header">
-            <span class="spotlight-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Nieuwe Case Study</span>
-            </span>
-            <span class="spotlight-client">Arnold Design</span>
+    <aside
+      id="case-study-notification"
+      class="spotlight-notification"
+      aria-label="Nieuwe Case Study Melding"
+    >
+      <button
+        type="button"
+        class="spotlight-close-btn"
+        id="close-spotlight-btn"
+        aria-label="Sluit melding"
+      >
+        &times;
+      </button>
+      <div class="spotlight-header">
+        <span class="spotlight-badge">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span>Nieuwe Case Study</span>
+        </span>
+        <span class="spotlight-client">Arnold Design</span>
+      </div>
+      <div class="spotlight-body">
+        <div class="spotlight-icon-wrap">
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2Z"
+              fill="url(#shieldGrad)"
+              stroke="#818cf8"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 12L11 14L15 10"
+              stroke="#ffffff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <defs>
+              <linearGradient
+                id="shieldGrad"
+                x1="4"
+                y1="2"
+                x2="20"
+                y2="22"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#6366f1" />
+                <stop offset="1" stop-color="#06b6d4" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
-        <div class="spotlight-body">
-            <div class="spotlight-icon-wrap">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2Z" fill="url(#shieldGrad)" stroke="#818cf8" stroke-width="1.5" stroke-linejoin="round"/>
-                    <path d="M9 12L11 14L15 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs>
-                        <linearGradient id="shieldGrad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#6366f1"/>
-                            <stop offset="1" stop-color="#06b6d4"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
-            <div class="spotlight-details">
-                <h4 class="spotlight-title" data-translate-key="spotlightNotifyTitle">7-Laags AI Scrape Shield</h4>
-                <p class="spotlight-desc" data-translate-key="spotlightNotifyDesc">Ontdek hoe we kunstwerken van Arnold Doornbos beschermen tegen AI-training en webscraping.</p>
-            </div>
+        <div class="spotlight-details">
+          <h4 class="spotlight-title" data-translate-key="spotlightNotifyTitle">
+            7-Laags AI Scrape Shield
+          </h4>
+          <p class="spotlight-desc" data-translate-key="spotlightNotifyDesc">
+            Ontdek hoe we kunstwerken van Arnold Doornbos beschermen tegen
+            AI-training en webscraping.
+          </p>
         </div>
-        <div class="spotlight-actions">
-            <a href="/projects/arnold-design/" class="btn-spotlight-primary">
-                <span data-translate-key="spotlightNotifyBtn">Lees het hele verhaal</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </a>
-            <a href="https://creationaltfix.nl/arnold-design/" target="_blank" rel="noopener noreferrer" class="btn-spotlight-secondary" title="Bekijk de live website" aria-label="Bekijk de live website">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-        </div>
+      </div>
+      <div class="spotlight-actions">
+        <a href="/projects/arnold-design/" class="btn-spotlight-primary">
+          <span data-translate-key="spotlightNotifyBtn"
+            >Lees het hele verhaal</span
+          >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+        <a
+          href="https://arnolddesign.nl/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-spotlight-secondary"
+          title="Bekijk de live website"
+          aria-label="Bekijk de live website"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+            ></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
     </aside>
 
     <!-- Hero Section -->
     <header id="hero" class="section">
-        <!-- Floating gradient orbs -->
-        <div class="hero-orb hero-orb-1"></div>
-        <div class="hero-orb hero-orb-2"></div>
-        <div class="hero-orb hero-orb-3"></div>
-        <canvas id="hero-particles"></canvas>
+      <!-- Floating gradient orbs -->
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+      <canvas id="hero-particles"></canvas>
 
-        <div class="hero-content">
-            <a href="/projects/arnold-design/" class="hero-spotlight-link fade-in" title="Bekijk onze nieuwste case study">
-                <span class="spotlight-tag">Nieuw</span>
-                <span class="spotlight-text" data-translate-key="heroSpotlight">🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
-            <div class="hero-badge" data-translate-key="heroBadge">AI-Powered Solutions</div>
-            <h1 class="hero-headline" data-translate-key="heroHeadline">Intelligente <span class="accent">AI-Oplossingen</span> voor Jouw Bedrijf</h1>
-            <p class="hero-subtitle" data-translate-key="heroSubtitle">Wij vertalen jouw idee razendsnel naar werkende software. Van slimme automatisering tot complete websites, aangedreven door AI.</p>
-            <div class="hero-ctas">
-                <a href="https://portal.creationaltfix.nl/intake/" class="btn btn-primary"><i class="fas fa-rocket"></i> <span data-translate-key="heroCtaIntake">Start Intake Formulier</span></a>
-                <a href="#ai-services" class="btn btn-secondary" data-translate-key="heroCtaPrimary">Ontdek AI Services</a>
-            </div>
+      <div class="hero-content">
+        <a
+          href="/projects/arnold-design/"
+          class="hero-spotlight-link fade-in"
+          title="Bekijk onze nieuwste case study"
+        >
+          <span class="spotlight-tag">Nieuw</span>
+          <span class="spotlight-text" data-translate-key="heroSpotlight"
+            >🛡️ Case Study: 7-Laags AI Scrape Shield voor Arnold Design</span
+          >
+          <i class="fas fa-arrow-right"></i>
+        </a>
+        <div class="hero-badge" data-translate-key="heroBadge">
+          AI-Powered Solutions
         </div>
+        <h1 class="hero-headline" data-translate-key="heroHeadline">
+          Intelligente <span class="accent">AI-Oplossingen</span> voor Jouw
+          Bedrijf
+        </h1>
+        <p class="hero-subtitle" data-translate-key="heroSubtitle">
+          Wij vertalen jouw idee razendsnel naar werkende software. Van slimme
+          automatisering tot complete websites, aangedreven door AI.
+        </p>
+        <div class="hero-ctas">
+          <a
+            href="https://portal.creationaltfix.nl/intake/"
+            class="btn btn-primary"
+            ><i class="fas fa-rocket"></i>
+            <span data-translate-key="heroCtaIntake"
+              >Start Intake Formulier</span
+            ></a
+          >
+          <a
+            href="#ai-services"
+            class="btn btn-secondary"
+            data-translate-key="heroCtaPrimary"
+            >Ontdek AI Services</a
+          >
+        </div>
+      </div>
     </header>
 
     <div class="shimmer-divider"></div>
 
     <main id="main-content">
-        <!-- AI Services Section -->
-        <section id="ai-services" class="section ai-grid-bg">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="aiServicesTitle">AI-Gedreven <span>Oplossingen</span></h2>
-                <div class="services-grid">
-                    <div class="service-card fade-in">
-                        <i class="fas fa-brain card-icon"></i>
-                        <h3><a href="/diensten/slimme-automatisering-ai/" class="stealth-link" data-translate-key="dienst2Title">Slimme Automatisering & AI</a></h3>
-                        <p data-translate-key="dienst2P">Van offertegeneratoren en simpele CRM's tot boekingssystemen en klantenportalen. Wij bouwen de tool die uw werk makkelijker maakt, snel en betaalbaar dankzij AI.</p>
-                        <ul class="keywords">
-                            <li data-translate-key="dienst2K1">Boekingssystemen</li>
-                            <li data-translate-key="dienst2K2">Simpel CRM</li>
-                            <li data-translate-key="dienst2K3">Workflow Automatisering</li>
-                        </ul>
-                        <a href="/diensten/slimme-automatisering-ai/" class="card-link" data-translate-key="learnMore">Meer info <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="service-card fade-in">
-                        <i class="fas fa-chart-pie card-icon"></i>
-                        <h3><a href="/diensten/data-dashboards/" class="stealth-link" data-translate-key="dienst4Title">Data Dashboards & Inzichten</a></h3>
-                        <p data-translate-key="dienst4P">Breng uw bedrijfsdata tot leven. Wij creëren overzichtelijke dashboards waarmee u direct ziet hoe uw bedrijf presteert en waar kansen liggen.</p>
-                        <ul class="keywords">
-                            <li data-translate-key="dienst4K1">Data Visualisatie</li>
-                            <li data-translate-key="dienst4K2">KPI Dashboards</li>
-                            <li data-translate-key="dienst4K3">Managementinformatie</li>
-                        </ul>
-                        <a href="/diensten/data-dashboards/" class="card-link" data-translate-key="learnMore">Meer info <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="service-card fade-in">
-                        <i class="fas fa-laptop-code card-icon"></i>
-                        <h3><a href="/diensten/website-laten-maken/" class="stealth-link" data-translate-key="dienst3Title">Websites & Digitale Aanwezigheid vanaf €99</a></h3>
-                        <p data-translate-key="dienst3P">Een moderne, snelle website of webshop die uw verhaal vertelt en klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor resultaat.</p>
-                        <ul class="keywords">
-                            <li data-translate-key="dienst3K1">Responsive Webdesign</li>
-                            <li data-translate-key="dienst3K2">Webshops</li>
-                            <li data-translate-key="dienst3K3">E-mail Flows</li>
-                        </ul>
-                        <a href="/diensten/website-laten-maken/" class="card-link" data-translate-key="learnMore">Meer info <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="service-card fade-in">
-                        <i class="fas fa-tools card-icon"></i>
-                        <h3><a href="/diensten/it-support-beheer/" class="stealth-link" data-translate-key="dienst1Title">Software Support & Systeembeheer</a></h3>
-                        <p data-translate-key="dienst1P">Systeemoptimalisatie, netwerkbeheer, softwareondersteuning. Snelle, betrouwbare support voor particulieren en MKB.</p>
-                        <ul class="keywords">
-                            <li data-translate-key="dienst1K1">Software & Systeem Support</li>
-                            <li data-translate-key="dienst1K2">Netwerkbeheer</li>
-                            <li data-translate-key="dienst1K3">Virusverwijdering</li>
-                        </ul>
-                        <a href="/diensten/it-support-beheer/" class="card-link" data-translate-key="learnMore">Meer info <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+      <!-- AI Services Section -->
+      <section id="ai-services" class="section ai-grid-bg">
+        <div class="container">
+          <h2
+            class="section-title fade-in"
+            data-translate-key="aiServicesTitle"
+          >
+            AI-Gedreven <span>Oplossingen</span>
+          </h2>
+          <div class="services-grid">
+            <div class="service-card fade-in">
+              <i class="fas fa-brain card-icon"></i>
+              <h3>
+                <a
+                  href="/diensten/slimme-automatisering-ai/"
+                  class="stealth-link"
+                  data-translate-key="dienst2Title"
+                  >Slimme Automatisering & AI</a
+                >
+              </h3>
+              <p data-translate-key="dienst2P">
+                Van offertegeneratoren en simpele CRM's tot boekingssystemen en
+                klantenportalen. Wij bouwen de tool die uw werk makkelijker
+                maakt, snel en betaalbaar dankzij AI.
+              </p>
+              <ul class="keywords">
+                <li data-translate-key="dienst2K1">Boekingssystemen</li>
+                <li data-translate-key="dienst2K2">Simpel CRM</li>
+                <li data-translate-key="dienst2K3">Workflow Automatisering</li>
+              </ul>
+              <a
+                href="/diensten/slimme-automatisering-ai/"
+                class="card-link"
+                data-translate-key="learnMore"
+                >Meer info <i class="fas fa-arrow-right"></i
+              ></a>
             </div>
-        </section>
-
-        <div class="shimmer-divider"></div>
-
-        <!-- Web Design & Tech Section (USPs + AI Benefits combined) -->
-        <section id="web-design" class="section section-darker">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="webDesignTitle">Waarom <span>Creation+Alt+Fix</span>?</h2>
-                <div class="usp-grid">
-                    <div class="usp-item fade-in">
-                        <i class="fas fa-rocket usp-icon"></i>
-                        <h4 data-translate-key="waarom1Title">Toekomstgerichte Expertise</h4>
-                        <p data-translate-key="waarom1P">Jarenlange IT-ervaring gecombineerd met de nieuwste AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke pleisters.</p>
-                    </div>
-                    <div class="usp-item fade-in">
-                        <i class="fas fa-comments usp-icon"></i>
-                        <h4 data-translate-key="waarom2Title">Uw Taal, Onze Techniek</h4>
-                        <p data-translate-key="waarom2P">U vertelt ons uw wens in heldere taal, wij zorgen voor de technische vertaling en snelle realisatie met AI. Geen jargon, wel resultaat.</p>
-                    </div>
-                    <div class="usp-item fade-in">
-                        <i class="fas fa-drafting-compass usp-icon"></i>
-                        <h4 data-translate-key="waarom3Title">Van Concept tot Creatie</h4>
-                        <p data-translate-key="waarom3P">Of het nu softwareoptimalisatie of een complexe AI-strategie betreft, wij begeleiden het hele proces. Jouw partner in digitale transformatie.</p>
-                    </div>
-                    <div class="usp-item fade-in">
-                        <i class="fas fa-palette usp-icon"></i>
-                        <h4 data-translate-key="waarom4Title">Design & Functionaliteit</h4>
-                        <p data-translate-key="waarom4P">Geïnspireerd door de beste designs, leveren we oplossingen die niet alleen perfect werken, maar er ook zo uitzien.</p>
-                    </div>
-                </div>
-
-                <!-- AI Benefits inline -->
-                <h3 class="section-title fade-in" style="margin-top: 4rem;" data-translate-key="aiOplossingenTitle">De Kracht van AI: <span>Sneller en Slimmer</span></h3>
-                <div class="ai-benefits-list">
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-cogs list-icon"></i>
-                        <p data-translate-key="aiBenefit1">Optimaliseer je workflow met AI-gedreven taakautomatisering.</p>
-                    </div>
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-chart-line list-icon"></i>
-                        <p data-translate-key="aiBenefit2">Krijg diepere inzichten uit je data met slimme analyse tools.</p>
-                    </div>
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-user-astronaut list-icon"></i>
-                        <p data-translate-key="aiBenefit3">Verbeter klantinteractie met intelligente chatbots.</p>
-                    </div>
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-robot list-icon"></i>
-                        <p data-translate-key="aiBenefit4">Laat AI repetitieve taken overnemen, focus op groei.</p>
-                    </div>
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-rocket list-icon"></i>
-                        <p data-translate-key="aiBenefit5">Realiseer software-ideeën in dagen in plaats van maanden.</p>
-                    </div>
-                    <div class="ai-benefit-item fade-in">
-                        <i class="fas fa-euro-sign list-icon"></i>
-                        <p data-translate-key="aiBenefit6">Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.</p>
-                    </div>
-                </div>
+            <div class="service-card fade-in">
+              <i class="fas fa-chart-pie card-icon"></i>
+              <h3>
+                <a
+                  href="/diensten/data-dashboards/"
+                  class="stealth-link"
+                  data-translate-key="dienst4Title"
+                  >Data Dashboards & Inzichten</a
+                >
+              </h3>
+              <p data-translate-key="dienst4P">
+                Breng uw bedrijfsdata tot leven. Wij creëren overzichtelijke
+                dashboards waarmee u direct ziet hoe uw bedrijf presteert en
+                waar kansen liggen.
+              </p>
+              <ul class="keywords">
+                <li data-translate-key="dienst4K1">Data Visualisatie</li>
+                <li data-translate-key="dienst4K2">KPI Dashboards</li>
+                <li data-translate-key="dienst4K3">Managementinformatie</li>
+              </ul>
+              <a
+                href="/diensten/data-dashboards/"
+                class="card-link"
+                data-translate-key="learnMore"
+                >Meer info <i class="fas fa-arrow-right"></i
+              ></a>
             </div>
-        </section>
-
-        <div class="shimmer-divider"></div>
-
-        <!-- How We Work Section: 5-Stage Transparent Workflow -->
-        <section id="werkwijze" class="section section-workflow ai-grid-bg">
-            <div class="container">
-                <div class="workflow-intro fade-in">
-                    <div class="hero-badge" style="margin-bottom: 0.75rem;" data-translate-key="workflowBadge"><i class="fas fa-layer-group"></i> Volledige Transparantie</div>
-                    <h2 class="section-title" data-translate-key="workflowSectionTitle">Hoe Wij Werken: <span>Transparant in 5 Stappen</span></h2>
-                    <p data-translate-key="workflowSectionSubtitle">Geen zwarte doos of onduidelijke wachttijden. Vanaf dag één volg je elk detail van jouw website of software live in jouw persoonlijke Creation+Alt+Fix Klantenportaal.</p>
-                </div>
-
-                <div class="workflow-grid">
-                    <!-- Step 1 -->
-                    <div class="workflow-card fade-in">
-                        <span class="workflow-step-badge" data-translate-key="wfStep1Badge">Fase 1</span>
-                        <div class="workflow-icon-wrap"><i class="fas fa-clipboard-check"></i></div>
-                        <h3 data-translate-key="wfStep1Title">1. Slimme Intake & Analyse</h3>
-                        <p data-translate-key="wfStep1Desc">Geef online je wensen, doelen en voorkeuren door in 2 minuten. Onze AI-engine analyseert direct de scope en zet je beveiligde klantaccount klaar.</p>
-                        <div class="workflow-pill"><i class="fas fa-user-shield"></i> <span data-translate-key="wfStep1Pill">Real-time Account</span></div>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="workflow-card fade-in">
-                        <span class="workflow-step-badge" data-translate-key="wfStep2Badge">Fase 2</span>
-                        <div class="workflow-icon-wrap"><i class="fas fa-file-signature"></i></div>
-                        <h3 data-translate-key="wfStep2Title">2. Transparante Offerte</h3>
-                        <p data-translate-key="wfStep2Desc">Gespecificeerde offerte inclusief hosting (€ 150,-/jr) zonder verborgen kosten. 1-klik digitaal akkoord & directe PDF download.</p>
-                        <div class="workflow-pill"><i class="fas fa-file-pdf"></i> <span data-translate-key="wfStep2Pill">Digitaal Akkoord & PDF</span></div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="workflow-card fade-in">
-                        <span class="workflow-step-badge" data-translate-key="wfStep3Badge">Fase 3</span>
-                        <div class="workflow-icon-wrap"><i class="fas fa-palette"></i></div>
-                        <h3 data-translate-key="wfStep3Title">3. Design & Concept Review</h3>
-                        <p data-translate-key="wfStep3Desc">Samen stemmen we kleurenpaletten, typografie en interactieve wireframes af. Pas na jouw visuele goedkeuring starten we de bouw.</p>
-                        <div class="workflow-pill"><i class="fas fa-check-circle"></i> <span data-translate-key="wfStep3Pill">Visuele Goedkeuring</span></div>
-                    </div>
-
-                    <!-- Step 4 (USP) -->
-                    <div class="workflow-card highlight fade-in">
-                        <span class="workflow-step-badge" data-translate-key="wfStep4Badge">Fase 4 • Highlight</span>
-                        <div class="workflow-icon-wrap"><i class="fas fa-crosshairs"></i></div>
-                        <h3 data-translate-key="wfStep4Title">4. Live Staging & Pin-Feedback</h3>
-                        <p data-translate-key="wfStep4Desc">Kijk live mee in een responsieve desktop/tablet/mobiel emulator en klik direct feedback-pins op knoppen of teksten (Design, Tekst, Bug).</p>
-                        <div class="workflow-pill" style="background: rgba(34, 211, 238, 0.12); color: var(--color-accent);"><i class="fas fa-map-pin"></i> <span data-translate-key="wfStep4Pill">Point-and-Click Pins</span></div>
-                    </div>
-
-                    <!-- Step 5 -->
-                    <div class="workflow-card fade-in">
-                        <span class="workflow-step-badge" data-translate-key="wfStep5Badge">Fase 5</span>
-                        <div class="workflow-icon-wrap"><i class="fas fa-rocket"></i></div>
-                        <h3 data-translate-key="wfStep5Title">5. Livegang & Documentatie</h3>
-                        <p data-translate-key="wfStep5Desc">Eindcontrole, DNS- & domeinoverdracht, overzicht van je Pi-facturen en officiële documentatiegids voor content- & systeembeheer.</p>
-                        <div class="workflow-pill"><i class="fas fa-book-bookmark"></i> <span data-translate-key="wfStep5Pill">Pi-Facturen & Docs</span></div>
-                    </div>
-                </div>
-
-                <!-- Portal Synergy Banner -->
-                <div class="workflow-portal-banner fade-in">
-                    <div class="workflow-banner-content">
-                        <span class="workflow-banner-badge"><i class="fas fa-shield-alt"></i> <span data-translate-key="wfBannerBadge">Inclusief bij Elk Project</span></span>
-                        <h3 data-translate-key="wfBannerTitle">Altijd realtime grip op jouw digitale assets</h3>
-                        <p data-translate-key="wfBannerDesc">Ervaar de kracht van een eigen portaal met live chatberichten, bestandsuploads, interactieve offerte en staging annotaties.</p>
-                    </div>
-                    <div class="workflow-banner-actions">
-                        <a href="https://portal.creationaltfix.nl/intake/" class="btn btn-primary"><i class="fas fa-rocket"></i> <span data-translate-key="wfBannerCtaIntake">Start Jouw Intake</span></a>
-                        <a href="/projects/crm-portal/" class="btn btn-secondary"><i class="fas fa-desktop"></i> <span data-translate-key="wfBannerCtaCase">Bekijk CRM Case Study</span></a>
-                        <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="border: 1px solid rgba(255,255,255,0.2); color: #fff;"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="wfBannerCtaPortal">Naar Portaal</span></a>
-                    </div>
-                </div>
+            <div class="service-card fade-in">
+              <i class="fas fa-laptop-code card-icon"></i>
+              <h3>
+                <a
+                  href="/diensten/website-laten-maken/"
+                  class="stealth-link"
+                  data-translate-key="dienst3Title"
+                  >Websites & Digitale Aanwezigheid vanaf €99</a
+                >
+              </h3>
+              <p data-translate-key="dienst3P">
+                Een moderne, snelle website of webshop die uw verhaal vertelt en
+                klanten aantrekt. Ontworpen met oog voor detail, gebouwd voor
+                resultaat.
+              </p>
+              <ul class="keywords">
+                <li data-translate-key="dienst3K1">Responsive Webdesign</li>
+                <li data-translate-key="dienst3K2">Webshops</li>
+                <li data-translate-key="dienst3K3">E-mail Flows</li>
+              </ul>
+              <a
+                href="/diensten/website-laten-maken/"
+                class="card-link"
+                data-translate-key="learnMore"
+                >Meer info <i class="fas fa-arrow-right"></i
+              ></a>
             </div>
-        </section>
-
-        <div class="shimmer-divider"></div>
-
-        <!-- Projects Section (Portfolio + GitHub) -->
-        <section id="projects" class="section">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="portfolioTitle">Bekijk onze <span>Websites!</span></h2>
-                <p class="subtitle-showcase fade-in" data-translate-key="portfolioSubtitle">Hieronder een selectie van websites en applicaties die wij recentelijk hebben ontwikkeld (zoals de portfolio-website van Arnold Design). Dit is een selecte greep uit ons complete portfolio om u een beeld te geven van wat wij voor u kunnen realiseren.</p>
-                <div class="showcase-grid">
-                    <!-- Project 1: Creation+Alt+Fix CRM & Klantenportaal -->
-                    <div class="showcase-item fade-in">
-                        <a href="/projects/crm-portal/" class="showcase-image-link">
-                            <picture>
-                                <img src="/images/crm-dashboard-mockup.webp" alt="Creation+Alt+Fix CRM Admin Dashboard" loading="lazy" decoding="async" width="1920" height="1080">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="/projects/crm-portal/" data-translate-key="project1Title">Creation+Alt+Fix CRM & Klantenportaal</a></h3>
-                            <p data-translate-key="project1P">Volledig custom CRM & Klantenportaal. Real-time Firebase tracking, interactieve live staging emulator met point-and-click feedback, en Pi-Boekhouding sync.</p>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <a href="/projects/crm-portal/" class="btn btn-secondary" data-translate-key="project1Btn">Bekijk Case Study</a>
-                                <a href="https://portal.creationaltfix.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.85rem; padding: 0.5rem 1rem;"><i class="fas fa-external-link-alt"></i> Live Portaal</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Project 2: Arnold Design AI Scrape Shield & Showcase -->
-                    <div class="showcase-item fade-in">
-                        <a href="/projects/arnold-design/" class="showcase-image-link">
-                            <picture>
-                                <img src="/images/arnolddesign.webp" alt="Arnold Design AI Scrape Shield & Portfolio Case Study" loading="lazy" decoding="async" width="1920" height="1080">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="/projects/arnold-design/" data-translate-key="projectArnoldTitle">Arnold Design — AI Scrape Shield</a></h3>
-                            <p data-translate-key="projectArnoldP">7-laags IP- en AI-scraping protectiesysteem gecombineerd met een monumentale glas-in-lood showcase voor kunstenaar Arnold Doornbos.</p>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <a href="/projects/arnold-design/" class="btn btn-secondary" data-translate-key="projectArnoldBtn">Bekijk AI Case</a>
-                                <a href="https://creationaltfix.nl/arnold-design/" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.85rem; padding: 0.5rem 1rem;"><i class="fas fa-external-link-alt"></i> Live Site</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Project 3: Home Buyer Intelligence -->
-                    <div class="showcase-item fade-in">
-                        <a href="/projects/home-buyer-intelligence/" class="showcase-image-link">
-                            <picture>
-                                <img src="/images/hbi-hero.webp" alt="Home Buyer Intelligence AI Dashboard" loading="lazy" decoding="async" width="1920" height="1080">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="/projects/home-buyer-intelligence/" data-translate-key="project2Title">Home Buyer Intelligence</a></h3>
-                            <p data-translate-key="project2P">AI-gedreven woninganalyse met risicoscoring en biedstrategie voor de Nederlandse huizenmarkt. Gebouwd met React, Fastify en Google Gemini AI.</p>
-                            <a href="/projects/home-buyer-intelligence/" class="btn btn-secondary" data-translate-key="project2Btn">Bekijk AI Case</a>
-                        </div>
-                    </div>
-
-                    <!-- Project 4: Angela Stenekes Website -->
-                    <div class="showcase-item fade-in">
-                        <a href="https://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" class="showcase-image-link">
-                            <picture>
-                                <img src="/images/angelastenekes.webp" alt="Angela Stenekes Website" loading="lazy" decoding="async" width="1910" height="1032">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="https://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" data-translate-key="project5Title">Angela Stenekes</a></h3>
-                            <p data-translate-key="project5P">Moderne, responsive bedrijfswebsite voor een lokale knipperij met schrijfambities. Inclusief verhalenblog, behandelingsprijzen en afsprakencontact.</p>
-                            <a href="https://www.angelastenekes.nl/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-translate-key="project5Btn">Ontdek de Website!</a>
-                        </div>
-                    </div>
-
-                    <!-- Project 5: Bakkertje Sieg E-Commerce Webshop -->
-                    <div class="showcase-item fade-in">
-                        <a href="https://www.bakkertjesieg.nl/new/" target="_blank" rel="noopener noreferrer" class="showcase-image-link">
-                            <picture>
-                                <source srcset="/images/bakkertjesieg.webp" type="image/webp">
-                                <img src="/images/bakkertjesieg.webp" alt="Screenshot van Bakkertje Sieg Webshop" loading="lazy" decoding="async" width="1915" height="1034">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="https://www.bakkertjesieg.nl/new/" target="_blank" rel="noopener noreferrer" data-translate-key="project4Title">Bakkertje Sieg Webshop</a></h3>
-                            <p data-translate-key="project4P">Volledige E-Commerce webshop met WordPress & WooCommerce. Inclusief receptencatalogus, winkelwagen en online betaalintegratie.</p>
-                            <a href="https://www.bakkertjesieg.nl/new/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-translate-key="project4Btn">Ontdek de Webshop!</a>
-                        </div>
-                    </div>
-
-                    <!-- Project 6: Wind Cloud Sync Tools -->
-                    <div class="showcase-item fade-in">
-                        <a href="/projects/wind/" class="showcase-image-link">
-                            <picture>
-                                <img src="/images/wind-hero.webp" alt="Wind Cloud Sync Tools Interface" loading="lazy" decoding="async" width="1920" height="1080">
-                            </picture>
-                        </a>
-                        <div class="showcase-content">
-                            <h3><a href="/projects/wind/" data-translate-key="project3Title">Wind – Cloud Sync Tools</a></h3>
-                            <p data-translate-key="project3P">Synchroniseer bestanden tussen OneDrive, Google Drive, iCloud en Google Photos met SHA256 verificatie en real-time web monitoring.</p>
-                            <a href="/projects/wind/" class="btn btn-secondary" data-translate-key="project3Btn">Bekijk Tool Case</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="fade-in" style="text-align: center; margin-top: 40px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="/projecten.html" class="btn btn-primary"><i class="fas fa-th-large"></i> <span data-translate-key="allProjectsBtn">Bekijk alle projecten & volledig portfolio (14+)</span></a>
-                    <a href="live-demo.html" class="btn btn-secondary" data-translate-key="liveDemoBtn">Bekijk de live demo hoe een website tot stand komt!</a>
-                </div>
+            <div class="service-card fade-in">
+              <i class="fas fa-tools card-icon"></i>
+              <h3>
+                <a
+                  href="/diensten/it-support-beheer/"
+                  class="stealth-link"
+                  data-translate-key="dienst1Title"
+                  >Software Support & Systeembeheer</a
+                >
+              </h3>
+              <p data-translate-key="dienst1P">
+                Systeemoptimalisatie, netwerkbeheer, softwareondersteuning.
+                Snelle, betrouwbare support voor particulieren en MKB.
+              </p>
+              <ul class="keywords">
+                <li data-translate-key="dienst1K1">
+                  Software & Systeem Support
+                </li>
+                <li data-translate-key="dienst1K2">Netwerkbeheer</li>
+                <li data-translate-key="dienst1K3">Virusverwijdering</li>
+              </ul>
+              <a
+                href="/diensten/it-support-beheer/"
+                class="card-link"
+                data-translate-key="learnMore"
+                >Meer info <i class="fas fa-arrow-right"></i
+              ></a>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <div class="shimmer-divider"></div>
+      <div class="shimmer-divider"></div>
 
-        <!-- GitHub Repositories Section -->
-        <section id="github-projects" class="section">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="githubTitle">Technische Projecten & <span>Open Source Bijdragen</span></h2>
-                <div id="repo-container">
-                </div>
+      <!-- Web Design & Tech Section (USPs + AI Benefits combined) -->
+      <section id="web-design" class="section section-darker">
+        <div class="container">
+          <h2 class="section-title fade-in" data-translate-key="webDesignTitle">
+            Waarom <span>Creation+Alt+Fix</span>?
+          </h2>
+          <div class="usp-grid">
+            <div class="usp-item fade-in">
+              <i class="fas fa-rocket usp-icon"></i>
+              <h4 data-translate-key="waarom1Title">
+                Toekomstgerichte Expertise
+              </h4>
+              <p data-translate-key="waarom1P">
+                Jarenlange IT-ervaring gecombineerd met de nieuwste
+                AI-ontwikkelingen. Duurzame oplossingen, geen tijdelijke
+                pleisters.
+              </p>
             </div>
-        </section>
-        
-
-        <!-- Over mij Section -->
-        <section id="over-mij" class="section">
-            <div class="container">
-                <div class="about-content fade-in" style="display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: center;">
-                    <div class="about-text" style="flex: 1; min-width: 300px;">
-                        <h2 class="section-title" style="text-align: left;" data-translate-key="aboutTitle">Over Mij</h2>
-                        <p data-translate-key="aboutP1">Hoi, ik ben Allard Veldman, de drijvende kracht achter Creation+Alt+Fix. Met een diepe passie voor technologie en een scherp oog voor detail help ik ondernemers en particulieren om hun digitale uitdagingen om te zetten in kansen.</p>
-                        <p data-translate-key="aboutP2">Mijn missie is simpel: complexe technologie toegankelijk en bruikbaar maken. Of het nu gaat om het bouwen van een bliksemsnelle website, het automatiseren van tijdrovende processen met AI, of het bieden van betrouwbare IT-support – ik sta voor een persoonlijke aanpak en resultaatgerichte oplossingen.</p>
-                        <p data-translate-key="aboutP3">Laten we samen kijken hoe we technologie in jouw voordeel kunnen laten werken!</p>
-                        <div style="margin-top: 1.5rem;">
-                            <a href="/over-mij.html" class="btn btn-secondary"><i class="fas fa-user"></i> <span data-translate-key="aboutReadMore">Lees meer over mij & achtergrond</span></a>
-                        </div>
-                    </div>
-                    <div class="about-image" style="flex: 1; min-width: 300px; text-align: center;">
-                        <picture>
-                            <img src="/images/1764963087201.webp" alt="Allard Veldman - Creation+Alt+Fix" loading="lazy" width="300" height="300" style="border-radius: 50%; border: 4px solid var(--color-primary, #6366f1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 100%; height: auto; object-fit: cover; aspect-ratio: 1 / 1;" decoding="async">
-                        </picture>
-                    </div>
-                </div>
+            <div class="usp-item fade-in">
+              <i class="fas fa-comments usp-icon"></i>
+              <h4 data-translate-key="waarom2Title">Uw Taal, Onze Techniek</h4>
+              <p data-translate-key="waarom2P">
+                U vertelt ons uw wens in heldere taal, wij zorgen voor de
+                technische vertaling en snelle realisatie met AI. Geen jargon,
+                wel resultaat.
+              </p>
             </div>
-        </section>
-
-        <div class="shimmer-divider"></div>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="section">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="faqTitle">Veelgestelde Vragen: <span>Snelle Websites</span></h2>
-                <div class="faq-grid">
-                    <div class="faq-item fade-in">
-                        <h4 data-translate-key="faq1Q">Kan ik echt binnen een dag een website hebben?</h4>
-                        <p data-translate-key="faq1A">Ja, voor simpele websites zoals een online visitekaartje, een landingspagina, of een basis informatieve site is dit vaak mogelijk. Neem contact op met uw wensen, dan geven we direct een inschatting.</p>
-                    </div>
-                    <div class="faq-item fade-in">
-                        <h4 data-translate-key="faq2Q">Wat kost het om snel een simpele website te laten maken?</h4>
-                        <p data-translate-key="faq2A">De kosten voor een snelle, professionele website zijn afhankelijk van uw wensen, maar altijd transparant en scherp geprijsd. Vraag gerust een vrijblijvende offerte aan voor uw specifieke situatie.</p>
-                    </div>
-                    <div class="faq-item fade-in">
-                        <h4 data-translate-key="faq3Q">Welke informatie hebben jullie nodig om mijn website snel te kunnen bouwen?</h4>
-                        <p data-translate-key="faq3A">Om snel te kunnen leveren, hebben we uw basisteksten, eventueel logo, en gewenste kleurstellingen nodig. We hebben ook templates en voorbeelden om het proces te versnellen als u nog geen content heeft.</p>
-                    </div>
-                </div>
+            <div class="usp-item fade-in">
+              <i class="fas fa-drafting-compass usp-icon"></i>
+              <h4 data-translate-key="waarom3Title">Van Concept tot Creatie</h4>
+              <p data-translate-key="waarom3P">
+                Of het nu softwareoptimalisatie of een complexe AI-strategie
+                betreft, wij begeleiden het hele proces. Jouw partner in
+                digitale transformatie.
+              </p>
             </div>
-        </section>
-
-        <div class="shimmer-divider"></div>
-
-        <!-- Contact Section -->
-        <section id="contact" class="section section-darker">
-            <div class="container">
-                <h2 class="section-title fade-in" data-translate-key="contactTitle">Klaar voor <span>AI-Transformatie?</span></h2>
-                <p class="contact-intro fade-in" data-translate-key="contactIntro">Heeft u een idee voor een slimme tool of software-oplossing? Neem contact op voor een vrijblijvend gesprek. We denken graag mee hoe we uw wens snel en betaalbaar kunnen realiseren.</p>
-                <div class="contact-details fade-in">
-                    <p><strong>Allard Veldman</strong></p>
-                    <div style="text-align: center; margin-top: 2rem; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                        <a href="https://portal.creationaltfix.nl/intake/" class="btn btn-primary"><i class="fas fa-rocket"></i> <span data-translate-key="contactIntakeBtn">Start Direct Je Intake</span></a>
-                        <a href="mailto:info@creationaltfix.nl" class="btn btn-secondary"><i class="fas fa-envelope"></i> <span data-translate-key="contactCtaBtn">Contact voor AI Strategie</span></a>
-                    </div>
-                </div>
+            <div class="usp-item fade-in">
+              <i class="fas fa-palette usp-icon"></i>
+              <h4 data-translate-key="waarom4Title">
+                Design & Functionaliteit
+              </h4>
+              <p data-translate-key="waarom4P">
+                Geïnspireerd door de beste designs, leveren we oplossingen die
+                niet alleen perfect werken, maar er ook zo uitzien.
+              </p>
             </div>
-        </section>
+          </div>
+
+          <!-- AI Benefits inline -->
+          <h3
+            class="section-title fade-in"
+            style="margin-top: 4rem"
+            data-translate-key="aiOplossingenTitle"
+          >
+            De Kracht van AI: <span>Sneller en Slimmer</span>
+          </h3>
+          <div class="ai-benefits-list">
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-cogs list-icon"></i>
+              <p data-translate-key="aiBenefit1">
+                Optimaliseer je workflow met AI-gedreven taakautomatisering.
+              </p>
+            </div>
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-chart-line list-icon"></i>
+              <p data-translate-key="aiBenefit2">
+                Krijg diepere inzichten uit je data met slimme analyse tools.
+              </p>
+            </div>
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-user-astronaut list-icon"></i>
+              <p data-translate-key="aiBenefit3">
+                Verbeter klantinteractie met intelligente chatbots.
+              </p>
+            </div>
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-robot list-icon"></i>
+              <p data-translate-key="aiBenefit4">
+                Laat AI repetitieve taken overnemen, focus op groei.
+              </p>
+            </div>
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-rocket list-icon"></i>
+              <p data-translate-key="aiBenefit5">
+                Realiseer software-ideeën in dagen in plaats van maanden.
+              </p>
+            </div>
+            <div class="ai-benefit-item fade-in">
+              <i class="fas fa-euro-sign list-icon"></i>
+              <p data-translate-key="aiBenefit6">
+                Bespaar aanzienlijk op ontwikkelkosten voor simpele oplossingen.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="shimmer-divider"></div>
+
+      <!-- How We Work Section: 5-Stage Transparent Workflow -->
+      <section id="werkwijze" class="section section-workflow ai-grid-bg">
+        <div class="container">
+          <div class="workflow-intro fade-in">
+            <div
+              class="hero-badge"
+              style="margin-bottom: 0.75rem"
+              data-translate-key="workflowBadge"
+            >
+              <i class="fas fa-layer-group"></i> Volledige Transparantie
+            </div>
+            <h2 class="section-title" data-translate-key="workflowSectionTitle">
+              Hoe Wij Werken: <span>Transparant in 5 Stappen</span>
+            </h2>
+            <p data-translate-key="workflowSectionSubtitle">
+              Geen zwarte doos of onduidelijke wachttijden. Vanaf dag één volg
+              je elk detail van jouw website of software live in jouw
+              persoonlijke Creation+Alt+Fix Klantenportaal.
+            </p>
+          </div>
+
+          <div class="workflow-grid">
+            <!-- Step 1 -->
+            <div class="workflow-card fade-in">
+              <span
+                class="workflow-step-badge"
+                data-translate-key="wfStep1Badge"
+                >Fase 1</span
+              >
+              <div class="workflow-icon-wrap">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+              <h3 data-translate-key="wfStep1Title">
+                1. Slimme Intake & Analyse
+              </h3>
+              <p data-translate-key="wfStep1Desc">
+                Geef online je wensen, doelen en voorkeuren door in 2 minuten.
+                Onze AI-engine analyseert direct de scope en zet je beveiligde
+                klantaccount klaar.
+              </p>
+              <div class="workflow-pill">
+                <i class="fas fa-user-shield"></i>
+                <span data-translate-key="wfStep1Pill">Real-time Account</span>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="workflow-card fade-in">
+              <span
+                class="workflow-step-badge"
+                data-translate-key="wfStep2Badge"
+                >Fase 2</span
+              >
+              <div class="workflow-icon-wrap">
+                <i class="fas fa-file-signature"></i>
+              </div>
+              <h3 data-translate-key="wfStep2Title">2. Transparante Offerte</h3>
+              <p data-translate-key="wfStep2Desc">
+                Gespecificeerde offerte inclusief hosting (€ 150,-/jr) zonder
+                verborgen kosten. 1-klik digitaal akkoord & directe PDF
+                download.
+              </p>
+              <div class="workflow-pill">
+                <i class="fas fa-file-pdf"></i>
+                <span data-translate-key="wfStep2Pill"
+                  >Digitaal Akkoord & PDF</span
+                >
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="workflow-card fade-in">
+              <span
+                class="workflow-step-badge"
+                data-translate-key="wfStep3Badge"
+                >Fase 3</span
+              >
+              <div class="workflow-icon-wrap">
+                <i class="fas fa-palette"></i>
+              </div>
+              <h3 data-translate-key="wfStep3Title">
+                3. Design & Concept Review
+              </h3>
+              <p data-translate-key="wfStep3Desc">
+                Samen stemmen we kleurenpaletten, typografie en interactieve
+                wireframes af. Pas na jouw visuele goedkeuring starten we de
+                bouw.
+              </p>
+              <div class="workflow-pill">
+                <i class="fas fa-check-circle"></i>
+                <span data-translate-key="wfStep3Pill"
+                  >Visuele Goedkeuring</span
+                >
+              </div>
+            </div>
+
+            <!-- Step 4 (USP) -->
+            <div class="workflow-card highlight fade-in">
+              <span
+                class="workflow-step-badge"
+                data-translate-key="wfStep4Badge"
+                >Fase 4 • Highlight</span
+              >
+              <div class="workflow-icon-wrap">
+                <i class="fas fa-crosshairs"></i>
+              </div>
+              <h3 data-translate-key="wfStep4Title">
+                4. Live Staging & Pin-Feedback
+              </h3>
+              <p data-translate-key="wfStep4Desc">
+                Kijk live mee in een responsieve desktop/tablet/mobiel emulator
+                en klik direct feedback-pins op knoppen of teksten (Design,
+                Tekst, Bug).
+              </p>
+              <div
+                class="workflow-pill"
+                style="
+                  background: rgba(34, 211, 238, 0.12);
+                  color: var(--color-accent);
+                "
+              >
+                <i class="fas fa-map-pin"></i>
+                <span data-translate-key="wfStep4Pill"
+                  >Point-and-Click Pins</span
+                >
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="workflow-card fade-in">
+              <span
+                class="workflow-step-badge"
+                data-translate-key="wfStep5Badge"
+                >Fase 5</span
+              >
+              <div class="workflow-icon-wrap">
+                <i class="fas fa-rocket"></i>
+              </div>
+              <h3 data-translate-key="wfStep5Title">
+                5. Livegang & Documentatie
+              </h3>
+              <p data-translate-key="wfStep5Desc">
+                Eindcontrole, DNS- & domeinoverdracht, overzicht van je
+                Pi-facturen en officiële documentatiegids voor content- &
+                systeembeheer.
+              </p>
+              <div class="workflow-pill">
+                <i class="fas fa-book-bookmark"></i>
+                <span data-translate-key="wfStep5Pill">Pi-Facturen & Docs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portal Synergy Banner -->
+          <div class="workflow-portal-banner fade-in">
+            <div class="workflow-banner-content">
+              <span class="workflow-banner-badge"
+                ><i class="fas fa-shield-alt"></i>
+                <span data-translate-key="wfBannerBadge"
+                  >Inclusief bij Elk Project</span
+                ></span
+              >
+              <h3 data-translate-key="wfBannerTitle">
+                Altijd realtime grip op jouw digitale assets
+              </h3>
+              <p data-translate-key="wfBannerDesc">
+                Ervaar de kracht van een eigen portaal met live chatberichten,
+                bestandsuploads, interactieve offerte en staging annotaties.
+              </p>
+            </div>
+            <div class="workflow-banner-actions">
+              <a
+                href="https://portal.creationaltfix.nl/intake/"
+                class="btn btn-primary"
+                ><i class="fas fa-rocket"></i>
+                <span data-translate-key="wfBannerCtaIntake"
+                  >Start Jouw Intake</span
+                ></a
+              >
+              <a href="/projects/crm-portal/" class="btn btn-secondary"
+                ><i class="fas fa-desktop"></i>
+                <span data-translate-key="wfBannerCtaCase"
+                  >Bekijk CRM Case Study</span
+                ></a
+              >
+              <a
+                href="https://portal.creationaltfix.nl/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline"
+                style="border: 1px solid rgba(255, 255, 255, 0.2); color: #fff"
+                ><i class="fas fa-sign-in-alt"></i>
+                <span data-translate-key="wfBannerCtaPortal"
+                  >Naar Portaal</span
+                ></a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="shimmer-divider"></div>
+
+      <!-- Projects Section (Portfolio + GitHub) -->
+      <section id="projects" class="section">
+        <div class="container">
+          <h2 class="section-title fade-in" data-translate-key="portfolioTitle">
+            Bekijk onze <span>Websites!</span>
+          </h2>
+          <p
+            class="subtitle-showcase fade-in"
+            data-translate-key="portfolioSubtitle"
+          >
+            Hieronder een selectie van websites en applicaties die wij
+            recentelijk hebben ontwikkeld (zoals de portfolio-website van Arnold
+            Design). Dit is een selecte greep uit ons complete portfolio om u
+            een beeld te geven van wat wij voor u kunnen realiseren.
+          </p>
+          <div class="showcase-grid">
+            <!-- Project 1: Creation+Alt+Fix CRM & Klantenportaal -->
+            <div class="showcase-item fade-in">
+              <a href="/projects/crm-portal/" class="showcase-image-link">
+                <picture>
+                  <img
+                    src="/images/crm-dashboard-mockup.webp"
+                    alt="Creation+Alt+Fix CRM Admin Dashboard"
+                    loading="lazy"
+                    decoding="async"
+                    width="1920"
+                    height="1080"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a
+                    href="/projects/crm-portal/"
+                    data-translate-key="project1Title"
+                    >Creation+Alt+Fix CRM & Klantenportaal</a
+                  >
+                </h3>
+                <p data-translate-key="project1P">
+                  Volledig custom CRM & Klantenportaal. Real-time Firebase
+                  tracking, interactieve live staging emulator met
+                  point-and-click feedback, en Pi-Boekhouding sync.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                  <a
+                    href="/projects/crm-portal/"
+                    class="btn btn-secondary"
+                    data-translate-key="project1Btn"
+                    >Bekijk Case Study</a
+                  >
+                  <a
+                    href="https://portal.creationaltfix.nl/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-outline"
+                    style="
+                      border: 1px solid rgba(255, 255, 255, 0.25);
+                      color: #fff;
+                      font-size: 0.85rem;
+                      padding: 0.5rem 1rem;
+                    "
+                    ><i class="fas fa-external-link-alt"></i> Live Portaal</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 2: Arnold Design AI Scrape Shield & Showcase -->
+            <div class="showcase-item fade-in">
+              <a href="/projects/arnold-design/" class="showcase-image-link">
+                <picture>
+                  <img
+                    src="/images/arnolddesign.webp"
+                    alt="Arnold Design AI Scrape Shield & Portfolio Case Study"
+                    loading="lazy"
+                    decoding="async"
+                    width="1920"
+                    height="1080"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a
+                    href="/projects/arnold-design/"
+                    data-translate-key="projectArnoldTitle"
+                    >Arnold Design — AI Scrape Shield</a
+                  >
+                </h3>
+                <p data-translate-key="projectArnoldP">
+                  7-laags IP- en AI-scraping protectiesysteem gecombineerd met
+                  een monumentale glas-in-lood showcase voor kunstenaar Arnold
+                  Doornbos.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                  <a
+                    href="/projects/arnold-design/"
+                    class="btn btn-secondary"
+                    data-translate-key="projectArnoldBtn"
+                    >Bekijk AI Case</a
+                  >
+                  <a
+                    href="https://arnolddesign.nl/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-outline"
+                    style="
+                      border: 1px solid rgba(255, 255, 255, 0.25);
+                      color: #fff;
+                      font-size: 0.85rem;
+                      padding: 0.5rem 1rem;
+                    "
+                    ><i class="fas fa-external-link-alt"></i> Live Site</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 3: Home Buyer Intelligence -->
+            <div class="showcase-item fade-in">
+              <a
+                href="/projects/home-buyer-intelligence/"
+                class="showcase-image-link"
+              >
+                <picture>
+                  <img
+                    src="/images/hbi-hero.webp"
+                    alt="Home Buyer Intelligence AI Dashboard"
+                    loading="lazy"
+                    decoding="async"
+                    width="1920"
+                    height="1080"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a
+                    href="/projects/home-buyer-intelligence/"
+                    data-translate-key="project2Title"
+                    >Home Buyer Intelligence</a
+                  >
+                </h3>
+                <p data-translate-key="project2P">
+                  AI-gedreven woninganalyse met risicoscoring en biedstrategie
+                  voor de Nederlandse huizenmarkt. Gebouwd met React, Fastify en
+                  Google Gemini AI.
+                </p>
+                <a
+                  href="/projects/home-buyer-intelligence/"
+                  class="btn btn-secondary"
+                  data-translate-key="project2Btn"
+                  >Bekijk AI Case</a
+                >
+              </div>
+            </div>
+
+            <!-- Project 4: Angela Stenekes Website -->
+            <div class="showcase-item fade-in">
+              <a
+                href="https://www.angelastenekes.nl/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="showcase-image-link"
+              >
+                <picture>
+                  <img
+                    src="/images/angelastenekes.webp"
+                    alt="Angela Stenekes Website"
+                    loading="lazy"
+                    decoding="async"
+                    width="1910"
+                    height="1032"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a
+                    href="https://www.angelastenekes.nl/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-translate-key="project5Title"
+                    >Angela Stenekes</a
+                  >
+                </h3>
+                <p data-translate-key="project5P">
+                  Moderne, responsive bedrijfswebsite voor een lokale knipperij
+                  met schrijfambities. Inclusief verhalenblog,
+                  behandelingsprijzen en afsprakencontact.
+                </p>
+                <a
+                  href="https://www.angelastenekes.nl/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-secondary"
+                  data-translate-key="project5Btn"
+                  >Ontdek de Website!</a
+                >
+              </div>
+            </div>
+
+            <!-- Project 5: Bakkertje Sieg E-Commerce Webshop -->
+            <div class="showcase-item fade-in">
+              <a
+                href="https://www.bakkertjesieg.nl/new/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="showcase-image-link"
+              >
+                <picture>
+                  <source
+                    srcset="/images/bakkertjesieg.webp"
+                    type="image/webp"
+                  />
+                  <img
+                    src="/images/bakkertjesieg.webp"
+                    alt="Screenshot van Bakkertje Sieg Webshop"
+                    loading="lazy"
+                    decoding="async"
+                    width="1915"
+                    height="1034"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a
+                    href="https://www.bakkertjesieg.nl/new/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-translate-key="project4Title"
+                    >Bakkertje Sieg Webshop</a
+                  >
+                </h3>
+                <p data-translate-key="project4P">
+                  Volledige E-Commerce webshop met WordPress & WooCommerce.
+                  Inclusief receptencatalogus, winkelwagen en online
+                  betaalintegratie.
+                </p>
+                <a
+                  href="https://www.bakkertjesieg.nl/new/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-secondary"
+                  data-translate-key="project4Btn"
+                  >Ontdek de Webshop!</a
+                >
+              </div>
+            </div>
+
+            <!-- Project 6: Wind Cloud Sync Tools -->
+            <div class="showcase-item fade-in">
+              <a href="/projects/wind/" class="showcase-image-link">
+                <picture>
+                  <img
+                    src="/images/wind-hero.webp"
+                    alt="Wind Cloud Sync Tools Interface"
+                    loading="lazy"
+                    decoding="async"
+                    width="1920"
+                    height="1080"
+                  />
+                </picture>
+              </a>
+              <div class="showcase-content">
+                <h3>
+                  <a href="/projects/wind/" data-translate-key="project3Title"
+                    >Wind – Cloud Sync Tools</a
+                  >
+                </h3>
+                <p data-translate-key="project3P">
+                  Synchroniseer bestanden tussen OneDrive, Google Drive, iCloud
+                  en Google Photos met SHA256 verificatie en real-time web
+                  monitoring.
+                </p>
+                <a
+                  href="/projects/wind/"
+                  class="btn btn-secondary"
+                  data-translate-key="project3Btn"
+                  >Bekijk Tool Case</a
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            class="fade-in"
+            style="
+              text-align: center;
+              margin-top: 40px;
+              display: flex;
+              gap: 15px;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a href="/projecten.html" class="btn btn-primary"
+              ><i class="fas fa-th-large"></i>
+              <span data-translate-key="allProjectsBtn"
+                >Bekijk alle projecten & volledig portfolio (14+)</span
+              ></a
+            >
+            <a
+              href="live-demo.html"
+              class="btn btn-secondary"
+              data-translate-key="liveDemoBtn"
+              >Bekijk de live demo hoe een website tot stand komt!</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <div class="shimmer-divider"></div>
+
+      <!-- GitHub Repositories Section -->
+      <section id="github-projects" class="section">
+        <div class="container">
+          <h2 class="section-title fade-in" data-translate-key="githubTitle">
+            Technische Projecten & <span>Open Source Bijdragen</span>
+          </h2>
+          <div id="repo-container"></div>
+        </div>
+      </section>
+
+      <!-- Over mij Section -->
+      <section id="over-mij" class="section">
+        <div class="container">
+          <div
+            class="about-content fade-in"
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 2.5rem;
+              align-items: center;
+            "
+          >
+            <div class="about-text" style="flex: 1; min-width: 300px">
+              <h2
+                class="section-title"
+                style="text-align: left"
+                data-translate-key="aboutTitle"
+              >
+                Over Mij
+              </h2>
+              <p data-translate-key="aboutP1">
+                Hoi, ik ben Allard Veldman, de drijvende kracht achter
+                Creation+Alt+Fix. Met een diepe passie voor technologie en een
+                scherp oog voor detail help ik ondernemers en particulieren om
+                hun digitale uitdagingen om te zetten in kansen.
+              </p>
+              <p data-translate-key="aboutP2">
+                Mijn missie is simpel: complexe technologie toegankelijk en
+                bruikbaar maken. Of het nu gaat om het bouwen van een
+                bliksemsnelle website, het automatiseren van tijdrovende
+                processen met AI, of het bieden van betrouwbare IT-support – ik
+                sta voor een persoonlijke aanpak en resultaatgerichte
+                oplossingen.
+              </p>
+              <p data-translate-key="aboutP3">
+                Laten we samen kijken hoe we technologie in jouw voordeel kunnen
+                laten werken!
+              </p>
+              <div style="margin-top: 1.5rem">
+                <a href="/over-mij.html" class="btn btn-secondary"
+                  ><i class="fas fa-user"></i>
+                  <span data-translate-key="aboutReadMore"
+                    >Lees meer over mij & achtergrond</span
+                  ></a
+                >
+              </div>
+            </div>
+            <div
+              class="about-image"
+              style="flex: 1; min-width: 300px; text-align: center"
+            >
+              <picture>
+                <img
+                  src="/images/1764963087201.webp"
+                  alt="Allard Veldman - Creation+Alt+Fix"
+                  loading="lazy"
+                  width="300"
+                  height="300"
+                  style="
+                    border-radius: 50%;
+                    border: 4px solid var(--color-primary, #6366f1);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                    max-width: 100%;
+                    height: auto;
+                    object-fit: cover;
+                    aspect-ratio: 1 / 1;
+                  "
+                  decoding="async"
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="shimmer-divider"></div>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="section">
+        <div class="container">
+          <h2 class="section-title fade-in" data-translate-key="faqTitle">
+            Veelgestelde Vragen: <span>Snelle Websites</span>
+          </h2>
+          <div class="faq-grid">
+            <div class="faq-item fade-in">
+              <h4 data-translate-key="faq1Q">
+                Kan ik echt binnen een dag een website hebben?
+              </h4>
+              <p data-translate-key="faq1A">
+                Ja, voor simpele websites zoals een online visitekaartje, een
+                landingspagina, of een basis informatieve site is dit vaak
+                mogelijk. Neem contact op met uw wensen, dan geven we direct een
+                inschatting.
+              </p>
+            </div>
+            <div class="faq-item fade-in">
+              <h4 data-translate-key="faq2Q">
+                Wat kost het om snel een simpele website te laten maken?
+              </h4>
+              <p data-translate-key="faq2A">
+                De kosten voor een snelle, professionele website zijn
+                afhankelijk van uw wensen, maar altijd transparant en scherp
+                geprijsd. Vraag gerust een vrijblijvende offerte aan voor uw
+                specifieke situatie.
+              </p>
+            </div>
+            <div class="faq-item fade-in">
+              <h4 data-translate-key="faq3Q">
+                Welke informatie hebben jullie nodig om mijn website snel te
+                kunnen bouwen?
+              </h4>
+              <p data-translate-key="faq3A">
+                Om snel te kunnen leveren, hebben we uw basisteksten, eventueel
+                logo, en gewenste kleurstellingen nodig. We hebben ook templates
+                en voorbeelden om het proces te versnellen als u nog geen
+                content heeft.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="shimmer-divider"></div>
+
+      <!-- Contact Section -->
+      <section id="contact" class="section section-darker">
+        <div class="container">
+          <h2 class="section-title fade-in" data-translate-key="contactTitle">
+            Klaar voor <span>AI-Transformatie?</span>
+          </h2>
+          <p class="contact-intro fade-in" data-translate-key="contactIntro">
+            Heeft u een idee voor een slimme tool of software-oplossing? Neem
+            contact op voor een vrijblijvend gesprek. We denken graag mee hoe we
+            uw wens snel en betaalbaar kunnen realiseren.
+          </p>
+          <div class="contact-details fade-in">
+            <p><strong>Allard Veldman</strong></p>
+            <div
+              style="
+                text-align: center;
+                margin-top: 2rem;
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+              "
+            >
+              <a
+                href="https://portal.creationaltfix.nl/intake/"
+                class="btn btn-primary"
+                ><i class="fas fa-rocket"></i>
+                <span data-translate-key="contactIntakeBtn"
+                  >Start Direct Je Intake</span
+                ></a
+              >
+              <a href="mailto:info@creationaltfix.nl" class="btn btn-secondary"
+                ><i class="fas fa-envelope"></i>
+                <span data-translate-key="contactCtaBtn"
+                  >Contact voor AI Strategie</span
+                ></a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
@@ -516,5 +1228,5 @@
 
     <script src="js/script.js" defer></script>
     <script src="/js/cookie-consent.js"></script>
-</body>
+  </body>
 </html>
