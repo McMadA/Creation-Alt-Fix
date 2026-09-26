@@ -903,16 +903,89 @@ export function getIncidentLogs() {
 }
 
 /**
+ * Completely removes a domain from Uptime & DNS Monitoring:
+ * - Marks it as '__removed__' in LOCAL_STORAGE_REPLACED_DOMAINS (if default domain)
+ * - Removes it from LOCAL_STORAGE_CUSTOM_DOMAINS (if custom domain)
+ * - Removes it from caf_cached_monitor_reports
+ * - Cleans up consecutive down tracking & alert throttle
+ * - Deletes the Firestore document /monitors/{oldDomainKey}
+ * 
+ * @param {Object} db - Firestore instance
+ * @param {string} domainName - Domain string to remove
+ * @returns {Promise<boolean>}
+ */
+export async function removeDomainFromMonitoring(db, domainName) {
+    const clean = normalizeDomain(domainName);
+    if (!clean) return false;
+
+    console.log(`🗑️ Removing domain from Uptime & DNS Monitoring: "${clean}"`);
+
+    // 1. Mark in replaced domains as __removed__ (if in DEFAULT_MONITORED_DOMAINS)
+    try {
+        const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
+        const replaced = storedReplaced ? JSON.parse(storedReplaced) : {};
+        replaced[clean] = '__removed__';
+        localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
+    } catch (e) {
+        console.warn("Could not update replaced domains in localStorage:", e);
+    }
+
+    // 2. Filter out from custom domains
+    try {
+        const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
+        if (storedCustom) {
+            let custom = JSON.parse(storedCustom);
+            custom = custom.filter(d => d.domain !== clean);
+            localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
+        }
+    } catch (e) {
+        console.warn("Could not remove custom domain:", e);
+    }
+
+    // 3. Remove from cached reports in localStorage
+    try {
+        const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
+        if (cachedStr) {
+            let cached = JSON.parse(cachedStr);
+            cached = cached.filter(r => r.domain !== clean);
+            localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
+        }
+    } catch (e) {}
+
+    // 4. Remove consecutive down count & alert sent throttle
+    try {
+        const storedDown = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
+        if (storedDown) {
+            let map = JSON.parse(storedDown);
+            delete map[clean];
+            localStorage.setItem(LOCAL_STORAGE_CONSECUTIVE_DOWN, JSON.stringify(map));
+        }
+        localStorage.removeItem(`caf_alert_sent_${clean}`);
+    } catch (e) {}
+
+    // 5. Delete obsolete Firestore document /monitors/{oldDomainKey}
+    if (db) {
+        try {
+            const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const oldKey = clean.replace(/[^a-zA-Z0-9]/g, '_');
+            await deleteDoc(doc(db, "monitors", oldKey));
+            console.log(`🗑️ Verouderd Firestore monitor document verwijderd: /monitors/${oldKey}`);
+        } catch (err) {
+            console.warn("Fout bij verwijderen oud Firestore monitor document:", err.message);
+        }
+    }
+
+    return true;
+}
+
+/**
  * Synchronizes domain changes made on client cards (Klantkaart) or project workspaces
  * with the Realtime Multi-DNS, SSL & Uptime Monitoring Suite.
  * 
  * Flow:
  * 1. Normalizes and validates oldDomain vs newDomain. If identical, early exits.
  * 2. If oldDomain existed:
- *    - Marks it in LOCAL_STORAGE_REPLACED_DOMAINS if it was a default domain
- *    - Removes it from LOCAL_STORAGE_CUSTOM_DOMAINS if it was a custom domain
- *    - Removes its cached report from caf_cached_monitor_reports
- *    - Deletes obsolete monitor document in Firestore (/monitors/{oldDomainKey})
+ *    - Removes oldDomain via removeDomainFromMonitoring()
  * 3. If newDomain is provided:
  *    - Unmarks it from LOCAL_STORAGE_REPLACED_DOMAINS if previously overridden
  *    - Registers/updates it in LOCAL_STORAGE_CUSTOM_DOMAINS
@@ -938,52 +1011,7 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
 
     // 1. Handle old domain retirement/cleanup
     if (cleanOld) {
-        // A. If in DEFAULT_MONITORED_DOMAINS, mark as replaced/removed
-        try {
-            const isDefault = DEFAULT_MONITORED_DOMAINS.some(d => d.domain === cleanOld);
-            if (isDefault) {
-                const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
-                const replaced = storedReplaced ? JSON.parse(storedReplaced) : {};
-                replaced[cleanOld] = cleanNew || '__removed__';
-                localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
-            }
-        } catch (e) {
-            console.warn("Could not update replaced domains in localStorage:", e);
-        }
-
-        // B. If in LOCAL_STORAGE_CUSTOM_DOMAINS, filter out
-        try {
-            const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-            if (storedCustom) {
-                let custom = JSON.parse(storedCustom);
-                custom = custom.filter(d => d.domain !== cleanOld);
-                localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
-            }
-        } catch (e) {
-            console.warn("Could not remove old custom domain:", e);
-        }
-
-        // C. Remove from cached reports in localStorage
-        try {
-            const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
-            if (cachedStr) {
-                let cached = JSON.parse(cachedStr);
-                cached = cached.filter(r => r.domain !== cleanOld);
-                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
-            }
-        } catch (e) {}
-
-        // D. Delete obsolete Firestore document /monitors/{oldDomainKey}
-        if (db) {
-            try {
-                const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-                const oldKey = cleanOld.replace(/[^a-zA-Z0-9]/g, '_');
-                await deleteDoc(doc(db, "monitors", oldKey));
-                console.log(`🗑️ Verouderd Firestore monitor document verwijderd: /monitors/${oldKey}`);
-            } catch (err) {
-                console.warn("Fout bij verwijderen oud Firestore monitor document:", err.message);
-            }
-        }
+        await removeDomainFromMonitoring(db, cleanOld);
     }
 
     // 2. Handle new domain registration & immediate health check

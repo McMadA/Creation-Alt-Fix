@@ -25,6 +25,7 @@ import {
     getIncidentLogs,
     playAlertTone,
     syncDomainChangeToMonitoring,
+    removeDomainFromMonitoring,
     normalizeDomain,
     getIgnoredDomains,
     isDomainIgnored,
@@ -2090,6 +2091,28 @@ window.deleteProject = async (id) => {
 
     if (db) {
         try {
+            // Also find and remove its domain from Uptime & DNS Monitoring if present
+            const domainToDelete = p ? (p.domainName || p.domain || '') : '';
+            const monitored = getMonitoredDomains();
+            const matchedMonitors = monitored.filter(m => {
+                if (domainToDelete && normalizeDomain(domainToDelete) === m.domain) return true;
+                const mClient = (m.client || m.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const pClient = (p.client || p.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (mClient && pClient && (mClient.includes(pClient) || pClient.includes(mClient))) return true;
+                return false;
+            });
+
+            for (const matched of matchedMonitors) {
+                await removeDomainFromMonitoring(db, matched.domain);
+                monitoringReports = monitoringReports.filter(r => r.domain !== matched.domain);
+            }
+            if (matchedMonitors.length > 0) {
+                try {
+                    localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+                } catch (e) {}
+                renderMonitorsTable();
+            }
+
             await deleteDoc(doc(db, "projects", id));
             cachedProjects = cachedProjects.filter(item => item.id != id);
             filterAndRenderTables();
@@ -2897,6 +2920,64 @@ function setupMonitoringEventListeners() {
         if (db) saveDomainReportToFirestore(db, report);
     });
 
+    // Sync / Cleanup Monitored Domains with Active Projects
+    document.getElementById('btn-sync-monitors-with-projects')?.addEventListener('click', async () => {
+        const monitored = getMonitoredDomains();
+        const activeProjects = cachedProjects || [];
+
+        // Identify client domains that do NOT belong to any active project
+        const orphaned = monitored.filter(m => {
+            // Keep internal domains always
+            if (m.category === 'internal' || (m.domain && m.domain.includes('creationaltfix.nl'))) return false;
+
+            // Check if any active project matches this domain or client name
+            const hasProject = activeProjects.some(p => {
+                const pDom = normalizeDomain(p.domainName || p.domain || '');
+                if (pDom && pDom === m.domain) return true;
+                const pName = (p.client || p.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const mName = (m.client || m.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (pName && mName && (pName.includes(mName) || mName.includes(pName))) return true;
+                return false;
+            });
+
+            return !hasProject;
+        });
+
+        if (orphaned.length === 0) {
+            alert("✓ Alle gemonitorde domeinen komen overeen met je actieve projecten. Geen overbodige domeinen gevonden.");
+            return;
+        }
+
+        const domainListStr = orphaned.map(o => `• ${o.name} (${o.domain})`).join('\n');
+        const proceed = confirm(
+            `Er zijn ${orphaned.length} domein(en) gevonden waarvan het project is verwijderd uit het CRM:\n\n${domainListStr}\n\nWil je deze ${orphaned.length} domein(en) nu definitief verwijderen uit Uptime Monitoring?`
+        );
+
+        if (!proceed) return;
+
+        const btn = document.getElementById('btn-sync-monitors-with-projects');
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met opschonen...';
+
+        try {
+            for (const item of orphaned) {
+                await removeDomainFromMonitoring(db, item.domain);
+                monitoringReports = monitoringReports.filter(r => r.domain !== item.domain);
+            }
+            try {
+                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+            } catch (e) {}
+
+            renderMonitorsTable();
+            alert(`✓ Succesvol ${orphaned.length} domein(en) opgeschoond uit Uptime & DNS Monitoring!`);
+        } catch (e) {
+            console.error("Fout bij opschonen monitoring:", e);
+            alert("Fout bij opschonen: " + e.message);
+        } finally {
+            if (btn) btn.innerHTML = originalHtml;
+        }
+    });
+
     // Search filter
     document.getElementById('monitor-search-input')?.addEventListener('input', (e) => {
         monitoringSearchQuery = (e.target.value || '').trim().toLowerCase();
@@ -3126,6 +3207,9 @@ function renderMonitorsTable() {
                             <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="Website bezoeken" style="padding: 4px 8px;">
                                 <i class="fas fa-globe"></i>
                             </a>
+                            <button class="btn btn-secondary btn-sm" onclick="window.removeMonitoredDomain('${escapeHtml(r.domain)}')" title="Verwijder domein uit monitoring" style="padding: 4px 8px; color: #ef4444; border-color: rgba(239, 68, 68, 0.35);">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -3291,6 +3375,9 @@ window.openMonitorDetailModal = async (domainName) => {
                     <button type="button" class="btn btn-secondary" onclick="toggleIgnoreDomain('${escapeHtml(report.domain)}').then(() => openMonitorDetailModal('${escapeHtml(report.domain)}'))" style="${isDomainIgnored(report.domain) ? 'color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15);' : ''}">
                         <i class="fas ${isDomainIgnored(report.domain) ? 'fa-bell-slash' : 'fa-eye-slash'}"></i> ${isDomainIgnored(report.domain) ? 'Dempen Opheffen' : 'Negeer Domein'}
                     </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.removeMonitoredDomain('${escapeHtml(report.domain)}', true)" title="Verwijder dit domein definitief uit de monitoring" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+                        <i class="fas fa-trash"></i> Verwijderen
+                    </button>
                     <a href="https://${escapeHtml(report.domain)}${report.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary">
                         <i class="fas fa-globe"></i> Open Website
                     </a>
@@ -3303,6 +3390,35 @@ window.openMonitorDetailModal = async (domainName) => {
     }
 
     modal?.classList.remove('hidden');
+};
+
+window.removeMonitoredDomain = async (domainName, closeDetailModal = false) => {
+    const clean = normalizeDomain(domainName);
+    if (!clean) return;
+
+    if (!confirm(`Weet je zeker dat je domein "${clean}" definitief wilt verwijderen uit de Realtime Uptime & DNS Monitoring?`)) {
+        return;
+    }
+
+    try {
+        await removeDomainFromMonitoring(db, clean);
+        monitoringReports = monitoringReports.filter(r => r.domain !== clean);
+
+        try {
+            localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+        } catch (e) {}
+
+        renderMonitorsTable();
+
+        if (closeDetailModal) {
+            closeModal('monitor-detail-modal');
+        }
+
+        alert(`✓ Domein "${clean}" is succesvol verwijderd uit Uptime Monitoring.`);
+    } catch (err) {
+        console.error("Fout bij verwijderen domein:", err);
+        alert("Fout bij verwijderen domein: " + err.message);
+    }
 };
 
 window.recheckSingleDomain = async (domainName, updateDetailModal = false) => {
