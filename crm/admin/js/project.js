@@ -579,12 +579,18 @@ function renderProjectWorkspace(p) {
         }
     });
 
-    // Populate Intake Form Inputs
-    document.getElementById('edit-client').value = clientName;
-    document.getElementById('edit-contact').value = contact;
-    document.getElementById('edit-email').value = email;
-    document.getElementById('edit-domain').value = domain;
-    document.getElementById('edit-domain').dataset.originalDomain = domain;
+    // Populate Intake Form Inputs with safe null guards
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val !== undefined && val !== null ? val : '';
+    };
+
+    setVal('edit-client', clientName);
+    setVal('edit-contact', contact);
+    setVal('edit-email', email);
+    setVal('edit-domain', domain);
+    const domainEl = document.getElementById('edit-domain');
+    if (domainEl) domainEl.dataset.originalDomain = domain;
 
     // Populate Extra / Secondary Domains
     const extraDomainsList = Array.isArray(currentProjectData.additionalDomains) 
@@ -620,16 +626,17 @@ function renderProjectWorkspace(p) {
             monStatusEl.innerHTML = `<span style="color: #64748b; font-style: italic;">Geen domein ingesteld. Vul in om realtime monitoring te activeren.</span>`;
         }
     }
-    document.getElementById('edit-service').value = service;
-    document.getElementById('edit-goals').value = goals;
-    document.getElementById('edit-design').value = design;
-    document.getElementById('edit-designUrl').value = designUrl;
-    if (document.getElementById('edit-street')) document.getElementById('edit-street').value = p.streetAndNumber || p.address || '';
-    if (document.getElementById('edit-postalCode')) document.getElementById('edit-postalCode').value = p.postalCode || '';
-    if (document.getElementById('edit-city')) document.getElementById('edit-city').value = p.city || '';
-    if (document.getElementById('edit-kvk')) document.getElementById('edit-kvk').value = p.kvkNumber || p.kvk || '';
-    if (document.getElementById('edit-vat')) document.getElementById('edit-vat').value = p.vatNumber || p.btwNummer || '';
-    if (document.getElementById('edit-targetDeliveryDate')) document.getElementById('edit-targetDeliveryDate').value = p.targetDeliveryDate || '';
+
+    setVal('edit-service', service);
+    setVal('edit-goals', goals);
+    setVal('edit-design', design);
+    setVal('edit-designUrl', designUrl);
+    setVal('edit-street', p.streetAndNumber || p.address || '');
+    setVal('edit-postalCode', p.postalCode || '');
+    setVal('edit-city', p.city || '');
+    setVal('edit-kvk', p.kvkNumber || p.kvk || '');
+    setVal('edit-vat', p.vatNumber || p.btwNummer || '');
+    setVal('edit-targetDeliveryDate', p.targetDeliveryDate || '');
 
     // Populate Auth Info Box
     document.getElementById('auth-email-display').innerText = email || 'Geen e-mailadres ingesteld';
@@ -692,9 +699,12 @@ function renderProjectWorkspace(p) {
     if (proposalPrice || p.proposalGeneratedAt) {
         const baseUrl = window.location.origin;
         const link = `${baseUrl}/offerte/index.html?id=${p.id}`;
-        document.getElementById('proposal-link-input').value = link;
-        document.getElementById('proposal-visit-btn').href = link;
-        document.getElementById('proposal-link-box').classList.remove('hidden');
+        const propLinkInput = document.getElementById('proposal-link-input');
+        if (propLinkInput) propLinkInput.value = link;
+        const propVisitBtn = document.getElementById('proposal-visit-btn');
+        if (propVisitBtn) propVisitBtn.href = link;
+        const propLinkBox = document.getElementById('proposal-link-box');
+        if (propLinkBox) propLinkBox.classList.remove('hidden');
 
         const signedBadge = document.getElementById('proposal-signed-badge');
         const signedText = document.getElementById('proposal-signed-text');

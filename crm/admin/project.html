@@ -307,6 +307,12 @@
                                         <a id="proposal-pdf-download-btn" href="#" target="_blank" class="btn btn-secondary btn-sm hidden" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399;"><i class="fas fa-file-pdf"></i> Ondertekende PDF</a>
                                     </div>
                                 </div>
+                                <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
+                                    <input type="text" id="proposal-link-input" class="admin-input" readonly style="margin: 0; font-size: 0.82rem; background: rgba(0,0,0,0.3); border-color: rgba(99,102,241,0.3); color: #cbd5e1;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('proposal-link-input').value); alert('Offerte link gekopieerd!');" title="Kopieer link">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- AI Offerte Scope & Deliverables Suite (TASK-302) -->

@@ -2,6 +2,14 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Oplossing Null Reference Error bij Openen Werkplek / Projectdossier**:
+  1. **Oorzaak van de Fout (`can't access property 'value', document.getElementById(...) is null`)**:
+     - In [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js) probeerde `renderProjectWorkspace()` bij elk project met een bestaande offerte (`proposalPrice` of `proposalGeneratedAt`) de offertelink toe te kennen aan `document.getElementById('proposal-link-input').value = link;`.
+     - In [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html) ontbrak het `<input id="proposal-link-input">` element in het `#proposal-link-box` paneel, waardoor `getElementById` een `null` retourneerde en de JS-engine crashte met een alert en geforceerde redirect terug naar `index.html`.
+  2. **Structurele Oplossing**:
+     - Het `<input id="proposal-link-input" readonly>` element met handige kopieerknop is netjes toegevoegd aan `#proposal-link-box` in [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html).
+     - [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js) voorzien van een defensieve `setVal(id, val)` helper en optionele null-guards op alle DOM-elementen, zodat het laden van een projectdossier nooit meer kan crashen door een ontbrekend veld.
+
 - **[2026-09-27] Multi-Domein Architectuur & Automatische Monitoring Integratie**:
   1. **Flexibele Domein Extractie (`extractProjectDomains`)**:
      - Projecten in Firestore kunnen nu meerdere domeinen bezitten via het hoofddomein (`domainName` of `domain`), de array `additionalDomains` (of komma-gescheiden string), en `domains`.
