@@ -13,7 +13,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, isAdminEmail, formatProjectStatus } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
@@ -494,7 +494,7 @@ async function loadProjectData(projectId) {
                         updateDoc(doc(db, "projects", currentProjectId), { tasks: mock.tasks }).catch(console.warn);
                     }
                 } else {
-                    const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live');
+                    const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live') || (currentProjectData.status || '').includes('Voldaan');
                     const now = new Date();
                     const addDaysIso = (days) => {
                         const d = new Date(now.getTime() + days * 86400000);
@@ -559,22 +559,24 @@ function renderProjectWorkspace(p) {
     document.title = `Project: ${clientName} - Creation+Alt+Fix Admin`;
     document.getElementById('project-date-display').innerText = dateSubmitted;
     
-    // Determine Phase (1 to 5)
-    let currentPhase = 1;
-    if (status === "Nieuwe Lead" || status === "Intake Voltooid") currentPhase = 1;
-    else if (status === "Wacht op Akkoord" || status.includes("Offerte")) currentPhase = 2;
-    else if (status.includes("Design")) currentPhase = 3;
-    else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
-    else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
+    // Determine Phase & Harmonized Status
+    const statusInfo = formatProjectStatus(status, p.statusClass);
+    const currentPhase = statusInfo.phase;
 
     // Update Phase Badge & Quick Selector
     const badgeElem = document.getElementById('project-phase-badge');
-    badgeElem.innerText = `Fase ${currentPhase}: ${status}`;
-    badgeElem.className = `badge badge-${escapeHtml(p.statusClass || 'waiting')}`;
+    if (badgeElem) {
+        badgeElem.innerText = statusInfo.label;
+        badgeElem.className = `badge badge-${escapeHtml(statusInfo.badgeClass)}`;
+    }
 
     const phaseChanger = document.getElementById('quick-phase-changer');
     if (phaseChanger) {
-        phaseChanger.value = String(currentPhase);
+        if (currentPhase === 5) {
+            phaseChanger.value = statusInfo.isPaymentWaiting ? '5-payment' : '5-complete';
+        } else {
+            phaseChanger.value = String(currentPhase);
+        }
     }
 
     // Update Visual 5-Stage Phase Tracker
@@ -1552,7 +1554,7 @@ function renderAftercareQueue(p) {
     const aftercareBox = document.getElementById('aftercare-queue-box');
     if (!aftercareBox) return;
 
-    const isCompleted = Boolean(p.status && (p.status.includes('Opgeleverd') || p.status.includes('Afgerond') || p.status.includes('Livegang') || p.status.includes('Mollie')));
+    const isCompleted = Boolean(p.status && (p.status.includes('Opgeleverd') || p.status.includes('Afgerond') || p.status.includes('Livegang') || p.status.includes('Mollie') || p.status.includes('Voldaan') || p.status.includes('Fase 5')));
     
     // If aftercare is already sent
     if (p.aftercareSentAt) {
@@ -1582,26 +1584,29 @@ function renderAftercareQueue(p) {
 }
 
 // --- Change Project Phase & Workflow Status ---
-async function changeProjectPhase(phaseNumber) {
+async function changeProjectPhase(phaseKey) {
     if (!currentProjectData) return;
 
-    let targetStatus = "Intake Voltooid";
+    let targetStatus = "Fase 1: Intake Voltooid";
     let targetStatusClass = "waiting";
 
-    if (phaseNumber === 1) {
-        targetStatus = "Intake Voltooid";
+    if (phaseKey === 1 || phaseKey === '1') {
+        targetStatus = "Fase 1: Intake Voltooid";
         targetStatusClass = "waiting";
-    } else if (phaseNumber === 2) {
-        targetStatus = "Wacht op Akkoord";
+    } else if (phaseKey === 2 || phaseKey === '2') {
+        targetStatus = "Fase 2: Wacht op Akkoord (Offerte)";
         targetStatusClass = "waiting";
-    } else if (phaseNumber === 3) {
-        targetStatus = "Design & Ontwerp (Fase 3)";
+    } else if (phaseKey === 3 || phaseKey === '3') {
+        targetStatus = "Fase 3: Design & Ontwerp";
         targetStatusClass = "active";
-    } else if (phaseNumber === 4) {
-        targetStatus = "In Ontwikkeling";
+    } else if (phaseKey === 4 || phaseKey === '4') {
+        targetStatus = "Fase 4: In Ontwikkeling";
         targetStatusClass = "active";
-    } else if (phaseNumber === 5) {
-        targetStatus = "Opgeleverd (Livegang)";
+    } else if (phaseKey === '5-payment') {
+        targetStatus = "Fase 5: Wacht op Betaling (Mollie)";
+        targetStatusClass = "payment";
+    } else if (phaseKey === '5-complete' || phaseKey === 5 || phaseKey === '5') {
+        targetStatus = "Fase 5: Volledig Live & Voldaan";
         targetStatusClass = "success";
     }
 
@@ -1616,14 +1621,14 @@ async function changeProjectPhase(phaseNumber) {
     if (db && currentProjectId) {
         try {
             await updateDoc(doc(db, "projects", currentProjectId), updated);
-            await logAuditEvent('status_updated', `Projectfase gewijzigd naar Fase ${phaseNumber}: ${targetStatus}`);
-            alert(`Projectfase succesvol bijgewerkt naar "Fase ${phaseNumber}: ${targetStatus}"!`);
+            await logAuditEvent('status_updated', `Projectfase gewijzigd naar: ${targetStatus}`);
+            alert(`Projectfase succesvol bijgewerkt naar "${targetStatus}"!`);
         } catch (err) {
             console.error("Fout bij updaten fase:", err);
             alert("Fout bij updaten fase: " + err.message);
         }
     } else {
-        alert(`Projectfase gewijzigd naar "Fase ${phaseNumber}: ${targetStatus}"!`);
+        alert(`Projectfase gewijzigd naar "${targetStatus}"!`);
     }
 }
 
@@ -1631,14 +1636,25 @@ async function changeProjectPhase(phaseNumber) {
 function setupFormHandlers() {
     // 0. Quick Phase Selector & Interactive Pipeline Tracker
     document.getElementById('quick-phase-changer')?.addEventListener('change', (e) => {
-        const phaseNum = parseInt(e.target.value, 10);
-        if (phaseNum) changeProjectPhase(phaseNum);
+        const val = e.target.value;
+        if (val) changeProjectPhase(val);
     });
 
     document.querySelectorAll('.phase-step').forEach(step => {
         step.addEventListener('click', () => {
             const phaseNum = parseInt(step.getAttribute('data-phase'), 10);
-            if (phaseNum) changeProjectPhase(phaseNum);
+            if (phaseNum === 5) {
+                const cur = formatProjectStatus(currentProjectData?.status || '');
+                if (cur.isPaymentWaiting) {
+                    if (confirm("Betaling ontvangen via Mollie of overboeking?\n\nKlik 'OK' om het project definitief te markeren als 'Fase 5: Volledig Live & Voldaan'.")) {
+                        changeProjectPhase('5-complete');
+                    }
+                } else {
+                    changeProjectPhase('5-complete');
+                }
+            } else if (phaseNum) {
+                changeProjectPhase(phaseNum);
+            }
         });
     });
 
@@ -2154,7 +2170,7 @@ function setupFormHandlers() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF Genereren...';
         try {
             const projData = { ...(currentProjectData || {}), id: currentProjectId };
-            const isSigned = Boolean(projData.proposalAcceptedAt || projData.status?.includes('Design') || projData.status?.includes('Ontwikkeling') || projData.status?.includes('Opgeleverd'));
+            const isSigned = Boolean(projData.proposalAcceptedAt || projData.status?.includes('Design') || projData.status?.includes('Ontwikkeling') || projData.status?.includes('Opgeleverd') || projData.status?.includes('Live') || projData.status?.includes('Voldaan') || projData.status?.includes('Fase 5') || projData.status?.includes('Mollie'));
             const { doc: pdfDoc, blob: pdfBlob, filename } = await generateProposalPDF(projData, isSigned);
             
             // Upload to storage if not yet uploaded
@@ -2390,49 +2406,6 @@ function setupFormHandlers() {
         }
     });
 
-    // Phase Tracker Click Listeners (Fase 1 t/m Fase 5)
-    document.querySelectorAll('.phase-step').forEach(step => {
-        step.addEventListener('click', async () => {
-            if (!currentProjectId || !currentProjectData) return;
-            const phaseNum = parseInt(step.getAttribute('data-phase'), 10);
-            
-            const phaseStatusMap = {
-                1: { status: "Intake Voltooid", statusClass: "waiting", label: "Fase 1 (Intake)" },
-                2: { status: "Wacht op Akkoord", statusClass: "waiting", label: "Fase 2 (Offerte & Akkoord)" },
-                3: { status: "Design Gereed voor Review", statusClass: "active", label: "Fase 3 (Design & Ontwerp)" },
-                4: { status: "In Ontwikkeling", statusClass: "active", label: "Fase 4 (Ontwikkeling)" },
-                5: { status: "Opgeleverd (Betaling via Mollie)", statusClass: "concept", label: "Fase 5 (Livegang & Mollie)" }
-            };
-
-            const target = phaseStatusMap[phaseNum];
-            if (!target) return;
-
-            // If switching to phase 3 and no designUrl, open the design modal instead
-            if (phaseNum === 3 && !(currentProjectData.designUrl || currentProjectData.figmaUrl)) {
-                openPhase3Modal();
-                return;
-            }
-
-            if (!confirm(`Wil je de projectstatus wijzigen naar "${target.label} - ${target.status}"?`)) return;
-
-            try {
-                const updated = {
-                    status: target.status,
-                    statusClass: target.statusClass
-                };
-                if (db && currentProjectId) {
-                    await updateDoc(doc(db, "projects", currentProjectId), updated);
-                }
-                currentProjectData = { ...currentProjectData, ...updated };
-                await logAuditEvent('status_change', `Status handmatig gewijzigd naar "${target.status}" via de 5-fasen tijdlijn.`);
-                renderProjectWorkspace(currentProjectData);
-            } catch (err) {
-                console.error("Fout bij wijzigen fase:", err);
-                alert("Kon fase niet wijzigen: " + err.message);
-            }
-        });
-    });
-
     // 9. Action: Invoice + Mollie (Open Modal)
     document.getElementById('btn-action-mollie')?.addEventListener('click', () => {
         const modal = document.getElementById('mollie-config-modal');
@@ -2460,16 +2433,16 @@ function setupFormHandlers() {
 
         try {
             const updated = {
-                status: "Opgeleverd (Betaling via Mollie)",
-                statusClass: "concept",
+                status: "Fase 5: Wacht op Betaling (Mollie)",
+                statusClass: "payment",
                 mollieLink: mollieUrl
             };
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             currentProjectData = { ...currentProjectData, ...updated };
 
-            await logAuditEvent('mollie_generated', `Mollie betaallink gekoppeld (${mollieUrl}) en status gewijzigd naar Opgeleverd.`);
+            await logAuditEvent('mollie_generated', `Mollie betaallink gekoppeld (${mollieUrl}) en status gewijzigd naar Fase 5: Wacht op Betaling (Mollie).`);
             document.getElementById('mollie-config-modal')?.classList.add('hidden');
-            alert(`✓ Mollie factuurverzoek is succesvol klaargezet in het klantenportaal!\n\nBetaallink:\n${mollieUrl}`);
+            alert(`✓ Mollie factuurverzoek is succesvol klaargezet in het klantenportaal!\n\nStatus: Fase 5: Wacht op Betaling (Mollie)\nBetaallink:\n${mollieUrl}`);
             renderProjectWorkspace(currentProjectData);
         } catch (err) {
             alert("Fout bij opslaan Mollie link: " + err.message);

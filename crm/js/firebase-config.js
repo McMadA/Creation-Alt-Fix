@@ -59,3 +59,106 @@ export function escapeHtml(str) {
 export function isAdminEmail(email) {
     return ADMIN_EMAILS.includes((email || '').toLowerCase());
 }
+
+/**
+ * Harmonizes project statuses across the CRM, ensuring uniform phase naming,
+ * clean badges, and eliminating clumsy duplicate parentheses.
+ * 
+ * Phase 5 specifications:
+ * - Fase 5: Wacht op Betaling (Mollie) -> blue/orange payment badge (technically live, awaiting settlement)
+ * - Fase 5: Volledig Live & Voldaan -> green success badge (live & fully paid)
+ * 
+ * @param {string} rawStatus 
+ * @param {string} [fallbackStatusClass]
+ * @returns {{ label: string, badgeClass: string, phase: number, isPhase5: boolean, isPaymentWaiting: boolean }}
+ */
+export function formatProjectStatus(rawStatus, fallbackStatusClass = '') {
+    const s = (rawStatus || 'Nieuwe Lead').trim();
+    const sLower = s.toLowerCase();
+
+    // 1. Fase 5: Wacht op Betaling (Mollie)
+    if (sLower.includes('mollie') || sLower.includes('wacht op betaling') || sLower.includes('betaling via')) {
+        return {
+            label: 'Fase 5: Wacht op Betaling (Mollie)',
+            badgeClass: 'payment',
+            phase: 5,
+            isPhase5: true,
+            isPaymentWaiting: true
+        };
+    }
+
+    // 2. Fase 5: Volledig Live & Voldaan
+    if (
+        sLower.includes('voldaan') ||
+        sLower.includes('volledig live') ||
+        sLower.includes('opgeleverd') ||
+        sLower.includes('livegang') ||
+        sLower === 'afgerond' ||
+        sLower === 'live' ||
+        sLower.includes('aftercare')
+    ) {
+        return {
+            label: 'Fase 5: Volledig Live & Voldaan',
+            badgeClass: 'success',
+            phase: 5,
+            isPhase5: true,
+            isPaymentWaiting: false
+        };
+    }
+
+    // 3. Fase 4: In Ontwikkeling
+    if (sLower.includes('ontwikkel') || sLower.includes('code')) {
+        return {
+            label: 'Fase 4: In Ontwikkeling',
+            badgeClass: 'active',
+            phase: 4,
+            isPhase5: false,
+            isPaymentWaiting: false
+        };
+    }
+
+    // 4. Fase 3: Design & Ontwerp
+    if (sLower.includes('design') || sLower.includes('ontwerp') || sLower.includes('concept')) {
+        return {
+            label: 'Fase 3: Design & Ontwerp',
+            badgeClass: 'concept',
+            phase: 3,
+            isPhase5: false,
+            isPaymentWaiting: false
+        };
+    }
+
+    // 5. Fase 2: Wacht op Akkoord (Offerte)
+    if (sLower.includes('akkoord') || sLower.includes('offerte') || sLower.includes('wacht op')) {
+        return {
+            label: 'Fase 2: Wacht op Akkoord (Offerte)',
+            badgeClass: 'waiting',
+            phase: 2,
+            isPhase5: false,
+            isPaymentWaiting: false
+        };
+    }
+
+    // 6. Fase 1: Leads & Intakes
+    if (sLower.includes('lead') || sLower.includes('intake')) {
+        const cleanLabel = sLower.includes('intake') ? 'Fase 1: Intake Voltooid' : 'Fase 1: Nieuwe Lead';
+        return {
+            label: cleanLabel,
+            badgeClass: 'concept',
+            phase: 1,
+            isPhase5: false,
+            isPaymentWaiting: false
+        };
+    }
+
+    // Fallback: clean up any redundant "(Fase X)" parentheses
+    const cleaned = s.replace(/\s*\(\s*Fase\s*\d\s*\)/gi, '').trim();
+    return {
+        label: cleaned,
+        badgeClass: fallbackStatusClass || 'waiting',
+        phase: 1,
+        isPhase5: false,
+        isPaymentWaiting: false
+    };
+}
+

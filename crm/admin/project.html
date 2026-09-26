@@ -65,9 +65,10 @@
                         <select id="quick-phase-changer" class="admin-input" style="padding: 5px 10px; font-size: 0.82rem; margin: 0; width: auto; cursor: pointer; background: rgba(15,23,42,0.9); border: 1px solid var(--color-primary-light); color: #fff; border-radius: 6px;" title="Wijzig projectfase direct">
                             <option value="1">Fase 1: Intake Voltooid</option>
                             <option value="2">Fase 2: Wacht op Akkoord (Offerte)</option>
-                            <option value="3">Fase 3: Design & Ontwerp</option>
+                            <option value="3">Fase 3: Design &amp; Ontwerp</option>
                             <option value="4">Fase 4: In Ontwikkeling</option>
-                            <option value="5">Fase 5: Opgeleverd (Livegang)</option>
+                            <option value="5-payment">Fase 5: Wacht op Betaling (Mollie)</option>
+                            <option value="5-complete">Fase 5: Volledig Live &amp; Voldaan</option>
                         </select>
                     </div>
                     <button type="button" id="btn-open-gemini-modal" class="btn btn-secondary btn-sm" title="Configureer Gemini AI API Sleutel">
@@ -88,16 +89,16 @@
                     <i class="fas fa-clipboard-check" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 1</strong><br>Intake
                 </div>
                 <div class="phase-step" data-phase="2" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 2 (Offerte & Akkoord) te schakelen">
-                    <i class="fas fa-file-signature" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 2</strong><br>Offerte & Akkoord
+                    <i class="fas fa-file-signature" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 2</strong><br>Offerte &amp; Akkoord
                 </div>
                 <div class="phase-step" data-phase="3" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 3 (Design & Ontwerp) te schakelen">
-                    <i class="fas fa-palette" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 3</strong><br>Design & Ontwerp
+                    <i class="fas fa-palette" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 3</strong><br>Design &amp; Ontwerp
                 </div>
                 <div class="phase-step" data-phase="4" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 4 (Ontwikkeling) te schakelen">
-                    <i class="fas fa-code" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 4</strong><br>Ontwikkeling
+                    <i class="fas fa-code" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 4</strong><br>In Ontwikkeling
                 </div>
-                <div class="phase-step" data-phase="5" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 5 (Livegang & Mollie) te schakelen">
-                    <i class="fas fa-rocket" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 5</strong><br>Livegang & Mollie
+                <div class="phase-step" data-phase="5" style="text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.82rem; color: #94a3b8; transition: 0.3s; cursor: pointer;" title="Klik om direct naar Fase 5 (Livegang & Betaling) te schakelen">
+                    <i class="fas fa-rocket" style="font-size: 1.1rem; margin-bottom: 4px;"></i><br><strong>Fase 5</strong><br>Live &amp; Voldaan
                 </div>
             </div>
 
@@ -846,7 +847,7 @@
     <div id="mollie-config-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div class="workspace-card" style="max-width: 520px; width: 90%; background: #0f172a; border: 1px solid rgba(34,211,238,0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8); padding: 24px;">
             <div class="workspace-card-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.15rem; color: #fff;"><i class="fas fa-euro-sign text-accent"></i> Mollie Betaallink Koppelen (Fase 5)</h3>
+                <h3 style="margin: 0; font-size: 1.15rem; color: #fff;"><i class="fas fa-euro-sign text-accent"></i> Mollie Betaallink Koppelen (Fase 5: Wacht op Betaling)</h3>
                 <button type="button" id="btn-close-mollie-modal" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer;">&times;</button>
             </div>
             <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 14px;">

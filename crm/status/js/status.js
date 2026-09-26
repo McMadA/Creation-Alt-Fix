@@ -9,7 +9,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, formatProjectStatus } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
 
@@ -660,35 +660,23 @@ function renderDashboard(data) {
 
     // Render Status Badge & Timeline Progress
     const badge = document.getElementById('status-badge');
-    badge.innerText = statusText;
+    const statusInfo = formatProjectStatus(statusText, data.statusClass);
+    badge.innerText = statusInfo.label;
+    badge.className = `badge badge-${statusInfo.badgeClass}`;
 
     let progress = 20;
-    let stepNumber = 1;
+    let stepNumber = statusInfo.phase;
 
-    if (statusText === "Nieuwe Lead" || statusText === "Intake Voltooid") {
+    if (statusInfo.phase === 1) {
         progress = 20;
-        stepNumber = 1;
-        badge.className = "badge badge-active";
-    } else if (statusText === "Wacht op Akkoord") {
+    } else if (statusInfo.phase === 2) {
         progress = 40;
-        stepNumber = 2;
-        badge.className = "badge badge-waiting";
-    } else if (statusText === "Wacht op Design & Ontwerp" || statusText === "Design Gereed voor Review") {
+    } else if (statusInfo.phase === 3) {
         progress = 60;
-        stepNumber = 3;
-        badge.className = "badge badge-active";
-    } else if (statusText === "Wacht op Ontwikkeling" || statusText === "In Ontwikkeling") {
+    } else if (statusInfo.phase === 4) {
         progress = 80;
-        stepNumber = 4;
-        badge.className = "badge badge-active";
-    } else if (statusText.includes("Mollie") || statusText.includes("Opgeleverd") || statusText === "Afgerond") {
-        progress = 100;
-        stepNumber = 5;
-        badge.className = "badge badge-success";
-    } else {
-        progress = 40;
-        stepNumber = 2;
-        badge.className = "badge badge-active";
+    } else if (statusInfo.phase === 5) {
+        progress = statusInfo.isPaymentWaiting ? 95 : 100;
     }
 
     document.getElementById('progress-bar-fill').style.width = `${progress}%`;
@@ -936,13 +924,17 @@ function renderProposalSection(data) {
     const actionContainer = document.getElementById('offerte-action-container');
     const successMsg = document.getElementById('offerte-success-msg');
 
+    const statusInfo = formatProjectStatus(data.status || '');
     const isAccepted = Boolean(
         data.proposalAcceptedAt || 
+        statusInfo.phase >= 3 ||
         data.status === "Wacht op Design & Ontwerp" ||
         data.status === "Design Gereed voor Review" ||
         data.status === "Wacht op Ontwikkeling" || 
         data.status === "In Ontwikkeling" || 
         data.status.includes("Opgeleverd") || 
+        data.status.includes("Live") ||
+        data.status.includes("Voldaan") ||
         data.status === "Afgerond"
     );
 
@@ -1288,13 +1280,18 @@ function renderDesignSection(data) {
 
     const statusText = data.status || '';
 
+    const statusInfo = formatProjectStatus(statusText);
+
     const showDesign = Boolean(
+        statusInfo.phase >= 3 ||
         statusText === "Wacht op Design & Ontwerp" ||
         statusText === "Design Gereed voor Review" ||
         statusText === "Wacht op Ontwikkeling" ||
         statusText === "In Ontwikkeling" ||
         data.designAcceptedAt ||
         statusText.includes("Opgeleverd") ||
+        statusText.includes("Live") ||
+        statusText.includes("Voldaan") ||
         statusText === "Afgerond"
     );
 
@@ -1312,9 +1309,12 @@ function renderDesignSection(data) {
 
     const isDesignAccepted = Boolean(
         data.designAcceptedAt ||
+        statusInfo.phase >= 4 ||
         statusText === "Wacht op Ontwikkeling" ||
         statusText === "In Ontwikkeling" ||
         statusText.includes("Opgeleverd") ||
+        statusText.includes("Live") ||
+        statusText.includes("Voldaan") ||
         statusText === "Afgerond"
     );
 
@@ -1819,9 +1819,13 @@ function setupInvoiceDownload(data) {
     if (!invCard) return;
 
     const statusText = data.status || '';
+    const statusInfo = formatProjectStatus(statusText);
     const isDeliveredOrMollie = Boolean(
+        statusInfo.phase === 5 ||
         statusText.includes('Mollie') ||
         statusText.includes('Opgeleverd') ||
+        statusText.includes('Live') ||
+        statusText.includes('Voldaan') ||
         statusText === 'Afgerond' ||
         data.invoicePdfUrl
     );

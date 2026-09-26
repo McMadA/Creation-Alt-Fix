@@ -10,7 +10,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail, formatProjectStatus } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
 import { parseTodoMarkdown, mapTaskToProject, syncTodoToFirestore, exportKanbanToTodoMarkdown, PROJECT_PROFILES } from "../../js/todo-sync.js";
@@ -78,19 +78,19 @@ const API = {
         let leads = 0, active = 0, waiting = 0, delivered = 0, openTasks = 0;
 
         projects.forEach(p => {
-            const s = (p.status || '').toLowerCase();
+            const info = formatProjectStatus(p.status, p.statusClass);
 
             // Fase 1: Leads & Intakes
-            if (s.includes('lead') || s.includes('intake')) leads++;
+            if (info.phase === 1) leads++;
 
-            // Wachten op actie / akkoord / review
-            if (s.includes('akkoord') || s.includes('review') || s.includes('wacht op')) waiting++;
+            // Wachten op actie / akkoord / review / betaling
+            if (info.phase === 2 || (info.phase === 5 && info.isPaymentWaiting)) waiting++;
 
-            // Fase 2-4: Lopende Projecten
-            if (s.includes('ontwikkeling') || s.includes('design') || s.includes('concept') || s.includes('bezig')) active++;
+            // Fase 3-4: Lopende Projecten
+            if (info.phase === 3 || info.phase === 4) active++;
 
-            // Fase 5: Opgeleverd / Livegang / Afgerond
-            if (s.includes('opgeleverd') || s.includes('livegang') || s.includes('mollie') || s.includes('afgerond')) delivered++;
+            // Fase 5: Opgeleverd / Live & Voldaan
+            if (info.phase === 5) delivered++;
 
             // Count open tasks
             const tasks = p.tasks || [];
@@ -863,25 +863,22 @@ function renderTablesData(projectsToRender) {
 
     const createRow = (p) => {
         const row = document.createElement('tr');
-        const phaseTag = getPhaseTag(p.status);
+        const statusInfo = formatProjectStatus(p.status, p.statusClass);
         const safeClient = escapeHtml(p.client || p.companyName || 'Onbekend');
         const taskCounterHtml = formatTaskCounter(p);
         const emailHtml = formatEmail(p.email);
         const domainHtml = formatDomain(p.domainName || p.domain);
-        const safeStatus = escapeHtml(p.status || 'Nieuwe Lead');
         const safeDate = escapeHtml(p.date || 'Onbekend');
         const safeId = escapeHtml(p.id);
-        const safeStatusClass = escapeHtml(p.statusClass || 'waiting');
-
-        // Clean status label without redundant parentheses
-        const statusDisplay = safeStatus.toLowerCase().includes('fase') ? safeStatus : `${safeStatus} (${phaseTag})`;
+        const safeStatusDisplay = escapeHtml(statusInfo.label);
+        const safeStatusClass = escapeHtml(statusInfo.badgeClass);
 
         row.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
             <td>${taskCounterHtml}</td>
             <td>${emailHtml}</td>
             <td>${domainHtml}</td>
-            <td><span class="badge badge-${safeStatusClass}">${statusDisplay}</span></td>
+            <td><span class="badge badge-${safeStatusClass}">${safeStatusDisplay}</span></td>
             <td><span style="color: var(--color-text-secondary); font-size: 0.85rem;">${safeDate}</span></td>
             <td style="white-space: nowrap;">
                 <a href="project.html?id=${safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open Dedicated Werkplek"><i class="fas fa-desktop"></i> Werkplek</a>
@@ -910,7 +907,7 @@ function renderTablesData(projectsToRender) {
     const leadsBody = document.querySelector('#leads-table tbody');
     if (leadsBody) {
         leadsBody.innerHTML = '';
-        const leads = projectsToRender.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
+        const leads = projectsToRender.filter(p => formatProjectStatus(p.status).phase === 1);
         if (leads.length === 0) {
             leadsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
         } else {
@@ -922,7 +919,7 @@ function renderTablesData(projectsToRender) {
     const activeProjectsBody = document.querySelector('#active-projects-table tbody');
     if (activeProjectsBody) {
         activeProjectsBody.innerHTML = '';
-        const activeProjects = projectsToRender.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
+        const activeProjects = projectsToRender.filter(p => formatProjectStatus(p.status).phase > 1);
         if (activeProjects.length === 0) {
             activeProjectsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
         } else {
@@ -964,12 +961,14 @@ function parseProjectDate(p) {
 }
 
 function getStatusWeight(status) {
-    const s = (status || '').toLowerCase();
-    if (s.includes('lead') || s.includes('intake')) return 1;
-    if (s.includes('akkoord') || s.includes('offerte') || s.includes('wacht op')) return 2;
-    if (s.includes('design') || s.includes('concept')) return 3;
-    if (s.includes('ontwikkeling')) return 4;
-    if (s.includes('opgeleverd') || s.includes('mollie') || s.includes('afgerond') || s.includes('livegang')) return 5;
+    const info = formatProjectStatus(status);
+    if (info.phase === 1) return 1;
+    if (info.phase === 2) return 2;
+    if (info.phase === 3) return 3;
+    if (info.phase === 4) return 4;
+    if (info.phase === 5) {
+        return info.isPaymentWaiting ? 5.1 : 5.2;
+    }
     return 99;
 }
 
@@ -1125,12 +1124,14 @@ function filterAndRenderTables() {
     let filtered = cachedProjects.filter(p => {
         // Status filter
         if (filterVal !== 'all') {
-            const st = (p.status || '').toLowerCase();
-            if (filterVal === 'Intake' && !st.includes('intake') && !st.includes('lead')) return false;
-            if (filterVal === 'Akkoord' && !st.includes('akkoord') && !st.includes('offerte')) return false;
-            if (filterVal === 'Design' && !st.includes('design')) return false;
-            if (filterVal === 'Ontwikkeling' && !st.includes('ontwikkeling')) return false;
-            if (filterVal === 'Opgeleverd' && !st.includes('mollie') && !st.includes('opgeleverd') && !st.includes('afgerond') && !st.includes('livegang')) return false;
+            const statusInfo = formatProjectStatus(p.status, p.statusClass);
+            if (filterVal === 'Intake' && statusInfo.phase !== 1) return false;
+            if (filterVal === 'Akkoord' && statusInfo.phase !== 2) return false;
+            if (filterVal === 'Design' && statusInfo.phase !== 3) return false;
+            if (filterVal === 'Ontwikkeling' && statusInfo.phase !== 4) return false;
+            if (filterVal === 'Fase5-Payment' && (!statusInfo.isPhase5 || !statusInfo.isPaymentWaiting)) return false;
+            if (filterVal === 'Fase5-Complete' && (!statusInfo.isPhase5 || statusInfo.isPaymentWaiting)) return false;
+            if (filterVal === 'Opgeleverd' && !statusInfo.isPhase5) return false;
         }
 
         // Search query filter
@@ -1209,16 +1210,6 @@ function setupSearchAndFilters() {
 window.exportProjectsToCSV = () => {
     if (!cachedProjects || cachedProjects.length === 0) return alert("Geen projectgegevens om te exporteren.");
 
-    const getPhaseTag = (status) => {
-        if (!status) return "Fase 1: Intake Voltooid";
-        if (status.includes("Nieuwe Lead") || status.includes("Intake Voltooid")) return "Fase 1: Intake Voltooid";
-        if (status.includes("Wacht op Akkoord") || status.includes("Offerte")) return "Fase 2: Offerte & Akkoord";
-        if (status.includes("Design")) return "Fase 3: Design & Ontwerp";
-        if (status.includes("Ontwikkeling")) return "Fase 4: In Ontwikkeling";
-        if (status.includes("Mollie") || status.includes("Opgeleverd") || status.includes("Afgerond") || status.includes("Livegang")) return "Fase 5: Opgeleverd (Livegang)";
-        return "Fase 1: Intake Voltooid";
-    };
-
     const headers = [
         "Project ID",
         "Klantnaam",
@@ -1246,6 +1237,7 @@ window.exportProjectsToCSV = () => {
         const tasks = p.tasks || [];
         const doneTasks = tasks.filter(t => t.completed || t.status === 'done').length;
         const openTasks = tasks.length - doneTasks;
+        const statusInfo = formatProjectStatus(p.status, p.statusClass);
         
         // Parse raw proposal price
         const priceClean = (p.proposalPrice || "0").toString().replace(/[^0-9,.-]/g, '').replace('.', ',');
@@ -1262,8 +1254,8 @@ window.exportProjectsToCSV = () => {
             `"${(p.domainName || p.domain || '').replace(/"/g, '""')}"`,
             `"${(p.service || '').replace(/"/g, '""')}"`,
             `"${(p.serviceCategory || p.category || 'MKB Web & Cloud').replace(/"/g, '""')}"`,
-            `"${getPhaseTag(p.status)}"`,
-            `"${(p.status || '').replace(/"/g, '""')}"`,
+            `"${statusInfo.label.split(':')[0]}"`,
+            `"${statusInfo.label.replace(/"/g, '""')}"`,
             `"${priceClean}"`,
             `"${numWithVat}"`,
             `"${(p.goals || p.projectGoals || '').replace(/"/g, '""')}"`,
@@ -1394,12 +1386,9 @@ window.openProjectDetails = (id) => {
         safeId: escapeHtml(id)
     };
 
-    let currentPhase = 1;
-    if (status === "Nieuwe Lead" || status === "Intake Voltooid") currentPhase = 1;
-    else if (status === "Wacht op Akkoord" || status.includes("Offerte")) currentPhase = 2;
-    else if (status.includes("Design")) currentPhase = 3;
-    else if (status.includes("Ontwikkeling") || status.includes("Wacht op Ontwikkeling")) currentPhase = 4;
-    else if (status.includes("Mollie") || status.includes("Opgeleverd") || status === "Afgerond" || status.includes("Livegang")) currentPhase = 5;
+    const statusInfo = formatProjectStatus(status, p.statusClass);
+    const currentPhase = statusInfo.phase;
+    const isPaymentWaiting = statusInfo.isPaymentWaiting;
 
     const files = p.files || [];
     let filesHtml = '';
@@ -1470,11 +1459,12 @@ window.openProjectDetails = (id) => {
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <a href="project.html?id=${s.safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;"><i class="fas fa-external-link-alt"></i> Open Werkplek</a>
                     <select onchange="window.updateProjectPhaseFromModal('${s.safeId}', this.value)" class="admin-input" style="padding: 4px 8px; font-size: 0.8rem; margin: 0; width: auto; cursor: pointer; background: rgba(15,23,42,0.9); border: 1px solid var(--color-primary-light); color: #fff; border-radius: 6px;" title="Wijzig status/fase direct">
-                        <option value="1" ${currentPhase === 1 ? 'selected' : ''}>Fase 1: Intake</option>
-                        <option value="2" ${currentPhase === 2 ? 'selected' : ''}>Fase 2: Offerte</option>
-                        <option value="3" ${currentPhase === 3 ? 'selected' : ''}>Fase 3: Design</option>
-                        <option value="4" ${currentPhase === 4 ? 'selected' : ''}>Fase 4: Code</option>
-                        <option value="5" ${currentPhase === 5 ? 'selected' : ''}>Fase 5: Livegang</option>
+                        <option value="1" ${currentPhase === 1 ? 'selected' : ''}>Fase 1: Intake Voltooid</option>
+                        <option value="2" ${currentPhase === 2 ? 'selected' : ''}>Fase 2: Wacht op Akkoord (Offerte)</option>
+                        <option value="3" ${currentPhase === 3 ? 'selected' : ''}>Fase 3: Design &amp; Ontwerp</option>
+                        <option value="4" ${currentPhase === 4 ? 'selected' : ''}>Fase 4: In Ontwikkeling</option>
+                        <option value="5-payment" ${currentPhase === 5 && isPaymentWaiting ? 'selected' : ''}>Fase 5: Wacht op Betaling (Mollie)</option>
+                        <option value="5-complete" ${currentPhase === 5 && !isPaymentWaiting ? 'selected' : ''}>Fase 5: Volledig Live &amp; Voldaan</option>
                     </select>
                 </div>
             </div>
@@ -1492,8 +1482,8 @@ window.openProjectDetails = (id) => {
                 <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 4)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 4 ? 'background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; color: #818cf8; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 4 (Code) te schakelen">
                     <i class="fas fa-code"></i><br>Fase 4: Code
                 </div>
-                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 5)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 5 ? 'background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; color: #34d399; font-weight: 700;' : 'color: #94a3b8;'}" title="Klik om naar Fase 5 (Livegang) te schakelen">
-                    <i class="fas fa-rocket"></i><br>Fase 5: Livegang
+                <div onclick="window.updateProjectPhaseFromModal('${s.safeId}', 5)" style="text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; ${currentPhase === 5 ? (isPaymentWaiting ? 'background: linear-gradient(135deg, rgba(14,165,233,0.2) 0%, rgba(245,158,11,0.2) 100%); border: 1px solid #fbbf24; color: #38bdf8; font-weight: 700;' : 'background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; color: #34d399; font-weight: 700;') : 'color: #94a3b8;'}" title="Klik om naar Fase 5 (Live & Voldaan) te schakelen">
+                    <i class="fas fa-rocket"></i><br>Fase 5: Live
                 </div>
             </div>
 
@@ -1853,52 +1843,51 @@ window.saveKlantkaartChanges = async (e, id) => {
 };
 
 window.updateProjectStatusDirect = async (id, newStatus) => {
-    let statusClass = "active";
-    if (newStatus === "Wacht op Akkoord") statusClass = "waiting";
-    else if (newStatus.includes("Mollie") || newStatus === "Afgerond") statusClass = "concept";
-    else statusClass = "active";
+    const info = formatProjectStatus(newStatus);
+    const targetStatus = info.label;
+    const statusClass = info.badgeClass;
 
     const itemIndex = cachedProjects.findIndex(p => p.id == id);
     if (itemIndex !== -1) {
-        cachedProjects[itemIndex].status = newStatus;
+        cachedProjects[itemIndex].status = targetStatus;
         cachedProjects[itemIndex].statusClass = statusClass;
     }
 
     if (db) {
         try {
             const docRef = doc(db, "projects", id);
-            await updateDoc(docRef, { status: newStatus, statusClass: statusClass });
+            await updateDoc(docRef, { status: targetStatus, statusClass: statusClass });
         } catch(err) {
             console.error("Fout bij updaten status in Firestore:", err);
         }
     }
 
-    alert(`Status gewijzigd naar: "${newStatus}"!\nHet project staat nu ook op het juiste tabblad.`);
+    alert(`Status gewijzigd naar: "${targetStatus}"!\nHet project staat nu ook op het juiste tabblad.`);
     closeModal('project-modal');
     loadDashboardData();
 };
 
-window.updateProjectPhaseFromModal = async (id, phaseNum) => {
-    const phase = parseInt(phaseNum, 10);
-    if (!phase) return;
-
-    let targetStatus = "Intake Voltooid";
+window.updateProjectPhaseFromModal = async (id, phaseKey) => {
+    let targetStatus = "Fase 1: Intake Voltooid";
     let targetStatusClass = "waiting";
 
-    if (phase === 1) {
-        targetStatus = "Intake Voltooid";
+    if (phaseKey === 1 || phaseKey === '1') {
+        targetStatus = "Fase 1: Intake Voltooid";
         targetStatusClass = "waiting";
-    } else if (phase === 2) {
-        targetStatus = "Wacht op Akkoord";
+    } else if (phaseKey === 2 || phaseKey === '2') {
+        targetStatus = "Fase 2: Wacht op Akkoord (Offerte)";
         targetStatusClass = "waiting";
-    } else if (phase === 3) {
-        targetStatus = "Design & Ontwerp (Fase 3)";
+    } else if (phaseKey === 3 || phaseKey === '3') {
+        targetStatus = "Fase 3: Design & Ontwerp";
         targetStatusClass = "active";
-    } else if (phase === 4) {
-        targetStatus = "In Ontwikkeling";
+    } else if (phaseKey === 4 || phaseKey === '4') {
+        targetStatus = "Fase 4: In Ontwikkeling";
         targetStatusClass = "active";
-    } else if (phase === 5) {
-        targetStatus = "Opgeleverd (Livegang)";
+    } else if (phaseKey === '5-payment') {
+        targetStatus = "Fase 5: Wacht op Betaling (Mollie)";
+        targetStatusClass = "payment";
+    } else if (phaseKey === '5-complete' || phaseKey === 5 || phaseKey === '5') {
+        targetStatus = "Fase 5: Volledig Live & Voldaan";
         targetStatusClass = "success";
     }
 
@@ -1917,7 +1906,7 @@ window.updateProjectPhaseFromModal = async (id, phaseNum) => {
         }
     }
 
-    alert(`Projectfase gewijzigd naar: "Fase ${phase}: ${targetStatus}"!`);
+    alert(`Projectfase gewijzigd naar: "${targetStatus}"!`);
     loadDashboardData();
     window.openProjectDetails(id);
 };
@@ -2052,8 +2041,8 @@ window.generateInvoiceMollieLink = async (id, name) => {
         const mockMollieLink = "https://useplink.com/payment/xyz123";
         
         await updateDoc(docRef, {
-            status: "Opgeleverd (Betaling via Mollie)",
-            statusClass: "concept",
+            status: "Fase 5: Wacht op Betaling (Mollie)",
+            statusClass: "payment",
             mollieLink: mockMollieLink
         });
 
