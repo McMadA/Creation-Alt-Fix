@@ -24,6 +24,17 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // Realtime Uptime, SSL & DNS Monitoring Collection [TASK-827]
+    // Anyone (clients in /status & visitors) can read monitor status
+    // Only authenticated admins can write/update monitor results
+    // ============================================================
+    match /monitors/{domainKey} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+
+    // ============================================================
     // Projects Collection
     // Core CRM data - tiered access control
     // ============================================================

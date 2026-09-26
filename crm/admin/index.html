@@ -55,6 +55,7 @@
                 <a href="#" class="nav-item" data-view="leads"><i class="fas fa-user-plus"></i> Leads & Intake</a>
                 <a href="#" class="nav-item" data-view="projects"><i class="fas fa-project-diagram"></i> Projecten</a>
                 <a href="#" class="nav-item" data-view="kanban"><i class="fas fa-columns"></i> Taken & Kanban</a>
+                <a href="#" class="nav-item" data-view="monitoring"><i class="fas fa-heartbeat" style="color: #10b981;"></i> Uptime &amp; Monitoring <span id="admin-uptime-alert-count" class="badge badge-danger hidden" style="margin-left: auto; padding: 2px 7px; font-size: 0.72rem; border-radius: 10px;">0</span></a>
                 <a href="#" class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Instellingen</a>
             </nav>
             <div class="sidebar-footer">
@@ -198,6 +199,146 @@
                         </div>
                         <div class="kanban-cards-list" id="list-kanban-done">
                             <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Uptime & Website Monitoring [TASK-827] -->
+            <div class="content-area hidden" id="view-monitoring">
+                <div class="monitoring-toolbar">
+                    <div>
+                        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-heartbeat" style="color: #10b981;"></i> Realtime Systeem, DNS &amp; Uptime Monitoring
+                        </h2>
+                        <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin: 0;">
+                            Multi-DNS (Google DoH &amp; Cloudflare DoH), SSL-handshake en HTTP/HTTPS statuscontrole over alle 17 gehoste domeinen.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="btn-scan-all-monitors" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-sync-alt" id="scan-all-spinner"></i> <span id="scan-all-btn-text">Nu Alle Domeinen Scannen</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-toggle-auto-refresh" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-clock"></i> <span id="auto-refresh-label">Auto-Refresh: Aan (60s)</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-toggle-alert-sound" style="display: flex; align-items: center; gap: 8px;" title="Schakel geluidssignaal in bij storingen">
+                            <i class="fas fa-volume-up" id="audio-alert-icon" style="color: #10b981;"></i> <span id="audio-alert-label">Audio: Aan</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-open-add-domain-modal" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-plus"></i> <span>Domein Toevoegen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Scan Progress Bar -->
+                <div id="monitoring-scan-progress-container" class="hidden" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 12px 16px; border: 1px solid rgba(99, 102, 241, 0.3);">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #c7d2fe; margin-bottom: 8px; font-weight: 600;">
+                        <span><i class="fas fa-satellite-dish fa-spin" style="color: var(--color-accent); margin-right: 6px;"></i> <span id="monitoring-scan-status-label">Bezig met scannen van DNS-records en HTTPS endpoints...</span></span>
+                        <span id="monitoring-scan-status-text">0 / 17</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 6px; overflow: hidden;">
+                        <div class="scan-progress-bar" id="monitoring-scan-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards -->
+                <div class="monitoring-kpi-grid">
+                    <div class="monitoring-kpi-card" id="kpi-card-operational">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Operationeel</span>
+                            <span class="monitoring-pulse-dot operational"></span>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-mon-operational" style="color: #34d399;">
+                            16 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ 17</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Domeinen live en bereikbaar</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card" id="kpi-card-down">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Storingen / Down</span>
+                            <span class="monitoring-pulse-dot down"></span>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-mon-down" style="color: #f87171;">
+                            0 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">incidenten</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);" id="kpi-mon-down-sub">Geen actieve DNS/HTTP uitval</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Gem. Responsetijd</span>
+                            <i class="fas fa-tachometer-alt" style="color: #38bdf8;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-mon-latency" style="color: #38bdf8;">
+                            ~65 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">ms</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Directe HTTP/TLS latency</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">DNS Resolutie Health</span>
+                            <i class="fas fa-network-wired" style="color: #a78bfa;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-mon-dns" style="color: #a78bfa;">
+                            100%
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">DoH NOERROR (Google &amp; CF)</div>
+                    </div>
+                </div>
+
+                <!-- Main Monitors Data Card -->
+                <div class="admin-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <h2><i class="fas fa-server" style="color: var(--color-accent); margin-right: 6px;"></i> Gehoste Domeinen &amp; Services</h2>
+                            <span class="kanban-count-badge" id="monitors-count-badge">17 Domeinen</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="text" id="monitor-search-input" class="admin-input" placeholder="🔍 Filter op domein of klant..." style="margin: 0; padding: 6px 12px; font-size: 0.85rem; width: 220px;">
+                            <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.3); padding: 3px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                                <button type="button" class="btn btn-sm btn-monitor-filter active" data-filter="all" style="padding: 4px 10px; font-size: 0.75rem; border: none; cursor: pointer;">Alle</button>
+                                <button type="button" class="btn btn-sm btn-monitor-filter" data-filter="issues" style="padding: 4px 10px; font-size: 0.75rem; border: none; color: #f87171; cursor: pointer;">Storingen</button>
+                                <button type="button" class="btn btn-sm btn-monitor-filter" data-filter="clients" style="padding: 4px 10px; font-size: 0.75rem; border: none; cursor: pointer;">Klanten</button>
+                                <button type="button" class="btn btn-sm btn-monitor-filter" data-filter="internal" style="padding: 4px 10px; font-size: 0.75rem; border: none; cursor: pointer;">Intern</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="monitors-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Domein &amp; Project</th>
+                                    <th>HTTP / HTTPS</th>
+                                    <th>SSL Certificaat</th>
+                                    <th>DNS Resolutie (DoH)</th>
+                                    <th>Responsetijd</th>
+                                    <th>Laatste Check</th>
+                                    <th>Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitors-tbody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Incidents & Event History -->
+                <div class="admin-card" style="margin-top: 24px;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-history" style="color: #fbbf24;"></i> Incidenten &amp; Alert Geschiedenis
+                        </h3>
+                        <span style="font-size: 0.75rem; color: var(--color-text-secondary);">Gedetecteerde uitval &amp; herstelde storingen</span>
+                    </div>
+                    <div id="monitors-incident-list" style="padding: 10px 0;">
+                        <div style="font-size: 0.85rem; color: #94a3b8; padding: 12px 16px; text-align: center;">
+                            <i class="fas fa-check-circle" style="color: #10b981; margin-right: 6px;"></i> Geen actieve storingen geregistreerd. Alle systemen draaien stabiel.
                         </div>
                     </div>
                 </div>
@@ -401,6 +542,14 @@
                         <div class="stat-value" id="stat-tasks" style="color: #c084fc;">0</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Deliverables op Kanban</div>
                     </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="document.querySelector('[data-view=monitoring]').click()" title="Klik voor Realtime Uptime &amp; DNS Monitoring">
+                        <i class="fas fa-heartbeat stat-icon" style="color: #10b981;" id="stat-monitoring-icon"></i>
+                        <div class="stat-label">Uptime &amp; Monitoring</div>
+                        <div class="stat-value" id="stat-monitoring" style="color: #10b981; display: flex; align-items: center; gap: 8px; font-size: 1.55rem;">
+                            <span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">17/17 Live</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;" id="stat-monitoring-sub">DNS, SSL &amp; HTTP OK</div>
+                    </div>
                 </div>
 
                 <!-- Recent Activity Kanban / List -->
@@ -601,6 +750,51 @@
                     <button type="button" id="btn-cancel-gemini-modal-main" class="btn btn-secondary btn-sm">Sluiten</button>
                     <button type="button" id="btn-save-gemini-key-main" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;">Sleutel Opslaan</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Monitor Domain Details & DNS Inspector [TASK-827] -->
+    <div id="monitor-detail-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header">
+                <h2 style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-network-wired text-accent"></i> <span id="modal-monitor-domain-title">Domein Details</span>
+                </h2>
+                <button class="close-btn" onclick="closeModal('monitor-detail-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-monitor-body">
+                <!-- Injected dynamically by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nieuw Domein Toevoegen aan Monitor [TASK-827] -->
+    <div id="add-monitor-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle text-accent"></i> Nieuw Domein Monitoren</h2>
+                <button class="close-btn" onclick="closeModal('add-monitor-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-monitor-domain">
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">Domeinnaam</label>
+                    <input type="text" id="add-mon-domain" class="admin-input" placeholder="bijv. klantbedrijf.nl" required style="margin-top: 4px;">
+
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 10px; display: block;">Klant / Projectnaam</label>
+                    <input type="text" id="add-mon-client" class="admin-input" placeholder="bijv. Klantbedrijf B.V." required style="margin-top: 4px;">
+
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 10px; display: block;">Verwacht Server IP (Optioneel)</label>
+                    <input type="text" id="add-mon-ip" class="admin-input" placeholder="185.104.29.148" style="margin-top: 4px;">
+
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 10px; display: block;">Subpad (Optioneel)</label>
+                    <input type="text" id="add-mon-path" class="admin-input" placeholder="/" value="/" style="margin-top: 4px;">
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('add-monitor-modal')">Annuleren</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Toevoegen &amp; Scannen</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -15,6 +15,17 @@ import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
 import { parseTodoMarkdown, mapTaskToProject, syncTodoToFirestore, exportKanbanToTodoMarkdown, PROJECT_PROFILES } from "../../js/todo-sync.js";
 import { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./project.js";
+import { 
+    getMonitoredDomains, 
+    runDomainHealthCheck, 
+    runAllDomainChecks, 
+    saveDomainReportToFirestore, 
+    dispatchDowntimeAlert, 
+    addCustomMonitoredDomain, 
+    getIncidentLogs,
+    playAlertTone 
+} from "../../js/uptime-monitor.js";
+
 
 
 
@@ -1057,6 +1068,10 @@ function setupNavigation() {
             if (targetView === 'settings') {
                 initSettingsTab();
             }
+            if (targetView === 'monitoring') {
+                initMonitoringTab();
+            }
+
         });
     });
 }
@@ -2546,13 +2561,512 @@ function initSettingsTab() {
     });
 }
 
+// ===========================================
+// UPTIME & WEBSITE MONITORING CONTROLLER [TASK-827]
+// ===========================================
+let monitoringReports = [];
+let monitoringCurrentFilter = 'all';
+let monitoringSearchQuery = '';
+let monitoringAutoRefreshTimer = null;
+let monitoringAutoRefreshEnabled = true;
+let monitoringAudioAlertsEnabled = true;
+let isScanningMonitors = false;
+let hasDoneInitialMonitoringScan = false;
+
+function initMonitoringTab() {
+    setupMonitoringEventListeners();
+    
+    // Load from cache first for instant render
+    if (monitoringReports.length === 0) {
+        try {
+            const cached = localStorage.getItem('caf_cached_monitor_reports');
+            if (cached) {
+                monitoringReports = JSON.parse(cached);
+                renderMonitorsTable();
+            }
+        } catch (e) {}
+    }
+
+    // Trigger initial scan if not performed yet
+    if (!hasDoneInitialMonitoringScan && !isScanningMonitors) {
+        hasDoneInitialMonitoringScan = true;
+        executeScanAllMonitors();
+    }
+
+    // Ensure auto-refresh timer is running
+    restartMonitoringAutoRefresh();
+}
+
+function setupMonitoringEventListeners() {
+    if (window._monitoringListenersBound) return;
+    window._monitoringListenersBound = true;
+
+    // Scan All Button
+    document.getElementById('btn-scan-all-monitors')?.addEventListener('click', () => {
+        executeScanAllMonitors();
+    });
+
+    // Auto Refresh Toggle
+    document.getElementById('btn-toggle-auto-refresh')?.addEventListener('click', () => {
+        monitoringAutoRefreshEnabled = !monitoringAutoRefreshEnabled;
+        const label = document.getElementById('auto-refresh-label');
+        if (label) {
+            label.innerText = monitoringAutoRefreshEnabled ? 'Auto-Refresh: Aan (60s)' : 'Auto-Refresh: Uit';
+        }
+        restartMonitoringAutoRefresh();
+    });
+
+    // Audio Alert Toggle
+    document.getElementById('btn-toggle-alert-sound')?.addEventListener('click', () => {
+        monitoringAudioAlertsEnabled = !monitoringAudioAlertsEnabled;
+        const icon = document.getElementById('audio-alert-icon');
+        const label = document.getElementById('audio-alert-label');
+        if (icon && label) {
+            if (monitoringAudioAlertsEnabled) {
+                icon.className = 'fas fa-volume-up';
+                icon.style.color = '#10b981';
+                label.innerText = 'Audio: Aan';
+            } else {
+                icon.className = 'fas fa-volume-mute';
+                icon.style.color = '#94a3b8';
+                label.innerText = 'Audio: Uit';
+            }
+        }
+    });
+
+    // Open Add Domain Modal
+    document.getElementById('btn-open-add-domain-modal')?.addEventListener('click', () => {
+        document.getElementById('add-monitor-modal')?.classList.remove('hidden');
+    });
+
+    // Add Domain Form Submit
+    document.getElementById('form-add-monitor-domain')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const domain = document.getElementById('add-mon-domain')?.value.trim();
+        const client = document.getElementById('add-mon-client')?.value.trim();
+        const expectedIp = document.getElementById('add-mon-ip')?.value.trim();
+        const path = document.getElementById('add-mon-path')?.value.trim() || '/';
+
+        if (!domain) return;
+        const added = addCustomMonitoredDomain({ domain, client, expectedIp, path });
+        if (!added) {
+            alert("Dit domein staat al in de monitor lijst of is ongeldig.");
+            return;
+        }
+
+        document.getElementById('add-monitor-modal')?.classList.add('hidden');
+        document.getElementById('form-add-monitor-domain')?.reset();
+
+        // Scan this newly added domain immediately
+        const report = await runDomainHealthCheck(added);
+        monitoringReports.unshift(report);
+        renderMonitorsTable();
+        if (db) saveDomainReportToFirestore(db, report);
+    });
+
+    // Search filter
+    document.getElementById('monitor-search-input')?.addEventListener('input', (e) => {
+        monitoringSearchQuery = (e.target.value || '').trim().toLowerCase();
+        renderMonitorsTable();
+    });
+
+    // Filter Buttons
+    document.querySelectorAll('.btn-monitor-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.btn-monitor-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            monitoringCurrentFilter = btn.getAttribute('data-filter') || 'all';
+            renderMonitorsTable();
+        });
+    });
+}
+
+function restartMonitoringAutoRefresh() {
+    if (monitoringAutoRefreshTimer) {
+        clearInterval(monitoringAutoRefreshTimer);
+        monitoringAutoRefreshTimer = null;
+    }
+    if (monitoringAutoRefreshEnabled) {
+        monitoringAutoRefreshTimer = setInterval(() => {
+            if (!isScanningMonitors) {
+                executeScanAllMonitors(true);
+            }
+        }, 60000);
+    }
+}
+
+async function executeScanAllMonitors(isSilent = false) {
+    if (isScanningMonitors) return;
+    isScanningMonitors = true;
+
+    const scanBtn = document.getElementById('btn-scan-all-monitors');
+    const scanSpinner = document.getElementById('scan-all-spinner');
+    const scanBtnText = document.getElementById('scan-all-btn-text');
+    const progressContainer = document.getElementById('monitoring-scan-progress-container');
+    const progressBar = document.getElementById('monitoring-scan-bar');
+    const progressText = document.getElementById('monitoring-scan-status-text');
+
+    if (scanBtn) scanBtn.disabled = true;
+    if (scanSpinner) scanSpinner.classList.add('fa-spin');
+    if (scanBtnText) scanBtnText.innerText = 'Bezig met scannen...';
+
+    if (progressContainer) progressContainer.classList.remove('hidden');
+    if (progressBar) progressBar.style.width = '0%';
+
+    const domains = getMonitoredDomains();
+
+    try {
+        const results = await runAllDomainChecks(domains, (completed, total, report) => {
+            const pct = Math.round((completed / total) * 100);
+            if (progressBar) progressBar.style.width = `${pct}%`;
+            if (progressText) progressText.innerText = `${completed} / ${total}`;
+
+            if (report.overallStatus === 'down') {
+                if (monitoringAudioAlertsEnabled) {
+                    playAlertTone();
+                }
+                dispatchDowntimeAlert(report);
+            }
+
+            if (db) {
+                saveDomainReportToFirestore(db, report);
+            }
+        });
+
+        monitoringReports = results;
+
+        try {
+            localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(results));
+        } catch (e) {}
+
+        renderMonitorsTable();
+
+    } catch (err) {
+        console.error("Fout tijdens monitoring scan:", err);
+    } finally {
+        isScanningMonitors = false;
+        if (scanBtn) scanBtn.disabled = false;
+        if (scanSpinner) scanSpinner.classList.remove('fa-spin');
+        if (scanBtnText) scanBtnText.innerText = 'Nu Alle Domeinen Scannen';
+
+        setTimeout(() => {
+            if (progressContainer) progressContainer.classList.add('hidden');
+        }, 1200);
+    }
+}
+
+function renderMonitorsTable() {
+    const tbody = document.getElementById('monitors-tbody');
+    if (!tbody) return;
+
+    let filtered = monitoringReports.filter(r => {
+        if (monitoringSearchQuery) {
+            const q = monitoringSearchQuery;
+            const matchName = (r.name || '').toLowerCase().includes(q);
+            const matchDom = (r.domain || '').toLowerCase().includes(q);
+            const matchClient = (r.client || '').toLowerCase().includes(q);
+            const matchStatus = (r.statusText || '').toLowerCase().includes(q);
+            if (!matchName && !matchDom && !matchClient && !matchStatus) return false;
+        }
+
+        if (monitoringCurrentFilter === 'issues') {
+            return r.overallStatus === 'down' || r.overallStatus === 'degraded';
+        }
+        if (monitoringCurrentFilter === 'clients') {
+            return r.category === 'client';
+        }
+        if (monitoringCurrentFilter === 'internal') {
+            return r.category === 'internal';
+        }
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 35px 20px; color: var(--color-text-secondary);">
+                    <i class="fas fa-search" style="font-size: 1.5rem; color: #94a3b8; margin-bottom: 8px; display: block;"></i>
+                    Geen domeinen gevonden voor de huidige selectie.
+                </td>
+            </tr>
+        `;
+    } else {
+        tbody.innerHTML = filtered.map(r => {
+            const latencyClass = r.latencyMs < 200 ? 'latency-fast' : (r.latencyMs < 800 ? 'latency-medium' : 'latency-slow');
+            const latencyPct = Math.min(100, Math.round((r.latencyMs / 1500) * 100));
+            const httpBadge = r.httpCode === 200 
+                ? `<span class="tech-badge ssl-ok"><i class="fas fa-check"></i> 200 OK</span>`
+                : `<span class="tech-badge ssl-fail"><i class="fas fa-exclamation-triangle"></i> ${r.httpCode || 'ERR'}</span>`;
+            
+            const sslBadge = r.sslValid
+                ? `<span class="tech-badge ssl-ok"><i class="fas fa-lock"></i> SSL Geldig</span>`
+                : `<span class="tech-badge ssl-fail"><i class="fas fa-lock-open"></i> SSL Fout</span>`;
+
+            const dnsBadge = r.dnsStatus === 'NOERROR'
+                ? `<span class="tech-badge dns-ok"><i class="fas fa-check-circle"></i> NOERROR</span>`
+                : `<span class="tech-badge dns-fail"><i class="fas fa-times-circle"></i> ${escapeHtml(r.dnsStatus)}</span>`;
+
+            const resolvedIpDisplay = r.resolvedIps && r.resolvedIps.length > 0 
+                ? r.resolvedIps[0] 
+                : '<span style="color: #f87171;">Geen IP</span>';
+
+            const lastCheckedFormatted = r.lastChecked 
+                ? new Date(r.lastChecked).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                : '-';
+
+            return `
+                <tr id="row-monitor-${escapeHtml(r.id)}">
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="monitoring-pulse-dot ${r.overallStatus}"></span>
+                            <span class="monitoring-status-pill ${r.overallStatus}">${escapeHtml(r.statusText)}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" style="color: #fff; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                                <span>${escapeHtml(r.domain)}</span>
+                                <i class="fas fa-external-link-alt" style="font-size: 0.72rem; color: #94a3b8;"></i>
+                            </a>
+                            <div style="font-size: 0.74rem; color: var(--color-text-secondary); margin-top: 2px;">
+                                ${escapeHtml(r.name)} • <span style="color: var(--color-accent);">${escapeHtml(r.client)}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${httpBadge}</td>
+                    <td>${sslBadge}</td>
+                    <td>
+                        <div>
+                            ${dnsBadge}
+                            <div style="font-size: 0.72rem; color: #94a3b8; font-family: monospace; margin-top: 3px;">
+                                ${resolvedIpDisplay}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="latency-meter ${latencyClass}">
+                            <span>${r.latencyMs} ms</span>
+                            <div class="latency-bar-track">
+                                <div class="latency-bar-fill" style="width: ${latencyPct}%;"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-size: 0.8rem; color: #94a3b8;">${lastCheckedFormatted}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button class="btn btn-secondary btn-sm" onclick="openMonitorDetailModal('${escapeHtml(r.domain)}')" title="Diepgaande DNS- &amp; SSL inspectie" style="padding: 4px 8px;">
+                                <i class="fas fa-search-plus" style="color: var(--color-accent);"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="recheckSingleDomain('${escapeHtml(r.domain)}')" title="Nu opnieuw testen" style="padding: 4px 8px;">
+                                <i class="fas fa-sync-alt" id="recheck-spin-${escapeHtml(r.id)}"></i>
+                            </button>
+                            <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="Website bezoeken" style="padding: 4px 8px;">
+                                <i class="fas fa-globe"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    const total = monitoringReports.length;
+    const operational = monitoringReports.filter(r => r.overallStatus === 'operational').length;
+    const down = monitoringReports.filter(r => r.overallStatus === 'down').length;
+    const degraded = monitoringReports.filter(r => r.overallStatus === 'degraded').length;
+
+    const sumLatency = monitoringReports.reduce((acc, r) => acc + (r.latencyMs || 0), 0);
+    const avgLatency = total > 0 ? Math.round(sumLatency / total) : 0;
+
+    const noerrorDns = monitoringReports.filter(r => r.dnsStatus === 'NOERROR').length;
+    const dnsHealth = total > 0 ? Math.round((noerrorDns / total) * 100) : 100;
+
+    const kpiOperational = document.getElementById('kpi-mon-operational');
+    if (kpiOperational) kpiOperational.innerHTML = `${operational} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ ${total}</span>`;
+
+    const kpiDown = document.getElementById('kpi-mon-down');
+    if (kpiDown) kpiDown.innerHTML = `${down} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">incidenten</span>`;
+
+    const kpiDownSub = document.getElementById('kpi-mon-down-sub');
+    if (kpiDownSub) {
+        kpiDownSub.innerText = down > 0 ? `${down} domein(en) vereisen directe actie!` : "Geen actieve DNS/HTTP uitval";
+        kpiDownSub.style.color = down > 0 ? '#f87171' : 'var(--color-text-secondary)';
+    }
+
+    const kpiLatency = document.getElementById('kpi-mon-latency');
+    if (kpiLatency) kpiLatency.innerHTML = `~${avgLatency} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">ms</span>`;
+
+    const kpiDns = document.getElementById('kpi-mon-dns');
+    if (kpiDns) kpiDns.innerHTML = `${dnsHealth}%`;
+
+    const countBadge = document.getElementById('monitors-count-badge');
+    if (countBadge) countBadge.innerText = `${total} Domeinen`;
+
+    const statMonitoring = document.getElementById('stat-monitoring');
+    const statMonitoringSub = document.getElementById('stat-monitoring-sub');
+    if (statMonitoring) {
+        const dotClass = down > 0 ? 'down' : (degraded > 0 ? 'degraded' : 'operational');
+        statMonitoring.innerHTML = `<span class="monitoring-pulse-dot ${dotClass}"></span> <span id="stat-monitoring-text">${operational}/${total} Live</span>`;
+        statMonitoring.style.color = down > 0 ? '#f87171' : (degraded > 0 ? '#fbbf24' : '#10b981');
+    }
+    if (statMonitoringSub) {
+        statMonitoringSub.innerText = down > 0 ? `🚨 ${down} domein(en) down!` : `DNS, SSL & HTTP OK (~${avgLatency}ms)`;
+        statMonitoringSub.style.color = down > 0 ? '#f87171' : 'var(--color-text-secondary)';
+    }
+
+    const sidebarAlertBadge = document.getElementById('admin-uptime-alert-count');
+    if (sidebarAlertBadge) {
+        if (down > 0) {
+            sidebarAlertBadge.innerText = down;
+            sidebarAlertBadge.classList.remove('hidden');
+        } else {
+            sidebarAlertBadge.classList.add('hidden');
+        }
+    }
+
+    renderIncidentList();
+}
+
+function renderIncidentList() {
+    const container = document.getElementById('monitors-incident-list');
+    if (!container) return;
+
+    const incidents = getIncidentLogs();
+    if (!incidents || incidents.length === 0) {
+        container.innerHTML = `
+            <div style="font-size: 0.85rem; color: #94a3b8; padding: 12px 16px; text-align: center;">
+                <i class="fas fa-check-circle" style="color: #10b981; margin-right: 6px;"></i> Geen actieve storingen geregistreerd. Alle systemen draaien stabiel.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = incidents.slice(0, 8).map(inc => {
+        const time = new Date(inc.timestamp).toLocaleString('nl-NL');
+        return `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.84rem;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="monitoring-pulse-dot down"></span>
+                    <strong style="color: #fff;">${escapeHtml(inc.domain)}</strong>
+                    <span style="color: #f87171;">${escapeHtml(inc.status)}</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">${escapeHtml(time)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.openMonitorDetailModal = async (domainName) => {
+    const report = monitoringReports.find(r => r.domain === domainName);
+    if (!report) return;
+
+    const modal = document.getElementById('monitor-detail-modal');
+    const title = document.getElementById('modal-monitor-domain-title');
+    const body = document.getElementById('modal-monitor-body');
+
+    if (title) title.innerText = `${report.name} (${report.domain})`;
+    if (body) {
+        body.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="monitoring-pulse-dot ${report.overallStatus}"></span>
+                    <span class="monitoring-status-pill ${report.overallStatus}" style="font-size: 0.85rem;">${escapeHtml(report.statusText)}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: #94a3b8;">
+                    Laatste controle: <strong>${new Date(report.lastChecked).toLocaleString('nl-NL')}</strong>
+                </div>
+            </div>
+
+            <!-- DNS Inspection -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px;">
+                <h4 style="margin: 0 0 10px 0; color: #38bdf8; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-network-wired"></i> DNS-over-HTTPS (DoH) Analyse
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.83rem;">
+                    <div><strong>DoH Provider:</strong> <span style="color: #c7d2fe;">${escapeHtml(report.dnsProvider)}</span></div>
+                    <div><strong>DNS Status Code:</strong> <span class="tech-badge ${report.dnsStatus === 'NOERROR' ? 'dns-ok' : 'dns-fail'}">${escapeHtml(report.dnsStatus)}</span></div>
+                    <div><strong>DNS Latency:</strong> <span>${report.dnsLatencyMs} ms</span></div>
+                    <div><strong>Verwacht Server IP:</strong> <span style="font-family: monospace;">${escapeHtml(report.expectedIp || 'Niet ingesteld')}</span></div>
+                    <div style="grid-column: span 2;">
+                        <strong>Geresolveerde IPv4 A-Records:</strong>
+                        <div style="font-family: monospace; color: #34d399; margin-top: 4px; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 4px;">
+                            ${report.resolvedIps && report.resolvedIps.length > 0 ? report.resolvedIps.join(', ') : 'Geen A-records aangetroffen'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HTTPS & SSL Inspection -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #34d399; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-lock"></i> HTTPS &amp; SSL Certificaat Status
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.83rem;">
+                    <div><strong>HTTP Responscode:</strong> <span class="tech-badge ${report.httpCode === 200 ? 'ssl-ok' : 'ssl-fail'}">HTTP ${report.httpCode}</span></div>
+                    <div><strong>SSL Handshake:</strong> <span class="tech-badge ${report.sslValid ? 'ssl-ok' : 'ssl-fail'}">${report.sslValid ? '✓ Succesvol (TLS OK)' : '✗ Fout / Verlopen'}</span></div>
+                    <div><strong>Totale Responsetijd:</strong> <span>${report.latencyMs} ms</span></div>
+                    <div><strong>Subpad:</strong> <code>${escapeHtml(report.path || '/')}</code></div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('monitor-detail-modal')">Sluiten</button>
+                <div style="display: flex; gap: 8px;">
+                    <a href="https://${escapeHtml(report.domain)}${report.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fas fa-globe"></i> Open Website
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="recheckSingleDomain('${escapeHtml(report.domain)}', true)">
+                        <i class="fas fa-sync-alt"></i> Nu Opnieuw Testen
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    modal?.classList.remove('hidden');
+};
+
+window.recheckSingleDomain = async (domainName, updateDetailModal = false) => {
+    const domainObj = getMonitoredDomains().find(d => d.domain === domainName);
+    if (!domainObj) return;
+
+    const spinner = document.getElementById(`recheck-spin-${domainObj.id}`);
+    if (spinner) spinner.classList.add('fa-spin');
+
+    try {
+        const freshReport = await runDomainHealthCheck(domainObj);
+        const idx = monitoringReports.findIndex(r => r.domain === domainName);
+        if (idx !== -1) {
+            monitoringReports[idx] = freshReport;
+        } else {
+            monitoringReports.push(freshReport);
+        }
+
+        renderMonitorsTable();
+
+        if (db) {
+            saveDomainReportToFirestore(db, freshReport);
+        }
+
+        if (updateDetailModal) {
+            window.openMonitorDetailModal(domainName);
+        }
+    } finally {
+        if (spinner) spinner.classList.remove('fa-spin');
+    }
+};
+
 function initAdminPage() {
     setupNavigation();
     setupSearchAndFilters();
     setupTodoSyncListeners();
     initSettingsTab();
+    initMonitoringTab();
     document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
     document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
+
 
     // Gemini Modal in Main Admin (for secondary modal access)
     const geminiModalMain = document.getElementById('gemini-settings-modal');

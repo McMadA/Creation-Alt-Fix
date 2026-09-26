@@ -1,0 +1,688 @@
+/**
+ * Creation+Alt+Fix - Central Uptime & Website Monitoring Suite
+ * [TASK-827] Realtime Uptime, HTTP, SSL & Multi-DNS Health Checker
+ * 
+ * Features:
+ * 1. Multi-DNS Resolver Engine (Google DoH + Cloudflare DoH) - Detects DNS DDoS / SERVFAIL / NXDOMAIN
+ * 2. Direct HTTPS Handshake & Uptime Probe with latency benchmarking
+ * 3. Fallback & Server-side cURL probe via crm/api/healthcheck.php when on live host
+ * 4. Dual persistence: Real-time Firestore sync (/monitors/{domainKey}) + LocalStorage fallback
+ * 5. Automated Downtime Alerting via EmailJS (to info@creationaltfix.nl) with 60-min anti-spam cooldown
+ * 6. Synthesized Web Audio chime for critical in-browser admin alerts
+ */
+
+import { EMAILJS_CONFIG } from "./firebase-config.js";
+
+/**
+ * Standard list of all 17 hosted and client portfolio domains.
+ */
+export const DEFAULT_MONITORED_DOMAINS = [
+    {
+        id: "creationaltfix-nl",
+        name: "Creation+Alt+Fix (Hoofdwebsite)",
+        domain: "creationaltfix.nl",
+        client: "Creation+Alt+Fix",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "internal"
+    },
+    {
+        id: "portal-creationaltfix-nl",
+        name: "Creation+Alt+Fix (CRM & Portaal)",
+        domain: "portal.creationaltfix.nl",
+        client: "Creation+Alt+Fix",
+        expectedIp: "185.104.29.148",
+        path: "/crm/",
+        category: "internal"
+    },
+    {
+        id: "bakkertjesieg-nl",
+        name: "BakkertjeSieg",
+        domain: "bakkertjesieg.nl",
+        client: "BakkertjeSieg",
+        expectedIp: "185.104.29.148",
+        path: "/new/",
+        category: "client"
+    },
+    {
+        id: "pomppop-nl",
+        name: "PompPop Festival",
+        domain: "pomppop.nl",
+        client: "Stichting PompPop",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "angelastenekes-nl",
+        name: "Angela Stenekes",
+        domain: "angelastenekes.nl",
+        client: "Angela Stenekes",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "arnolddesign-nl",
+        name: "Arnold Design",
+        domain: "arnolddesign.nl",
+        client: "Arnold Doornbos",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "naaiatelier-willa-nl",
+        name: "Naaiatelier Willa",
+        domain: "naaiatelier-willa.nl",
+        client: "Willa Handmade Studio",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "ftruckstore-nl",
+        name: "F-Truck Store (NL)",
+        domain: "ftruckstore.nl",
+        client: "F-Truck Store",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "ftruckstore-com",
+        name: "F-Truck Store (COM)",
+        domain: "ftruckstore.com",
+        client: "F-Truck Store",
+        expectedIp: "185.104.28.238",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "stenekesrioolspecialist-nl",
+        name: "Stenekes Riool & Grondwerk",
+        domain: "stenekesrioolspecialist.nl",
+        client: "Stenekes Riool & Grondwerk",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "scholte-elektrotechniek-nl",
+        name: "Scholte Elektrotechniek",
+        domain: "scholte-elektrotechniek.nl",
+        client: "Scholte Elektrotechniek",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "capybaraculture-com",
+        name: "Capybara Culture",
+        domain: "capybaraculture.com",
+        client: "Capybara Culture",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "qolipa-nl",
+        name: "Qolipa (NL)",
+        domain: "qolipa.nl",
+        client: "Qolipa Brand",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "qolipa-com",
+        name: "Qolipa (COM)",
+        domain: "qolipa.com",
+        client: "Qolipa Brand",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "besselinginstallatietechniek-nl",
+        name: "Besseling Installatietechniek",
+        domain: "besselinginstallatietechniek.nl",
+        client: "Besseling Installatietechniek",
+        expectedIp: "95.179.128.188",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "vanderplaats-nl",
+        name: "VAN DER PLAATS",
+        domain: "vanderplaats.nl",
+        client: "Gerard Klusser",
+        expectedIp: "141.148.239.137",
+        path: "/",
+        category: "client"
+    },
+    {
+        id: "hbi-creationaltfix-nl",
+        name: "Home Buyer Intelligence",
+        domain: "hbi.creationaltfix.nl",
+        client: "Creation+Alt+Fix (PropTech AI)",
+        expectedIp: "185.104.29.148",
+        path: "/",
+        category: "internal"
+    }
+];
+
+const LOCAL_STORAGE_CUSTOM_DOMAINS = 'caf_uptime_custom_domains';
+const LOCAL_STORAGE_ALERTS_LOG = 'caf_uptime_alerts_log';
+const LOCAL_STORAGE_SETTINGS = 'caf_uptime_settings';
+
+/**
+ * Returns the active list of monitored domains (defaults + any custom added).
+ */
+export function getMonitoredDomains() {
+    let custom = [];
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
+        if (stored) custom = JSON.parse(stored);
+    } catch (e) {
+        console.warn("Could not read custom domains:", e);
+    }
+    return [...DEFAULT_MONITORED_DOMAINS, ...custom];
+}
+
+/**
+ * Adds a new custom domain to monitor.
+ */
+export function addCustomMonitoredDomain(domainObj) {
+    if (!domainObj || !domainObj.domain) return false;
+    const cleanDomain = domainObj.domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    const id = cleanDomain.replace(/[^a-z0-9]/g, '-');
+
+    const all = getMonitoredDomains();
+    if (all.some(d => d.domain === cleanDomain)) return false;
+
+    const newEntry = {
+        id,
+        name: domainObj.name || cleanDomain,
+        domain: cleanDomain,
+        client: domainObj.client || "Maatwerk Klant",
+        expectedIp: domainObj.expectedIp || "",
+        path: domainObj.path || "/",
+        category: domainObj.category || "client"
+    };
+
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
+        const list = stored ? JSON.parse(stored) : [];
+        list.push(newEntry);
+        localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(list));
+        return newEntry;
+    } catch (e) {
+        console.error("Error saving custom domain:", e);
+        return false;
+    }
+}
+
+/**
+ * Checks DNS resolution via Google Public DNS (DoH) and Cloudflare DoH.
+ * Catches DNS DDoS timeouts, SERVFAIL, NXDOMAIN, and verifies resolved IPs.
+ * 
+ * @param {string} domain 
+ * @returns {Promise<Object>} DNS health details
+ */
+export async function checkDomainDns(domain) {
+    const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+    const dnsResult = {
+        domain: cleanDomain,
+        status: "UNKNOWN",
+        statusCode: -1,
+        resolvedIps: [],
+        nameservers: [],
+        latencyMs: 0,
+        provider: "Google DoH",
+        timestamp: new Date().toISOString()
+    };
+
+    const startTime = performance.now();
+
+    // 1. Primary: Google DNS-over-HTTPS
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        
+        const googleUrl = `https://dns.google/resolve?name=${encodeURIComponent(cleanDomain)}&type=A`;
+        const res = await fetch(googleUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            const data = await res.json();
+            dnsResult.latencyMs = Math.round(performance.now() - startTime);
+            dnsResult.statusCode = data.Status;
+
+            if (data.Status === 0) {
+                dnsResult.status = "NOERROR"; // Healthy
+                if (data.Answer && Array.isArray(data.Answer)) {
+                    dnsResult.resolvedIps = data.Answer
+                        .filter(a => a.type === 1) // Type 1 = A record
+                        .map(a => a.data);
+                }
+            } else if (data.Status === 2) {
+                dnsResult.status = "SERVFAIL"; // Server failure / DDoS / Nameserver timeout!
+            } else if (data.Status === 3) {
+                dnsResult.status = "NXDOMAIN"; // Non-existent domain
+            } else {
+                dnsResult.status = `DNS_STATUS_${data.Status}`;
+            }
+
+            return dnsResult;
+        }
+    } catch (err) {
+        console.warn(`Google DoH failed for ${cleanDomain}, trying Cloudflare DoH fallback:`, err.message);
+    }
+
+    // 2. Fallback: Cloudflare DNS-over-HTTPS
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        const cfUrl = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleanDomain)}&type=A`;
+        const res = await fetch(cfUrl, {
+            headers: { 'Accept': 'application/dns-json' },
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            const data = await res.json();
+            dnsResult.latencyMs = Math.round(performance.now() - startTime);
+            dnsResult.provider = "Cloudflare DoH";
+            dnsResult.statusCode = data.Status;
+
+            if (data.Status === 0) {
+                dnsResult.status = "NOERROR";
+                if (data.Answer && Array.isArray(data.Answer)) {
+                    dnsResult.resolvedIps = data.Answer.filter(a => a.type === 1).map(a => a.data);
+                }
+            } else if (data.Status === 2) {
+                dnsResult.status = "SERVFAIL";
+            } else if (data.Status === 3) {
+                dnsResult.status = "NXDOMAIN";
+            } else {
+                dnsResult.status = `DNS_STATUS_${data.Status}`;
+            }
+
+            return dnsResult;
+        }
+    } catch (cfErr) {
+        dnsResult.latencyMs = Math.round(performance.now() - startTime);
+        dnsResult.status = "DNS_TIMEOUT";
+        dnsResult.error = cfErr.message;
+    }
+
+    return dnsResult;
+}
+
+/**
+ * Performs a direct HTTPS connectivity probe with SSL and latency measurement.
+ * Tests server availability and handshake.
+ * 
+ * @param {string} domain 
+ * @param {string} path 
+ * @returns {Promise<Object>}
+ */
+export async function probeDomainHttps(domain, path = "/") {
+    const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+    const targetUrl = `https://${cleanDomain}${path}`;
+    const startTime = performance.now();
+
+    const probeResult = {
+        url: targetUrl,
+        reachable: false,
+        latencyMs: 0,
+        sslValid: false,
+        httpCode: null,
+        message: "Niet getest"
+    };
+
+    // 1. Try internal healthcheck proxy if on live host (Vimexx cURL endpoint)
+    try {
+        const basePath = (typeof window !== 'undefined' && window.location.pathname.includes('/crm/')) ? '/crm' : '';
+        const proxyUrl = `${basePath}/api/healthcheck.php?domain=${encodeURIComponent(cleanDomain)}`;
+        const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(3500) });
+        if (proxyRes.ok) {
+            const proxyData = await proxyRes.json();
+            if (proxyData && proxyData.success) {
+                probeResult.reachable = proxyData.reachable;
+                probeResult.latencyMs = proxyData.latency_ms || Math.round(performance.now() - startTime);
+                probeResult.sslValid = !!proxyData.ssl_valid;
+                probeResult.httpCode = proxyData.http_code;
+                probeResult.message = proxyData.message || (proxyData.reachable ? "Bereikbaar (200 OK)" : "Niet bereikbaar");
+                return probeResult;
+            }
+        }
+    } catch (e) {
+        // Fallback to direct client-side probe
+    }
+
+    // 2. Direct browser HTTPS probe (no-cors fetch with timeout)
+    try {
+        const probeTarget = `${targetUrl}${targetUrl.includes('?') ? '&' : '?'}_probe=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+        const res = await fetch(probeTarget, {
+            mode: 'no-cors',
+            cache: 'no-store',
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        probeResult.latencyMs = Math.round(performance.now() - startTime);
+        probeResult.reachable = true;
+        probeResult.sslValid = true; // HTTPS handshake succeeded without TLS reject
+        probeResult.httpCode = 200;
+        probeResult.message = "Bereikbaar via HTTPS";
+    } catch (err) {
+        probeResult.latencyMs = Math.round(performance.now() - startTime);
+        probeResult.reachable = false;
+
+        if (err.name === 'AbortError') {
+            probeResult.message = "Timeout (> 6000ms)";
+            probeResult.httpCode = 504;
+        } else {
+            probeResult.message = "Verbinding mislukt (SSL / Poort / Host onbereikbaar)";
+            probeResult.httpCode = 500;
+        }
+    }
+
+    return probeResult;
+}
+
+/**
+ * Runs a unified health check (DNS + HTTPS) for a single domain.
+ * 
+ * @param {Object} domainConfig 
+ * @returns {Promise<Object>} Full check diagnostic report
+ */
+export async function runDomainHealthCheck(domainConfig) {
+    const domain = domainConfig.domain;
+    const path = domainConfig.path || "/";
+
+    // Run DNS and HTTPS concurrently
+    const [dnsSettled, httpsSettled] = await Promise.allSettled([
+        checkDomainDns(domain),
+        probeDomainHttps(domain, path)
+    ]);
+
+    const dns = dnsSettled.status === 'fulfilled' ? dnsSettled.value : { status: 'ERROR', latencyMs: 0, resolvedIps: [] };
+    const https = httpsSettled.status === 'fulfilled' ? httpsSettled.value : { reachable: false, latencyMs: 0, sslValid: false, httpCode: 500, message: "Probe error" };
+
+    // Calculate overall status
+    let overallStatus = "operational"; // operational | degraded | down
+    let statusText = "Operationeel";
+    let statusColor = "#10b981"; // green
+
+    if (!https.reachable || dns.status === 'SERVFAIL' || dns.status === 'DNS_TIMEOUT') {
+        overallStatus = "down";
+        statusText = dns.status === 'SERVFAIL' ? "DNS Storing (SERVFAIL / DDoS)" : "Offline / Onbereikbaar";
+        statusColor = "#ef4444"; // red
+    } else if (dns.status === 'NXDOMAIN') {
+        overallStatus = "down";
+        statusText = "Domein Niet Gekoppeld (NXDOMAIN)";
+        statusColor = "#ef4444";
+    } else if (https.latencyMs > 2500 || dns.latencyMs > 1000) {
+        overallStatus = "degraded";
+        statusText = `Vertraagd (${https.latencyMs}ms)`;
+        statusColor = "#f59e0b"; // orange
+    }
+
+    const report = {
+        id: domainConfig.id,
+        name: domainConfig.name,
+        domain: domainConfig.domain,
+        client: domainConfig.client,
+        category: domainConfig.category || "client",
+        overallStatus,
+        statusText,
+        statusColor,
+        httpCode: https.httpCode || (https.reachable ? 200 : 500),
+        sslValid: https.sslValid,
+        latencyMs: https.latencyMs,
+        dnsStatus: dns.status,
+        dnsLatencyMs: dns.latencyMs,
+        dnsProvider: dns.provider || "Google DoH",
+        resolvedIps: dns.resolvedIps || [],
+        expectedIp: domainConfig.expectedIp || "",
+        ipMatchesExpected: domainConfig.expectedIp ? dns.resolvedIps.includes(domainConfig.expectedIp) : true,
+        lastChecked: new Date().toISOString(),
+        details: {
+            dns,
+            https
+        }
+    };
+
+    return report;
+}
+
+/**
+ * Checks all domains concurrently with batched concurrency to prevent network saturation.
+ * 
+ * @param {Array<Object>} domainList 
+ * @param {Function} onProgressCallback (completedCount, totalCount, lastReport)
+ * @returns {Promise<Array<Object>>} List of all reports
+ */
+export async function runAllDomainChecks(domainList, onProgressCallback = null) {
+    const list = domainList || getMonitoredDomains();
+    const results = [];
+    const total = list.length;
+    let completed = 0;
+
+    // Run in parallel batches of 4 to keep DNS & HTTP sockets fast and avoid rate limiting
+    const BATCH_SIZE = 4;
+    for (let i = 0; i < list.length; i += BATCH_SIZE) {
+        const batch = list.slice(i, i + BATCH_SIZE);
+        const batchPromises = batch.map(async (d) => {
+            const report = await runDomainHealthCheck(d);
+            results.push(report);
+            completed++;
+            if (onProgressCallback) {
+                onProgressCallback(completed, total, report);
+            }
+            return report;
+        });
+        await Promise.all(batchPromises);
+    }
+
+    // Sort: First DOWN, then DEGRADED, then OPERATIONAL
+    results.sort((a, b) => {
+        const order = { down: 0, degraded: 1, operational: 2 };
+        return (order[a.overallStatus] ?? 3) - (order[b.overallStatus] ?? 3);
+    });
+
+    return results;
+}
+
+/**
+ * Persists domain check report to Firestore (/monitors/{domainKey}) if db & user available.
+ */
+export async function saveDomainReportToFirestore(db, report) {
+    if (!db || !report) return false;
+    try {
+        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const cleanKey = report.domain.replace(/[^a-zA-Z0-9]/g, '_');
+        const docRef = doc(db, "monitors", cleanKey);
+        await setDoc(docRef, {
+            ...report,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+        return true;
+    } catch (err) {
+        // Silently catch permission or network errors
+        console.warn("Could not save monitor to Firestore:", err.message);
+        return false;
+    }
+}
+
+/**
+ * Retrieves the latest monitor status for a domain from Firestore or runs an instant check.
+ */
+export async function getDomainStatusWithFallback(db, domainName) {
+    const cleanDomain = domainName.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+    const cleanKey = cleanDomain.replace(/[^a-zA-Z0-9]/g, '_');
+
+    // 1. Try Firestore
+    if (db) {
+        try {
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const docRef = doc(db, "monitors", cleanKey);
+            const snapshot = await getDoc(docRef);
+            if (snapshot.exists()) {
+                const data = snapshot.data();
+                // If checked within the last 15 minutes, return cached result
+                const ageMinutes = (Date.now() - new Date(data.lastChecked).getTime()) / (1000 * 60);
+                if (ageMinutes < 15) {
+                    return data;
+                }
+            }
+        } catch (e) {
+            console.warn("Firestore monitor fetch failed:", e.message);
+        }
+    }
+
+    // 2. Run instant on-the-fly live check
+    const match = getMonitoredDomains().find(d => d.domain === cleanDomain) || {
+        id: cleanKey,
+        name: cleanDomain,
+        domain: cleanDomain,
+        client: "Klant",
+        path: "/"
+    };
+
+    return await runDomainHealthCheck(match);
+}
+
+/**
+ * Dispatches an automated EmailJS alert when a domain enters DOWN or DNS_FAIL status.
+ * Contains a 60-minute anti-spam throttle per domain.
+ */
+export async function dispatchDowntimeAlert(report) {
+    if (!report || report.overallStatus !== 'down') return false;
+
+    // Check throttle in localStorage
+    const throttleKey = `caf_alert_sent_${report.domain}`;
+    const lastSent = localStorage.getItem(throttleKey);
+    const ONE_HOUR = 60 * 60 * 1000;
+
+    if (lastSent && (Date.now() - parseInt(lastSent, 10)) < ONE_HOUR) {
+        console.info(`⏳ Downtime alert for ${report.domain} suppressed (throttled to max 1/hour).`);
+        return false;
+    }
+
+    // Play subtle synthesized audio alert chime in browser
+    playAlertTone();
+
+    // Log incident locally
+    logIncident(report);
+
+    // Send EmailJS if configured
+    if (!EMAILJS_CONFIG || !EMAILJS_CONFIG.publicKey) {
+        console.info("EmailJS public key not configured; incident logged locally.");
+        return true;
+    }
+
+    try {
+        const payload = {
+            service_id: EMAILJS_CONFIG.serviceId,
+            template_id: EMAILJS_CONFIG.templateId,
+            user_id: EMAILJS_CONFIG.publicKey,
+            template_params: {
+                client_name: "Creation+Alt+Fix Monitoring Bot",
+                contact_name: "Allard Veldman",
+                client_email: "monitor-alert@creationaltfix.nl",
+                service: `Downtime Incident: ${report.domain}`,
+                domain: report.domain,
+                goals: `AUTOMATISCHE ALERT: Domein ${report.domain} (${report.name}) is momenteel DOWN!\nStatus: ${report.statusText}\nHTTP Code: ${report.httpCode}\nDNS Status: ${report.dnsStatus}\nIPs: ${report.resolvedIps.join(', ') || 'Geen'}\nTijdstip: ${new Date().toLocaleString('nl-NL')}`,
+                design: "Downtime Alert Protocol Actief",
+                to_email: EMAILJS_CONFIG.toEmail || "info@creationaltfix.nl"
+            }
+        };
+
+        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            localStorage.setItem(throttleKey, Date.now().toString());
+            console.log(`🚨 Downtime alert successfully dispatched to info@creationaltfix.nl for ${report.domain}`);
+            return true;
+        }
+    } catch (err) {
+        console.warn("Failed to dispatch EmailJS alert:", err.message);
+    }
+
+    return false;
+}
+
+/**
+ * Synthesizes a crisp, high-tech alert chime using browser Web Audio API.
+ * Requires no external audio files.
+ */
+export function playAlertTone() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+    } catch (e) {
+        // Silently catch audio policy blocks
+    }
+}
+
+/**
+ * Stores an incident entry in LocalStorage.
+ */
+function logIncident(report) {
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_ALERTS_LOG);
+        const list = stored ? JSON.parse(stored) : [];
+        list.unshift({
+            id: `inc_${Date.now()}`,
+            domain: report.domain,
+            name: report.name,
+            status: report.statusText,
+            timestamp: new Date().toISOString(),
+            resolved: false
+        });
+        // Keep max 50 incidents
+        localStorage.setItem(LOCAL_STORAGE_ALERTS_LOG, JSON.stringify(list.slice(0, 50)));
+    } catch (e) {}
+}
+
+/**
+ * Returns recorded incident logs.
+ */
+export function getIncidentLogs() {
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_ALERTS_LOG);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}

@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **50 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **36 Tasks (72%)**                       |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **51 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **37 Tasks (74%)**                       |
 | **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (10%)**                        |
 | **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (16%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[█████████████████░░░░░░░] 72% Complete (5 In Progress, 8 in Queue)`
+`[██████████████████░░░░░░] 74% Complete (5 In Progress, 8 in Queue)`
 
 ---
 
@@ -314,3 +314,8 @@
 - [x] `[TASK-826]` `[P2-HIGH]` `[STATUS: DONE]` **Klantportaal Factuur Download & Self-Service Profielbeheer (Adres, Postcode, KvK & BTW) (Punten 29, 30, 32, 33)**
   - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, `crm/intake/js/intake.js`, `crm/admin/js/project.js`, `crm/js/pdf-generator.js`
   - **Details**: Officiële Factuur PDF downloadknop in het statusportaal via `generateInvoicePDF`. Bedrijfsnaamweergave in de header en "⚙️ Mijn Gegevens" modal voor adres-, KvK- en btw-beheer met realtime tweeweg synchronisatie naar Firestore en het Admin Dashboard.
+
+- [x] `[TASK-827]` `[P1-HIGH]` `[STATUS: DONE]` **Centraal Uptime & Website Monitoring Systeem in het Beheerders- & Klantenportaal**
+  - **Scope**: `crm/js/uptime-monitor.js`, `crm/api/healthcheck.php`, `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/css/admin.css`, `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `firestore.rules`
+  - **Details**: Volledige realtime monitoring suite gerealiseerd: 1. Multi-DNS resolver engine (Google DoH & Cloudflare DoH APIs) voor automatische detectie van DNS-storingen, SERVFAIL (zoals bij de Vimexx DDoS-storing), NXDOMAIN, IPv4 A-records en latency; 2. Directe HTTPS handshake & uptime probe gecombineerd met dedicated server-side cURL fallback (`crm/api/healthcheck.php`); 3. Uitgebreid Admin Dashboard monitoring view (`view-monitoring`) met 4 KPI-kaarten, live glow pulse statusbolletjes (groen, oranje, rood), zoek- en categoriefilters, live scan voortgangsbalk, domein-inspectie modal (`#monitor-detail-modal`), auto-refresh interval (60s), en Web Audio alert chimes; 4. Klantenportaal integratie met live statusbadge in de header en een dedicated "Live Systeem- & Website Status" kaart met 1-klik herverificatie (`#btn-client-verify-uptime`); 5. Geautomatiseerde e-mail alerts via EmailJS naar `info@creationaltfix.nl` met 60-minuten anti-spam afkoelperiode en Firestore real-time persistentie (`/monitors/{domainKey}`).
+
