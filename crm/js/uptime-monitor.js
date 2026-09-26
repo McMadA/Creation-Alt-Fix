@@ -144,12 +144,12 @@ export const DEFAULT_MONITORED_DOMAINS = [
         category: "client"
     },
     {
-        id: "besselinginstallatietechniek-nl",
+        id: "besselinginstallatietechniek",
         name: "Besseling Installatietechniek",
-        domain: "besselinginstallatietechniek.nl",
+        domain: "creationaltfix.nl",
         client: "Besseling Installatietechniek",
-        expectedIp: "95.179.128.188",
-        path: "/",
+        expectedIp: "185.104.29.148",
+        path: "/besselinginstallatietechniek/",
         category: "client"
     },
     {
@@ -252,6 +252,7 @@ export function normalizeDomain(domain) {
     if (!domain || typeof domain !== 'string') return '';
     return domain.trim().toLowerCase()
         .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
         .replace(/\/.*$/, '')
         .trim();
 }
@@ -264,19 +265,36 @@ export function getMonitoredDomains() {
     let replaced = {};
     try {
         const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-        if (stored) custom = JSON.parse(stored);
+        if (stored) {
+            custom = JSON.parse(stored).filter(d => d.domain !== 'besselinginstallatietechniek.nl' && d.domain !== 'www.besselinginstallatietechniek.nl');
+        }
     } catch (e) {
         console.warn("Could not read custom domains:", e);
     }
     try {
         const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
         if (storedReplaced) replaced = JSON.parse(storedReplaced);
+        // Ensure legacy standalone Besseling domain is purged
+        replaced['besselinginstallatietechniek.nl'] = '__removed__';
+        replaced['www.besselinginstallatietechniek.nl'] = '__removed__';
     } catch (e) {
         console.warn("Could not read replaced domains:", e);
     }
 
+    // Also purge from cached reports in localStorage if present
+    try {
+        const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
+        if (cachedStr) {
+            let cached = JSON.parse(cachedStr);
+            if (cached.some(r => r.domain === 'besselinginstallatietechniek.nl' || r.domain === 'www.besselinginstallatietechniek.nl')) {
+                cached = cached.filter(r => r.domain !== 'besselinginstallatietechniek.nl' && r.domain !== 'www.besselinginstallatietechniek.nl');
+                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
+            }
+        }
+    } catch (e) {}
+
     // Exclude default domains that have been replaced or removed
-    const activeDefaults = DEFAULT_MONITORED_DOMAINS.filter(d => !replaced[d.domain]);
+    const activeDefaults = DEFAULT_MONITORED_DOMAINS.filter(d => !replaced[d.domain] && d.domain !== 'besselinginstallatietechniek.nl');
 
     return [...activeDefaults, ...custom];
 }
@@ -531,6 +549,7 @@ export async function runDomainHealthCheck(domainConfig) {
         id: domainConfig.id,
         name: domainConfig.name,
         domain: domainConfig.domain,
+        path: domainConfig.path || "/",
         client: domainConfig.client,
         category: domainConfig.category || "client",
         overallStatus,

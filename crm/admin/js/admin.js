@@ -115,13 +115,14 @@ const API = {
             // Ensure ALL clients & historical projects from the portfolio / CRM exports exist in active list
             const mockList = this.getMockProjects();
             for (const m of mockList) {
-                const mName = (m.client || m.companyName || '').toLowerCase();
+                const mName = (m.client || m.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const mDom = (m.domainName || m.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
                 const exists = projectsList.some(p => {
-                    const pName = (p.client || p.companyName || '').toLowerCase();
+                    const pName = (p.client || p.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                     const pDom = (p.domainName || p.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
                     if (mName && pName && (pName.includes(mName) || mName.includes(pName))) return true;
                     if (mDom && pDom && (pDom.includes(mDom) || mDom.includes(pDom))) return true;
+                    if (pName.includes('besseling') && mName.includes('besseling')) return true;
                     return false;
                 });
 
@@ -333,14 +334,14 @@ const API = {
                 companyName: "Besseling Installatietechniek",
                 contactName: "Maico Besseling",
                 email: "info@besselinginstallatietechniek.nl",
-                domainName: "www.besselinginstallatietechniek.nl",
-                domain: "www.besselinginstallatietechniek.nl",
+                domainName: "https://creationaltfix.nl/besselinginstallatietechniek/",
+                domain: "https://creationaltfix.nl/besselinginstallatietechniek/",
                 service: "Installatie & Elektra Website",
                 goals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
                 design: "Modern, fris wit met blauw/oranje accenten.",
                 status: "In Ontwikkeling",
                 statusClass: "active",
-                date: "25-08-2026",
+                date: "12-8-2026",
                 proposalPrice: "650,00",
                 tasks: [
                     { id: 'bes_0', title: '[TASK-801] Besseling Installatietechniek Projectafronding', completed: false, status: 'todo', priority: 'high', dueDate: '2026-09-01' },
@@ -3140,7 +3141,7 @@ function renderMonitorsTable() {
                         <div>
                             <div style="display: flex; align-items: center;">
                                 <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" style="color: #fff; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                                    <span>${escapeHtml(r.domain)}</span>
+                                    <span>${escapeHtml(r.domain)}${r.path && r.path !== '/' ? escapeHtml(r.path) : ''}</span>
                                     <i class="fas fa-external-link-alt" style="font-size: 0.72rem; color: #94a3b8;"></i>
                                 </a>
                                 ${domainIgnoredTag}

@@ -57,14 +57,14 @@ export const PROJECT_PROFILES = {
         companyName: "Besseling Installatietechniek",
         contactName: "Maico Besseling",
         email: "info@besselinginstallatietechniek.nl",
-        domainName: "www.besselinginstallatietechniek.nl",
-        domain: "www.besselinginstallatietechniek.nl",
+        domainName: "https://creationaltfix.nl/besselinginstallatietechniek/",
+        domain: "https://creationaltfix.nl/besselinginstallatietechniek/",
         service: "Installatie & Elektra Website",
         goals: "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra.",
         design: "Modern, fris wit met blauw/oranje accenten.",
         status: "In Ontwikkeling",
         statusClass: "active",
-        date: "25-08-2026",
+        date: "12-8-2026",
         proposalPrice: "650,00"
     },
     ARNOLD: {
