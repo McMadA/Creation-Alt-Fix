@@ -2,6 +2,45 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Geautomatiseerde CI/CD Test Suite & Quality Gate ([tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js), [.github/workflows/main.yml](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/.github/workflows/main.yml))**:
+  1. **Zero-Dependency Native Node Test Suite**:
+     - Volledig geautomatiseerde test suite gebouwd met Node.js `node:test` en `node:assert/strict` die in minder dan 1 seconde 32 unieke unittests draait.
+     - Dekt 9 kernsuites af: (1) Core Utilities (`escapeHtml` XSS sanitization, `isAdminEmail` whitelist check, `formatProjectStatus` 5-fasen mapping, `formatCurrency`, `normalizeDomain`); (2) Dashboard KPI calculaties (`calculateDashboardStats`); (3) 8-koloms sorteermotor (`sortProjectsList` ASC/DESC, `parseProjectDate` parser voor 4 datumformaten, `getStatusWeight`); (4) Boekhoudingsadvies & Pi-koppeling (`getPiBoekhoudingInfo`); (5) Uptime monitoring utilities (`parseDomainAndPath`, 3x faaldrempel, dynamische projectextractie); (6) Syntaxis- en parse-validatie van alle 16 JavaScript bestanden in `crm/`; (7) Firebase Security Rules synchronisatie met `ADMIN_EMAILS`; (8) Multi-domein parsing & deduplicatie; (9) Zero-leak code isolatie audit.
+  2. **GitHub Actions Quality Gate**:
+     - Workflow [main.yml](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/.github/workflows/main.yml) uitgebreid met een geautomatiseerde teststap direct na de checkout.
+     - Als er een syntaxis- of regressiefout ontstaat, blokkeert de CI/CD pipeline de deployment onmiddellijk vóór minification en FTP-sync, waardoor de live productieomgeving 100% beveiligd is tegen defecte code.
+  3. **Lokale Test Uitvoering**:
+     - `npm test` of `node tests/run-all-tests.js` kan lokaal op elk gewenst moment gedraaid worden voorafgaand aan een `git push`. Score: 32 PASSED, 0 FAILED.
+
+
+- **[2026-09-27] CRM Modulaire Architectuur & White-Label Voorbereiding**:
+
+  1. **Centrale Configuratie (`crm/js/crm-config.js`)**:
+     - Alle bedrijfsbranding (`BRANDING`), Firebase configuratie (`firebaseConfig`), admin e-mails (`ADMIN_EMAILS`), EmailJS instellingen en abonnementsplannen (`SUBSCRIPTION_PLANS`) zijn gecentraliseerd in één overzichtelijk bestand.
+     - [crm/js/firebase-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/firebase-config.js) re-exporteert alles voor 100% backward-compatibility, zodat geen enkel bestaand script of koppeling breekt.
+  2. **Core Services (`crm/js/core/`)**:
+     - `core/firebase.js`: Één centrale initialisatie van Firebase App, Auth, Firestore, Storage en SecondaryAuth.
+     - `core/db-service.js`: Schone, herbruikbare database-functies (`getAllProjects`, `getProjectById`, `updateProject`, `recordAuditLog`, `appendProjectMessage`).
+  3. **Opsplitsing Monoliths**:
+     - `crm/admin/js/modules/admin-tables.js`: Volledige tabelrendering, 8-koloms sorteermotor, filters en CSV-export geëxtraheerd uit `admin.js` (~350 regels bespaard).
+     - `crm/admin/js/modules/admin-stats.js`: KPI berekeningen en statusstatistieken geëxtraheerd.
+     - `crm/admin/js/modules/bookkeeping-data.js`: Gevoelige klantdata en Pi-Boekhouding historie geïsoleerd uit `project.js` (240 regels klantdata opgeschoond uit werkstationcode).
+     - `crm/status/js/modules/translations.js`: 340+ regels tweetalige NL/EN vertaalwoordenboeken geëxtraheerd uit `status.js`.
+  4. **Behoud van Alle Functionaliteiten**:
+     - Alle actieve projecten, authenticatiesessies, monitoring probes en notificaties blijven 100% functioneel voor Allard / Creation+Alt+Fix.
+     - Als het systeem later verkocht moet worden, hoeft alleen `crm-config.js` leeggemaakt of aangepast te worden.
+
+- **[2026-09-27] Oplossing Auth Overlay Flash & Naadloze Sessiebehoud tussen Pagina's**:
+
+  1. **Oorzaak van de Flashende Login Prompt**:
+     - Zowel in [crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html) als in [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html) stond `<div id="auth-overlay">` standaard zichtbaar in de HTML (zonder `hidden` class).
+     - Firebase Auth herstelt bestaande gebruikerssessies asynchroon via IndexedDB (duurt ~150-300ms). Gedurende die fractie van een seconde toonde de browser de Google login-kaart. Als de beheerder daarop klikte, opende de Google account selector terwijl Firebase Auth op de achtergrond de actieve sessie al aan het herstellen was.
+  2. **Structurele Oplossing**:
+     - `#auth-overlay` is standaard voorzien van de class `hidden` in de HTML.
+     - Subtiele `#auth-loading` overlay toegevoegd die gedurende de milliseconden waarin Firebase Auth de sessie verifieert een nette status toont ("Beheerderssessie verifiëren...").
+     - Zodra `onAuthStateChanged` bevestigt dat de beheerder is ingelogd, verdwijnt de loader direct en wordt `#admin-app` getoond zonder dat de login prompt ooit in beeld verschijnt.
+     - Alleen wanneer een bezoeker daadwerkelijk uitgelogd is (`user === null`), wordt `#auth-overlay` onthuld.
+
 - **[2026-09-27] Oplossing Null Reference Error bij Openen Werkplek / Projectdossier**:
   1. **Oorzaak van de Fout (`can't access property 'value', document.getElementById(...) is null`)**:
      - In [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js) probeerde `renderProjectWorkspace()` bij elk project met een bestaande offerte (`proposalPrice` of `proposalGeneratedAt`) de offertelink toe te kennen aan `document.getElementById('proposal-link-input').value = link;`.

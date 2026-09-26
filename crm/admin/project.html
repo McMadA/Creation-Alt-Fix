@@ -17,8 +17,17 @@
 </head>
 <body>
 
+    <!-- Initial Auth Resolving Loader (prevents login card flash for active sessions) -->
+    <div id="auth-loading" style="position: fixed; inset: 0; background: #0B0F19; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999;">
+        <img src="/images/logo.webp" alt="Creation+Alt+Fix" style="height: 48px; margin-bottom: 16px; opacity: 0.9;">
+        <div style="display: flex; align-items: center; gap: 10px; color: #94A3B8; font-size: 0.88rem;">
+            <i class="fas fa-circle-notch fa-spin" style="color: #22D3EE;"></i>
+            <span>Beheerderssessie verifiëren...</span>
+        </div>
+    </div>
+
     <!-- Auth Overlay (Exclusief Google Sign-In voor Beheerders) -->
-    <div id="auth-overlay" class="auth-overlay">
+    <div id="auth-overlay" class="auth-overlay hidden">
         <div class="auth-card" style="max-width: 440px; text-align: center; padding: 36px 28px;">
             <img src="/images/logo.webp" alt="Logo" class="auth-logo" style="margin: 0 auto 16px; height: 48px;">
             <h2 style="font-size: 1.45rem; font-weight: 700; margin-bottom: 6px; color: #F8FAFC;">Beheerdersportaal</h2>

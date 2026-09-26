@@ -1,0 +1,18 @@
+{
+  "name": "creation-alt-fix-crm",
+  "version": "2.0.0",
+  "description": "Creation+Alt+Fix Proprietary CRM, DNS Monitoring & Client Portal Suite",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run-all-tests.js"
+  },
+  "keywords": [
+    "crm",
+    "saas",
+    "uptime-monitor",
+    "client-portal",
+    "firestore"
+  ],
+  "author": "Allard Veldman <info@creationaltfix.nl>",
+  "license": "UNLICENSED"
+}

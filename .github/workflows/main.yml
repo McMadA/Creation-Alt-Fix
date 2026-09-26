@@ -12,6 +12,16 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
+      - name: ⚙️ Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 🧪 Run Automated Test Suite (Quality Gate)
+        run: |
+          npm test
+
+
       - name: 🖼️ Convert images to WebP
         run: |
           sudo apt-get install -y -qq webp
