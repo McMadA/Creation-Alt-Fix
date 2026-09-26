@@ -69,12 +69,12 @@
                 <h1>Dashboard <span class="accent">Overzicht</span></h1>
             </header>
 
-            <!-- Search & Filter Toolbar -->
+            <!-- Search, Filter & Sorteer Toolbar -->
             <div class="admin-toolbar" style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center;">
                 <div style="flex: 1; min-width: 260px;">
                     <input type="text" id="admin-search-input" class="admin-input" placeholder="🔍 Zoek op klantnaam, e-mail, domein of dienst..." style="margin: 0;">
                 </div>
-                <div style="width: 240px;">
+                <div style="width: 230px;">
                     <select id="admin-status-filter" class="admin-input" style="margin: 0; cursor: pointer;">
                         <option value="all">Alle Statussen & Fasen</option>
                         <option value="Intake">Fase 1: Intake Voltooid</option>
@@ -83,6 +83,26 @@
                         <option value="Ontwikkeling">Fase 4: Ontwikkeling</option>
                         <option value="Opgeleverd">Fase 5: Livegang & Mollie</option>
                     </select>
+                </div>
+                <!-- Sorteer op dropdown & knop -->
+                <div class="admin-sort-control" style="display: flex; gap: 8px; align-items: center; min-width: 300px;">
+                    <div style="position: relative; flex: 1;">
+                        <select id="admin-sort-by" class="admin-input" style="margin: 0; cursor: pointer; padding-left: 36px;" title="Kies een kolom om op te sorteren">
+                            <option value="updated" selected>Sorteer: Laatste Update</option>
+                            <option value="client">Sorteer: Klant / Bedrijf</option>
+                            <option value="tasks">Sorteer: Taken / Voortgang</option>
+                            <option value="email">Sorteer: E-mailadres</option>
+                            <option value="domain">Sorteer: Domeinnaam</option>
+                            <option value="service">Sorteer: Dienst</option>
+                            <option value="status">Sorteer: Status</option>
+                            <option value="actions">Sorteer: Acties</option>
+                        </select>
+                        <i class="fas fa-sort-amount-down" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-accent); pointer-events: none; font-size: 0.85rem;"></i>
+                    </div>
+                    <button type="button" id="admin-sort-direction-btn" class="btn btn-secondary" style="height: 42px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; white-space: nowrap;" title="Wissel sorteervolgorde (Aflopend / Oplopend)">
+                        <i class="fas fa-sort-amount-down" id="admin-sort-dir-icon"></i>
+                        <span id="admin-sort-dir-label">Aflopend</span>
+                    </button>
                 </div>
             </div>
 
@@ -95,14 +115,14 @@
                         <table class="data-table" id="leads-table">
                             <thead>
                                 <tr>
-                                    <th>Klant / Bedrijf</th>
-                                    <th>Taken / Voortgang</th>
-                                    <th>E-mailadres</th>
-                                    <th>Domeinnaam</th>
-                                    <th>Dienst</th>
-                                    <th>Status</th>
-                                    <th>Datum</th>
-                                    <th>Acties</th>
+                                    <th data-sort="client" class="sortable-th" title="Klik om te sorteren op Klant / Bedrijf">Klant / Bedrijf <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="tasks" class="sortable-th" title="Klik om te sorteren op Taken / Voortgang">Taken / Voortgang <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="email" class="sortable-th" title="Klik om te sorteren op E-mailadres">E-mailadres <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="domain" class="sortable-th" title="Klik om te sorteren op Domeinnaam">Domeinnaam <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="service" class="sortable-th" title="Klik om te sorteren op Dienst">Dienst <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="status" class="sortable-th" title="Klik om te sorteren op Status">Status <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="updated" class="sortable-th active-sort" title="Klik om te sorteren op Laatste Update">Laatste Update <i class="fas fa-sort-down sort-icon"></i></th>
+                                    <th data-sort="actions" class="sortable-th" title="Klik om te sorteren op Acties & tickets">Acties <i class="fas fa-sort sort-icon"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -122,14 +142,14 @@
                         <table class="data-table" id="active-projects-table">
                             <thead>
                                 <tr>
-                                    <th>Klant / Bedrijf</th>
-                                    <th>Taken / Voortgang</th>
-                                    <th>E-mailadres</th>
-                                    <th>Domeinnaam</th>
-                                    <th>Dienst</th>
-                                    <th>Status</th>
-                                    <th>Datum</th>
-                                    <th>Acties</th>
+                                    <th data-sort="client" class="sortable-th" title="Klik om te sorteren op Klant / Bedrijf">Klant / Bedrijf <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="tasks" class="sortable-th" title="Klik om te sorteren op Taken / Voortgang">Taken / Voortgang <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="email" class="sortable-th" title="Klik om te sorteren op E-mailadres">E-mailadres <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="domain" class="sortable-th" title="Klik om te sorteren op Domeinnaam">Domeinnaam <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="service" class="sortable-th" title="Klik om te sorteren op Dienst">Dienst <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="status" class="sortable-th" title="Klik om te sorteren op Status">Status <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="updated" class="sortable-th active-sort" title="Klik om te sorteren op Laatste Update">Laatste Update <i class="fas fa-sort-down sort-icon"></i></th>
+                                    <th data-sort="actions" class="sortable-th" title="Klik om te sorteren op Acties & tickets">Acties <i class="fas fa-sort sort-icon"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -561,14 +581,14 @@
                         <table class="data-table" id="projects-table">
                             <thead>
                                 <tr>
-                                    <th>Klant / Bedrijf</th>
-                                    <th>Taken / Voortgang</th>
-                                    <th>E-mailadres</th>
-                                    <th>Domeinnaam</th>
-                                    <th>Dienst</th>
-                                    <th>Status</th>
-                                    <th>Laatste Update</th>
-                                    <th>Acties</th>
+                                    <th data-sort="client" class="sortable-th" title="Klik om te sorteren op Klant / Bedrijf">Klant / Bedrijf <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="tasks" class="sortable-th" title="Klik om te sorteren op Taken / Voortgang">Taken / Voortgang <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="email" class="sortable-th" title="Klik om te sorteren op E-mailadres">E-mailadres <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="domain" class="sortable-th" title="Klik om te sorteren op Domeinnaam">Domeinnaam <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="service" class="sortable-th" title="Klik om te sorteren op Dienst">Dienst <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="status" class="sortable-th" title="Klik om te sorteren op Status">Status <i class="fas fa-sort sort-icon"></i></th>
+                                    <th data-sort="updated" class="sortable-th active-sort" title="Klik om te sorteren op Laatste Update">Laatste Update <i class="fas fa-sort-down sort-icon"></i></th>
+                                    <th data-sort="actions" class="sortable-th" title="Klik om te sorteren op Acties & tickets">Acties <i class="fas fa-sort sort-icon"></i></th>
                                 </tr>
                             </thead>
                             <tbody>

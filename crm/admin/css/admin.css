@@ -74,9 +74,53 @@ h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--color-text-headi
 .card-header { padding: 20px; border-bottom: 1px solid var(--color-border); }
 .data-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 950px; }
 .data-table th { padding: 14px 18px; background: rgba(0,0,0,0.25); color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; font-family: var(--font-heading); letter-spacing: 0.5px; white-space: nowrap; }
+.data-table th.sortable-th {
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition-base);
+    position: relative;
+}
+.data-table th.sortable-th:hover {
+    background: rgba(99, 102, 241, 0.16) !important;
+    color: var(--color-accent) !important;
+}
+.data-table th.sortable-th .sort-icon {
+    margin-left: 6px;
+    font-size: 0.72rem;
+    opacity: 0.35;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+.data-table th.sortable-th:hover .sort-icon {
+    opacity: 0.9;
+    color: var(--color-accent);
+}
+.data-table th.sortable-th.active-sort {
+    color: var(--color-accent) !important;
+    background: rgba(34, 211, 238, 0.08) !important;
+    border-bottom: 2px solid var(--color-accent);
+}
+.data-table th.sortable-th.active-sort .sort-icon {
+    opacity: 1;
+    color: var(--color-accent);
+}
 .data-table td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; vertical-align: middle; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tbody tr:hover { background: rgba(99,102,241,0.06); }
+
+/* Sorteer Toolbar Styling */
+.admin-sort-control {
+    transition: var(--transition-base);
+}
+.admin-sort-control select:hover,
+.admin-sort-control select:focus {
+    border-color: var(--color-accent);
+}
+#admin-sort-direction-btn:hover {
+    border-color: var(--color-accent);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
+}
 
 .table-contact-name { display: inline-flex; align-items: center; gap: 6px; color: var(--color-text-primary); font-weight: 500; }
 .table-email-link { color: var(--color-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; transition: var(--transition-base); }

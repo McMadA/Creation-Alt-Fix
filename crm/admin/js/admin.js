@@ -925,6 +925,190 @@ function renderTablesData(projectsToRender) {
     }
 }
 
+// ===========================================
+// SORTEER ENGINE & COMPARATORS
+// ===========================================
+let currentSortColumn = 'updated'; // Default: Laatste Update
+let currentSortDirection = 'desc'; // Default: Nieuwste eerst
+
+function parseProjectDate(p) {
+    if (p.updatedAt) {
+        if (typeof p.updatedAt === 'object' && p.updatedAt.seconds) {
+            return p.updatedAt.seconds * 1000;
+        }
+        if (p.updatedAt instanceof Date) return p.updatedAt.getTime();
+        const parsed = Date.parse(p.updatedAt);
+        if (!isNaN(parsed)) return parsed;
+    }
+    const dStr = (p.date || p.createdAt || '').trim();
+    if (!dStr) return 0;
+
+    // Formaat DD-MM-YYYY
+    const dmy = dStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (dmy) {
+        return new Date(parseInt(dmy[3], 10), parseInt(dmy[2], 10) - 1, parseInt(dmy[1], 10)).getTime();
+    }
+    // Formaat YYYY-MM-DD
+    const ymd = dStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (ymd) {
+        return new Date(parseInt(ymd[1], 10), parseInt(ymd[2], 10) - 1, parseInt(ymd[3], 10)).getTime();
+    }
+    const parsed = Date.parse(dStr);
+    return isNaN(parsed) ? 0 : parsed;
+}
+
+function getStatusWeight(status) {
+    const s = (status || '').toLowerCase();
+    if (s.includes('lead') || s.includes('intake')) return 1;
+    if (s.includes('akkoord') || s.includes('offerte') || s.includes('wacht op')) return 2;
+    if (s.includes('design') || s.includes('concept')) return 3;
+    if (s.includes('ontwikkeling')) return 4;
+    if (s.includes('opgeleverd') || s.includes('mollie') || s.includes('afgerond') || s.includes('livegang')) return 5;
+    return 99;
+}
+
+function sortProjectsList(list, column, direction) {
+    const dir = direction === 'asc' ? 1 : -1;
+    const sorted = [...list];
+
+    return sorted.sort((a, b) => {
+        let comp = 0;
+
+        switch (column) {
+            case 'client': {
+                const nameA = (a.client || a.companyName || '').toLowerCase().trim();
+                const nameB = (b.client || b.companyName || '').toLowerCase().trim();
+                comp = nameA.localeCompare(nameB, 'nl', { sensitivity: 'base' });
+                break;
+            }
+
+            case 'tasks': {
+                const tasksA = a.tasks || [];
+                const tasksB = b.tasks || [];
+                const totalA = tasksA.length;
+                const totalB = tasksB.length;
+                const doneA = tasksA.filter(t => t.completed || t.status === 'done').length;
+                const doneB = tasksB.filter(t => t.completed || t.status === 'done').length;
+
+                // Geef prioriteit aan voltooiingsratio en aantal taken
+                const scoreA = totalA > 0 ? ((doneA / totalA) * 1000) + totalA : 0;
+                const scoreB = totalB > 0 ? ((doneB / totalB) * 1000) + totalB : 0;
+                comp = scoreA - scoreB;
+                break;
+            }
+
+            case 'email': {
+                const emailA = (a.email || '').toLowerCase().trim();
+                const emailB = (b.email || '').toLowerCase().trim();
+                if (!emailA && !emailB) comp = 0;
+                else if (!emailA) comp = 1;
+                else if (!emailB) comp = -1;
+                else comp = emailA.localeCompare(emailB, 'nl', { sensitivity: 'base' });
+                break;
+            }
+
+            case 'domain': {
+                const domA = (a.domainName || a.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').trim();
+                const domB = (b.domainName || b.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').trim();
+                if (!domA && !domB) comp = 0;
+                else if (!domA) comp = 1;
+                else if (!domB) comp = -1;
+                else comp = domA.localeCompare(domB, 'nl', { sensitivity: 'base' });
+                break;
+            }
+
+            case 'service': {
+                const servA = (a.service || '').toLowerCase().trim();
+                const servB = (b.service || '').toLowerCase().trim();
+                comp = servA.localeCompare(servB, 'nl', { sensitivity: 'base' });
+                break;
+            }
+
+            case 'status': {
+                const wA = getStatusWeight(a.status);
+                const wB = getStatusWeight(b.status);
+                if (wA !== wB) {
+                    comp = wA - wB;
+                } else {
+                    const stA = (a.status || '').toLowerCase().trim();
+                    const stB = (b.status || '').toLowerCase().trim();
+                    comp = stA.localeCompare(stB, 'nl', { sensitivity: 'base' });
+                }
+                break;
+            }
+
+            case 'updated': {
+                const dateA = parseProjectDate(a);
+                const dateB = parseProjectDate(b);
+                comp = dateA - dateB;
+                break;
+            }
+
+            case 'actions': {
+                // Sorteer op urgentie: openstaande klantberichten/tickets eerst
+                const unreadA = (a.messages || []).filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
+                const unreadB = (b.messages || []).filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
+                const totalMsgsA = (a.messages || []).length;
+                const totalMsgsB = (b.messages || []).length;
+
+                const scoreA = (unreadA * 1000) + totalMsgsA;
+                const scoreB = (unreadB * 1000) + totalMsgsB;
+                comp = scoreA - scoreB;
+                break;
+            }
+
+            default:
+                comp = 0;
+        }
+
+        return comp * dir;
+    });
+}
+
+function updateTableHeaderSortIcons() {
+    const allHeaders = document.querySelectorAll('th.sortable-th');
+    allHeaders.forEach(th => {
+        const col = th.getAttribute('data-sort');
+        const icon = th.querySelector('.sort-icon');
+        if (col === currentSortColumn) {
+            th.classList.add('active-sort');
+            if (icon) {
+                icon.className = `fas fa-sort-${currentSortDirection === 'asc' ? 'up' : 'down'} sort-icon`;
+            }
+        } else {
+            th.classList.remove('active-sort');
+            if (icon) {
+                icon.className = 'fas fa-sort sort-icon';
+            }
+        }
+    });
+}
+
+function syncSortToolbarUI() {
+    const sortBySelect = document.getElementById('admin-sort-by');
+    if (sortBySelect && sortBySelect.value !== currentSortColumn) {
+        sortBySelect.value = currentSortColumn;
+    }
+
+    const dirBtn = document.getElementById('admin-sort-direction-btn');
+    const dirIcon = document.getElementById('admin-sort-dir-icon');
+    const dirLabel = document.getElementById('admin-sort-dir-label');
+
+    if (dirBtn && dirIcon && dirLabel) {
+        if (currentSortDirection === 'asc') {
+            dirIcon.className = 'fas fa-sort-amount-up-alt';
+            dirLabel.textContent = 'Oplopend';
+            dirBtn.title = 'Huidige volgorde: Oplopend (A-Z / Oudste). Klik om te wisselen.';
+        } else {
+            dirIcon.className = 'fas fa-sort-amount-down';
+            dirLabel.textContent = 'Aflopend';
+            dirBtn.title = 'Huidige volgorde: Aflopend (Z-A / Nieuwste). Klik om te wisselen.';
+        }
+    }
+
+    updateTableHeaderSortIcons();
+}
+
 function filterAndRenderTables() {
     const searchInput = document.getElementById('admin-search-input');
     const filterSelect = document.getElementById('admin-status-filter');
@@ -958,12 +1142,62 @@ function filterAndRenderTables() {
         return true;
     });
 
+    // Pas actieve sortering toe
+    filtered = sortProjectsList(filtered, currentSortColumn, currentSortDirection);
+
+    // Synchroniseer UI en icoontjes
+    syncSortToolbarUI();
+
     renderTablesData(filtered);
 }
 
 function setupSearchAndFilters() {
     document.getElementById('admin-search-input')?.addEventListener('input', () => filterAndRenderTables());
     document.getElementById('admin-status-filter')?.addEventListener('change', () => filterAndRenderTables());
+
+    // Sorteer dropdown wijziging
+    document.getElementById('admin-sort-by')?.addEventListener('change', (e) => {
+        currentSortColumn = e.target.value;
+        // Bepaal slimme initiële sorteerrichting per kolomtype
+        if (['client', 'email', 'domain', 'service', 'status'].includes(currentSortColumn)) {
+            currentSortDirection = 'asc';
+        } else {
+            currentSortDirection = 'desc';
+        }
+        filterAndRenderTables();
+    });
+
+    // Sorteer richting knop toggle
+    document.getElementById('admin-sort-direction-btn')?.addEventListener('click', () => {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+        filterAndRenderTables();
+    });
+
+    // Klikbare tabelkolommen (event delegation op thead van alle tabellen)
+    document.querySelectorAll('.data-table thead').forEach(thead => {
+        thead.addEventListener('click', (e) => {
+            const th = e.target.closest('th.sortable-th');
+            if (!th) return;
+
+            const col = th.getAttribute('data-sort');
+            if (!col) return;
+
+            if (currentSortColumn === col) {
+                // Zelfde kolom: wissel richting
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Nieuwe kolom gekozen
+                currentSortColumn = col;
+                if (['client', 'email', 'domain', 'service', 'status'].includes(col)) {
+                    currentSortDirection = 'asc';
+                } else {
+                    currentSortDirection = 'desc';
+                }
+            }
+
+            filterAndRenderTables();
+        });
+    });
 }
 
 window.exportProjectsToCSV = () => {
