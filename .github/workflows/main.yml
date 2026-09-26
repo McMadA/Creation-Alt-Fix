@@ -1,26 +1,45 @@
-name: 🚀 Nieuwe update jonguh
+name: 🚀 Build, Test & Deploy
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  web-deploy:
+  # ============================================================
+  # 1. QUALITY GATE: AUTOMATED TEST SUITE (32 TESTS ACROSS 9 SUITES)
+  # ============================================================
+  test:
+    name: 🧪 Automated Test Suite & Quality Gate
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: 🚚 Checkout Code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js Environment
+      - name: ⚙️ Setup Node.js (v20)
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: 🧪 Run Automated Test Suite (Quality Gate)
+      - name: 🧪 Run All CRM & Core Function Tests
         run: |
           npm test
 
+  # ============================================================
+  # 2. OPTIMIZATION & PRODUCTION DEPLOYMENT (FTP + FIREBASE)
+  # Only executes if the test suite passes 100% on the main branch!
+  # ============================================================
+  web-deploy:
+    name: 🚀 Optimize & Production Deploy
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Checkout Code
+        uses: actions/checkout@v4
 
       - name: 🖼️ Convert images to WebP
         run: |
@@ -93,6 +112,5 @@ jobs:
             fi
             echo "✅ Firestore rules successfully deployed to Firebase!"
           else
-            echo "ℹ️ Firebase credentials (FIREBASE_TOKEN of FIREBASE_SERVICE_ACCOUNT_MYTHICAL_CIDER_475118_E5) niet gevonden in GitHub Secrets. Handmatige/lokale CLI deployment blijft actief."
+            echo "ℹ️ Firebase credentials niet gevonden in GitHub Secrets. Lokale deployment blijft actief."
           fi
-

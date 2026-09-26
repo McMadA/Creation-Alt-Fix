@@ -40,8 +40,9 @@ let currentProjectId = null;
 let currentProjectData = null;
 
 // --- Plans & Bookkeeping Records (Modularized) ---
-export { SUBSCRIPTION_PLANS } from "../../js/crm-config.js";
-export { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js";
+import { SUBSCRIPTION_PLANS } from "../../js/crm-config.js";
+import { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js";
+export { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo };
 
 
 document.addEventListener('DOMContentLoaded', () => {

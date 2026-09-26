@@ -256,6 +256,18 @@ test("getPiBoekhoudingInfo identifies recorded clients and generates dynamic adv
     assert.equal(dynCustom.recommendedPlanId, "managed_custom");
 });
 
+test("project.js properly imports and binds bookkeeping and plan symbols into local scope", () => {
+    const projectJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/project.js"), "utf-8");
+    assert.ok(
+        projectJs.includes("import { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo }"),
+        "project.js must explicitly import getPiBoekhoudingInfo to prevent runtime ReferenceErrors"
+    );
+    assert.ok(
+        projectJs.includes("import { SUBSCRIPTION_PLANS }"),
+        "project.js must explicitly import SUBSCRIPTION_PLANS to prevent runtime ReferenceErrors"
+    );
+});
+
 // ========================================================
 // 5. UPTIME MONITORING ENGINE (crm/js/uptime-monitor.js)
 // ========================================================

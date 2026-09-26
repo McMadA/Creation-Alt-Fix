@@ -2,15 +2,24 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Opgelost: 'getPiBoekhoudingInfo is not defined' & Scope Binding in ES Modules ([crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
+  - **Probleem**: Bij het openen van een projectwerkstation (`project.html`) trad een runtime fout op: `ReferenceError: getPiBoekhoudingInfo is not defined`.
+  - **Oorzaak**: In JavaScript ES Modules bindt een re-export syntax zoals `export { getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js"` het symbool *niet* in de lokale lexicale scope van het bestand zelf. Hierdoor kon `project.js` de functie `renderSubscriptionAndInvoiceCard` niet aanroepen.
+  - **Oplossing**: De symbolen (`SUBSCRIPTION_PLANS`, `PI_BOEKHOUDING_CLIENT_DATA`, `getPiBoekhoudingInfo`) worden nu eerst via `import` in de lokale module-scope geladen en vervolgens geëxporteerd (`export { ... }`).
+  - **Test Toevoeging**: Een gerichte test toegevoegd in `tests/run-all-tests.js` (totaal 33 tests) die verifieert dat alle geëxporteerde en benodigde identifiers daadwerkelijk in de lokale scope van `project.js` gebonden zijn.
+
 - **[2026-09-27] Geautomatiseerde CI/CD Test Suite & Quality Gate ([tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js), [.github/workflows/main.yml](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/.github/workflows/main.yml))**:
   1. **Zero-Dependency Native Node Test Suite**:
-     - Volledig geautomatiseerde test suite gebouwd met Node.js `node:test` en `node:assert/strict` die in minder dan 1 seconde 32 unieke unittests draait.
-     - Dekt 9 kernsuites af: (1) Core Utilities (`escapeHtml` XSS sanitization, `isAdminEmail` whitelist check, `formatProjectStatus` 5-fasen mapping, `formatCurrency`, `normalizeDomain`); (2) Dashboard KPI calculaties (`calculateDashboardStats`); (3) 8-koloms sorteermotor (`sortProjectsList` ASC/DESC, `parseProjectDate` parser voor 4 datumformaten, `getStatusWeight`); (4) Boekhoudingsadvies & Pi-koppeling (`getPiBoekhoudingInfo`); (5) Uptime monitoring utilities (`parseDomainAndPath`, 3x faaldrempel, dynamische projectextractie); (6) Syntaxis- en parse-validatie van alle 16 JavaScript bestanden in `crm/`; (7) Firebase Security Rules synchronisatie met `ADMIN_EMAILS`; (8) Multi-domein parsing & deduplicatie; (9) Zero-leak code isolatie audit.
-  2. **GitHub Actions Quality Gate**:
-     - Workflow [main.yml](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/.github/workflows/main.yml) uitgebreid met een geautomatiseerde teststap direct na de checkout.
-     - Als er een syntaxis- of regressiefout ontstaat, blokkeert de CI/CD pipeline de deployment onmiddellijk vóór minification en FTP-sync, waardoor de live productieomgeving 100% beveiligd is tegen defecte code.
+     - Volledig geautomatiseerde test suite gebouwd met Node.js `node:test` en `node:assert/strict` die in minder dan 1 seconde 33 unieke unittests draait.
+     - Dekt 9 kernsuites af: (1) Core Utilities (`escapeHtml` XSS sanitization, `isAdminEmail` whitelist check, `formatProjectStatus` 5-fasen mapping, `formatCurrency`, `normalizeDomain`); (2) Dashboard KPI calculaties (`calculateDashboardStats`); (3) 8-koloms sorteermotor (`sortProjectsList` ASC/DESC, `parseProjectDate` parser voor 4 datumformaten, `getStatusWeight`); (4) Boekhoudingsadvies & Pi-koppeling (`getPiBoekhoudingInfo`, scope-binding); (5) Uptime monitoring utilities (`parseDomainAndPath`, 3x faaldrempel, dynamische projectextractie); (6) Syntaxis- en parse-validatie van alle 16 JavaScript bestanden in `crm/`; (7) Firebase Security Rules synchronisatie met `ADMIN_EMAILS`; (8) Multi-domein parsing & deduplicatie; (9) Zero-leak code isolatie audit.
+  2. **GitHub Actions 2-Stage Pipeline (Quality Gate)**:
+     - Workflow [main.yml](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/.github/workflows/main.yml) gestructureerd in 2 afhankelijke jobs:
+       1. `test`: Draait Node.js 20 met `npm test` op alle pushes en pull requests.
+       2. `web-deploy`: Heeft `needs: test` en wordt alleen geactiveerd als alle 33 tests slagen op `main`.
+     - Als er zelfs maar 1 test faalt of een syntaxisfout ontstaat, blokkeert GitHub Actions de pipeline onmiddellijk vóór minification en FTP-sync, waardoor de live productieomgeving 100% beveiligd is tegen defecte code.
   3. **Lokale Test Uitvoering**:
-     - `npm test` of `node tests/run-all-tests.js` kan lokaal op elk gewenst moment gedraaid worden voorafgaand aan een `git push`. Score: 32 PASSED, 0 FAILED.
+     - `npm test` of `node tests/run-all-tests.js` kan lokaal op elk gewenst moment gedraaid worden voorafgaand aan een `git push`. Score: 33 PASSED, 0 FAILED.
+
 
 
 - **[2026-09-27] CRM Modulaire Architectuur & White-Label Voorbereiding**:
