@@ -681,45 +681,11 @@ export async function dispatchDowntimeAlert(report) {
     // Log incident locally
     logIncident(report);
 
-    // Send EmailJS if configured
-    if (!EMAILJS_CONFIG || !EMAILJS_CONFIG.publicKey) {
-        console.info("EmailJS public key not configured; incident logged locally.");
-        return true;
-    }
-
-    try {
-        const payload = {
-            service_id: EMAILJS_CONFIG.serviceId,
-            template_id: EMAILJS_CONFIG.templateId,
-            user_id: EMAILJS_CONFIG.publicKey,
-            template_params: {
-                client_name: "Creation+Alt+Fix Monitoring Bot",
-                contact_name: "Allard Veldman",
-                client_email: "monitor-alert@creationaltfix.nl",
-                service: `Downtime Incident: ${report.domain}`,
-                domain: report.domain,
-                goals: `AUTOMATISCHE ALERT: Domein ${report.domain} (${report.name}) is momenteel DOWN!\nStatus: ${report.statusText}\nHTTP Code: ${report.httpCode}\nDNS Status: ${report.dnsStatus}\nIPs: ${report.resolvedIps.join(', ') || 'Geen'}\nTijdstip: ${new Date().toLocaleString('nl-NL')}`,
-                design: "Downtime Alert Protocol Actief",
-                to_email: EMAILJS_CONFIG.toEmail || "info@creationaltfix.nl"
-            }
-        };
-
-        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-            localStorage.setItem(throttleKey, Date.now().toString());
-            console.log(`🚨 Downtime alert successfully dispatched to info@creationaltfix.nl for ${report.domain}`);
-            return true;
-        }
-    } catch (err) {
-        console.warn("Failed to dispatch EmailJS alert:", err.message);
-    }
-
-    return false;
+    // NOTE: EmailJS dispatch is disabled here to avoid sending the client intake welcome template (template_zihp21d).
+    // Live incidents are logged to local storage and audio chime is played.
+    console.info(`🚨 Downtime alert geregistreerd voor ${report.domain} (${report.statusText}). Geen externe e-mail verstuurd.`);
+    localStorage.setItem(throttleKey, Date.now().toString());
+    return true;
 }
 
 /**
