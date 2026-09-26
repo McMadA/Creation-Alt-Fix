@@ -153,15 +153,6 @@ export const DEFAULT_MONITORED_DOMAINS = [
         category: "client"
     },
     {
-        id: "vanderplaats-nl",
-        name: "VAN DER PLAATS",
-        domain: "vanderplaats.nl",
-        client: "Gerard Klusser",
-        expectedIp: "141.148.239.137",
-        path: "/",
-        category: "client"
-    },
-    {
         id: "hbi-creationaltfix-nl",
         name: "Home Buyer Intelligence",
         domain: "hbi.creationaltfix.nl",

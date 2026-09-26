@@ -2,6 +2,17 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Definitieve Verwijdering Mock Data & Verhelpen Spookprojecten Herrijzenis (Justin & VAN DER PLAATS)**:
+  1. **Oorzaak van het Terugkeren na Refresh**: De projecten *Justin* (`JfuATfbcAQ9HxihmFUR8`) en *VAN DER PLAATS (Gerard Klusser)* (`Opr6qw99umfbtVJKYmS8`) stonden daadwerkelijk als documenten in Firestore. Bij het klikken op de prullenbak in het Admin Dashboard faalde `deleteDoc` omdat `window.deleteProject` in `crm/admin/js/admin.js` vóór de Firestore verwijdering `removeDomainFromMonitoring` aanriep die niet geïmplementeerd was in de scope, waardoor een unhandled JS exceptie de daadwerkelijke Firestore `deleteDoc` blokkeerde.
+  2. **Directe Sanering in Firestore**: Via de authenticated Firestore REST API zijn beide documenten (`JfuATfbcAQ9HxihmFUR8` en `Opr6qw99umfbtVJKYmS8`) definitief verwijderd uit de `projects` collectie, alsmede het monitor document `/monitors/vanderplaats_nl`.
+  3. **Volledige Mock Data Purge (460+ regels rommel verwijderd)**:
+     - `crm/admin/js/admin.js`: `getMockProjects()` ontdaan van alle 17 statische mock projecten; retourneert nu uitsluitend een lege array `[]`.
+     - `crm/admin/js/project.js`: `getMockProjects()` en `getMockProject()` leeggemaakt; laadt nooit meer dummy portfolio mock data bij ontbrekende of verwijderde project-IDs, maar toont een nette melding en keert terug naar `index.html`.
+     - `crm/js/uptime-monitor.js`: `vanderplaats.nl` definitief verwijderd uit `DEFAULT_MONITORED_DOMAINS`.
+     - `crm/js/todo-sync.js`: `PROJECT_PROFILES.VANDERPLAATS` en `PROJECT_PROFILES.JUSTIN` verwijderd. De auto-provisie functie in `syncTodoToFirestore` is geneutraliseerd zodat taken voor ontbrekende/verwijderde projecten nooit meer automatisch nieuwe spookprojecten kunnen aanmaken in Firestore of CRM.
+  4. **Geharde `deleteProject` Flow**: `await deleteDoc(doc(db, "projects", String(id)))` wordt nu als allereerste uitgevoerd, met de monitoring opschoning veilig geïsoleerd in een try/catch, zodat een monitoring-waarschuwing het verwijderen van een project nooit meer kan blokkeren.
+
+
 - **[2026-09-01] CRM & Intake 33-Punten Optimalisatie & Backlog Integratie (TASK-821 t/m TASK-826 - Voltooid & Geverifieerd)**:
   1. **Intake & Auth Flow (`[TASK-821]`)**: Custom action URL configuratie (`https://portal.creationaltfix.nl/crm/index.html?resetSuccess=true`) voor Firebase Auth password reset emails, fasering van de offertestatus (in actieve voorbereiding in Fase 1), en dynamische domein-TLD detectie (`.com`, `.eu`, `.de`, etc.) met expliciete indicatie voor geschatte / variabele domeinkosten.
   2. **Klantportaal Context & Fasering (`[TASK-822]`)**: Staging Previews en Documentatiegids verborgen in Fase 1 & 2 en bij niet-web services (Dashboards/AI). Realtime Firestore `onSnapshot` koppeling voor directe prijs- en scope-updates zonder page refresh.

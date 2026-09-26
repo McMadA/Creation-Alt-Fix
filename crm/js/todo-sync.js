@@ -169,40 +169,6 @@ export const PROJECT_PROFILES = {
         statusClass: "success",
         date: "25-08-2026",
         proposalPrice: "0,00"
-    },
-    VANDERPLAATS: {
-        id: "vanderplaats",
-        matchKeys: ["vanderplaats", "gerard klusser", "plaats", "task-808"],
-        client: "VAN DER PLAATS (Gerard Klusser)",
-        companyName: "VAN DER PLAATS (Gerard Klusser)",
-        contactName: "Gerard Klusser",
-        email: "vanderplaats2@gmail.com",
-        domainName: "www.vanderplaats.nl",
-        domain: "www.vanderplaats.nl",
-        service: "Website & Klusbedrijf Formulier Backend",
-        goals: "Professionele klusbedrijf website met werkend contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (Tel: +31 6 12104850, KvK: 98527339).",
-        design: "Robuust, betrouwbaar, modern klusbedrijf thema.",
-        status: "In Ontwikkeling",
-        statusClass: "active",
-        date: "26-08-2026",
-        proposalPrice: "650,00"
-    },
-    JUSTIN: {
-        id: "justin",
-        matchKeys: ["justin", "task-810"],
-        client: "Justin",
-        companyName: "Justin",
-        contactName: "Justin",
-        email: "contact@justin.nl",
-        domainName: "www.justin.nl",
-        domain: "www.justin.nl",
-        service: "Website Laten Maken & Prototype",
-        goals: "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen.",
-        design: "Dark AI modern, strak, interactief.",
-        status: "Nieuwe Lead",
-        statusClass: "concept",
-        date: "27-08-2026",
-        proposalPrice: "600,00"
     }
 };
 
@@ -340,14 +306,8 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-804' || fullText.includes('home buyer') || fullText.includes('hbi') || fullText.includes('proptech')) {
         return PROJECT_PROFILES.HBI;
     }
-    if (code === 'TASK-808' || fullText.includes('vanderplaats') || fullText.includes('gerard klusser')) {
-        return PROJECT_PROFILES.VANDERPLAATS;
-    }
     if (code === 'TASK-809' || fullText.includes('ftruck') || fullText.includes('f-truck')) {
         return PROJECT_PROFILES.FTRUCK;
-    }
-    if (code === 'TASK-810' || fullText.includes('justin')) {
-        return PROJECT_PROFILES.JUSTIN;
     }
     if (code === 'TASK-805' || code === 'TASK-807' || code === 'TASK-811' || code === 'TASK-812') {
         return PROJECT_PROFILES.HOOFDWEBSITE;
@@ -440,35 +400,9 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
 
         let isNewlyCreated = false;
         if (!existingProj) {
-            // Provision new project document
-            existingProj = {
-                id: profile.id,
-                client: profile.client,
-                companyName: profile.companyName,
-                contactName: profile.contactName,
-                email: profile.email,
-                domainName: profile.domainName,
-                domain: profile.domain,
-                service: profile.service,
-                goals: profile.goals,
-                projectGoals: profile.goals,
-                design: profile.design,
-                designPreferences: profile.design,
-                status: profile.status,
-                statusClass: profile.statusClass,
-                date: profile.date,
-                proposalPrice: profile.proposalPrice,
-                tasks: [],
-                internalNotes: [
-                    { id: 'sync_n_' + Date.now(), text: 'Project automatisch aangemaakt via TODO.md DevOps Backlog Synchronisatie.', createdAt: new Date().toISOString(), author: 'DevOps AutoSync' }
-                ],
-                auditLog: [
-                    { id: 'sync_l_' + Date.now(), timestamp: new Date().toISOString(), type: 'project_created', description: 'Project gesynchroniseerd vanuit TODO.md.', actor: 'DevOps AutoSync' }
-                ]
-            };
-            currentProjects.push(existingProj);
-            isNewlyCreated = true;
-            summary.projectsCreated++;
+            // No auto-provisioning of deleted or unknown projects to prevent ghost mock data
+            console.log(`[TodoSync] Project "${profile.client}" niet gevonden in CRM database. Wordt overgeslagen.`);
+            continue;
         }
 
         // Merge existing tasks with new parsed tasks
