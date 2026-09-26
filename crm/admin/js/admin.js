@@ -813,7 +813,7 @@ function renderTablesData(projectsToRender) {
         const total = tasks.length;
         let taskBadge = '';
         if (total === 0) {
-            taskBadge = `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: var(--color-text-secondary);"><i class="fas fa-minus" style="font-size: 0.65rem; opacity: 0.5;"></i> 0 taken</span>`;
+            taskBadge = `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: var(--color-text-secondary); white-space: nowrap;"><i class="fas fa-minus" style="font-size: 0.65rem; opacity: 0.5;"></i> 0 taken</span>`;
         } else {
             const done = tasks.filter(t => t.completed || t.status === 'done').length;
             const isAllDone = done === total && total > 0;
@@ -827,21 +827,22 @@ function renderTablesData(projectsToRender) {
             </span>`;
         }
 
+        let msgBadge = '';
         const msgs = p.messages || [];
         if (msgs.length > 0) {
             const unreadCount = msgs.filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
             if (unreadCount > 0) {
-                taskBadge += ` <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.8rem; font-weight: 700; color: #f87171; margin-left: 6px;" title="${unreadCount} openstaande ticket(s)/bericht(en)">
+                msgBadge = `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.8rem; font-weight: 700; color: #f87171; white-space: nowrap;" title="${unreadCount} openstaande ticket(s)/bericht(en)">
                     <i class="fas fa-comment-dots"></i> ${unreadCount}
                 </span>`;
             } else {
-                taskBadge += ` <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); font-size: 0.8rem; font-weight: 600; color: var(--color-accent); margin-left: 6px;" title="${msgs.length} bericht(en) in historie">
+                msgBadge = `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); font-size: 0.8rem; font-weight: 600; color: var(--color-accent); white-space: nowrap;" title="${msgs.length} bericht(en) in historie">
                     <i class="fas fa-comments"></i> ${msgs.length}
                 </span>`;
             }
         }
 
-        return taskBadge;
+        return `<div class="table-task-badges" style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">${taskBadge}${msgBadge}</div>`;
     };
 
     const formatEmail = (email) => {
@@ -875,11 +876,11 @@ function renderTablesData(projectsToRender) {
 
         row.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
-            <td>${taskCounterHtml}</td>
-            <td>${emailHtml}</td>
-            <td>${domainHtml}</td>
-            <td><span class="badge badge-${safeStatusClass}">${safeStatusDisplay}</span></td>
-            <td><span style="color: var(--color-text-secondary); font-size: 0.85rem;">${safeDate}</span></td>
+            <td style="white-space: nowrap;">${taskCounterHtml}</td>
+            <td style="white-space: nowrap;">${emailHtml}</td>
+            <td style="white-space: nowrap;">${domainHtml}</td>
+            <td style="white-space: nowrap;"><span class="badge badge-${safeStatusClass}">${safeStatusDisplay}</span></td>
+            <td style="white-space: nowrap;"><span style="color: var(--color-text-secondary); font-size: 0.85rem;">${safeDate}</span></td>
             <td style="white-space: nowrap;">
                 <a href="project.html?id=${safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open Dedicated Werkplek"><i class="fas fa-desktop"></i> Werkplek</a>
                 <button class="btn btn-secondary btn-sm" data-action="details" data-id="${safeId}"><i class="fas fa-eye"></i> Snelmenu</button>
