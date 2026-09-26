@@ -174,8 +174,76 @@ export const DEFAULT_MONITORED_DOMAINS = [
 
 const LOCAL_STORAGE_CUSTOM_DOMAINS = 'caf_uptime_custom_domains';
 const LOCAL_STORAGE_REPLACED_DOMAINS = 'caf_uptime_replaced_domains';
+const LOCAL_STORAGE_IGNORED_DOMAINS = 'caf_uptime_ignored_domains';
 const LOCAL_STORAGE_ALERTS_LOG = 'caf_uptime_alerts_log';
 const LOCAL_STORAGE_SETTINGS = 'caf_uptime_settings';
+
+/**
+ * Returns the list of currently ignored/muted domains.
+ */
+export function getIgnoredDomains() {
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_IGNORED_DOMAINS);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+/**
+ * Checks whether a given domain is currently ignored/muted.
+ */
+export function isDomainIgnored(domain) {
+    if (!domain) return false;
+    const clean = normalizeDomain(domain);
+    return getIgnoredDomains().includes(clean);
+}
+
+/**
+ * Toggles or sets the ignored status of a domain (persisted in LocalStorage + Firestore).
+ */
+export async function setDomainIgnored(db, domain, isIgnored = true) {
+    const clean = normalizeDomain(domain);
+    if (!clean) return false;
+
+    let list = getIgnoredDomains();
+    if (isIgnored) {
+        if (!list.includes(clean)) list.push(clean);
+    } else {
+        list = list.filter(d => d !== clean);
+    }
+
+    try {
+        localStorage.setItem(LOCAL_STORAGE_IGNORED_DOMAINS, JSON.stringify(list));
+    } catch (e) {}
+
+    // Update cached reports
+    try {
+        const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
+        if (cachedStr) {
+            let cached = JSON.parse(cachedStr);
+            const rep = cached.find(r => r.domain === clean);
+            if (rep) {
+                rep.isIgnored = isIgnored;
+                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
+            }
+        }
+    } catch (e) {}
+
+    // Persist to Firestore if db available
+    if (db) {
+        try {
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const cleanKey = clean.replace(/[^a-zA-Z0-9]/g, '_');
+            const docRef = doc(db, "monitors", cleanKey);
+            await setDoc(docRef, { isIgnored, updatedAt: new Date().toISOString() }, { merge: true });
+        } catch (e) {
+            console.warn("Could not save ignore state to Firestore:", e.message);
+        }
+    }
+
+    return isIgnored;
+}
 
 /**
  * Normalizes a raw domain string to clean hostname (lowercase, no protocols, no slashes).
@@ -591,6 +659,12 @@ export async function getDomainStatusWithFallback(db, domainName) {
 export async function dispatchDowntimeAlert(report) {
     if (!report || report.overallStatus !== 'down') return false;
 
+    // Suppress alerts if domain is explicitly muted/ignored (e.g. unpurchased or maintenance)
+    if (isDomainIgnored(report.domain) || report.isIgnored) {
+        console.info(`🔕 Downtime alert voor ${report.domain} onderdrukt (domein is gemarkeerd als Genegeerd/Gedempt).`);
+        return false;
+    }
+
     // Check throttle in localStorage
     const throttleKey = `caf_alert_sent_${report.domain}`;
     const lastSent = localStorage.getItem(throttleKey);
@@ -890,4 +964,7 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
 if (typeof window !== 'undefined') {
     window.syncDomainChangeToMonitoring = syncDomainChangeToMonitoring;
     window.normalizeDomain = normalizeDomain;
+    window.getIgnoredDomains = getIgnoredDomains;
+    window.isDomainIgnored = isDomainIgnored;
+    window.setDomainIgnored = setDomainIgnored;
 }

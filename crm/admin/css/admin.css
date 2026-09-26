@@ -534,6 +534,38 @@ h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--color-text-headi
     border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
+.monitoring-pulse-dot.ignored {
+    background: #64748b;
+    box-shadow: 0 0 4px #64748b;
+    animation: none;
+}
+
+.monitoring-status-pill.ignored {
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+tr.row-monitor-ignored {
+    opacity: 0.52;
+    background: rgba(15, 23, 42, 0.35) !important;
+    transition: opacity 0.25s ease, background 0.25s ease;
+}
+
+tr.row-monitor-ignored:hover {
+    opacity: 0.88;
+    background: rgba(30, 41, 59, 0.55) !important;
+}
+
+tr.row-monitor-ignored td a {
+    color: #94a3b8 !important;
+}
+
+tr.row-monitor-ignored .tech-badge {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
 .latency-meter {
     display: inline-flex;
     align-items: center;

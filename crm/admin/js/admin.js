@@ -25,7 +25,10 @@ import {
     getIncidentLogs,
     playAlertTone,
     syncDomainChangeToMonitoring,
-    normalizeDomain
+    normalizeDomain,
+    getIgnoredDomains,
+    isDomainIgnored,
+    setDomainIgnored
 } from "../../js/uptime-monitor.js";
 
 
@@ -3025,7 +3028,7 @@ async function executeScanAllMonitors(isSilent = false) {
             if (progressBar) progressBar.style.width = `${pct}%`;
             if (progressText) progressText.innerText = `${completed} / ${total}`;
 
-            if (report.overallStatus === 'down') {
+            if (report.overallStatus === 'down' && !isDomainIgnored(report.domain)) {
                 if (monitoringAudioAlertsEnabled) {
                     playAlertTone();
                 }
@@ -3074,7 +3077,10 @@ function renderMonitorsTable() {
         }
 
         if (monitoringCurrentFilter === 'issues') {
-            return r.overallStatus === 'down' || r.overallStatus === 'degraded';
+            return (r.overallStatus === 'down' || r.overallStatus === 'degraded') && !isDomainIgnored(r.domain);
+        }
+        if (monitoringCurrentFilter === 'ignored') {
+            return isDomainIgnored(r.domain);
         }
         if (monitoringCurrentFilter === 'clients') {
             return r.category === 'client';
@@ -3096,6 +3102,8 @@ function renderMonitorsTable() {
         `;
     } else {
         tbody.innerHTML = filtered.map(r => {
+            const isIgnored = isDomainIgnored(r.domain) || !!r.isIgnored;
+            const rowClass = isIgnored ? 'row-monitor-ignored' : '';
             const latencyClass = r.latencyMs < 200 ? 'latency-fast' : (r.latencyMs < 800 ? 'latency-medium' : 'latency-slow');
             const latencyPct = Math.min(100, Math.round((r.latencyMs / 1500) * 100));
             const httpBadge = r.httpCode === 200 
@@ -3118,20 +3126,35 @@ function renderMonitorsTable() {
                 ? new Date(r.lastChecked).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                 : '-';
 
+            const statusColumnHtml = isIgnored
+                ? `<div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="monitoring-pulse-dot ignored"></span>
+                        <span class="monitoring-status-pill ignored"><i class="fas fa-eye-slash" style="font-size: 0.68rem;"></i> Genegeerd</span>
+                    </div>
+                    <span style="font-size: 0.68rem; color: #64748b; margin-left: 18px;">Meldingen uit</span>
+                   </div>`
+                : `<div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="monitoring-pulse-dot ${r.overallStatus}"></span>
+                    <span class="monitoring-status-pill ${r.overallStatus}">${escapeHtml(r.statusText)}</span>
+                   </div>`;
+
+            const domainIgnoredTag = isIgnored
+                ? `<span style="background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; margin-left: 6px;"><i class="fas fa-bell-slash"></i> Gedempt</span>`
+                : '';
+
             return `
-                <tr id="row-monitor-${escapeHtml(r.id)}">
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="monitoring-pulse-dot ${r.overallStatus}"></span>
-                            <span class="monitoring-status-pill ${r.overallStatus}">${escapeHtml(r.statusText)}</span>
-                        </div>
-                    </td>
+                <tr id="row-monitor-${escapeHtml(r.id)}" class="${rowClass}">
+                    <td>${statusColumnHtml}</td>
                     <td>
                         <div>
-                            <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" style="color: #fff; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                                <span>${escapeHtml(r.domain)}</span>
-                                <i class="fas fa-external-link-alt" style="font-size: 0.72rem; color: #94a3b8;"></i>
-                            </a>
+                            <div style="display: flex; align-items: center;">
+                                <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" style="color: #fff; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                                    <span>${escapeHtml(r.domain)}</span>
+                                    <i class="fas fa-external-link-alt" style="font-size: 0.72rem; color: #94a3b8;"></i>
+                                </a>
+                                ${domainIgnoredTag}
+                            </div>
                             <div style="font-size: 0.74rem; color: var(--color-text-secondary); margin-top: 2px;">
                                 ${escapeHtml(r.name)} • <span style="color: var(--color-accent);">${escapeHtml(r.client)}</span>
                             </div>
@@ -3166,6 +3189,11 @@ function renderMonitorsTable() {
                             <button class="btn btn-secondary btn-sm" onclick="recheckSingleDomain('${escapeHtml(r.domain)}')" title="Nu opnieuw testen" style="padding: 4px 8px;">
                                 <i class="fas fa-sync-alt" id="recheck-spin-${escapeHtml(r.id)}"></i>
                             </button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleIgnoreDomain('${escapeHtml(r.domain)}')" 
+                                title="${isIgnored ? 'Dempen opheffen & monitoring heractiveren' : 'Negeer domein (vergrijzen en meldingen uitschakelen)'}" 
+                                style="padding: 4px 8px; ${isIgnored ? 'color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15);' : ''}">
+                                <i class="fas ${isIgnored ? 'fa-bell-slash' : 'fa-eye-slash'}"></i>
+                            </button>
                             <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="Website bezoeken" style="padding: 4px 8px;">
                                 <i class="fas fa-globe"></i>
                             </a>
@@ -3177,26 +3205,34 @@ function renderMonitorsTable() {
     }
 
     const total = monitoringReports.length;
-    const operational = monitoringReports.filter(r => r.overallStatus === 'operational').length;
-    const down = monitoringReports.filter(r => r.overallStatus === 'down').length;
-    const degraded = monitoringReports.filter(r => r.overallStatus === 'degraded').length;
+    const nonIgnored = monitoringReports.filter(r => !isDomainIgnored(r.domain));
+    const ignoredCount = monitoringReports.filter(r => isDomainIgnored(r.domain)).length;
 
-    const sumLatency = monitoringReports.reduce((acc, r) => acc + (r.latencyMs || 0), 0);
-    const avgLatency = total > 0 ? Math.round(sumLatency / total) : 0;
+    const operational = nonIgnored.filter(r => r.overallStatus === 'operational').length;
+    const down = nonIgnored.filter(r => r.overallStatus === 'down').length;
+    const degraded = nonIgnored.filter(r => r.overallStatus === 'degraded').length;
 
-    const noerrorDns = monitoringReports.filter(r => r.dnsStatus === 'NOERROR').length;
-    const dnsHealth = total > 0 ? Math.round((noerrorDns / total) * 100) : 100;
+    const sumLatency = nonIgnored.reduce((acc, r) => acc + (r.latencyMs || 0), 0);
+    const avgLatency = nonIgnored.length > 0 ? Math.round(sumLatency / nonIgnored.length) : 0;
+
+    const noerrorDns = nonIgnored.filter(r => r.dnsStatus === 'NOERROR').length;
+    const dnsHealth = nonIgnored.length > 0 ? Math.round((noerrorDns / nonIgnored.length) * 100) : 100;
 
     const kpiOperational = document.getElementById('kpi-mon-operational');
-    if (kpiOperational) kpiOperational.innerHTML = `${operational} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ ${total}</span>`;
+    if (kpiOperational) kpiOperational.innerHTML = `${operational} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ ${nonIgnored.length}</span>`;
 
     const kpiDown = document.getElementById('kpi-mon-down');
     if (kpiDown) kpiDown.innerHTML = `${down} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">incidenten</span>`;
 
     const kpiDownSub = document.getElementById('kpi-mon-down-sub');
     if (kpiDownSub) {
-        kpiDownSub.innerText = down > 0 ? `${down} domein(en) vereisen directe actie!` : "Geen actieve DNS/HTTP uitval";
-        kpiDownSub.style.color = down > 0 ? '#f87171' : 'var(--color-text-secondary)';
+        if (down > 0) {
+            kpiDownSub.innerText = `${down} domein(en) vereisen directe actie!`;
+            kpiDownSub.style.color = '#f87171';
+        } else {
+            kpiDownSub.innerText = ignoredCount > 0 ? `Geen actieve uitval (${ignoredCount} genegeerd)` : "Geen actieve DNS/HTTP uitval";
+            kpiDownSub.style.color = 'var(--color-text-secondary)';
+        }
     }
 
     const kpiLatency = document.getElementById('kpi-mon-latency');
@@ -3318,6 +3354,9 @@ window.openMonitorDetailModal = async (domainName) => {
             <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('monitor-detail-modal')">Sluiten</button>
                 <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleIgnoreDomain('${escapeHtml(report.domain)}').then(() => openMonitorDetailModal('${escapeHtml(report.domain)}'))" style="${isDomainIgnored(report.domain) ? 'color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15);' : ''}">
+                        <i class="fas ${isDomainIgnored(report.domain) ? 'fa-bell-slash' : 'fa-eye-slash'}"></i> ${isDomainIgnored(report.domain) ? 'Dempen Opheffen' : 'Negeer Domein'}
+                    </button>
                     <a href="https://${escapeHtml(report.domain)}${report.path || '/'}" target="_blank" rel="noopener" class="btn btn-secondary">
                         <i class="fas fa-globe"></i> Open Website
                     </a>
@@ -3360,6 +3399,22 @@ window.recheckSingleDomain = async (domainName, updateDetailModal = false) => {
     } finally {
         if (spinner) spinner.classList.remove('fa-spin');
     }
+};
+
+window.toggleIgnoreDomain = async (domainName) => {
+    const clean = normalizeDomain(domainName);
+    if (!clean) return;
+    const currentlyIgnored = isDomainIgnored(clean);
+    const newIgnored = !currentlyIgnored;
+
+    await setDomainIgnored(db, clean, newIgnored);
+
+    const rep = monitoringReports.find(r => r.domain === clean);
+    if (rep) {
+        rep.isIgnored = newIgnored;
+    }
+
+    renderMonitorsTable();
 };
 
 function initAdminPage() {
