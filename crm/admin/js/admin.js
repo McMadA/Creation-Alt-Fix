@@ -1,7 +1,7 @@
 /**
  * Admin Dashboard Logic
  * Integrated with Firebase Auth & Firestore.
- * Fallbacks to mock data if Firebase is not yet configured.
+ * Production mode: Firestore is the single source of truth.
  * 
  * Security: XSS-escaped output, centralized config, admin whitelist.
  */
@@ -28,7 +28,9 @@ import {
     normalizeDomain,
     getIgnoredDomains,
     isDomainIgnored,
-    setDomainIgnored
+    setDomainIgnored,
+    REQUIRED_CONSECUTIVE_FAILURES,
+    getConsecutiveFailures
 } from "../../js/uptime-monitor.js";
 
 
@@ -103,7 +105,10 @@ const API = {
     },
 
     async getProjects() {
-        if (!db) return this.getMockProjects();
+        if (!db) {
+            console.warn('[CRM] Firebase niet beschikbaar. Geen projecten geladen.');
+            return [];
+        }
 
         try {
             const querySnapshot = await getDocs(collection(db, "projects"));
@@ -112,87 +117,17 @@ const API = {
                 projectsList.push({ id: doc.id, ...doc.data() });
             });
 
-            // Ensure ALL clients & historical projects from the portfolio / CRM exports exist in active list
-            const mockList = this.getMockProjects();
-            for (const m of mockList) {
-                const mName = (m.client || m.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                const mDom = (m.domainName || m.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-                const exists = projectsList.some(p => {
-                    const pName = (p.client || p.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const pDom = (p.domainName || p.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-                    if (mName && pName && (pName.includes(mName) || mName.includes(pName))) return true;
-                    if (mDom && pDom && (pDom.includes(mDom) || mDom.includes(pDom))) return true;
-                    if (pName.includes('besseling') && mName.includes('besseling')) return true;
-                    return false;
-                });
-
-                if (!exists) {
-                    const { id, ...dataToSeed } = m;
-                    projectsList.push({ id: `seed_${m.id}`, ...dataToSeed });
-                    if (db) {
-                        try {
-                            addDoc(collection(db, "projects"), dataToSeed).catch(console.warn);
-                        } catch (e) {}
-                    }
-                }
-            }
-
-            // Universal task synchronization & canceled task filtering for ALL projects
+            // Data sanitization: filter out canceled tasks (TASK-501, Google Ads)
             for (const p of projectsList) {
-                // Filter out canceled TASK-501
                 if (p.tasks && Array.isArray(p.tasks)) {
                     p.tasks = p.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
                 }
-
-                const pName = (p.client || p.companyName || '').toLowerCase();
-                const pDom = (p.domainName || p.domain || '').toLowerCase();
-
-                // Match against rich deliverables in mockList
-                let matchedMock = mockList.find(m => {
-                    const mName = (m.client || m.companyName || '').toLowerCase();
-                    const mDom = (m.domainName || m.domain || '').toLowerCase();
-                    if (pName.includes('hoofdwebsite') || (pDom.includes('creationaltfix') && !pName.includes('crm') && !pDom.includes('portal') && !pDom.includes('hbi'))) return m.id === 6;
-                    if (pName.includes('crm') || pDom.includes('portal.creationaltfix')) return m.id === 7;
-                    if (pName.includes('besseling') || pDom.includes('besseling')) return m.id === 8;
-                    if (pName.includes('arnold') || pDom.includes('arnold')) return m.id === 5;
-                    if (pName.includes('angela') || pDom.includes('angela')) return m.id === 9;
-                    if (pName.includes('hbi') || pName.includes('buyer') || pDom.includes('hbi.')) return m.id === 10;
-                    if (pName.includes('sieg') || pDom.includes('bakkertjesieg')) return m.id === 11;
-                    if (pName.includes('ftruck') || pDom.includes('ftruck')) return m.id === 12;
-                    if (pName && mName && (pName.includes(mName) || mName.includes(pName))) return true;
-                    if (pDom && mDom && (pDom.includes(mDom) || mDom.includes(pDom))) return true;
-                    return false;
-                });
-
-                if (matchedMock && matchedMock.tasks && matchedMock.tasks.length > 0) {
-                    const currentCount = (p.tasks && Array.isArray(p.tasks)) ? p.tasks.length : 0;
-                    // If current tasks are empty or missing new deliverables, update to matched tasks
-                    if (currentCount < matchedMock.tasks.length || pName.includes('hoofdwebsite') || pName.includes('crm') || pName.includes('besseling') || pName.includes('arnold') || pName.includes('sieg') || pName.includes('angela')) {
-                        p.tasks = matchedMock.tasks;
-                        if (p.id && String(p.id).length > 5) {
-                            updateDoc(doc(db, "projects", p.id), { tasks: matchedMock.tasks }).catch(console.warn);
-                        }
-                    }
-                } else if (!p.tasks || !Array.isArray(p.tasks) || p.tasks.length === 0) {
-                    // Populate clean delivery milestones for completed historical projects so none show '0 taken'
-                    const isDone = (p.status || '').includes('Opgeleverd') || (p.status || '').includes('Live');
-                    const defaultTasks = [
-                        { id: 'del_' + (p.id || '1') + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: p.date || '2025-01-01' },
-                        { id: 'del_' + (p.id || '1') + '_2', title: 'UI/UX Design & responsive template ontwikkeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: p.date || '2025-01-01' },
-                        { id: 'del_' + (p.id || '1') + '_3', title: 'Content, formulieren, database & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: p.date || '2025-01-01' },
-                        { id: 'del_' + (p.id || '1') + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: p.date || '2025-01-01' }
-                    ];
-                    p.tasks = defaultTasks;
-                    if (p.id && String(p.id).length > 5) {
-                        updateDoc(doc(db, "projects", p.id), { tasks: defaultTasks }).catch(console.warn);
-                    }
-                }
             }
 
-            if (projectsList.length > 0) return projectsList;
-            throw new Error("No projects found");
+            return projectsList;
         } catch (e) {
-            return this.getMockProjects();
+            console.error('[CRM] Fout bij laden projecten uit Firestore:', e);
+            return [];
         }
     },
 
@@ -3020,10 +2955,9 @@ async function executeScanAllMonitors(isSilent = false) {
             if (progressText) progressText.innerText = `${completed} / ${total}`;
 
             if (report.overallStatus === 'down' && !isDomainIgnored(report.domain)) {
-                if (monitoringAudioAlertsEnabled) {
-                    playAlertTone();
-                }
-                dispatchDowntimeAlert(report);
+                // dispatchDowntimeAlert enforces REQUIRED_CONSECUTIVE_FAILURES (3x down)
+                // and only plays audio tone + sends alert email when confirmed down
+                dispatchDowntimeAlert(report, { playAudio: monitoringAudioAlertsEnabled });
             }
 
             if (db) {
@@ -3117,6 +3051,10 @@ function renderMonitorsTable() {
                 ? new Date(r.lastChecked).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                 : '-';
 
+            const isVerifying = r.overallStatus === 'down' && !r.isConfirmedDown;
+            const statusDotClass = isVerifying ? 'degraded' : r.overallStatus;
+            const statusPillClass = isVerifying ? 'degraded' : r.overallStatus;
+
             const statusColumnHtml = isIgnored
                 ? `<div>
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -3126,8 +3064,8 @@ function renderMonitorsTable() {
                     <span style="font-size: 0.68rem; color: #64748b; margin-left: 18px;">Meldingen uit</span>
                    </div>`
                 : `<div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="monitoring-pulse-dot ${r.overallStatus}"></span>
-                    <span class="monitoring-status-pill ${r.overallStatus}">${escapeHtml(r.statusText)}</span>
+                    <span class="monitoring-pulse-dot ${statusDotClass}"></span>
+                    <span class="monitoring-status-pill ${statusPillClass}">${escapeHtml(r.statusText)}</span>
                    </div>`;
 
             const domainIgnoredTag = isIgnored
@@ -3299,11 +3237,15 @@ window.openMonitorDetailModal = async (domainName) => {
 
     if (title) title.innerText = `${report.name} (${report.domain})`;
     if (body) {
+        const isModalVerifying = report.overallStatus === 'down' && !report.isConfirmedDown;
+        const modalDotClass = isModalVerifying ? 'degraded' : report.overallStatus;
+        const modalPillClass = isModalVerifying ? 'degraded' : report.overallStatus;
+
         body.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="monitoring-pulse-dot ${report.overallStatus}"></span>
-                    <span class="monitoring-status-pill ${report.overallStatus}" style="font-size: 0.85rem;">${escapeHtml(report.statusText)}</span>
+                    <span class="monitoring-pulse-dot ${modalDotClass}"></span>
+                    <span class="monitoring-status-pill ${modalPillClass}" style="font-size: 0.85rem;">${escapeHtml(report.statusText)}</span>
                 </div>
                 <div style="font-size: 0.85rem; color: #94a3b8;">
                     Laatste controle: <strong>${new Date(report.lastChecked).toLocaleString('nl-NL')}</strong>
@@ -3319,6 +3261,7 @@ window.openMonitorDetailModal = async (domainName) => {
                     <div><strong>DoH Provider:</strong> <span style="color: #c7d2fe;">${escapeHtml(report.dnsProvider)}</span></div>
                     <div><strong>DNS Status Code:</strong> <span class="tech-badge ${report.dnsStatus === 'NOERROR' ? 'dns-ok' : 'dns-fail'}">${escapeHtml(report.dnsStatus)}</span></div>
                     <div><strong>DNS Latency:</strong> <span>${report.dnsLatencyMs} ms</span></div>
+                    <div><strong>Metingen &amp; Alert Status:</strong> <span style="color: ${report.overallStatus === 'down' ? (report.isConfirmedDown ? '#ef4444' : '#f59e0b') : '#10b981'}; font-weight: 600;">${report.overallStatus === 'down' ? (report.isConfirmedDown ? `🚨 Bevestigd Down (${report.consecutiveFailures}x)` : `⚠️ In verificatie (${report.consecutiveFailures || 1}/${REQUIRED_CONSECUTIVE_FAILURES})`) : '✓ Stabiel (0 fouten)'}</span></div>
                     <div><strong>Verwacht Server IP:</strong> <span style="font-family: monospace;">${escapeHtml(report.expectedIp || 'Niet ingesteld')}</span></div>
                     <div style="grid-column: span 2;">
                         <strong>Geresolveerde IPv4 A-Records:</strong>

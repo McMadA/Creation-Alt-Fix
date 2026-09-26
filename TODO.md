@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **51 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **37 Tasks (74%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (10%)**                        |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (16%)**                        |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **57 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **43 Tasks (77%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (9%)**                         |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (14%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░] 74% Complete (5 In Progress, 8 in Queue)`
+`[███████████████████░░░░░] 77% Complete (5 In Progress, 8 in Queue)`
 
 ---
 
@@ -317,9 +317,38 @@
 
 - [x] `[TASK-827]` `[P1-HIGH]` `[STATUS: DONE]` **Centraal Uptime & Website Monitoring Systeem in het Beheerders- & Klantenportaal**
   - **Scope**: `crm/js/uptime-monitor.js`, `crm/api/healthcheck.php`, `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/css/admin.css`, `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `firestore.rules`
-  - **Details**: Volledige realtime monitoring suite gerealiseerd: 1. Multi-DNS resolver engine (Google DoH & Cloudflare DoH APIs) voor automatische detectie van DNS-storingen, SERVFAIL (zoals bij de Vimexx DDoS-storing), NXDOMAIN, IPv4 A-records en latency; 2. Directe HTTPS handshake & uptime probe gecombineerd met dedicated server-side cURL fallback (`crm/api/healthcheck.php`); 3. Uitgebreid Admin Dashboard monitoring view (`view-monitoring`) met 4 KPI-kaarten, live glow pulse statusbolletjes (groen, oranje, rood), zoek- en categoriefilters, live scan voortgangsbalk, domein-inspectie modal (`#monitor-detail-modal`), auto-refresh interval (60s), en Web Audio alert chimes; 4. Klantenportaal integratie met live statusbadge in de header en een dedicated "Live Systeem- & Website Status" kaart met 1-klik herverificatie (`#btn-client-verify-uptime`); 5. Dedicated beheerder-only downtime alerts via FormSubmit naar `info@creationaltfix.nl` met 60-minuten anti-spam afkoelperiode en Firestore real-time persistentie (`/monitors/{domainKey}`).
+  - **Details**: Volledige realtime monitoring suite gerealiseerd: 1. Multi-DNS resolver engine (Google DoH & Cloudflare DoH APIs) voor automatische detectie van DNS-storingen, SERVFAIL (zoals bij de Vimexx DDoS-storing), NXDOMAIN, IPv4 A-records en latency; 2. Directe HTTPS handshake & uptime probe gecombineerd met dedicated server-side cURL fallback (`crm/api/healthcheck.php`); 3. Uitgebreid Admin Dashboard monitoring view (`view-monitoring`) met 4 KPI-kaarten, live glow pulse statusbolletjes (groen, oranje, rood), zoek- en categoriefilters, live scan voortgangsbalk, domein-inspectie modal (`#monitor-detail-modal`), auto-refresh interval (60s), en Web Audio alert chimes; 4. Klantenportaal integratie met live statusbadge in de header en een dedicated "Live Systeem- & Website Status" kaart met 1-klik herverificatie (`#btn-client-verify-uptime`); 5. Dedicated beheerder-only downtime alerts via FormSubmit naar `info@creationaltfix.nl` met false-positive filtering: alerts en audio chimes triggeren uitsluitend na minimaal 3 opeenvolgende bevestigde DOWN-metingen (`REQUIRED_CONSECUTIVE_FAILURES = 3`) inclusief automatische instant re-probe (1.2s delay) om tijdelijke netwerkhiccups te filteren, 60-minuten anti-spam afkoelperiode en Firestore real-time persistentie (`/monitors/{domainKey}`).
 
 - [ ] `[TASK-828]` `[P3-LOW]` `[STATUS: BACKLOG]` **Uptime Monitoring Externe Alert Integraties: WhatsApp & Push Notificaties (Twilio / Green API / CallMeBot / Webhooks)**
   - **Scope**: `crm/js/uptime-monitor.js`, WhatsApp Business API / Webhooks, SMS of Push notificaties
   - **Details**: Automatische instant WhatsApp- of Push-notificatie naar Allard wanneer een gehost domein offline gaat of DNS SERVFAIL vertoont, inclusief incidentdetails (statuscode, responsetijd) en directe beheerderslink. Voor latere sprint gepland.
+
+---
+
+### 🛡️ EPIC-10: Q1 2027 Klantenportaal Productie-Hardening & Communicatie
+
+- [x] `[TASK-829]` `[P1-HIGH]` `[STATUS: DONE]` **Geautomatiseerde E-mail Notificaties bij Berichten & Faseovergangen (Tweeweg Communicatie)**
+  - **Scope**: `crm/js/email-notifications.js`, `crm/status/js/status.js`, `crm/admin/js/project.js`
+  - **Details**: Volledige tweeweg notificatie-engine: (1) Klant -> Admin: direct e-mailalert naar `info@creationaltfix.nl` bij nieuw klantbericht of revisieticket via EmailJS met FormSubmit fallback; (2) Admin -> Klant: branded e-mail notificatie naar klant wanneer beheerder antwoordt in de werkplek; (3) Mijlpaalnotificaties: automatische e-mail naar de klant bij faseovergangen met dynamische toelichting per fase; (4) Anti-spam throttling (2 minuten cooldown) en non-blocking dispatch zodat portal interacties nooit vertragen.
+
+- [x] `[TASK-830]` `[P2-HIGH]` `[STATUS: DONE]` **Iframe CORS & X-Frame-Options Fallback Waarschuwing in Staging Viewer**
+  - **Scope**: `crm/status/js/status.js`
+  - **Details**: Intelligente detectie van cross-origin / `X-Frame-Options` / CSP `frame-ancestors` blokkades in de live preview viewport. Toont automatisch een amberkleurige informatieve banner die de klant geruststelt dat de blokkade het gevolg is van beveiligingsheaders op de hosting en geen invloed heeft op de website, met een directe knop "Open in nieuw venster".
+
+- [x] `[TASK-831]` `[P1-HIGH]` `[STATUS: DONE]` **Frictieloze Eerste Login & Magic Link / Wachtwoord Herstel CTA op CRM Login**
+  - **Scope**: `crm/index.html`
+  - **Details**: Prominente "Eerste keer inloggen of wachtwoord kwijt?" call-to-action box toegevoegd boven het reguliere inlogformulier. Klanten vullen enkel hun e-mailadres in en ontvangen met 1 klik een beveiligde Firebase password-setup link, inclusief volledige tweetalige ondersteuning (NL/EN) en duidelijke instructiepagina.
+
+- [x] `[TASK-832]` `[P2-HIGH]` `[STATUS: DONE]` **Mock Data Seeder Uitschakelen & Firestore als Single Source of Truth in Productie Admin**
+  - **Scope**: `crm/admin/js/admin.js`
+  - **Details**: De hardcoded mock data auto-seeder in `API.getProjects()` definitief uitgeschakeld. Data wordt direct en uitsluitend uit Firestore geladen en gecached, waardoor handmatige verwijderingen en updates in het beheerpaneel 100% persistent zijn zonder spook-hercreatie van demo projecten.
+
+- [x] `[TASK-833]` `[P2-HIGH]` `[STATUS: DONE]` **Klantbestanden Download Manager & Bulk Download in Admin Werkplek**
+  - **Scope**: `crm/admin/js/project.js`
+  - **Details**: `renderFilesList()` uitgebreid met visuele bestandstype-iconen per extensie (PDF, afbeeldingen, Word, ZIP, code), datum- en bestandsgrootte weergave, subtiele hover effecten en een "Download Alle" knop die alle aangeleverde klantbestanden getimed in afzonderlijke tabs opent zonder popup-blockers te triggeren.
+
+- [x] `[TASK-834]` `[P1-CRITICAL]` `[STATUS: DONE]` **Firebase Cloud Storage Beveiligingsregels (`storage.rules`) & Deployment**
+  - **Scope**: `storage.rules`, `firebase.json`
+  - **Details**: Nieuwe granulaire `storage.rules` geschreven ter bescherming van klantbestanden, offertes en facturen: scoped write-toegang per project voor ingelogde klanten met strikte bestandsgroottelimiet (max 10 MB) en gevalideerde MIME-types (afbeeldingen, PDFs, Office documenten), volledige beheerderstoegang voor de admin whitelist (`allardv03@gmail.com`, `info@creationaltfix.nl`), en gekoppeld in `firebase.json`. Succesvol live gedeployed naar Firebase project `mythical-cider-475118-e5`.
+
 

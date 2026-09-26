@@ -292,6 +292,36 @@
             </a>
         </div>
 
+        <!-- Eerste Keer Inloggen / Magic Link CTA -->
+        <div id="first-login-cta" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(99, 102, 241, 0.08)); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; text-align: center;">
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+                <i class="fas fa-magic" style="color: var(--color-accent); margin-right: 4px;"></i>
+                <span data-translate-key="portalFirstLoginDesc">Eerste keer inloggen of wachtwoord kwijt? Ontvang een verse inloglink via e-mail.</span>
+            </p>
+            <button type="button" id="btn-first-login" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.25);">
+                <i class="fas fa-paper-plane"></i>
+                <span data-translate-key="portalFirstLoginBtn">Stuur mij een inloglink</span>
+            </button>
+        </div>
+
+        <!-- Eerste Login Email Formulier -->
+        <div id="first-login-box" class="login-box hidden">
+            <h2><i class="fas fa-magic" style="color: var(--color-accent);"></i> <span data-translate-key="portalFirstLoginBoxTitle">Wachtwoord Instellen</span></h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;" data-translate-key="portalFirstLoginBoxDesc">Vul het e-mailadres in waarmee je project is aangemeld. Je ontvangt direct een veilige link om je wachtwoord in te stellen.</p>
+            <form id="first-login-form">
+                <div class="form-group">
+                    <label for="first-login-email"><i class="fas fa-envelope"></i> <span data-translate-key="portalLblEmail">E-mailadres</span></label>
+                    <input type="email" id="first-login-email" class="input-field" placeholder="je-naam@bedrijf.nl" data-translate-key-placeholder="portalPlhEmail" required>
+                </div>
+                <button type="submit" id="btn-send-first-login" class="btn-submit" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4);">
+                    <i class="fas fa-paper-plane"></i> <span data-translate-key="portalFirstLoginSendBtn">Wachtwoord Reset Link Versturen</span>
+                </button>
+            </form>
+            <a href="#" id="back-to-login-from-first" style="display: block; text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--color-accent); text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> <span data-translate-key="portalBtnBackToLogin">Terug naar inloggen</span>
+            </a>
+        </div>
+
         <div class="divider"><span data-translate-key="portalDivider">Nog geen lopend project?</span></div>
 
         <!-- Intake Link -->
@@ -357,7 +387,14 @@
                 portalNavDocs: "Documentatie",
                 portalErrInvalid: "Ongeldig e-mailadres of wachtwoord. Controleer je gegevens of de ontvangen e-mail.",
                 portalErrNoProject: "Geen actief project of beheerdersaccount gevonden voor dit e-mailadres.",
-                portalErrReset: "Kon de reset-mail niet versturen. Controleer of het e-mailadres juist is."
+                portalErrReset: "Kon de reset-mail niet versturen. Controleer of het e-mailadres juist is.",
+                portalFirstLoginDesc: "Eerste keer inloggen of wachtwoord kwijt? Ontvang een verse inloglink via e-mail.",
+                portalFirstLoginBtn: "Stuur mij een inloglink",
+                portalFirstLoginBoxTitle: "Wachtwoord Instellen",
+                portalFirstLoginBoxDesc: "Vul het e-mailadres in waarmee je project is aangemeld. Je ontvangt direct een veilige link om je wachtwoord in te stellen.",
+                portalFirstLoginSendBtn: "Wachtwoord Reset Link Versturen",
+                portalFirstLoginSent: "Link Verstuurd!",
+                portalFirstLoginSentDesc: "We hebben een beveiligde link gestuurd naar je e-mailadres. Controleer ook je spambox. De link is 1 uur geldig."
             },
             en: {
                 portalLoginTitle: "Client Portal & Login - Creation+Alt+Fix",
@@ -386,7 +423,14 @@
                 portalNavDocs: "Documentation",
                 portalErrInvalid: "Invalid email or password. Please verify your credentials or the email you received.",
                 portalErrNoProject: "No active project or administrator account found for this email address.",
-                portalErrReset: "Could not dispatch reset email. Please verify that the email address is correct."
+                portalErrReset: "Could not dispatch reset email. Please verify that the email address is correct.",
+                portalFirstLoginDesc: "First time logging in or forgot your password? Get a fresh login link via email.",
+                portalFirstLoginBtn: "Send me a login link",
+                portalFirstLoginBoxTitle: "Set Your Password",
+                portalFirstLoginBoxDesc: "Enter the email address associated with your project. You'll receive a secure link to set your password.",
+                portalFirstLoginSendBtn: "Send Password Reset Link",
+                portalFirstLoginSent: "Link Sent!",
+                portalFirstLoginSentDesc: "We've sent a secure link to your email address. Please also check your spam folder. The link is valid for 1 hour."
             }
         };
 
@@ -553,6 +597,59 @@
                     `;
                 } catch (err) {
                     console.error("Reset error:", err);
+                    alert(t.portalErrReset);
+                    btn.innerHTML = originalBtn;
+                    btn.disabled = false;
+                }
+            }
+        });
+
+        // [TASK-831] Eerste Keer Inloggen / Magic Link Handlers
+        document.getElementById('btn-first-login')?.addEventListener('click', () => {
+            document.getElementById('login-box-container').classList.add('hidden');
+            document.getElementById('forgot-password-box').classList.add('hidden');
+            document.getElementById('first-login-cta').classList.add('hidden');
+            document.getElementById('first-login-box').classList.remove('hidden');
+            // Pre-fill email if already entered
+            const emailVal = document.getElementById('client-email')?.value || '';
+            if (emailVal) document.getElementById('first-login-email').value = emailVal;
+        });
+
+        document.getElementById('back-to-login-from-first')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('first-login-box').classList.add('hidden');
+            document.getElementById('first-login-cta').classList.remove('hidden');
+            document.getElementById('login-box-container').classList.remove('hidden');
+        });
+
+        document.getElementById('first-login-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const t = translations[currentLang] || translations.nl;
+            const email = document.getElementById('first-login-email').value.trim();
+            const btn = document.getElementById('btn-send-first-login');
+            const originalBtn = btn.innerHTML;
+
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t.portalBtnSendingReset}`;
+            btn.disabled = true;
+
+            if (email) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    
+                    const box = document.getElementById('first-login-box');
+                    box.innerHTML = `
+                        <div style="text-align: center; padding: 10px 0;">
+                            <div style="width: 56px; height: 56px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                <i class="fas fa-check" style="color: #10b981; font-size: 1.5rem;"></i>
+                            </div>
+                            <h2 style="color: #10b981; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;">${t.portalFirstLoginSent}</h2>
+                            <p style="font-size: 0.92rem; color: var(--text-main); margin-bottom: 8px; line-height: 1.6;">${t.portalFirstLoginSentDesc}</p>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;"><i class="fas fa-envelope" style="margin-right: 4px;"></i> ${email}</p>
+                            <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> ${t.portalBtnBackToLogin}</button>
+                        </div>
+                    `;
+                } catch (err) {
+                    console.error("First login reset error:", err);
                     alert(t.portalErrReset);
                     btn.innerHTML = originalBtn;
                     btn.disabled = false;

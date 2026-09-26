@@ -177,6 +177,66 @@ const LOCAL_STORAGE_REPLACED_DOMAINS = 'caf_uptime_replaced_domains';
 const LOCAL_STORAGE_IGNORED_DOMAINS = 'caf_uptime_ignored_domains';
 const LOCAL_STORAGE_ALERTS_LOG = 'caf_uptime_alerts_log';
 const LOCAL_STORAGE_SETTINGS = 'caf_uptime_settings';
+const LOCAL_STORAGE_CONSECUTIVE_DOWN = 'caf_uptime_consecutive_down';
+
+/**
+ * Minimum number of consecutive failed checks required before dispatching an alert.
+ * Single transient measurements or socket timeouts will NOT trigger alerts.
+ */
+export const REQUIRED_CONSECUTIVE_FAILURES = 3;
+
+/**
+ * Returns the current consecutive failure count for a domain.
+ * @param {string} domain 
+ * @returns {number}
+ */
+export function getConsecutiveFailures(domain) {
+    if (!domain) return 0;
+    const clean = normalizeDomain(domain);
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
+        const map = stored ? JSON.parse(stored) : {};
+        return typeof map[clean] === 'number' ? map[clean] : 0;
+    } catch (e) {
+        return 0;
+    }
+}
+
+/**
+ * Updates the consecutive failure count for a domain based on check result.
+ * Increments count when down; resets to 0 when operational or degraded (recovered).
+ * 
+ * @param {string} domain 
+ * @param {string} overallStatus ('down' | 'degraded' | 'operational')
+ * @returns {number} The updated consecutive failure count
+ */
+export function recordDomainCheckResult(domain, overallStatus) {
+    if (!domain) return 0;
+    const clean = normalizeDomain(domain);
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
+        const map = stored ? JSON.parse(stored) : {};
+
+        if (overallStatus === 'down') {
+            const current = typeof map[clean] === 'number' ? map[clean] : 0;
+            const updated = current + 1;
+            map[clean] = updated;
+            localStorage.setItem(LOCAL_STORAGE_CONSECUTIVE_DOWN, JSON.stringify(map));
+            return updated;
+        } else {
+            // Recovered or operational -> reset counter to 0
+            if (map[clean]) {
+                delete map[clean];
+                localStorage.setItem(LOCAL_STORAGE_CONSECUTIVE_DOWN, JSON.stringify(map));
+                // Clear alert throttle on recovery so next future incident alerts properly
+                localStorage.removeItem(`caf_alert_sent_${clean}`);
+            }
+            return 0;
+        }
+    } catch (e) {
+        return overallStatus === 'down' ? 1 : 0;
+    }
+}
 
 /**
  * Returns the list of currently ignored/muted domains.
@@ -524,25 +584,49 @@ export async function runDomainHealthCheck(domainConfig) {
     ]);
 
     const dns = dnsSettled.status === 'fulfilled' ? dnsSettled.value : { status: 'ERROR', latencyMs: 0, resolvedIps: [] };
-    const https = httpsSettled.status === 'fulfilled' ? httpsSettled.value : { reachable: false, latencyMs: 0, sslValid: false, httpCode: 500, message: "Probe error" };
+    let https = httpsSettled.status === 'fulfilled' ? httpsSettled.value : { reachable: false, latencyMs: 0, sslValid: false, httpCode: 500, message: "Probe error" };
+
+    // Initial failure check
+    let isDown = (!https.reachable || dns.status === 'SERVFAIL' || dns.status === 'DNS_TIMEOUT' || dns.status === 'NXDOMAIN');
+
+    // Immediate confirmation probe: if down on first probe, wait 1.2s and probe once more
+    // This immediately eliminates false positives from temporary TCP socket / WiFi packet blips
+    if (isDown && (!https.reachable || dns.status === 'DNS_TIMEOUT')) {
+        await new Promise(r => setTimeout(r, 1200));
+        const retryHttps = await probeDomainHttps(domain, path);
+        if (retryHttps.reachable) {
+            https = retryHttps;
+            isDown = (dns.status === 'SERVFAIL' || dns.status === 'NXDOMAIN');
+        }
+    }
 
     // Calculate overall status
     let overallStatus = "operational"; // operational | degraded | down
     let statusText = "Operationeel";
     let statusColor = "#10b981"; // green
 
-    if (!https.reachable || dns.status === 'SERVFAIL' || dns.status === 'DNS_TIMEOUT') {
+    if (isDown) {
         overallStatus = "down";
-        statusText = dns.status === 'SERVFAIL' ? "DNS Storing (SERVFAIL / DDoS)" : "Offline / Onbereikbaar";
+        statusText = dns.status === 'SERVFAIL' 
+            ? "DNS Storing (SERVFAIL / DDoS)" 
+            : (dns.status === 'NXDOMAIN' ? "Domein Niet Gekoppeld (NXDOMAIN)" : "Offline / Onbereikbaar");
         statusColor = "#ef4444"; // red
-    } else if (dns.status === 'NXDOMAIN') {
-        overallStatus = "down";
-        statusText = "Domein Niet Gekoppeld (NXDOMAIN)";
-        statusColor = "#ef4444";
     } else if (https.latencyMs > 2500 || dns.latencyMs > 1000) {
         overallStatus = "degraded";
         statusText = `Vertraagd (${https.latencyMs}ms)`;
         statusColor = "#f59e0b"; // orange
+    }
+
+    // Track consecutive failure count (persisted in LocalStorage)
+    const consecutiveFailures = recordDomainCheckResult(domain, overallStatus);
+    const isConfirmedDown = consecutiveFailures >= REQUIRED_CONSECUTIVE_FAILURES;
+
+    if (overallStatus === 'down') {
+        if (!isConfirmedDown) {
+            statusText = `${statusText} (Verifiëren ${consecutiveFailures}/${REQUIRED_CONSECUTIVE_FAILURES})`;
+        } else {
+            statusText = `${statusText} (Bevestigd ${consecutiveFailures}x)`;
+        }
     }
 
     const report = {
@@ -565,6 +649,8 @@ export async function runDomainHealthCheck(domainConfig) {
         expectedIp: domainConfig.expectedIp || "",
         ipMatchesExpected: domainConfig.expectedIp ? dns.resolvedIps.includes(domainConfig.expectedIp) : true,
         lastChecked: new Date().toISOString(),
+        consecutiveFailures,
+        isConfirmedDown,
         details: {
             dns,
             https
@@ -672,10 +758,15 @@ export async function getDomainStatusWithFallback(db, domainName) {
 }
 
 /**
- * Dispatches an automated EmailJS alert when a domain enters DOWN or DNS_FAIL status.
+ * Dispatches an automated FormSubmit alert when a domain enters DOWN or DNS_FAIL status.
+ * Requires minimum 3 consecutive failed checks (REQUIRED_CONSECUTIVE_FAILURES).
+ * Single transient measurements or socket timeouts will NOT trigger alerts.
  * Contains a 60-minute anti-spam throttle per domain.
+ * 
+ * @param {Object} report
+ * @param {Object} options - Optional flags { playAudio: boolean }
  */
-export async function dispatchDowntimeAlert(report) {
+export async function dispatchDowntimeAlert(report, options = {}) {
     if (!report || report.overallStatus !== 'down') return false;
 
     // Suppress alerts if domain is explicitly muted/ignored (e.g. unpurchased or maintenance)
@@ -684,7 +775,17 @@ export async function dispatchDowntimeAlert(report) {
         return false;
     }
 
-    // Check throttle in localStorage
+    // REQUIRE CONSECUTIVE FAILURES (at least REQUIRED_CONSECUTIVE_FAILURES, default 3)
+    const consecutive = report.consecutiveFailures !== undefined 
+        ? report.consecutiveFailures 
+        : getConsecutiveFailures(report.domain);
+
+    if (consecutive < REQUIRED_CONSECUTIVE_FAILURES) {
+        console.info(`⏳ [Uptime Monitor] ${report.domain} is DOWN gemeten (${consecutive}/${REQUIRED_CONSECUTIVE_FAILURES} opeenvolgende metingen). Geen alert verstuurd; vereist ${REQUIRED_CONSECUTIVE_FAILURES} bevestigde metingen achter elkaar.`);
+        return false;
+    }
+
+    // Check throttle in localStorage (max 1 alert per hour per confirmed incident)
     const throttleKey = `caf_alert_sent_${report.domain}`;
     const lastSent = localStorage.getItem(throttleKey);
     const ONE_HOUR = 60 * 60 * 1000;
@@ -694,8 +795,10 @@ export async function dispatchDowntimeAlert(report) {
         return false;
     }
 
-    // Play subtle synthesized audio alert chime in browser
-    playAlertTone();
+    // Play subtle synthesized audio alert chime in browser ONLY when confirmed down
+    if (options.playAudio !== false) {
+        playAlertTone();
+    }
 
     // Log incident locally
     logIncident(report);
@@ -705,17 +808,17 @@ export async function dispatchDowntimeAlert(report) {
     try {
         const url = "https://formsubmit.co/ajax/info@creationaltfix.nl";
         const payload = {
-            "_subject": `🚨 UPTIME ALERT: Domein ${report.domain} is DOWN!`,
+            "_subject": `🚨 UPTIME ALERT: Domein ${report.domain} is BEVESTIGD DOWN (${consecutive}x achter elkaar!)`,
             "_template": "table",
             "_captcha": "false",
             "Domein": report.domain,
             "Klant / Project": report.name + (report.client ? ` (${report.client})` : ''),
-            "Status": report.statusText,
+            "Status": `BEVESTIGD DOWN (${consecutive} opeenvolgende metingen)`,
             "HTTP Code": report.httpCode || "Geen verbinding",
             "DNS Status": report.dnsStatus || "Onbekend",
             "Gedetecteerde IP's": (report.resolvedIps && report.resolvedIps.length > 0) ? report.resolvedIps.join(', ') : 'Geen IP gevonden',
             "Tijdstip": new Date().toLocaleString('nl-NL'),
-            "Admin Dashboard Link": "https://portal.creationaltfix.nl/admin/"
+            "Admin Dashboard Link": "https://portal.creationaltfix.nl/crm/admin/"
         };
 
         const res = await fetch(url, {

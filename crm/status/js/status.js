@@ -12,6 +12,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstati
 import { firebaseConfig, escapeHtml, formatProjectStatus } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
+import { notifyAdminNewMessage } from "../../js/email-notifications.js";
 
 
 let app, auth, db, storage;
@@ -787,10 +788,20 @@ async function renderClientUptimeSection(data) {
                     uptimeBadge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
                 }
             } else {
-                headerBadgeText.innerText = currentLang === 'en' ? 'Incident Detected' : 'Systeem Uitval / Storing';
-                if (uptimeBadge) {
-                    uptimeBadge.style.color = '#f87171';
-                    uptimeBadge.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                if (report.consecutiveFailures && report.consecutiveFailures < 3) {
+                    headerBadgeText.innerText = currentLang === 'en' ? 'Verifying Network...' : 'Netwerk Verifiëren...';
+                    if (headerDotEl) headerDotEl.className = 'monitoring-pulse-dot degraded';
+                    if (uptimeBadge) {
+                        uptimeBadge.style.color = '#fbbf24';
+                        uptimeBadge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+                    }
+                } else {
+                    headerBadgeText.innerText = currentLang === 'en' ? 'Incident Detected' : 'Systeem Uitval / Storing';
+                    if (headerDotEl) headerDotEl.className = 'monitoring-pulse-dot down';
+                    if (uptimeBadge) {
+                        uptimeBadge.style.color = '#f87171';
+                        uptimeBadge.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                    }
                 }
             }
         }
@@ -1688,6 +1699,15 @@ function setupChatListeners() {
                     activeProject.data.messages = existingMessages;
                 }
 
+                // [TASK-829] Notify admin via email that client sent a new message
+                notifyAdminNewMessage({
+                    clientName: clientName,
+                    clientEmail: clientEmail,
+                    projectName: (activeProject && (activeProject.data.companyName || activeProject.data.client)) || 'Project',
+                    messagePreview: messageText.length > 200 ? messageText.slice(0, 200) + '...' : messageText,
+                    category: category === 'revision' ? 'Revisie' : category === 'urgent' ? 'Spoed' : category === 'question' ? 'Vraag' : 'Algemeen'
+                }).catch(err => console.warn('[CRM Notify] Admin notification error (non-blocking):', err));
+
                 messageEl.value = '';
                 renderMessagesSection(activeProject ? activeProject.data : { messages: existingMessages });
 
@@ -1744,6 +1764,57 @@ export function resolveStagingUrl(p) {
     return url;
 }
 
+/**
+ * [TASK-830] Shows a user-friendly fallback banner when the staging iframe 
+ * is blocked by X-Frame-Options, CSP frame-ancestors, or CORS headers.
+ */
+function showIframeCORSFallback(url, container) {
+    if (document.getElementById('staging-cors-fallback')) return; // already shown
+
+    const t = translations[currentLang] || translations.nl;
+    const isNL = currentLang !== 'en';
+
+    const banner = document.createElement('div');
+    banner.id = 'staging-cors-fallback';
+    banner.style.cssText = `
+        background: rgba(245, 158, 11, 0.12); 
+        border: 1px solid rgba(245, 158, 11, 0.4); 
+        border-radius: 12px; 
+        padding: 16px 20px; 
+        margin: 12px 0; 
+        display: flex; 
+        align-items: center; 
+        gap: 14px; 
+        flex-wrap: wrap;
+    `;
+    banner.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.3rem;"></i>
+        <div style="flex: 1; min-width: 200px;">
+            <strong style="color: #fbbf24; font-size: 0.95rem;">
+                ${isNL ? 'Preview geblokkeerd door beveiligingsheaders' : 'Preview blocked by security headers'}
+            </strong>
+            <p style="color: #94a3b8; margin: 4px 0 0; font-size: 0.85rem; line-height: 1.5;">
+                ${isNL 
+                    ? 'De hostingserver van deze website blokkeert het inladen in een preview-venster. Dit is een beveiligingsinstelling en heeft geen invloed op je website.'
+                    : 'The hosting server blocks loading this site in a preview frame. This is a security setting and does not affect your website.'}
+            </p>
+        </div>
+        <a href="${url}" target="_blank" rel="noopener noreferrer" 
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">
+            <i class="fas fa-external-link-alt"></i>
+            ${isNL ? 'Open in nieuw venster' : 'Open in new window'}
+        </a>
+    `;
+
+    // Insert before the iframe wrapper
+    const iframeWrapper = container.querySelector('.staging-iframe-wrapper, .mockup-viewport');
+    if (iframeWrapper) {
+        iframeWrapper.parentNode.insertBefore(banner, iframeWrapper);
+    } else {
+        container.appendChild(banner);
+    }
+}
+
 let isAnnotationModeActive = false;
 let currentPendingPinCoords = null;
 let currentViewport = 'desktop';
@@ -1780,6 +1851,27 @@ function renderStagingSection(data) {
             iframe.removeAttribute('srcdoc');
             iframe.src = resolvedUrl;
             iframe.dataset.loadedUrl = resolvedUrl;
+
+            // [TASK-830] CORS/X-Frame-Options fallback: detect iframe blocking
+            const corsFallbackBanner = document.getElementById('staging-cors-fallback');
+            if (corsFallbackBanner) corsFallbackBanner.remove();
+
+            iframe.onerror = () => {
+                showIframeCORSFallback(resolvedUrl, stagingCard);
+            };
+            // Also detect via a timeout — onerror doesn't always fire for X-Frame-Options blocks
+            setTimeout(() => {
+                try {
+                    // If the iframe loaded but was blocked, contentDocument will throw or be null
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                    if (!iframeDoc || !iframeDoc.body || iframeDoc.body.innerHTML === '') {
+                        showIframeCORSFallback(resolvedUrl, stagingCard);
+                    }
+                } catch (e) {
+                    // Cross-origin access denied = iframe is blocked
+                    showIframeCORSFallback(resolvedUrl, stagingCard);
+                }
+            }, 4000);
         }
         if (urlDisplay) urlDisplay.innerText = resolvedUrl;
         if (mockupUrl) mockupUrl.innerText = resolvedUrl;

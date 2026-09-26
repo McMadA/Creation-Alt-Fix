@@ -17,6 +17,7 @@ import { firebaseConfig, escapeHtml, isAdminEmail, formatProjectStatus } from ".
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
+import { notifyClientAdminReply, notifyClientPhaseChange } from "../../js/email-notifications.js";
 
 let app, auth, db, storage, secondaryAuth;
 try {
@@ -1102,7 +1103,7 @@ async function logAuditEvent(type, description) {
     }
 }
 
-// --- Render Project Files List ---
+// --- [TASK-832] Enhanced Project Files List with Download Manager ---
 function renderFilesList(files) {
     const container = document.getElementById('project-files-list');
     const filesCountElem = document.getElementById('tab-files-count');
@@ -1114,20 +1115,82 @@ function renderFilesList(files) {
         return;
     }
 
-    container.innerHTML = files.map(f => `
-        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; margin-bottom: 10px; border-radius: 8px;">
-            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
-                <i class="fas fa-file-alt" style="color: var(--color-primary-light); font-size: 1.2rem;"></i>
-                <div style="overflow: hidden;">
+    // File type icon resolver
+    function getFileIcon(filename) {
+        const ext = (filename || '').split('.').pop().toLowerCase();
+        const iconMap = {
+            'pdf': 'fa-file-pdf', 'doc': 'fa-file-word', 'docx': 'fa-file-word',
+            'xls': 'fa-file-excel', 'xlsx': 'fa-file-excel', 'csv': 'fa-file-csv',
+            'png': 'fa-file-image', 'jpg': 'fa-file-image', 'jpeg': 'fa-file-image',
+            'gif': 'fa-file-image', 'svg': 'fa-file-image', 'webp': 'fa-file-image',
+            'zip': 'fa-file-archive', 'rar': 'fa-file-archive', '7z': 'fa-file-archive',
+            'txt': 'fa-file-alt', 'rtf': 'fa-file-alt', 'md': 'fa-file-alt',
+            'mp4': 'fa-file-video', 'mov': 'fa-file-video', 'avi': 'fa-file-video',
+            'psd': 'fa-palette', 'ai': 'fa-palette', 'fig': 'fa-palette'
+        };
+        return iconMap[ext] || 'fa-file';
+    }
+
+    function getFileColor(filename) {
+        const ext = (filename || '').split('.').pop().toLowerCase();
+        if (['pdf'].includes(ext)) return '#ef4444';
+        if (['doc', 'docx'].includes(ext)) return '#3b82f6';
+        if (['xls', 'xlsx', 'csv'].includes(ext)) return '#22c55e';
+        if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) return '#a855f7';
+        if (['zip', 'rar', '7z'].includes(ext)) return '#f59e0b';
+        if (['psd', 'ai', 'fig'].includes(ext)) return '#ec4899';
+        return 'var(--color-primary-light)';
+    }
+
+    // Summary header with download-all button
+    let html = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-folder-open" style="color: var(--color-accent); font-size: 1.1rem;"></i>
+                <span style="color: #f8fafc; font-weight: 600; font-size: 0.95rem;">Aangeleverde Klantbestanden</span>
+                <span style="background: rgba(34,211,238,0.15); color: var(--color-accent); padding: 2px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">${files.length}</span>
+            </div>
+            <button type="button" id="btn-download-all-files" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); color: var(--color-accent); border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" title="Open alle bestanden in nieuw tabblad">
+                <i class="fas fa-download"></i> Download Alle
+            </button>
+        </div>
+    `;
+
+    // File rows
+    html += files.map(f => {
+        const icon = getFileIcon(f.name);
+        const color = getFileColor(f.name);
+        const dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'onbekend';
+        const sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : '';
+
+        return `
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; transition: border-color 0.2s;" onmouseover="this.style.borderColor='rgba(34,211,238,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1;">
+                <i class="fas ${icon}" style="color: ${color}; font-size: 1.3rem; width: 24px; text-align: center;"></i>
+                <div style="overflow: hidden; flex: 1;">
                     <div style="font-size: 0.92rem; color: #fff; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${escapeHtml(f.name)}</div>
-                    <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Toegevoegd op: ${f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('nl-NL') : 'onbekend'}</div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-secondary); display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span><i class="far fa-clock" style="margin-right: 3px;"></i>${dateStr}</span>
+                        ${sizeStr ? `<span><i class="fas fa-weight-hanging" style="margin-right: 3px;"></i>${sizeStr}</span>` : ''}
+                    </div>
                 </div>
             </div>
-            <a href="${escapeHtml(f.url)}" target="_blank" class="btn btn-secondary btn-sm" style="color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3);">
+            <a href="${escapeHtml(f.url)}" target="_blank" class="btn btn-secondary btn-sm" style="color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3); white-space: nowrap; margin-left: 10px;">
                 <i class="fas fa-download"></i> Downloaden
             </a>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
+
+    container.innerHTML = html;
+
+    // Download All handler — opens each file in a new tab
+    document.getElementById('btn-download-all-files')?.addEventListener('click', () => {
+        files.forEach((f, i) => {
+            setTimeout(() => {
+                window.open(f.url, '_blank');
+            }, i * 300); // stagger to prevent popup blocker
+        });
+    });
 }
 
 // --- [TASK-604] Admin Messages & Tickets Management ---
@@ -1268,6 +1331,19 @@ async function sendAdminMessage(category, messageText, ticketStatus) {
         try {
             await updateDoc(doc(db, "projects", currentProjectId), { messages: updatedMessages });
             await logAuditEvent('message_sent', `Reactie gestuurd naar klant (${category}): "${newMsg.message.slice(0, 45)}${newMsg.message.length > 45 ? '...' : ''}" (Status: ${ticketStatus})`);
+
+            // [TASK-829] Notify client via email that admin has replied
+            const clientEmail = currentProjectData.email || '';
+            const clientName = currentProjectData.contactName || currentProjectData.client || 'Klant';
+            const projectName = currentProjectData.companyName || currentProjectData.client || 'Project';
+            if (clientEmail) {
+                notifyClientAdminReply({
+                    clientEmail,
+                    clientName,
+                    projectName,
+                    messagePreview: newMsg.message.length > 200 ? newMsg.message.slice(0, 200) + '...' : newMsg.message
+                }).catch(err => console.warn('[CRM Notify] Client reply notification error (non-blocking):', err));
+            }
         } catch (err) {
             console.error("Fout bij versturen admin bericht:", err);
             alert("Fout bij opslaan bericht: " + err.message);
@@ -1623,6 +1699,19 @@ async function changeProjectPhase(phaseKey) {
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             await logAuditEvent('status_updated', `Projectfase gewijzigd naar: ${targetStatus}`);
             alert(`Projectfase succesvol bijgewerkt naar "${targetStatus}"!`);
+
+            // [TASK-829] Notify client about phase transition via email
+            const clientEmail = currentProjectData.email || '';
+            const clientName = currentProjectData.contactName || currentProjectData.client || 'Klant';
+            const projectName = currentProjectData.companyName || currentProjectData.client || 'Project';
+            if (clientEmail) {
+                notifyClientPhaseChange({
+                    clientEmail,
+                    clientName,
+                    projectName,
+                    newPhaseLabel: targetStatus
+                }).catch(err => console.warn('[CRM Notify] Phase notification error (non-blocking):', err));
+            }
         } catch (err) {
             console.error("Fout bij updaten fase:", err);
             alert("Fout bij updaten fase: " + err.message);
