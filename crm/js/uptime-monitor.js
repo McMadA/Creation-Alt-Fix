@@ -700,9 +700,39 @@ export async function dispatchDowntimeAlert(report) {
     // Log incident locally
     logIncident(report);
 
-    // NOTE: EmailJS dispatch is disabled here to avoid sending the client intake welcome template (template_zihp21d).
-    // Live incidents are logged to local storage and audio chime is played.
-    console.info(`🚨 Downtime alert geregistreerd voor ${report.domain} (${report.statusText}). Geen externe e-mail verstuurd.`);
+    // Dispatch dedicated admin-only alert email directly to Allard (info@creationaltfix.nl)
+    // NEVER touches client templates or customer emails.
+    try {
+        const url = "https://formsubmit.co/ajax/info@creationaltfix.nl";
+        const payload = {
+            "_subject": `🚨 UPTIME ALERT: Domein ${report.domain} is DOWN!`,
+            "_template": "table",
+            "_captcha": "false",
+            "Domein": report.domain,
+            "Klant / Project": report.name + (report.client ? ` (${report.client})` : ''),
+            "Status": report.statusText,
+            "HTTP Code": report.httpCode || "Geen verbinding",
+            "DNS Status": report.dnsStatus || "Onbekend",
+            "Gedetecteerde IP's": (report.resolvedIps && report.resolvedIps.length > 0) ? report.resolvedIps.join(', ') : 'Geen IP gevonden',
+            "Tijdstip": new Date().toLocaleString('nl-NL'),
+            "Admin Dashboard Link": "https://portal.creationaltfix.nl/admin/"
+        };
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            localStorage.setItem(throttleKey, Date.now().toString());
+            console.log(`🚨 Beheerder downtime alert succesvol verzonden naar info@creationaltfix.nl voor ${report.domain}`);
+            return true;
+        }
+    } catch (err) {
+        console.warn("Fout bij verzenden beheerder downtime alert:", err.message);
+    }
+
     localStorage.setItem(throttleKey, Date.now().toString());
     return true;
 }
