@@ -23,7 +23,9 @@ import {
     dispatchDowntimeAlert, 
     addCustomMonitoredDomain, 
     getIncidentLogs,
-    playAlertTone 
+    playAlertTone,
+    syncDomainChangeToMonitoring,
+    normalizeDomain
 } from "../../js/uptime-monitor.js";
 
 
@@ -1508,7 +1510,8 @@ window.openProjectDetails = (id) => {
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-globe"></i> Domeinnaam</div>
-                        <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="bijv. www.klant.nl">
+                        <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="bijv. www.klant.nl" data-original-domain="${s.domain}">
+                        <div id="modal-domain-status-pill" style="margin-top: 5px; font-size: 0.76rem; display: flex; align-items: center; gap: 6px;"></div>
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-tag"></i> Geselecteerde Dienst</div>
@@ -1643,6 +1646,31 @@ window.openProjectDetails = (id) => {
     document.getElementById('btn-activate-auth')?.addEventListener('click', () => createClientAuthAccount(id, document.getElementById('edit-email')?.value || email, contact));
     document.getElementById('btn-reset-auth')?.addEventListener('click', () => triggerAdminPasswordReset(document.getElementById('edit-email')?.value || email));
 
+    // Render current monitoring status badge under domain input
+    const cleanDomain = normalizeDomain(s.domain);
+    const domainStatusPill = document.getElementById('modal-domain-status-pill');
+    if (domainStatusPill) {
+        if (cleanDomain) {
+            const existingReport = monitoringReports.find(r => r.domain === cleanDomain);
+            if (existingReport) {
+                domainStatusPill.innerHTML = `
+                    <span class="monitoring-pulse-dot ${existingReport.overallStatus}"></span>
+                    <span style="color: ${existingReport.statusColor}; font-weight: 600;">${escapeHtml(existingReport.statusText)}</span>
+                    <span style="color: #64748b;">(${existingReport.latencyMs}ms • DNS: ${escapeHtml(existingReport.dnsStatus)})</span>
+                `;
+            } else {
+                domainStatusPill.innerHTML = `
+                    <span class="monitoring-pulse-dot operational"></span>
+                    <span style="color: #94a3b8;">Gekoppeld aan Realtime Monitoring Suite</span>
+                `;
+            }
+        } else {
+            domainStatusPill.innerHTML = `
+                <span style="color: #64748b; font-style: italic;">Geen domein ingesteld. Vul in om realtime monitoring te activeren.</span>
+            `;
+        }
+    }
+
     document.getElementById('btn-modal-save-sub')?.addEventListener('click', async () => {
         const select = document.getElementById('modal-select-subscription');
         if (!select) return;
@@ -1743,13 +1771,20 @@ window.saveKlantkaartChanges = async (e, id) => {
         if (!confirmed) return;
     }
 
+    const domainInput = document.getElementById('edit-domain');
+    const originalDomain = domainInput?.dataset?.originalDomain 
+        || cachedProjects.find(p => p.id == id)?.domainName 
+        || cachedProjects.find(p => p.id == id)?.domain 
+        || '';
+    const newDomain = domainInput?.value?.trim() || '';
+
     const updatedData = {
         client: document.getElementById('edit-client').value,
         companyName: document.getElementById('edit-client').value,
         contactName: document.getElementById('edit-contact').value,
         email: newEmail,
-        domainName: document.getElementById('edit-domain').value,
-        domain: document.getElementById('edit-domain').value,
+        domainName: newDomain,
+        domain: newDomain,
         service: document.getElementById('edit-service').value,
         goals: document.getElementById('edit-goals').value,
         projectGoals: document.getElementById('edit-goals').value,
@@ -1775,7 +1810,41 @@ window.saveKlantkaartChanges = async (e, id) => {
         }
     }
 
-    alert("Klantkaart gegevens succesvol bijgewerkt!");
+    // Synchronize domain change with Realtime Systeem, DNS & Uptime Monitoring
+    let monitoringNotice = '';
+    const cleanOld = normalizeDomain(originalDomain);
+    const cleanNew = normalizeDomain(newDomain);
+
+    if (cleanOld !== cleanNew) {
+        try {
+            const syncResult = await syncDomainChangeToMonitoring(db, originalDomain, newDomain, {
+                client: updatedData.client,
+                companyName: updatedData.companyName,
+                contactName: updatedData.contactName,
+                projectId: id
+            });
+
+            if (syncResult && syncResult.changed) {
+                // Update in-memory monitoringReports list
+                if (cleanOld) {
+                    monitoringReports = monitoringReports.filter(r => r.domain !== cleanOld);
+                }
+                if (syncResult.report) {
+                    monitoringReports.unshift(syncResult.report);
+                }
+                renderMonitorsTable();
+                updateMonitoringKpis();
+
+                monitoringNotice = `\n\n🌐 Realtime Uptime & DNS Monitoring bijgewerkt:\n` +
+                    (cleanOld ? `• Oud domein (${cleanOld}) uitgefaseerd & opgeschoond\n` : '') +
+                    (cleanNew ? `• Nieuw domein (${cleanNew}) geverifieerd (${syncResult.report?.statusText || 'OK'})` : '');
+            }
+        } catch (syncErr) {
+            console.warn("Fout bij synchroniseren naar Uptime Monitoring:", syncErr);
+        }
+    }
+
+    alert("Klantkaart gegevens succesvol bijgewerkt!" + monitoringNotice);
     closeModal('project-modal');
     loadDashboardData();
 };

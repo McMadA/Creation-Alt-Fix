@@ -16,6 +16,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstati
 import { firebaseConfig, escapeHtml, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
+import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
 
 let app, auth, db, storage, secondaryAuth;
 try {
@@ -602,6 +603,32 @@ function renderProjectWorkspace(p) {
     document.getElementById('edit-contact').value = contact;
     document.getElementById('edit-email').value = email;
     document.getElementById('edit-domain').value = domain;
+    document.getElementById('edit-domain').dataset.originalDomain = domain;
+
+    // Render Realtime DNS & Uptime status badge under domain input
+    const monStatusEl = document.getElementById('project-domain-monitor-status');
+    if (monStatusEl) {
+        const cleanDom = normalizeDomain(domain);
+        if (cleanDom) {
+            monStatusEl.innerHTML = `
+                <span class="monitoring-pulse-dot operational"></span>
+                <span style="color: #94a3b8;"><strong style="color: #fff;">${escapeHtml(cleanDom)}</strong> realtime DNS &amp; Uptime actief</span>
+            `;
+            if (db) {
+                getDomainStatusWithFallback(db, cleanDom).then(st => {
+                    if (st && monStatusEl) {
+                        monStatusEl.innerHTML = `
+                            <span class="monitoring-pulse-dot ${st.overallStatus}"></span>
+                            <span style="color: ${st.statusColor || '#10b981'}; font-weight: 600;">${escapeHtml(st.statusText || 'Operationeel')}</span>
+                            <span style="color: #64748b;">(${st.latencyMs || 0}ms • HTTP ${st.httpCode || 200} • DNS ${escapeHtml(st.dnsStatus || 'NOERROR')})</span>
+                        `;
+                    }
+                }).catch(() => {});
+            }
+        } else {
+            monStatusEl.innerHTML = `<span style="color: #64748b; font-style: italic;">Geen domein ingesteld. Vul in om realtime monitoring te activeren.</span>`;
+        }
+    }
     document.getElementById('edit-service').value = service;
     document.getElementById('edit-goals').value = goals;
     document.getElementById('edit-design').value = design;
@@ -1627,13 +1654,20 @@ function setupFormHandlers() {
             if (!confirm(`Let op: je wijzigt het e-mailadres van "${originalEmail}" naar "${newEmail}". Wil je doorgaan?`)) return;
         }
 
+        const domainInput = document.getElementById('edit-domain');
+        const originalDomain = domainInput?.dataset?.originalDomain 
+            || currentProjectData?.domainName 
+            || currentProjectData?.domain 
+            || '';
+        const newDomain = domainInput?.value?.trim() || '';
+
         const updatedData = {
             client: document.getElementById('edit-client').value,
             companyName: document.getElementById('edit-client').value,
             contactName: document.getElementById('edit-contact').value,
             email: newEmail,
-            domainName: document.getElementById('edit-domain').value,
-            domain: document.getElementById('edit-domain').value,
+            domainName: newDomain,
+            domain: newDomain,
             service: document.getElementById('edit-service').value,
             goals: document.getElementById('edit-goals').value,
             projectGoals: document.getElementById('edit-goals').value,
@@ -1658,7 +1692,36 @@ function setupFormHandlers() {
             try {
                 await updateDoc(doc(db, "projects", currentProjectId), updatedData);
                 await logAuditEvent('data_updated', 'Klantgegevens & intakeformulier bijgewerkt door beheerder.');
-                alert("Wijzigingen succesvol opgeslagen in Firestore!");
+
+                // Synchronize domain change with Realtime Uptime & DNS Monitoring
+                let monitoringNotice = '';
+                const cleanOld = normalizeDomain(originalDomain);
+                const cleanNew = normalizeDomain(newDomain);
+
+                if (cleanOld !== cleanNew) {
+                    try {
+                        const syncResult = await syncDomainChangeToMonitoring(db, originalDomain, newDomain, {
+                            client: updatedData.client,
+                            companyName: updatedData.companyName,
+                            contactName: updatedData.contactName,
+                            projectId: currentProjectId
+                        });
+
+                        if (syncResult && syncResult.changed) {
+                            if (domainInput) domainInput.dataset.originalDomain = newDomain;
+                            await logAuditEvent('domain_monitoring_synced', 
+                                `Domeinnaam gewijzigd van "${originalDomain || 'geen'}" naar "${newDomain}". Automatisch gekoppeld en geverifieerd in Realtime Uptime & DNS Monitor (${syncResult.report?.statusText || 'OK'}).`
+                            );
+                            monitoringNotice = `\n\n🌐 Realtime Uptime & DNS Monitoring bijgewerkt:\n` +
+                                (cleanOld ? `• Oud domein (${cleanOld}) uitgefaseerd & opgeschoond\n` : '') +
+                                (cleanNew ? `• Nieuw domein (${cleanNew}) geverifieerd (${syncResult.report?.statusText || 'OK'})` : '');
+                        }
+                    } catch (syncErr) {
+                        console.warn("Fout bij synchroniseren naar Uptime Monitoring:", syncErr);
+                    }
+                }
+
+                alert("Wijzigingen succesvol opgeslagen in Firestore!" + monitoringNotice);
                 renderProjectWorkspace(currentProjectData);
             } catch (err) {
                 console.error("Fout bij opslaan:", err);

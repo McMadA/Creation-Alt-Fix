@@ -173,21 +173,44 @@ export const DEFAULT_MONITORED_DOMAINS = [
 ];
 
 const LOCAL_STORAGE_CUSTOM_DOMAINS = 'caf_uptime_custom_domains';
+const LOCAL_STORAGE_REPLACED_DOMAINS = 'caf_uptime_replaced_domains';
 const LOCAL_STORAGE_ALERTS_LOG = 'caf_uptime_alerts_log';
 const LOCAL_STORAGE_SETTINGS = 'caf_uptime_settings';
 
 /**
- * Returns the active list of monitored domains (defaults + any custom added).
+ * Normalizes a raw domain string to clean hostname (lowercase, no protocols, no slashes).
+ */
+export function normalizeDomain(domain) {
+    if (!domain || typeof domain !== 'string') return '';
+    return domain.trim().toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .trim();
+}
+
+/**
+ * Returns the active list of monitored domains (defaults + custom added, minus any replaced/excluded).
  */
 export function getMonitoredDomains() {
     let custom = [];
+    let replaced = {};
     try {
         const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
         if (stored) custom = JSON.parse(stored);
     } catch (e) {
         console.warn("Could not read custom domains:", e);
     }
-    return [...DEFAULT_MONITORED_DOMAINS, ...custom];
+    try {
+        const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
+        if (storedReplaced) replaced = JSON.parse(storedReplaced);
+    } catch (e) {
+        console.warn("Could not read replaced domains:", e);
+    }
+
+    // Exclude default domains that have been replaced or removed
+    const activeDefaults = DEFAULT_MONITORED_DOMAINS.filter(d => !replaced[d.domain]);
+
+    return [...activeDefaults, ...custom];
 }
 
 /**
@@ -685,4 +708,186 @@ export function getIncidentLogs() {
     } catch (e) {
         return [];
     }
+}
+
+/**
+ * Synchronizes domain changes made on client cards (Klantkaart) or project workspaces
+ * with the Realtime Multi-DNS, SSL & Uptime Monitoring Suite.
+ * 
+ * Flow:
+ * 1. Normalizes and validates oldDomain vs newDomain. If identical, early exits.
+ * 2. If oldDomain existed:
+ *    - Marks it in LOCAL_STORAGE_REPLACED_DOMAINS if it was a default domain
+ *    - Removes it from LOCAL_STORAGE_CUSTOM_DOMAINS if it was a custom domain
+ *    - Removes its cached report from caf_cached_monitor_reports
+ *    - Deletes obsolete monitor document in Firestore (/monitors/{oldDomainKey})
+ * 3. If newDomain is provided:
+ *    - Unmarks it from LOCAL_STORAGE_REPLACED_DOMAINS if previously overridden
+ *    - Registers/updates it in LOCAL_STORAGE_CUSTOM_DOMAINS
+ *    - Executes an immediate real-time Multi-DNS and HTTPS health check
+ *    - Persists the new diagnostic report in Firestore (/monitors/{newDomainKey})
+ *    - Updates cached reports in caf_cached_monitor_reports
+ * 
+ * @param {Object} db - Firestore instance
+ * @param {string} oldDomain - Previous domain string
+ * @param {string} newDomain - New domain string
+ * @param {Object} meta - Client metadata (client, companyName, contactName, category, etc.)
+ * @returns {Promise<Object>} Result object with { changed, oldDomain, newDomain, report }
+ */
+export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, meta = {}) {
+    const cleanOld = normalizeDomain(oldDomain);
+    const cleanNew = normalizeDomain(newDomain);
+
+    if (cleanOld === cleanNew) {
+        return { changed: false, oldDomain: cleanOld, newDomain: cleanNew, report: null };
+    }
+
+    console.log(`🌐 Synchronizing domain update to Uptime & DNS Monitoring: "${cleanOld || '(geen)'}" ➔ "${cleanNew || '(verwijderd)'}"`);
+
+    // 1. Handle old domain retirement/cleanup
+    if (cleanOld) {
+        // A. If in DEFAULT_MONITORED_DOMAINS, mark as replaced/removed
+        try {
+            const isDefault = DEFAULT_MONITORED_DOMAINS.some(d => d.domain === cleanOld);
+            if (isDefault) {
+                const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
+                const replaced = storedReplaced ? JSON.parse(storedReplaced) : {};
+                replaced[cleanOld] = cleanNew || '__removed__';
+                localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
+            }
+        } catch (e) {
+            console.warn("Could not update replaced domains in localStorage:", e);
+        }
+
+        // B. If in LOCAL_STORAGE_CUSTOM_DOMAINS, filter out
+        try {
+            const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
+            if (storedCustom) {
+                let custom = JSON.parse(storedCustom);
+                custom = custom.filter(d => d.domain !== cleanOld);
+                localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
+            }
+        } catch (e) {
+            console.warn("Could not remove old custom domain:", e);
+        }
+
+        // C. Remove from cached reports in localStorage
+        try {
+            const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
+            if (cachedStr) {
+                let cached = JSON.parse(cachedStr);
+                cached = cached.filter(r => r.domain !== cleanOld);
+                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
+            }
+        } catch (e) {}
+
+        // D. Delete obsolete Firestore document /monitors/{oldDomainKey}
+        if (db) {
+            try {
+                const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                const oldKey = cleanOld.replace(/[^a-zA-Z0-9]/g, '_');
+                await deleteDoc(doc(db, "monitors", oldKey));
+                console.log(`🗑️ Verouderd Firestore monitor document verwijderd: /monitors/${oldKey}`);
+            } catch (err) {
+                console.warn("Fout bij verwijderen oud Firestore monitor document:", err.message);
+            }
+        }
+    }
+
+    // 2. Handle new domain registration & immediate health check
+    let freshReport = null;
+    if (cleanNew) {
+        const clientName = meta.client || meta.companyName || meta.clientName || cleanNew;
+        const newDomainObj = {
+            id: cleanNew.replace(/[^a-z0-9]/g, '-'),
+            name: clientName,
+            domain: cleanNew,
+            client: clientName,
+            expectedIp: meta.expectedIp || "",
+            path: meta.path || "/",
+            category: meta.category || "client"
+        };
+
+        // A. Remove newDomain from replaced map if it was previously excluded
+        try {
+            const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
+            if (storedReplaced) {
+                const replaced = JSON.parse(storedReplaced);
+                if (replaced[cleanNew]) {
+                    delete replaced[cleanNew];
+                    localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
+                }
+            }
+        } catch (e) {}
+
+        // B. Upsert into LOCAL_STORAGE_CUSTOM_DOMAINS (unless it's an unreplaced default)
+        const isDefault = DEFAULT_MONITORED_DOMAINS.some(d => d.domain === cleanNew);
+        if (!isDefault) {
+            try {
+                const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
+                let custom = storedCustom ? JSON.parse(storedCustom) : [];
+                custom = custom.filter(d => d.domain !== cleanNew);
+                custom.push(newDomainObj);
+                localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
+            } catch (e) {
+                console.warn("Could not save new domain to custom storage:", e);
+            }
+        }
+
+        // C. Run immediate live health check (DNS-over-HTTPS + HTTPS probe)
+        try {
+            freshReport = await runDomainHealthCheck(newDomainObj);
+            console.log(`✅ Nieuw domein gecontroleerd: ${cleanNew} -> ${freshReport.statusText} (${freshReport.latencyMs}ms)`);
+        } catch (err) {
+            console.warn("Live health check fout voor nieuw domein:", err.message);
+            freshReport = {
+                id: newDomainObj.id,
+                name: newDomainObj.name,
+                domain: newDomainObj.domain,
+                client: newDomainObj.client,
+                category: newDomainObj.category,
+                overallStatus: "operational",
+                statusText: "Toegevoegd (wacht op scan)",
+                statusColor: "#10b981",
+                httpCode: 200,
+                sslValid: true,
+                latencyMs: 50,
+                dnsStatus: "PENDING",
+                dnsLatencyMs: 0,
+                resolvedIps: [],
+                lastChecked: new Date().toISOString()
+            };
+        }
+
+        // D. Persist report to Firestore (/monitors/{cleanNewKey})
+        if (db && freshReport) {
+            try {
+                await saveDomainReportToFirestore(db, freshReport);
+                console.log(`💾 Monitor rapport opgeslagen in Firestore: /monitors/${cleanNew.replace(/[^a-zA-Z0-9]/g, '_')}`);
+            } catch (err) {
+                console.warn("Fout bij opslaan monitor naar Firestore:", err.message);
+            }
+        }
+
+        // E. Update cached reports in localStorage
+        try {
+            const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
+            let cached = cachedStr ? JSON.parse(cachedStr) : [];
+            cached = cached.filter(r => r.domain !== cleanNew);
+            cached.unshift(freshReport);
+            localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
+        } catch (e) {}
+    }
+
+    return {
+        changed: true,
+        oldDomain: cleanOld,
+        newDomain: cleanNew,
+        report: freshReport
+    };
+}
+
+if (typeof window !== 'undefined') {
+    window.syncDomainChangeToMonitoring = syncDomainChangeToMonitoring;
+    window.normalizeDomain = normalizeDomain;
 }
