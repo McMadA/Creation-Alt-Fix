@@ -130,10 +130,6 @@ const API = {
             console.error('[CRM] Fout bij laden projecten uit Firestore:', e);
             return [];
         }
-    },
-
-    getMockProjects() {
-        return [];
     }
 };
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
@@ -836,10 +832,10 @@ window.saveNewLead = async () => {
             await addDoc(collection(db, "projects"), newLeadObj);
         } catch(e) {
             console.error("Error saving lead", e);
-            alert("Fout bij opslaan lead.");
+            alert("Fout bij opslaan lead in Firestore: " + e.message);
         }
     } else {
-        alert("Opslaan gesimuleerd (Firebase is nog mock data)");
+        alert("Opslaan mislukt: Geen verbinding met Firestore.");
     }
     closeModal('project-modal');
     loadDashboardData();
@@ -1406,7 +1402,7 @@ window.updateProjectPhaseFromModal = async (id, phaseKey) => {
 
 window.generateProposal = async (id) => {
     if (!db) {
-        alert("Firestore is niet verbonden (in mock-modus).");
+        alert("Firestore is niet verbonden.");
         return;
     }
     
@@ -1439,7 +1435,7 @@ window.generateProposal = async (id) => {
 
 window.sendDesignToClient = async (id) => {
     if (!db) {
-        alert("Firestore is niet verbonden (in mock-modus).");
+        alert("Firestore is niet verbonden.");
         return;
     }
 
@@ -1527,18 +1523,19 @@ window.generateInvoiceMollieLink = async (id, name) => {
     }
 
     try {
+        const p = cachedProjects.find(item => item.id == id);
+        const currentLink = p?.mollieLink || "";
+        const enteredLink = prompt(`Voer de officiële Mollie / Plink betaallink in voor ${name}:`, currentLink || "https://useplink.com/payment/");
+        if (!enteredLink || !enteredLink.trim()) return;
+
         const docRef = doc(db, "projects", id);
-        
-        // Simuleer een Mollie Betaallink (Plink)
-        const mockMollieLink = "https://useplink.com/payment/xyz123";
-        
         await updateDoc(docRef, {
             status: "Fase 5: Wacht op Betaling (Mollie)",
             statusClass: "payment",
-            mollieLink: mockMollieLink
+            mollieLink: enteredLink.trim()
         });
 
-        alert(`Factuurverzoek klaargezet!\n\nStuur de volgende betaallink naar ${name}:\n${mockMollieLink}\n\nDe status in het dashboard is geüpdatet.`);
+        alert(`Factuurverzoek opgeslagen in Firestore!\n\nBetaallink voor ${name}:\n${enteredLink.trim()}\n\nDe status in het dashboard is geüpdatet.`);
         
         // Herlaad tabel
         loadDashboardData();

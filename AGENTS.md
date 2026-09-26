@@ -2,6 +2,16 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Deep Scan & 100% Firestore Single Source of Truth Verificatie**:
+  1. **Purge van Mock Data & Functies**:
+     - `crm/admin/js/admin.js`: `getMockProjects()` verwijderd uit het `API` object; `saveNewLead` toont nu een zuivere Firestore foutmelding i.p.v. "Opslaan gesimuleerd (Firebase is nog mock data)"; `generateProposal` en `sendDesignToClient` ontdaan van "(in mock-modus)" meldingen; `generateInvoiceMollieLink` hardcode niet langer `"https://useplink.com/payment/xyz123"` maar vraagt via een interactieve prompt de daadwerkelijke betaallink op en slaat deze direct op in het Firestore document (`doc(db, "projects", id)`).
+     - `crm/admin/js/project.js`: Alle mock fallbacks geëlimineerd uit `loadProjectData`; niet-gevonden documenten worden niet langer opgevuld met mock arrays maar leiden direct naar een foutmelding en redirect; `dummyDemo` URL verwijderd uit staging preview.
+     - `crm/js/uptime-monitor.js`: `DEFAULT_MONITORED_DOMAINS` volledig verwijderd; gemonitorde domeinen worden nu 100% dynamisch afgeleid van de `projects` collectie in Firestore (13 projecten = exact 13 actieve monitoring endpoints).
+  2. **Single Source of Truth Bevestigd**:
+     - `projects` collectie in Firestore is de enige bron voor projecten, statussen, kanban taken, offertes en live domeinen.
+     - Geen dummy data, mock arrays of ghost projecten meer aanwezig in de frontend codebases.
+     - Alle 4 kernmodules (`admin.js`, `project.js`, `status.js`, `uptime-monitor.js`) gescand en foutloos door `node --check` gevalideerd.
+
 - **[2026-09-27] Definitieve Verwijdering Mock Data & Verhelpen Spookprojecten Herrijzenis (Justin & VAN DER PLAATS)**:
   1. **Oorzaak van het Terugkeren na Refresh**: De projecten *Justin* (`JfuATfbcAQ9HxihmFUR8`) en *VAN DER PLAATS (Gerard Klusser)* (`Opr6qw99umfbtVJKYmS8`) stonden daadwerkelijk als documenten in Firestore. Bij het klikken op de prullenbak in het Admin Dashboard faalde `deleteDoc` omdat `window.deleteProject` in `crm/admin/js/admin.js` vóór de Firestore verwijdering `removeDomainFromMonitoring` aanriep die niet geïmplementeerd was in de scope, waardoor een unhandled JS exceptie de daadwerkelijke Firestore `deleteDoc` blokkeerde.
   2. **Directe Sanering in Firestore**: Via de authenticated Firestore REST API zijn beide documenten (`JfuATfbcAQ9HxihmFUR8` en `Opr6qw99umfbtVJKYmS8`) definitief verwijderd uit de `projects` collectie, alsmede het monitor document `/monitors/vanderplaats_nl`.

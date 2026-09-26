@@ -439,9 +439,8 @@ function setupTabNavigation() {
 // --- Load Project Data from Firestore ---
 async function loadProjectData(projectId) {
     if (!db) {
-        console.warn("Mock project data fallback.");
-        currentProjectData = getMockProject(projectId);
-        renderProjectWorkspace(currentProjectData);
+        console.error("Geen verbinding met Firestore database.");
+        alert("Fout: Geen verbinding met de Firestore database.");
         return;
     }
 
@@ -486,38 +485,30 @@ async function loadProjectData(projectId) {
                 }
             }
 
-            // If tasks are missing or empty, match against mock definition or set clean delivery milestones
+            // If tasks are missing or empty, set clean initial delivery milestones
             if (!currentProjectData.tasks || !Array.isArray(currentProjectData.tasks) || currentProjectData.tasks.length === 0) {
-                const mock = getMockProject(projectId);
-                if (mock && mock.tasks && mock.tasks.length > 0) {
-                    currentProjectData.tasks = mock.tasks;
-                    if (db && currentProjectId) {
-                        updateDoc(doc(db, "projects", currentProjectId), { tasks: mock.tasks }).catch(console.warn);
-                    }
-                } else {
-                    const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live') || (currentProjectData.status || '').includes('Voldaan');
-                    const now = new Date();
-                    const addDaysIso = (days) => {
-                        const d = new Date(now.getTime() + days * 86400000);
-                        return d.toISOString().split('T')[0];
-                    };
+                const isDone = (currentProjectData.status || '').includes('Opgeleverd') || (currentProjectData.status || '').includes('Live') || (currentProjectData.status || '').includes('Voldaan');
+                const now = new Date();
+                const addDaysIso = (days) => {
+                    const d = new Date(now.getTime() + days * 86400000);
+                    return d.toISOString().split('T')[0];
+                };
 
-                    const defaultTasks = [
-                        { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(2) },
-                        { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template concept', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(6) },
-                        { id: 'del_' + projectId + '_3', title: 'Content, formulieren, functionaliteit & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(12) },
-                        { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(18) }
-                    ];
-                    currentProjectData.tasks = defaultTasks;
-                    if (db && currentProjectId) {
-                        updateDoc(doc(db, "projects", currentProjectId), { tasks: defaultTasks }).catch(console.warn);
-                    }
+                const defaultTasks = [
+                    { id: 'del_' + projectId + '_1', title: 'Intake, functionele briefing & wensenanalyse', completed: isDone, status: isDone ? 'done' : 'inprogress', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(2) },
+                    { id: 'del_' + projectId + '_2', title: 'UI/UX Design & responsive template concept', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(6) },
+                    { id: 'del_' + projectId + '_3', title: 'Content, formulieren, functionaliteit & API koppeling', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'medium', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(12) },
+                    { id: 'del_' + projectId + '_4', title: 'Livegang, DNS domeinkoppeling & SSL certificering', completed: isDone, status: isDone ? 'done' : 'todo', priority: 'high', dueDate: isDone ? (currentProjectData.date || addDaysIso(0)) : addDaysIso(18) }
+                ];
+                currentProjectData.tasks = defaultTasks;
+                if (db && currentProjectId) {
+                    updateDoc(doc(db, "projects", currentProjectId), { tasks: defaultTasks }).catch(console.warn);
                 }
             }
             renderProjectWorkspace(currentProjectData);
         } else {
             // Document niet in Firestore
-            alert("Project niet gevonden in Firestore.");
+            alert("Project niet gevonden in Firestore database.");
             window.location.href = "index.html";
         }
     } catch (err) {
@@ -1433,8 +1424,7 @@ function renderAdminStaging(p) {
             openBtn.classList.remove('hidden');
         }
     } else {
-        const dummyDemo = `https://demo.creationaltfix.nl/${encodeURIComponent((p.client || 'concept').toLowerCase().replace(/\s+/g, '-'))}`;
-        if (urlDisplay) urlDisplay.innerText = `${dummyDemo} (Geen extern domein)`;
+        if (urlDisplay) urlDisplay.innerText = "Geen staging URL of extern domein geconfigureerd.";
         if (openBtn) openBtn.classList.add('hidden');
     }
 
@@ -2561,12 +2551,4 @@ function setupFormHandlers() {
         }
     });
 }
-
-// Purged Mock Data - Production CRM uses Firestore exclusively
-function getMockProjects() {
-    return [];
-}
-
-function getMockProject(id) {
-    return null;
-}
+
