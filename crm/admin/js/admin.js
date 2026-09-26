@@ -863,19 +863,20 @@ function renderTablesData(projectsToRender) {
         const taskCounterHtml = formatTaskCounter(p);
         const emailHtml = formatEmail(p.email);
         const domainHtml = formatDomain(p.domainName || p.domain);
-        const safeService = escapeHtml(p.service || 'Onbekend');
         const safeStatus = escapeHtml(p.status || 'Nieuwe Lead');
         const safeDate = escapeHtml(p.date || 'Onbekend');
         const safeId = escapeHtml(p.id);
         const safeStatusClass = escapeHtml(p.statusClass || 'waiting');
+
+        // Clean status label without redundant parentheses
+        const statusDisplay = safeStatus.toLowerCase().includes('fase') ? safeStatus : `${safeStatus} (${phaseTag})`;
 
         row.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
             <td>${taskCounterHtml}</td>
             <td>${emailHtml}</td>
             <td>${domainHtml}</td>
-            <td><span style="color: var(--color-text-primary);">${safeService}</span></td>
-            <td><span class="badge badge-${safeStatusClass}">${safeStatus} (${phaseTag})</span></td>
+            <td><span class="badge badge-${safeStatusClass}">${statusDisplay}</span></td>
             <td><span style="color: var(--color-text-secondary); font-size: 0.85rem;">${safeDate}</span></td>
             <td style="white-space: nowrap;">
                 <a href="project.html?id=${safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open Dedicated Werkplek"><i class="fas fa-desktop"></i> Werkplek</a>
@@ -894,7 +895,7 @@ function renderTablesData(projectsToRender) {
     if (overviewBody) {
         overviewBody.innerHTML = '';
         if (projectsToRender.length === 0) {
-            overviewBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen resultaten gevonden voor deze zoekopdracht/filter.</td></tr>`;
+            overviewBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen resultaten gevonden voor deze zoekopdracht/filter.</td></tr>`;
         } else {
             projectsToRender.forEach(p => overviewBody.appendChild(createRow(p)));
         }
@@ -906,7 +907,7 @@ function renderTablesData(projectsToRender) {
         leadsBody.innerHTML = '';
         const leads = projectsToRender.filter(p => !p.status || p.status === "Nieuwe Lead" || p.status === "Intake Voltooid");
         if (leads.length === 0) {
-            leadsBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
+            leadsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
         } else {
             leads.forEach(p => leadsBody.appendChild(createRow(p)));
         }
@@ -918,7 +919,7 @@ function renderTablesData(projectsToRender) {
         activeProjectsBody.innerHTML = '';
         const activeProjects = projectsToRender.filter(p => p.status && p.status !== "Nieuwe Lead" && p.status !== "Intake Voltooid");
         if (activeProjects.length === 0) {
-            activeProjectsBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
+            activeProjectsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen lopende projecten gevonden.</td></tr>`;
         } else {
             activeProjects.forEach(p => activeProjectsBody.appendChild(createRow(p)));
         }
@@ -1159,7 +1160,7 @@ function setupSearchAndFilters() {
     document.getElementById('admin-sort-by')?.addEventListener('change', (e) => {
         currentSortColumn = e.target.value;
         // Bepaal slimme initiële sorteerrichting per kolomtype
-        if (['client', 'email', 'domain', 'service', 'status'].includes(currentSortColumn)) {
+        if (['client', 'email', 'domain', 'status'].includes(currentSortColumn)) {
             currentSortDirection = 'asc';
         } else {
             currentSortDirection = 'desc';
@@ -1188,7 +1189,7 @@ function setupSearchAndFilters() {
             } else {
                 // Nieuwe kolom gekozen
                 currentSortColumn = col;
-                if (['client', 'email', 'domain', 'service', 'status'].includes(col)) {
+                if (['client', 'email', 'domain', 'status'].includes(col)) {
                     currentSortDirection = 'asc';
                 } else {
                     currentSortDirection = 'desc';
