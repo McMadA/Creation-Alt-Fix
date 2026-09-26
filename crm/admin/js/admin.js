@@ -251,6 +251,7 @@ document.getElementById('logout-btn')?.addEventListener('click', () => {
 async function loadDashboardData() {
     // 1. Load Projects Table & sync state
     cachedProjects = await API.getProjects();
+    window.cachedProjects = cachedProjects;
 
     // 2. Compute dynamic stats from cached projects
     const stats = await API.getDashboardStats();
@@ -270,6 +271,21 @@ async function loadDashboardData() {
     // 3. Initial Render
     filterAndRenderTables();
     renderKanbanBoard();
+
+    // 4. Update Uptime & DNS Monitoring with active projects
+    try {
+        const activeMonitors = getMonitoredDomains(cachedProjects);
+        const activeIds = new Set(activeMonitors.map(m => m.id));
+        const activeDomains = new Set(activeMonitors.map(m => m.domain));
+
+        if (monitoringReports.length > 0) {
+            monitoringReports = monitoringReports.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain));
+            try {
+                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+            } catch (e) {}
+            renderMonitorsTable();
+        }
+    } catch (e) {}
 }
 
 function renderTablesData(projectsToRender) {
@@ -2384,15 +2400,32 @@ let hasDoneInitialMonitoringScan = false;
 function initMonitoringTab() {
     setupMonitoringEventListeners();
     
-    // Load from cache first for instant render
+    // Purge legacy storage keys
+    try {
+        localStorage.removeItem('caf_uptime_custom_domains');
+        localStorage.removeItem('caf_uptime_replaced_domains');
+    } catch (e) {}
+
+    const activeProjects = (cachedProjects && cachedProjects.length > 0) ? cachedProjects : (window.cachedProjects || []);
+    const activeMonitors = getMonitoredDomains(activeProjects);
+    const activeIds = new Set(activeMonitors.map(m => m.id));
+    const activeDomains = new Set(activeMonitors.map(m => m.domain));
+
+    // Load from cache first for instant render, filtered to active projects only
     if (monitoringReports.length === 0) {
         try {
             const cached = localStorage.getItem('caf_cached_monitor_reports');
             if (cached) {
-                monitoringReports = JSON.parse(cached);
+                const parsed = JSON.parse(cached);
+                monitoringReports = activeMonitors.length > 0
+                    ? parsed.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain))
+                    : parsed;
                 renderMonitorsTable();
             }
         } catch (e) {}
+    } else if (activeMonitors.length > 0) {
+        monitoringReports = monitoringReports.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain));
+        renderMonitorsTable();
     }
 
     // Trigger initial scan if not performed yet
@@ -2442,89 +2475,50 @@ function setupMonitoringEventListeners() {
         }
     });
 
-    // Open Add Domain Modal
+    // Open Add Domain Modal: Inform that domains are managed via Klantkaart
     document.getElementById('btn-open-add-domain-modal')?.addEventListener('click', () => {
-        document.getElementById('add-monitor-modal')?.classList.remove('hidden');
+        alert("💡 Domeinen worden nu 100% dynamisch gekoppeld aan de Klantkaarten!\n\nOpen een project in het overzicht, vul de domeinnaam in op de Klantkaart en sla op. Het domein verschijnt direct in de Realtime Uptime Monitoring.");
     });
 
-    // Add Domain Form Submit
+    // Add Domain Form Submit fallback
     document.getElementById('form-add-monitor-domain')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const domain = document.getElementById('add-mon-domain')?.value.trim();
-        const client = document.getElementById('add-mon-client')?.value.trim();
-        const expectedIp = document.getElementById('add-mon-ip')?.value.trim();
-        const path = document.getElementById('add-mon-path')?.value.trim() || '/';
-
-        if (!domain) return;
-        const added = addCustomMonitoredDomain({ domain, client, expectedIp, path });
-        if (!added) {
-            alert("Dit domein staat al in de monitor lijst of is ongeldig.");
-            return;
-        }
-
+        alert("Domeinen worden automatisch ingeladen via de Klantkaart van projecten in het CRM.");
         document.getElementById('add-monitor-modal')?.classList.add('hidden');
-        document.getElementById('form-add-monitor-domain')?.reset();
-
-        // Scan this newly added domain immediately
-        const report = await runDomainHealthCheck(added);
-        monitoringReports.unshift(report);
-        renderMonitorsTable();
-        if (db) saveDomainReportToFirestore(db, report);
     });
 
     // Sync / Cleanup Monitored Domains with Active Projects
     document.getElementById('btn-sync-monitors-with-projects')?.addEventListener('click', async () => {
-        const monitored = getMonitoredDomains();
-        const activeProjects = cachedProjects || [];
-
-        // Identify client domains that do NOT belong to any active project
-        const orphaned = monitored.filter(m => {
-            // Keep internal domains always
-            if (m.category === 'internal' || (m.domain && m.domain.includes('creationaltfix.nl'))) return false;
-
-            // Check if any active project matches this domain or client name
-            const hasProject = activeProjects.some(p => {
-                const pDom = normalizeDomain(p.domainName || p.domain || '');
-                if (pDom && pDom === m.domain) return true;
-                const pName = (p.client || p.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                const mName = (m.client || m.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (pName && mName && (pName.includes(mName) || mName.includes(pName))) return true;
-                return false;
-            });
-
-            return !hasProject;
-        });
-
-        if (orphaned.length === 0) {
-            alert("✓ Alle gemonitorde domeinen komen overeen met je actieve projecten. Geen overbodige domeinen gevonden.");
-            return;
-        }
-
-        const domainListStr = orphaned.map(o => `• ${o.name} (${o.domain})`).join('\n');
-        const proceed = confirm(
-            `Er zijn ${orphaned.length} domein(en) gevonden waarvan het project is verwijderd uit het CRM:\n\n${domainListStr}\n\nWil je deze ${orphaned.length} domein(en) nu definitief verwijderen uit Uptime Monitoring?`
-        );
-
-        if (!proceed) return;
-
         const btn = document.getElementById('btn-sync-monitors-with-projects');
         const originalHtml = btn ? btn.innerHTML : '';
-        if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met opschonen...';
+        if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met synchroniseren...';
 
         try {
-            for (const item of orphaned) {
-                await removeDomainFromMonitoring(db, item.domain);
-                monitoringReports = monitoringReports.filter(r => r.domain !== item.domain);
-            }
+            // Fresh reload from Firestore
+            cachedProjects = await API.getProjects();
+            window.cachedProjects = cachedProjects;
+
+            // Purge legacy storage keys
+            try {
+                localStorage.removeItem('caf_uptime_custom_domains');
+                localStorage.removeItem('caf_uptime_replaced_domains');
+            } catch (e) {}
+
+            const activeMonitored = getMonitoredDomains(cachedProjects);
+            const activeIds = new Set(activeMonitored.map(m => m.id));
+            const activeDomains = new Set(activeMonitored.map(m => m.domain));
+
+            monitoringReports = monitoringReports.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain));
             try {
                 localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
             } catch (e) {}
 
             renderMonitorsTable();
-            alert(`✓ Succesvol ${orphaned.length} domein(en) opgeschoond uit Uptime & DNS Monitoring!`);
+            await executeScanAllMonitors(false);
+            alert(`✓ Realtime Monitoring is 100% gesynchroniseerd met de ${activeMonitored.length} actieve projecten op de Klantkaarten!`);
         } catch (e) {
-            console.error("Fout bij opschonen monitoring:", e);
-            alert("Fout bij opschonen: " + e.message);
+            console.error("Fout bij synchroniseren monitoring:", e);
+            alert("Fout bij synchroniseren: " + e.message);
         } finally {
             if (btn) btn.innerHTML = originalHtml;
         }
@@ -2579,7 +2573,8 @@ async function executeScanAllMonitors(isSilent = false) {
     if (progressContainer) progressContainer.classList.remove('hidden');
     if (progressBar) progressBar.style.width = '0%';
 
-    const domains = getMonitoredDomains();
+    const activeProjects = (cachedProjects && cachedProjects.length > 0) ? cachedProjects : (window.cachedProjects || []);
+    const domains = getMonitoredDomains(activeProjects);
 
     try {
         const results = await runAllDomainChecks(domains, (completed, total, report) => {
@@ -2974,7 +2969,8 @@ window.removeMonitoredDomain = async (domainName, closeDetailModal = false) => {
 };
 
 window.recheckSingleDomain = async (domainName, updateDetailModal = false) => {
-    const domainObj = getMonitoredDomains().find(d => d.domain === domainName);
+    const activeProjects = (cachedProjects && cachedProjects.length > 0) ? cachedProjects : (window.cachedProjects || []);
+    const domainObj = getMonitoredDomains(activeProjects).find(d => d.domain === domainName || d.id === domainName);
     if (!domainObj) return;
 
     const spinner = document.getElementById(`recheck-spin-${domainObj.id}`);

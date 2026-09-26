@@ -231,7 +231,7 @@
                             <i class="fas fa-heartbeat" style="color: #10b981;"></i> Realtime Systeem, DNS &amp; Uptime Monitoring
                         </h2>
                         <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin: 0;">
-                            Multi-DNS (Google DoH &amp; Cloudflare DoH), SSL-handshake en HTTP/HTTPS statuscontrole over alle 17 gehoste domeinen.
+                            Multi-DNS (Google DoH &amp; Cloudflare DoH), SSL-handshake en HTTP/HTTPS statuscontrole over alle actieve domeinen van de Klantkaarten.
                         </p>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -244,11 +244,8 @@
                         <button class="btn btn-secondary" id="btn-toggle-alert-sound" style="display: flex; align-items: center; gap: 8px;" title="Schakel geluidssignaal in bij storingen">
                             <i class="fas fa-volume-up" id="audio-alert-icon" style="color: #10b981;"></i> <span id="audio-alert-label">Audio: Aan</span>
                         </button>
-                        <button class="btn btn-secondary" id="btn-sync-monitors-with-projects" style="display: flex; align-items: center; gap: 8px;" title="Verwijder domeinen van inactieve of verwijderde projecten">
-                            <i class="fas fa-broom" style="color: #fbbf24;"></i> <span>Projecten Synchroniseren</span>
-                        </button>
-                        <button class="btn btn-secondary" id="btn-open-add-domain-modal" style="display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-plus"></i> <span>Domein Toevoegen</span>
+                        <button class="btn btn-secondary" id="btn-sync-monitors-with-projects" style="display: flex; align-items: center; gap: 8px;" title="Synchroniseer domeinen met actieve projecten op de Klantkaart">
+                            <i class="fas fa-sync" style="color: #fbbf24;"></i> <span>Projecten Synchroniseren</span>
                         </button>
                     </div>
                 </div>
@@ -257,7 +254,7 @@
                 <div id="monitoring-scan-progress-container" class="hidden" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 12px 16px; border: 1px solid rgba(99, 102, 241, 0.3);">
                     <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #c7d2fe; margin-bottom: 8px; font-weight: 600;">
                         <span><i class="fas fa-satellite-dish fa-spin" style="color: var(--color-accent); margin-right: 6px;"></i> <span id="monitoring-scan-status-label">Bezig met scannen van DNS-records en HTTPS endpoints...</span></span>
-                        <span id="monitoring-scan-status-text">0 / 17</span>
+                        <span id="monitoring-scan-status-text">0 / 13</span>
                     </div>
                     <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 6px; overflow: hidden;">
                         <div class="scan-progress-bar" id="monitoring-scan-bar" style="width: 0%;"></div>
@@ -272,7 +269,7 @@
                             <span class="monitoring-pulse-dot operational"></span>
                         </div>
                         <div class="monitoring-kpi-val" id="kpi-mon-operational" style="color: #34d399;">
-                            16 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ 17</span>
+                            13 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ 13</span>
                         </div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Domeinen live en bereikbaar</div>
                     </div>
@@ -316,7 +313,7 @@
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <h2><i class="fas fa-server" style="color: var(--color-accent); margin-right: 6px;"></i> Gehoste Domeinen &amp; Services</h2>
-                            <span class="kanban-count-badge" id="monitors-count-badge">17 Domeinen</span>
+                            <span class="kanban-count-badge" id="monitors-count-badge">13 Domeinen</span>
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="text" id="monitor-search-input" class="admin-input" placeholder="🔍 Filter op domein of klant..." style="margin: 0; padding: 6px 12px; font-size: 0.85rem; width: 220px;">
@@ -569,7 +566,7 @@
                         <i class="fas fa-heartbeat stat-icon" style="color: #10b981;" id="stat-monitoring-icon"></i>
                         <div class="stat-label">Uptime &amp; Monitoring</div>
                         <div class="stat-value" id="stat-monitoring" style="color: #10b981; display: flex; align-items: center; gap: 8px; font-size: 1.55rem;">
-                            <span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">17/17 Live</span>
+                            <span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">13/13 Live</span>
                         </div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;" id="stat-monitoring-sub">DNS, SSL &amp; HTTP OK</div>
                     </div>

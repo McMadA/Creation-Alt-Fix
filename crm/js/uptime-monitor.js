@@ -14,161 +14,53 @@
 import { EMAILJS_CONFIG } from "./firebase-config.js";
 
 /**
- * Standard list of all 17 hosted and client portfolio domains.
+ * Export empty default array for backward-compatibility.
+ * Monitored domains are now derived 100% dynamically from Firestore projects.
  */
-export const DEFAULT_MONITORED_DOMAINS = [
-    {
-        id: "creationaltfix-nl",
-        name: "Creation+Alt+Fix (Hoofdwebsite)",
-        domain: "creationaltfix.nl",
-        client: "Creation+Alt+Fix",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "internal"
-    },
-    {
-        id: "portal-creationaltfix-nl",
-        name: "Creation+Alt+Fix (CRM & Portaal)",
-        domain: "portal.creationaltfix.nl",
-        client: "Creation+Alt+Fix",
-        expectedIp: "185.104.29.148",
-        path: "/crm/",
-        category: "internal"
-    },
-    {
-        id: "bakkertjesieg-nl",
-        name: "BakkertjeSieg",
-        domain: "bakkertjesieg.nl",
-        client: "BakkertjeSieg",
-        expectedIp: "185.104.29.148",
-        path: "/new/",
-        category: "client"
-    },
-    {
-        id: "pomppop-nl",
-        name: "PompPop Festival",
-        domain: "pomppop.nl",
-        client: "Stichting PompPop",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "angelastenekes-nl",
-        name: "Angela Stenekes",
-        domain: "angelastenekes.nl",
-        client: "Angela Stenekes",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "arnolddesign-nl",
-        name: "Arnold Design",
-        domain: "arnolddesign.nl",
-        client: "Arnold Doornbos",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "naaiatelier-willa-nl",
-        name: "Naaiatelier Willa",
-        domain: "naaiatelier-willa.nl",
-        client: "Willa Handmade Studio",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "ftruckstore-nl",
-        name: "F-Truck Store (NL)",
-        domain: "ftruckstore.nl",
-        client: "F-Truck Store",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "ftruckstore-com",
-        name: "F-Truck Store (COM)",
-        domain: "ftruckstore.com",
-        client: "F-Truck Store",
-        expectedIp: "185.104.28.238",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "stenekesrioolspecialist-nl",
-        name: "Stenekes Riool & Grondwerk",
-        domain: "stenekesrioolspecialist.nl",
-        client: "Stenekes Riool & Grondwerk",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "scholte-elektrotechniek-nl",
-        name: "Scholte Elektrotechniek",
-        domain: "scholte-elektrotechniek.nl",
-        client: "Scholte Elektrotechniek",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "capybaraculture-com",
-        name: "Capybara Culture",
-        domain: "capybaraculture.com",
-        client: "Capybara Culture",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "qolipa-nl",
-        name: "Qolipa (NL)",
-        domain: "qolipa.nl",
-        client: "Qolipa Brand",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "qolipa-com",
-        name: "Qolipa (COM)",
-        domain: "qolipa.com",
-        client: "Qolipa Brand",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "client"
-    },
-    {
-        id: "besselinginstallatietechniek",
-        name: "Besseling Installatietechniek",
-        domain: "creationaltfix.nl",
-        client: "Besseling Installatietechniek",
-        expectedIp: "185.104.29.148",
-        path: "/besselinginstallatietechniek/",
-        category: "client"
-    },
-    {
-        id: "hbi-creationaltfix-nl",
-        name: "Home Buyer Intelligence",
-        domain: "hbi.creationaltfix.nl",
-        client: "Creation+Alt+Fix (PropTech AI)",
-        expectedIp: "185.104.29.148",
-        path: "/",
-        category: "internal"
-    }
-];
+export const DEFAULT_MONITORED_DOMAINS = [];
 
-const LOCAL_STORAGE_CUSTOM_DOMAINS = 'caf_uptime_custom_domains';
-const LOCAL_STORAGE_REPLACED_DOMAINS = 'caf_uptime_replaced_domains';
 const LOCAL_STORAGE_IGNORED_DOMAINS = 'caf_uptime_ignored_domains';
 const LOCAL_STORAGE_ALERTS_LOG = 'caf_uptime_alerts_log';
 const LOCAL_STORAGE_SETTINGS = 'caf_uptime_settings';
 const LOCAL_STORAGE_CONSECUTIVE_DOWN = 'caf_uptime_consecutive_down';
+
+/**
+ * Extracts and parses clean hostname and subpath from a raw domain or URL.
+ * Handles protocols (https://), subdirectories (/besselinginstallatietechniek/), and www prefixes.
+ * 
+ * @param {string} rawInput 
+ * @returns {{ domain: string, path: string }}
+ */
+export function parseDomainAndPath(rawInput) {
+    if (!rawInput || typeof rawInput !== 'string') return { domain: '', path: '/' };
+    let clean = rawInput.trim();
+    if (!clean || clean === '-' || clean.toLowerCase() === 'nvt' || clean.toLowerCase() === 'geen') {
+        return { domain: '', path: '/' };
+    }
+
+    // Remove protocol
+    clean = clean.replace(/^https?:\/\//i, '');
+
+    // Split domain and path
+    const slashIdx = clean.indexOf('/');
+    let domain = '';
+    let path = '/';
+
+    if (slashIdx !== -1) {
+        domain = clean.substring(0, slashIdx).trim().toLowerCase();
+        path = clean.substring(slashIdx).trim();
+        if (!path.startsWith('/')) path = '/' + path;
+        if (!path.endsWith('/') && !path.includes('.')) path = path + '/';
+    } else {
+        domain = clean.trim().toLowerCase();
+        path = '/';
+    }
+
+    // Strip www. prefix from domain for DNS and DoH consistency
+    domain = domain.replace(/^www\./i, '').trim();
+
+    return { domain, path };
+}
 
 /**
  * Minimum number of consecutive failed checks required before dispatching an alert.
@@ -309,78 +201,75 @@ export function normalizeDomain(domain) {
 }
 
 /**
- * Returns the active list of monitored domains (defaults + custom added, minus any replaced/excluded).
+ * Returns the active list of monitored domains derived 100% dynamically
+ * from the projects collection in Firestore (Recente Klanten & Projecten).
+ * Zero hardcoded lists. Only projects with a domain configured on their Klantkaart are monitored.
+ * 
+ * @param {Array<Object>} [projectsList=null] - Optional array of project objects from Firestore
+ * @returns {Array<Object>}
  */
-export function getMonitoredDomains() {
-    let custom = [];
-    let replaced = {};
-    try {
-        const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-        if (stored) {
-            custom = JSON.parse(stored).filter(d => d.domain !== 'besselinginstallatietechniek.nl' && d.domain !== 'www.besselinginstallatietechniek.nl');
-        }
-    } catch (e) {
-        console.warn("Could not read custom domains:", e);
-    }
-    try {
-        const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
-        if (storedReplaced) replaced = JSON.parse(storedReplaced);
-        // Ensure legacy standalone Besseling domain is purged
-        replaced['besselinginstallatietechniek.nl'] = '__removed__';
-        replaced['www.besselinginstallatietechniek.nl'] = '__removed__';
-    } catch (e) {
-        console.warn("Could not read replaced domains:", e);
+export function getMonitoredDomains(projectsList = null) {
+    let sourceProjects = [];
+
+    if (Array.isArray(projectsList) && projectsList.length > 0) {
+        sourceProjects = projectsList;
+    } else if (typeof window !== 'undefined' && Array.isArray(window.cachedProjects) && window.cachedProjects.length > 0) {
+        sourceProjects = window.cachedProjects;
     }
 
-    // Also purge from cached reports in localStorage if present
-    try {
-        const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
-        if (cachedStr) {
-            let cached = JSON.parse(cachedStr);
-            if (cached.some(r => r.domain === 'besselinginstallatietechniek.nl' || r.domain === 'www.besselinginstallatietechniek.nl')) {
-                cached = cached.filter(r => r.domain !== 'besselinginstallatietechniek.nl' && r.domain !== 'www.besselinginstallatietechniek.nl');
-                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
-            }
-        }
-    } catch (e) {}
+    const monitored = [];
+    const seenIds = new Set();
 
-    // Exclude default domains that have been replaced or removed
-    const activeDefaults = DEFAULT_MONITORED_DOMAINS.filter(d => !replaced[d.domain] && d.domain !== 'besselinginstallatietechniek.nl');
+    for (const p of sourceProjects) {
+        if (!p) continue;
+        const raw = (p.domainName || p.domain || '').trim();
+        if (!raw) continue;
 
-    return [...activeDefaults, ...custom];
+        const { domain, path } = parseDomainAndPath(raw);
+        if (!domain) continue;
+
+        const id = String(p.id || domain.replace(/[^a-z0-9]/g, '-'));
+        if (seenIds.has(id)) continue;
+        seenIds.add(id);
+
+        const clientName = p.client || p.companyName || p.clientName || domain;
+        const siteName = p.projectName || p.name || clientName;
+
+        monitored.push({
+            id,
+            projectId: String(p.id || ''),
+            name: siteName,
+            domain,
+            path,
+            client: clientName,
+            expectedIp: p.expectedIp || "185.104.29.148",
+            category: p.category || (domain.includes('creationaltfix.nl') && path === '/' ? 'internal' : 'client')
+        });
+    }
+
+    return monitored;
 }
 
 /**
- * Adds a new custom domain to monitor.
+ * Adds a new domain configuration for temporary in-session monitoring if requested.
  */
 export function addCustomMonitoredDomain(domainObj) {
     if (!domainObj || !domainObj.domain) return false;
-    const cleanDomain = domainObj.domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-    const id = cleanDomain.replace(/[^a-z0-9]/g, '-');
-
-    const all = getMonitoredDomains();
-    if (all.some(d => d.domain === cleanDomain)) return false;
+    const { domain, path } = parseDomainAndPath(domainObj.domain);
+    if (!domain) return false;
+    const id = domainObj.id || (domain.replace(/[^a-z0-9]/g, '-') + (path !== '/' ? '-' + path.replace(/[^a-z0-9]/g, '') : ''));
 
     const newEntry = {
         id,
-        name: domainObj.name || cleanDomain,
-        domain: cleanDomain,
+        name: domainObj.name || domainObj.client || domain,
+        domain: domain,
+        path: path || domainObj.path || "/",
         client: domainObj.client || "Maatwerk Klant",
-        expectedIp: domainObj.expectedIp || "",
-        path: domainObj.path || "/",
+        expectedIp: domainObj.expectedIp || "185.104.29.148",
         category: domainObj.category || "client"
     };
 
-    try {
-        const stored = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-        const list = stored ? JSON.parse(stored) : [];
-        list.push(newEntry);
-        localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(list));
-        return newEntry;
-    } catch (e) {
-        console.error("Error saving custom domain:", e);
-        return false;
-    }
+    return newEntry;
 }
 
 /**
@@ -908,42 +797,19 @@ export function getIncidentLogs() {
 export async function removeDomainFromMonitoring(db, domainName) {
     const clean = normalizeDomain(domainName);
     if (!clean) return false;
-
     console.log(`🗑️ Removing domain from Uptime & DNS Monitoring: "${clean}"`);
 
-    // 1. Mark in replaced domains as __removed__ (if in DEFAULT_MONITORED_DOMAINS)
-    try {
-        const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
-        const replaced = storedReplaced ? JSON.parse(storedReplaced) : {};
-        replaced[clean] = '__removed__';
-        localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
-    } catch (e) {
-        console.warn("Could not update replaced domains in localStorage:", e);
-    }
-
-    // 2. Filter out from custom domains
-    try {
-        const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-        if (storedCustom) {
-            let custom = JSON.parse(storedCustom);
-            custom = custom.filter(d => d.domain !== clean);
-            localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
-        }
-    } catch (e) {
-        console.warn("Could not remove custom domain:", e);
-    }
-
-    // 3. Remove from cached reports in localStorage
+    // 1. Remove from cached reports in localStorage
     try {
         const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
         if (cachedStr) {
             let cached = JSON.parse(cachedStr);
-            cached = cached.filter(r => r.domain !== clean);
+            cached = cached.filter(r => normalizeDomain(r.domain) !== clean);
             localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
         }
     } catch (e) {}
 
-    // 4. Remove consecutive down count & alert sent throttle
+    // 2. Remove consecutive down count & alert sent throttle
     try {
         const storedDown = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
         if (storedDown) {
@@ -954,7 +820,7 @@ export async function removeDomainFromMonitoring(db, domainName) {
         localStorage.removeItem(`caf_alert_sent_${clean}`);
     } catch (e) {}
 
-    // 5. Delete obsolete Firestore document /monitors/{oldDomainKey}
+    // 3. Delete obsolete Firestore document /monitors/{oldDomainKey}
     if (db) {
         try {
             const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -978,8 +844,6 @@ export async function removeDomainFromMonitoring(db, domainName) {
  * 2. If oldDomain existed:
  *    - Removes oldDomain via removeDomainFromMonitoring()
  * 3. If newDomain is provided:
- *    - Unmarks it from LOCAL_STORAGE_REPLACED_DOMAINS if previously overridden
- *    - Registers/updates it in LOCAL_STORAGE_CUSTOM_DOMAINS
  *    - Executes an immediate real-time Multi-DNS and HTTPS health check
  *    - Persists the new diagnostic report in Firestore (/monitors/{newDomainKey})
  *    - Updates cached reports in caf_cached_monitor_reports
@@ -991,17 +855,17 @@ export async function removeDomainFromMonitoring(db, domainName) {
  * @returns {Promise<Object>} Result object with { changed, oldDomain, newDomain, report }
  */
 export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, meta = {}) {
-    const cleanOld = normalizeDomain(oldDomain);
-    const cleanNew = normalizeDomain(newDomain);
+    const { domain: cleanOld } = parseDomainAndPath(oldDomain);
+    const { domain: cleanNew, path: newPath } = parseDomainAndPath(newDomain);
 
-    if (cleanOld === cleanNew) {
+    if (cleanOld === cleanNew && !cleanNew) {
         return { changed: false, oldDomain: cleanOld, newDomain: cleanNew, report: null };
     }
 
     console.log(`🌐 Synchronizing domain update to Uptime & DNS Monitoring: "${cleanOld || '(geen)'}" ➔ "${cleanNew || '(verwijderd)'}"`);
 
     // 1. Handle old domain retirement/cleanup
-    if (cleanOld) {
+    if (cleanOld && cleanOld !== cleanNew) {
         await removeDomainFromMonitoring(db, cleanOld);
     }
 
@@ -1010,42 +874,17 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
     if (cleanNew) {
         const clientName = meta.client || meta.companyName || meta.clientName || cleanNew;
         const newDomainObj = {
-            id: cleanNew.replace(/[^a-z0-9]/g, '-'),
+            id: meta.projectId || cleanNew.replace(/[^a-z0-9]/g, '-'),
+            projectId: meta.projectId || '',
             name: clientName,
             domain: cleanNew,
             client: clientName,
-            expectedIp: meta.expectedIp || "",
-            path: meta.path || "/",
+            expectedIp: meta.expectedIp || "185.104.29.148",
+            path: newPath || meta.path || "/",
             category: meta.category || "client"
         };
 
-        // A. Remove newDomain from replaced map if it was previously excluded
-        try {
-            const storedReplaced = localStorage.getItem(LOCAL_STORAGE_REPLACED_DOMAINS);
-            if (storedReplaced) {
-                const replaced = JSON.parse(storedReplaced);
-                if (replaced[cleanNew]) {
-                    delete replaced[cleanNew];
-                    localStorage.setItem(LOCAL_STORAGE_REPLACED_DOMAINS, JSON.stringify(replaced));
-                }
-            }
-        } catch (e) {}
-
-        // B. Upsert into LOCAL_STORAGE_CUSTOM_DOMAINS (unless it's an unreplaced default)
-        const isDefault = DEFAULT_MONITORED_DOMAINS.some(d => d.domain === cleanNew);
-        if (!isDefault) {
-            try {
-                const storedCustom = localStorage.getItem(LOCAL_STORAGE_CUSTOM_DOMAINS);
-                let custom = storedCustom ? JSON.parse(storedCustom) : [];
-                custom = custom.filter(d => d.domain !== cleanNew);
-                custom.push(newDomainObj);
-                localStorage.setItem(LOCAL_STORAGE_CUSTOM_DOMAINS, JSON.stringify(custom));
-            } catch (e) {
-                console.warn("Could not save new domain to custom storage:", e);
-            }
-        }
-
-        // C. Run immediate live health check (DNS-over-HTTPS + HTTPS probe)
+        // Run immediate live health check (DNS-over-HTTPS + HTTPS probe)
         try {
             freshReport = await runDomainHealthCheck(newDomainObj);
             console.log(`✅ Nieuw domein gecontroleerd: ${cleanNew} -> ${freshReport.statusText} (${freshReport.latencyMs}ms)`);
@@ -1053,8 +892,10 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
             console.warn("Live health check fout voor nieuw domein:", err.message);
             freshReport = {
                 id: newDomainObj.id,
+                projectId: newDomainObj.projectId,
                 name: newDomainObj.name,
                 domain: newDomainObj.domain,
+                path: newDomainObj.path,
                 client: newDomainObj.client,
                 category: newDomainObj.category,
                 overallStatus: "operational",
@@ -1070,7 +911,7 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
             };
         }
 
-        // D. Persist report to Firestore (/monitors/{cleanNewKey})
+        // Persist report to Firestore (/monitors/{cleanNewKey})
         if (db && freshReport) {
             try {
                 await saveDomainReportToFirestore(db, freshReport);
@@ -1080,11 +921,11 @@ export async function syncDomainChangeToMonitoring(db, oldDomain, newDomain, met
             }
         }
 
-        // E. Update cached reports in localStorage
+        // Update cached reports in localStorage
         try {
             const cachedStr = localStorage.getItem('caf_cached_monitor_reports');
             let cached = cachedStr ? JSON.parse(cachedStr) : [];
-            cached = cached.filter(r => r.domain !== cleanNew);
+            cached = cached.filter(r => r.domain !== cleanNew && r.id !== newDomainObj.id);
             cached.unshift(freshReport);
             localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(cached));
         } catch (e) {}
