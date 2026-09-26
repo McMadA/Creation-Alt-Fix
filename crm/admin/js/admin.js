@@ -274,14 +274,46 @@ async function loadDashboardData() {
         const activeIds = new Set(activeMonitors.map(m => m.id));
         const activeDomains = new Set(activeMonitors.map(m => m.domain));
 
-        if (monitoringReports.length > 0) {
-            monitoringReports = monitoringReports.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain));
+        if (monitoringReports.length === 0) {
             try {
-                localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+                const cached = localStorage.getItem('caf_cached_monitor_reports');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    monitoringReports = activeMonitors.length > 0
+                        ? parsed.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain))
+                        : parsed;
+                }
             } catch (e) {}
-            renderMonitorsTable();
+        } else if (activeMonitors.length > 0) {
+            monitoringReports = monitoringReports.filter(r => activeIds.has(r.id) || activeDomains.has(r.domain));
         }
-    } catch (e) {}
+
+        renderMonitorsTable();
+
+        // Check if there are newly added domains that don't have a report yet
+        const existingDomains = new Set(monitoringReports.map(r => r.domain));
+        const missingMonitors = activeMonitors.filter(m => !existingDomains.has(m.domain));
+        if (missingMonitors.length > 0 && !isScanningMonitors) {
+            Promise.all(missingMonitors.map(m => runDomainHealthCheck(m))).then(newReports => {
+                for (const nr of newReports) {
+                    monitoringReports.push(nr);
+                    if (db) saveDomainReportToFirestore(db, nr);
+                }
+                try {
+                    localStorage.setItem('caf_cached_monitor_reports', JSON.stringify(monitoringReports));
+                } catch (e) {}
+                renderMonitorsTable();
+            }).catch(console.warn);
+        }
+
+        // Run initial scan automatically as soon as Firestore projects have arrived
+        if (!hasDoneInitialMonitoringScan && !isScanningMonitors && activeMonitors.length > 0) {
+            hasDoneInitialMonitoringScan = true;
+            executeScanAllMonitors();
+        }
+    } catch (e) {
+        console.error("Fout bij bijwerken monitoring in loadDashboardData:", e);
+    }
 }
 
 function renderTablesData(projectsToRender) {
@@ -858,12 +890,19 @@ window.openProjectDetails = (id) => {
     const originalEmail = p.email || ""; // Track original email for change detection
     const isAuthActivated = Boolean((p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2') || p.isClientAccount);
 
+    // Parse extra/secondary domains
+    const extraDomainsList = Array.isArray(p.additionalDomains) 
+        ? p.additionalDomains 
+        : (typeof p.additionalDomains === 'string' ? p.additionalDomains.split(/[\r\n,;]+/).map(d => d.trim()).filter(Boolean) : []);
+    const extraDomainsStr = extraDomainsList.join(', ');
+
     // XSS-safe versions for innerHTML injection
     const s = {
         clientName: escapeHtml(clientName),
         contact: escapeHtml(contact),
         email: escapeHtml(email),
         domain: escapeHtml(domain),
+        extraDomains: escapeHtml(extraDomainsStr),
         service: escapeHtml(service),
         goals: escapeHtml(goals),
         design: escapeHtml(design),
@@ -990,9 +1029,16 @@ window.openProjectDetails = (id) => {
                         <input type="email" id="edit-email" class="admin-input" value="${s.email}" required style="margin: 4px 0 0 0;" data-original-email="${s.email}">
                     </div>
                     <div class="meta-box">
-                        <div class="meta-label"><i class="fas fa-globe"></i> Domeinnaam</div>
+                        <div class="meta-label"><i class="fas fa-globe"></i> Hoofddomein (Primair)</div>
                         <input type="text" id="edit-domain" class="admin-input" value="${s.domain}" style="margin: 4px 0 0 0;" placeholder="bijv. www.klant.nl" data-original-domain="${s.domain}">
                         <div id="modal-domain-status-pill" style="margin-top: 5px; font-size: 0.76rem; display: flex; align-items: center; gap: 6px;"></div>
+                    </div>
+                    <div class="meta-box" style="grid-column: span 2;">
+                        <div class="meta-label"><i class="fas fa-network-wired"></i> Extra / Secundaire Domeinen (Optioneel)</div>
+                        <input type="text" id="edit-extra-domains" class="admin-input" value="${s.extraDomains}" style="margin: 4px 0 0 0;" placeholder="bijv. klant.com, staging.klant.nl, shop.klant.nl (gescheiden door komma's)" data-original-extra="${s.extraDomains}">
+                        <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">
+                            <i class="fas fa-shield-alt" style="color: var(--color-accent);"></i> Elk extra domein wordt direct automatisch gemonitord op DNS, SSL &amp; HTTPS bereikbaarheid.
+                        </div>
                     </div>
                     <div class="meta-box">
                         <div class="meta-label"><i class="fas fa-tag"></i> Geselecteerde Dienst</div>
@@ -1259,6 +1305,13 @@ window.saveKlantkaartChanges = async (e, id) => {
         || '';
     const newDomain = domainInput?.value?.trim() || '';
 
+    const extraDomainsInput = document.getElementById('edit-extra-domains');
+    const rawExtra = extraDomainsInput?.value?.trim() || '';
+    const additionalDomains = rawExtra 
+        ? rawExtra.split(/[\r\n,;]+/).map(d => d.trim()).filter(Boolean)
+        : [];
+    const allDomains = [newDomain, ...additionalDomains].filter(Boolean);
+
     const updatedData = {
         client: document.getElementById('edit-client').value,
         companyName: document.getElementById('edit-client').value,
@@ -1266,6 +1319,8 @@ window.saveKlantkaartChanges = async (e, id) => {
         email: newEmail,
         domainName: newDomain,
         domain: newDomain,
+        additionalDomains,
+        domains: allDomains,
         service: document.getElementById('edit-service').value,
         goals: document.getElementById('edit-goals').value,
         projectGoals: document.getElementById('edit-goals').value,
@@ -2425,8 +2480,8 @@ function initMonitoringTab() {
         renderMonitorsTable();
     }
 
-    // Trigger initial scan if not performed yet
-    if (!hasDoneInitialMonitoringScan && !isScanningMonitors) {
+    // Trigger initial scan if not performed yet and projects are loaded
+    if (!hasDoneInitialMonitoringScan && !isScanningMonitors && activeMonitors.length > 0) {
         hasDoneInitialMonitoringScan = true;
         executeScanAllMonitors();
     }
@@ -2702,11 +2757,14 @@ function renderMonitorsTable() {
                     <td>${statusColumnHtml}</td>
                     <td>
                         <div>
-                            <div style="display: flex; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                                 <a href="https://${escapeHtml(r.domain)}${r.path || '/'}" target="_blank" rel="noopener" style="color: #fff; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                                     <span>${escapeHtml(r.domain)}${r.path && r.path !== '/' ? escapeHtml(r.path) : ''}</span>
                                     <i class="fas fa-external-link-alt" style="font-size: 0.72rem; color: #94a3b8;"></i>
                                 </a>
+                                ${r.isPrimary === false 
+                                    ? `<span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;"><i class="fas fa-network-wired" style="font-size: 0.65rem;"></i> Extra Domein</span>` 
+                                    : `<span style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;"><i class="fas fa-star" style="font-size: 0.65rem;"></i> Primair</span>`}
                                 ${domainIgnoredTag}
                             </div>
                             <div style="font-size: 0.74rem; color: var(--color-text-secondary); margin-top: 2px;">

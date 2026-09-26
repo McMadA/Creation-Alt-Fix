@@ -2,13 +2,27 @@
 
 ## Recent Insights
 
+- **[2026-09-27] Multi-Domein Architectuur & Automatische Monitoring Integratie**:
+  1. **Flexibele Domein Extractie (`extractProjectDomains`)**:
+     - Projecten in Firestore kunnen nu meerdere domeinen bezitten via het hoofddomein (`domainName` of `domain`), de array `additionalDomains` (of komma-gescheiden string), en `domains`.
+     - `extractProjectDomains(p)` splitst en normaliseert invoer automatisch op komma's, spaties en newlines. Het eerste domein wordt gemarkeerd als primair (`isPrimary: true`), aanvullende domeinen als secundair (`isPrimary: false`).
+  2. **Automatische Monitoring Sync (`getMonitoredDomains`)**:
+     - `getMonitoredDomains(projectsList)` genereert per project voor ieder uniek gekoppeld domein een eigen monitor endpoint (bijv. `proj_1_arnolddesign_nl` en `proj_1_arnolddesign_com`).
+     - Elk domein wordt afzonderlijk doorgelicht op DNS-over-HTTPS (Google & Cloudflare), TLS/SSL handshakes en HTTP(S) responsetijd.
+  3. **UI Integratie**:
+     - **Klantkaart Quick-Edit Modal** ([crm/admin/js/admin.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/admin.js)): Veld toegevoegd voor *"Extra / Secundaire Domeinen (Optioneel)"* met automatische Firestore persistentie onder `additionalDomains` en `domains`.
+     - **Project Workstation** ([crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html) & [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js)): Veld toegevoegd inclusief formulierverwerking en instant visualisatie.
+     - **Monitoring Dashboard**: Duidelijke visuele badges tonen nu `Primair` (cyaan ster) of `Extra Domein` (paars netwerkicoon) per rij, terwijl beide netjes gegroepeerd blijven onder hetzelfde klant- en projectdossier.
+     - **Directe Automatische Scan**: Nieuw toegevoegde extra domeinen worden op de achtergrond direct getest en in de monitoring tabel getoond zonder page refresh.
+
 - **[2026-09-27] Deep Scan & 100% Firestore Single Source of Truth Verificatie**:
   1. **Purge van Mock Data & Functies**:
      - `crm/admin/js/admin.js`: `getMockProjects()` verwijderd uit het `API` object; `saveNewLead` toont nu een zuivere Firestore foutmelding i.p.v. "Opslaan gesimuleerd (Firebase is nog mock data)"; `generateProposal` en `sendDesignToClient` ontdaan van "(in mock-modus)" meldingen; `generateInvoiceMollieLink` hardcode niet langer `"https://useplink.com/payment/xyz123"` maar vraagt via een interactieve prompt de daadwerkelijke betaallink op en slaat deze direct op in het Firestore document (`doc(db, "projects", id)`).
      - `crm/admin/js/project.js`: Alle mock fallbacks geëlimineerd uit `loadProjectData`; niet-gevonden documenten worden niet langer opgevuld met mock arrays maar leiden direct naar een foutmelding en redirect; `dummyDemo` URL verwijderd uit staging preview.
      - `crm/js/uptime-monitor.js`: `DEFAULT_MONITORED_DOMAINS` volledig verwijderd; gemonitorde domeinen worden nu 100% dynamisch afgeleid van de `projects` collectie in Firestore (13 projecten = exact 13 actieve monitoring endpoints).
-  2. **Single Source of Truth Bevestigd**:
+  2. **Single Source of Truth & Startup Sync Fix**:
      - `projects` collectie in Firestore is de enige bron voor projecten, statussen, kanban taken, offertes en live domeinen.
+     - **Async Startup Race Condition Opgelost**: Bij page load startte `initMonitoringTab()` enkele milliseconden vóórdat `loadDashboardData()` de Firestore query voltooide, waardoor de initiële monitoring scan met 0 projecten startte en "0/0 domeinen" toonde totdat handmatig op sync werd gedrukt. Opgelost door `loadDashboardData()` direct de actieve monitors te laten inladen en de initiële scan pas te triggeren zodra de Firestore documenten daadwerkelijk in `cachedProjects` zijn geladen.
      - Geen dummy data, mock arrays of ghost projecten meer aanwezig in de frontend codebases.
      - Alle 4 kernmodules (`admin.js`, `project.js`, `status.js`, `uptime-monitor.js`) gescand en foutloos door `node --check` gevalideerd.
 

@@ -586,6 +586,16 @@ function renderProjectWorkspace(p) {
     document.getElementById('edit-domain').value = domain;
     document.getElementById('edit-domain').dataset.originalDomain = domain;
 
+    // Populate Extra / Secondary Domains
+    const extraDomainsList = Array.isArray(currentProjectData.additionalDomains) 
+        ? currentProjectData.additionalDomains 
+        : (typeof currentProjectData.additionalDomains === 'string' ? currentProjectData.additionalDomains.split(/[\r\n,;]+/).map(d => d.trim()).filter(Boolean) : []);
+    const extraInput = document.getElementById('edit-extra-domains');
+    if (extraInput) {
+        extraInput.value = extraDomainsList.join(', ');
+        extraInput.dataset.originalExtra = extraDomainsList.join(', ');
+    }
+
     // Render Realtime DNS & Uptime status badge under domain input
     const monStatusEl = document.getElementById('project-domain-monitor-status');
     if (monStatusEl) {
@@ -1743,6 +1753,13 @@ function setupFormHandlers() {
             || '';
         const newDomain = domainInput?.value?.trim() || '';
 
+        const extraDomainsInput = document.getElementById('edit-extra-domains');
+        const rawExtra = extraDomainsInput?.value?.trim() || '';
+        const additionalDomains = rawExtra 
+            ? rawExtra.split(/[\r\n,;]+/).map(d => d.trim()).filter(Boolean)
+            : [];
+        const allDomains = [newDomain, ...additionalDomains].filter(Boolean);
+
         const updatedData = {
             client: document.getElementById('edit-client').value,
             companyName: document.getElementById('edit-client').value,
@@ -1750,6 +1767,8 @@ function setupFormHandlers() {
             email: newEmail,
             domainName: newDomain,
             domain: newDomain,
+            additionalDomains,
+            domains: allDomains,
             service: document.getElementById('edit-service').value,
             goals: document.getElementById('edit-goals').value,
             projectGoals: document.getElementById('edit-goals').value,

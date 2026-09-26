@@ -201,9 +201,74 @@ export function normalizeDomain(domain) {
 }
 
 /**
+ * Extracts and normalizes all domain entries associated with a project.
+ * Supports:
+ * - Primary domain from p.domainName or p.domain (can be comma/newline-separated)
+ * - Explicit p.domains array
+ * - Additional domains from p.additionalDomains (array or string)
+ * 
+ * @param {Object} p - Project document object from Firestore
+ * @returns {Array<{ domain: string, path: string, isPrimary: boolean, raw: string }>}
+ */
+export function extractProjectDomains(p) {
+    if (!p) return [];
+    const collected = [];
+    const seen = new Set();
+
+    const addCandidate = (raw, isPrimaryCandidate = false) => {
+        if (!raw || typeof raw !== 'string') return;
+        // Split by comma, newline, semicolon or multiple whitespace
+        const parts = raw.split(/[\r\n,;]+/);
+        for (let part of parts) {
+            part = part.trim();
+            if (!part) continue;
+            const { domain, path } = parseDomainAndPath(part);
+            if (!domain) continue;
+            const fullKey = `${domain}${path}`;
+            if (seen.has(fullKey)) continue;
+            seen.add(fullKey);
+            collected.push({
+                domain,
+                path,
+                raw: part,
+                isPrimary: isPrimaryCandidate && collected.length === 0
+            });
+        }
+    };
+
+    // 1. Primary domain from domainName or domain
+    if (p.domainName) addCandidate(p.domainName, true);
+    if (p.domain) addCandidate(p.domain, true);
+
+    // 2. Explicit domains array
+    if (Array.isArray(p.domains)) {
+        for (const d of p.domains) {
+            addCandidate(d, false);
+        }
+    }
+
+    // 3. Additional domains (array or string)
+    if (Array.isArray(p.additionalDomains)) {
+        for (const d of p.additionalDomains) {
+            addCandidate(d, false);
+        }
+    } else if (typeof p.additionalDomains === 'string') {
+        addCandidate(p.additionalDomains, false);
+    }
+
+    // Ensure the very first domain is marked as primary if none was
+    if (collected.length > 0 && !collected.some(c => c.isPrimary)) {
+        collected[0].isPrimary = true;
+    }
+
+    return collected;
+}
+
+/**
  * Returns the active list of monitored domains derived 100% dynamically
  * from the projects collection in Firestore (Recente Klanten & Projecten).
- * Zero hardcoded lists. Only projects with a domain configured on their Klantkaart are monitored.
+ * Projects with multiple domains (primary + aliases / extra domains) will
+ * each have an entry in the monitoring suite automatically.
  * 
  * @param {Array<Object>} [projectsList=null] - Optional array of project objects from Firestore
  * @returns {Array<Object>}
@@ -218,33 +283,38 @@ export function getMonitoredDomains(projectsList = null) {
     }
 
     const monitored = [];
-    const seenIds = new Set();
+    const seenKeys = new Set();
 
     for (const p of sourceProjects) {
         if (!p) continue;
-        const raw = (p.domainName || p.domain || '').trim();
-        if (!raw) continue;
+        const projectDomains = extractProjectDomains(p);
+        if (projectDomains.length === 0) continue;
 
-        const { domain, path } = parseDomainAndPath(raw);
-        if (!domain) continue;
+        const clientName = p.client || p.companyName || p.clientName || 'Onbekende Klant';
+        const baseSiteName = p.projectName || p.name || clientName;
 
-        const id = String(p.id || domain.replace(/[^a-z0-9]/g, '-'));
-        if (seenIds.has(id)) continue;
-        seenIds.add(id);
+        for (const item of projectDomains) {
+            const { domain, path, isPrimary } = item;
+            const uniqueKey = `${domain}${path}`;
+            if (seenKeys.has(uniqueKey)) continue;
+            seenKeys.add(uniqueKey);
 
-        const clientName = p.client || p.companyName || p.clientName || domain;
-        const siteName = p.projectName || p.name || clientName;
+            const pathSlug = path && path !== '/' ? '_' + path.replace(/[^a-z0-9]/gi, '_').replace(/^_+|_+$/g, '') : '';
+            const monitorId = `${p.id || 'proj'}_${domain.replace(/[^a-z0-9]/gi, '_')}${pathSlug}`;
+            const displayName = isPrimary ? baseSiteName : `${baseSiteName} (${domain})`;
 
-        monitored.push({
-            id,
-            projectId: String(p.id || ''),
-            name: siteName,
-            domain,
-            path,
-            client: clientName,
-            expectedIp: p.expectedIp || "185.104.29.148",
-            category: p.category || (domain.includes('creationaltfix.nl') && path === '/' ? 'internal' : 'client')
-        });
+            monitored.push({
+                id: monitorId,
+                projectId: String(p.id || ''),
+                name: displayName,
+                domain,
+                path,
+                client: clientName,
+                isPrimary: Boolean(isPrimary),
+                expectedIp: p.expectedIp || "185.104.29.148",
+                category: p.category || (domain.includes('creationaltfix.nl') && path === '/' ? 'internal' : 'client')
+            });
+        }
     }
 
     return monitored;
@@ -511,6 +581,8 @@ export async function runDomainHealthCheck(domainConfig) {
 
     const report = {
         id: domainConfig.id,
+        projectId: domainConfig.projectId || "",
+        isPrimary: domainConfig.isPrimary !== undefined ? domainConfig.isPrimary : true,
         name: domainConfig.name,
         domain: domainConfig.domain,
         path: domainConfig.path || "/",
