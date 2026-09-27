@@ -2,6 +2,21 @@
 
 ## Recent Insights
 
+- **[2026-09-27] 2027 Abonnementsmigratie & Klantcommunicatie Suite ([crm/admin/js/modules/subscription-2027.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/subscription-2027.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules))**:
+  - **Doel**: Alle klanten met een verouderd of eenmalig tarief (zoals `legacy_22` € 22,-/jr) per 1 januari 2027 migreren naar een professioneel Managed Cloud Hosting & Service Abonnement (€ 150,- tot € 500,-/jr).
+  - **Communicatiemotor & Modals**:
+    1. Gecreëerd `crm/admin/js/modules/subscription-2027.js` met `generate2027ProposalText`, `generate2027WhatsAppText` en `open2027SubscriptionModal`.
+    2. Geïntegreerd in zowel de Klantkaart Snelmenu modal ([crm/admin/js/admin.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/admin.js)) als het Dedicated Project Werkstation ([crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js)) via de knop `🚀 2027 Abonnementsplan Berichten aan Klant`.
+    3. Biedt 4 directe verzendopties: (1) Plaats als bericht in het klantenportaal (`appendProjectMessage`), (2) Open in e-mail client (`mailto:`) met klembord fallback, (3) Directe WhatsApp Web / App dispatch (`wa.me`), (4) Klembord kopieerknop.
+  - **Klantenportaal Bevestiging (2-Weg)**:
+    1. In het Klantenportaal ([crm/status/](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html)) verschijnt een speciale 2027 vernieuwingsbanner met alle inbegrepen specificaties (NVMe cloud, SSL, 24/7 uptime DoH monitoring, backups).
+    2. Klant kan met 1 klik akkoord geven: `Akkoord met 2027 Serviceplan`.
+    3. Update slaat `subscriptionPlan2027Status = 'bevestigd'`, `subscriptionPlan2027ConfirmedAt` en planparameters direct op in Firestore en stuurt een directe admin notificatie naar `info@creationaltfix.nl`.
+  - **Beveiliging & CI/CD**:
+    1. Whitelist in `firestore.rules` uitgebreid met alle `subscriptionPlan2027*` velden zodat updates van geauthenticeerde klanten niet worden geblokkeerd.
+    2. Test suite ([tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js)) uitgebreid met 2 nieuwe tests (totaal 35 tests, 100% pass).
+    3. Locatie-pad weergave gecorrigeerd in `admin.js` (`C:\\Users\\Admin\\Backups\\Pi-Boekhouding`).
+
 - **[2026-09-27] Opgelost: 'getPiBoekhoudingInfo is not defined' & Scope Binding in ES Modules ([crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
   - **Probleem**: Bij het openen van een projectwerkstation (`project.html`) trad een runtime fout op: `ReferenceError: getPiBoekhoudingInfo is not defined`.
   - **Oorzaak**: In JavaScript ES Modules bindt een re-export syntax zoals `export { getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js"` het symbool *niet* in de lokale lexicale scope van het bestand zelf. Hierdoor kon `project.js` de functie `renderSubscriptionAndInvoiceCard` niet aanroepen.

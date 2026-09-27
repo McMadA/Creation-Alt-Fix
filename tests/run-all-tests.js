@@ -266,6 +266,30 @@ test("project.js properly imports and binds bookkeeping and plan symbols into lo
         projectJs.includes("import { SUBSCRIPTION_PLANS }"),
         "project.js must explicitly import SUBSCRIPTION_PLANS to prevent runtime ReferenceErrors"
     );
+    assert.ok(
+        projectJs.includes("import { open2027SubscriptionModal }"),
+        "project.js must import open2027SubscriptionModal for 2027 communication"
+    );
+});
+
+test("generate2027ProposalText and WhatsApp generator produce accurate client communication", async () => {
+    const { generate2027ProposalText, generate2027WhatsAppText } = await import("../crm/admin/js/modules/subscription-2027.js");
+    const mockProj = {
+        id: "proj_angela",
+        client: "Angela Stenekes",
+        domainName: "angelastenekes.nl",
+        phone: "0612345678"
+    };
+
+    const emailBody = generate2027ProposalText(mockProj, "managed_nl");
+    assert.ok(emailBody.includes("Beste Angela Stenekes"), "Must address client personally");
+    assert.ok(emailBody.includes("angelastenekes.nl"), "Must reference client domain");
+    assert.ok(emailBody.includes("€ 150,00 excl. BTW"), "Must state correct plan price");
+    assert.ok(emailBody.includes("https://creationaltfix.nl/crm/status/?id=proj_angela"), "Must include direct status portal link");
+
+    const waBody = generate2027WhatsAppText(mockProj, "allin_apk");
+    assert.ok(waBody.includes("Hoi Angela Stenekes"), "WhatsApp message must address client");
+    assert.ok(waBody.includes("€ 500,00,- excl. BTW"), "WhatsApp message must state all-in APK price");
 });
 
 // ========================================================
@@ -332,6 +356,7 @@ const filesToCheck = [
     "crm/admin/js/modules/admin-tables.js",
     "crm/admin/js/modules/admin-stats.js",
     "crm/admin/js/modules/bookkeeping-data.js",
+    "crm/admin/js/modules/subscription-2027.js",
     "crm/status/js/status.js",
     "crm/status/js/modules/translations.js"
 ];
@@ -362,6 +387,16 @@ test("firestore.rules exists and synchronizes all ADMIN_EMAILS", () => {
             `firestore.rules must whitelist admin email: ${email}`
         );
     }
+
+    // Must whitelist 2027 subscription confirmation fields for clients
+    assert.ok(
+        rulesContent.includes("subscriptionPlan2027Status"),
+        "firestore.rules must whitelist subscriptionPlan2027Status for client confirmations"
+    );
+    assert.ok(
+        rulesContent.includes("subscriptionPlan2027ConfirmedAt"),
+        "firestore.rules must whitelist subscriptionPlan2027ConfirmedAt for client confirmations"
+    );
 });
 
 test("storage.rules enforces 10MB file limit and client restrictions", () => {

@@ -42,6 +42,7 @@ let currentProjectData = null;
 // --- Plans & Bookkeeping Records (Modularized) ---
 import { SUBSCRIPTION_PLANS } from "../../js/crm-config.js";
 import { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js";
+import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
 export { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo };
 
 
@@ -2147,6 +2148,59 @@ function setupFormHandlers() {
             saveBtn.disabled = false;
             saveBtn.innerHTML = origText;
         }
+    });
+
+    // Action: 2027 Subscription Communication Modal
+    document.getElementById('btn-workstation-2027-proposal')?.addEventListener('click', () => {
+        if (!currentProjectData) return;
+        open2027SubscriptionModal({
+            project: currentProjectData,
+            onSavePlan: async (proj, plan) => {
+                const updatedFields = {
+                    subscriptionPlan2027Id: plan.id,
+                    subscriptionPlan2027Name: plan.name,
+                    subscriptionPlan2027Price: plan.price,
+                    subscriptionPlan2027Status: 'voorgesteld',
+                    subscriptionPlan2027ProposedAt: new Date().toISOString()
+                };
+                if (db && currentProjectId) {
+                    await updateDoc(doc(db, "projects", currentProjectId), updatedFields);
+                }
+                currentProjectData = { ...(currentProjectData || {}), ...updatedFields };
+                renderSubscriptionAndInvoiceCard(currentProjectData);
+                await logAuditEvent('2027_plan_proposed', `2027 Abonnementsplan voorgesteld: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
+            },
+            onSendPortalTicket: async (proj, plan, messageText) => {
+                const updatedFields = {
+                    subscriptionPlan2027Id: plan.id,
+                    subscriptionPlan2027Name: plan.name,
+                    subscriptionPlan2027Price: plan.price,
+                    subscriptionPlan2027Status: 'voorgesteld',
+                    subscriptionPlan2027ProposedAt: new Date().toISOString()
+                };
+                const msgObj = {
+                    id: 'msg_2027_' + Date.now(),
+                    sender: 'admin',
+                    text: messageText,
+                    createdAt: new Date().toISOString(),
+                    status: 'open',
+                    readByClient: false
+                };
+                if (db && currentProjectId) {
+                    const currentMsgs = currentProjectData.messages || [];
+                    await updateDoc(doc(db, "projects", currentProjectId), {
+                        ...updatedFields,
+                        messages: [...currentMsgs, msgObj]
+                    });
+                }
+                if (!currentProjectData.messages) currentProjectData.messages = [];
+                currentProjectData.messages.push(msgObj);
+                Object.assign(currentProjectData, updatedFields);
+                renderSubscriptionAndInvoiceCard(currentProjectData);
+                renderTicketsList(currentProjectData.messages);
+                await logAuditEvent('2027_plan_ticket_sent', `2027 Abonnementsvoorstel als ticket in klantenportaal geplaatst voor ${proj.client || 'klant'}.`);
+            }
+        });
     });
 
     // 8. Action: Send Design to Client (Opens Phase 3 Design Studio Modal)

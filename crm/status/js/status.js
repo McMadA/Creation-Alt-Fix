@@ -566,6 +566,127 @@ function renderSubscriptionSection(data) {
         ];
         featuresList.innerHTML = features.map(f => `<span style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">${f}</span>`).join('');
     }
+
+    // Render 2027 Subscription Banner & Confirmation Engine
+    const banner2027 = document.getElementById('client-2027-subscription-banner');
+    if (banner2027) {
+        const plan2027Id = data.subscriptionPlan2027Id || (planId === 'legacy_22' ? 'managed_nl' : planId);
+        const plan2027 = SUBSCRIPTION_PLANS[plan2027Id] || SUBSCRIPTION_PLANS['managed_nl'];
+        const is2027Confirmed = data.subscriptionPlan2027Status === 'bevestigd';
+        const has2027Proposal = data.subscriptionPlan2027Status === 'voorgesteld' || planId === 'legacy_22';
+
+        if (is2027Confirmed) {
+            banner2027.style.display = 'block';
+            banner2027.innerHTML = `
+                <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="color: #34d399; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-check-circle"></i> ${currentLang === 'en' ? '2027 Service Plan Confirmed' : 'Serviceplan 2027 Bevestigd'}
+                        </div>
+                        <p style="margin: 4px 0 0 0; color: #cbd5e1; font-size: 0.85rem;">
+                            ${currentLang === 'en' 
+                                ? `Your website is registered for <strong>${escapeHtml(plan2027.name)}</strong> (€ ${escapeHtml(plan2027.price)}/yr excl. VAT) per January 1st, 2027.`
+                                : `Jouw website staat ingepland voor het <strong>${escapeHtml(plan2027.name)}</strong> (€ ${escapeHtml(plan2027.price)}/jr excl. BTW) per 1 januari 2027.`
+                            }
+                        </p>
+                    </div>
+                    <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                        ${currentLang === 'en' ? 'Active per 2027' : 'Actief per 1 jan 2027'}
+                    </span>
+                </div>
+            `;
+        } else if (has2027Proposal) {
+            banner2027.style.display = 'block';
+            banner2027.innerHTML = `
+                <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(129, 140, 248, 0.4); border-radius: 10px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                        <div>
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #818cf8; letter-spacing: 0.5px;">
+                                🚀 ${currentLang === 'en' ? '2027 Service Plan Renewal' : 'Vernieuwing Serviceplan 2027'}
+                            </span>
+                            <h4 style="margin: 4px 0 0 0; font-size: 1.05rem; color: #fff;">
+                                ${currentLang === 'en' ? 'Cloud Uptime, Speed & Maintenance' : 'Continuïteit, Cloud Uptime & Onderhoud'}
+                            </h4>
+                        </div>
+                        <div style="background: rgba(99,102,241,0.25); border: 1px solid #818cf8; color: #c7d2fe; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; font-weight: 600;">
+                            ${currentLang === 'en' ? 'Awaiting Confirmation' : 'Wacht op Bevestiging'}
+                        </div>
+                    </div>
+                    <p style="color: #cbd5e1; font-size: 0.86rem; margin: 0 0 12px 0; line-height: 1.45;">
+                        ${currentLang === 'en' 
+                            ? `Starting January 1st, 2027, all websites transition to our high-speed Cloud & 24/7 monitoring SLA. For <strong>${escapeHtml(domainVal)}</strong> the following plan is prepared:`
+                            : `Per 1 januari 2027 stappen we over op onze continue Cloud Hosting & Uptime monitoring standaard. Voor jouw domein <strong>${escapeHtml(domainVal)}</strong> staat het volgende plan klaargezet:`
+                        }
+                    </p>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <strong style="color: #fff; font-size: 0.95rem;">${escapeHtml(plan2027.name)}</strong>
+                            <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
+                                ${currentLang === 'en' ? 'NVMe storage, SSL, mailboxes, 24/7 DoH uptime monitoring & daily backups.' : 'NVMe servers, SSL, 5 mailboxen, 24/7 DoH uptime monitoring & dagelijkse back-ups.'}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.15rem; font-weight: 800; color: #34d399;">€ ${escapeHtml(plan2027.price)} <span style="font-size: 0.75rem; font-weight: 400; color: #94a3b8;">${currentLang === 'en' ? '/ yr excl. VAT' : '/ jr excl. BTW'}</span></div>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">${currentLang === 'en' ? 'Invoiced Jan 2027' : 'Facturatie jan 2027'}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="button" id="btn-confirm-2027-plan" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700; padding: 9px 18px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-check-circle"></i> ${currentLang === 'en' ? 'Confirm 2027 Service Plan' : 'Akkoord met 2027 Serviceplan'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            banner2027.querySelector('#btn-confirm-2027-plan')?.addEventListener('click', async () => {
+                const btn = banner2027.querySelector('#btn-confirm-2027-plan');
+                const orig = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+
+                try {
+                    const updateObj = {
+                        subscriptionPlan2027Id: plan2027.id,
+                        subscriptionPlan2027Name: plan2027.name,
+                        subscriptionPlan2027Price: plan2027.price,
+                        subscriptionPlan2027Status: 'bevestigd',
+                        subscriptionPlan2027ConfirmedAt: new Date().toISOString(),
+                        subscriptionPlanId: plan2027.id,
+                        subscriptionPlanName: plan2027.name,
+                        subscriptionPrice: plan2027.price,
+                        subscriptionCycle: plan2027.cycle,
+                        updatedAt: new Date().toISOString()
+                    };
+                    if (db && currentProjectDocId) {
+                        await updateDoc(doc(db, "projects", currentProjectDocId), updateObj);
+                    }
+                    Object.assign(data, updateObj);
+
+                    // Notify admin via EmailJS
+                    notifyAdminNewMessage({
+                        clientName: data.client || data.companyName || 'Klant',
+                        clientEmail: data.email || '',
+                        projectName: domainVal || data.client || 'Project',
+                        messagePreview: `Klant heeft het 2027 abonnement (${plan2027.name} à € ${plan2027.price}/jr) zojuist digitaal bevestigd in het klantenportaal.`,
+                        category: 'Abonnement 2027'
+                    }).catch(console.warn);
+
+                    renderSubscriptionSection(data);
+                    
+                    alert(currentLang === 'en' 
+                        ? 'Thank you! Your 2027 service plan has been confirmed.'
+                        : 'Bedankt! Jouw serviceplan voor 2027 is officieel bevestigd. Wij zorgen dat jouw website optimaal blijft draaien.');
+                } catch (err) {
+                    console.error("Fout bij bevestigen 2027 plan:", err);
+                    alert("Kon akkoord niet verwerken: " + err.message);
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            });
+        } else {
+            banner2027.style.display = 'none';
+        }
+    }
 }
 
 function updateTimeline(activeStep) {

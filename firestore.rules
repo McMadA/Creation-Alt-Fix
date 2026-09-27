@@ -76,7 +76,10 @@ service cloud.firestore {
                              'client', 'companyName', 'contactName', 'phone', 
                              'streetAndNumber', 'address', 'postalCode', 'city', 
                              'kvkNumber', 'kvk', 'vatNumber', 'btwNummer', 'updatedAt',
-                             'clientUid'
+                             'clientUid',
+                             'subscriptionPlan2027Status', 'subscriptionPlan2027ConfirmedAt',
+                             'subscriptionPlan2027Id', 'subscriptionPlan2027ProposedAt',
+                             'subscriptionPlanId', 'subscriptionPlanName', 'subscriptionPrice', 'subscriptionCycle'
                            ]));
 
       // DELETE: Only admins

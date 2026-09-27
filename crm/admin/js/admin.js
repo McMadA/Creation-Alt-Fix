@@ -44,6 +44,7 @@ import {
     REQUIRED_CONSECUTIVE_FAILURES,
     getConsecutiveFailures
 } from "../../js/uptime-monitor.js";
+import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
 
 
 
@@ -729,6 +730,10 @@ window.openProjectDetails = (id) => {
                         </button>
                     </div>
 
+                    <button type="button" id="btn-modal-2027-proposal" class="btn btn-sm" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: 1px solid #818cf8; font-weight: 600; padding: 7px 12px; font-size: 0.8rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i> 🚀 2027 Abonnementsplan Berichten aan Klant
+                    </button>
+
                     ${invoiceHtml}
 
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px;">
@@ -740,7 +745,7 @@ window.openProjectDetails = (id) => {
                         </button>
                     </div>
                     <div style="font-family: monospace; font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">
-                        Locatie: C:\Users\Admin\Backups\Pi-Boekhouding
+                        Locatie: C:\\Users\\Admin\\Backups\\Pi-Boekhouding
                     </div>
                 </div>
             </div>
@@ -833,6 +838,54 @@ window.openProjectDetails = (id) => {
             saveBtn.disabled = false;
             saveBtn.innerHTML = origText;
         }
+    });
+
+    document.getElementById('btn-modal-2027-proposal')?.addEventListener('click', () => {
+        open2027SubscriptionModal({
+            project: p,
+            onSavePlan: async (proj, plan) => {
+                const updatedFields = {
+                    subscriptionPlan2027Id: plan.id,
+                    subscriptionPlan2027Name: plan.name,
+                    subscriptionPlan2027Price: plan.price,
+                    subscriptionPlan2027Status: 'voorgesteld',
+                    subscriptionPlan2027ProposedAt: new Date().toISOString()
+                };
+                if (db && id && String(id).length > 5) {
+                    await updateDoc(doc(db, "projects", id), updatedFields);
+                }
+                Object.assign(p, updatedFields);
+                await logAuditEvent('2027_plan_proposed', `2027 Abonnementsplan voorgesteld: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
+            },
+            onSendPortalTicket: async (proj, plan, messageText) => {
+                const updatedFields = {
+                    subscriptionPlan2027Id: plan.id,
+                    subscriptionPlan2027Name: plan.name,
+                    subscriptionPlan2027Price: plan.price,
+                    subscriptionPlan2027Status: 'voorgesteld',
+                    subscriptionPlan2027ProposedAt: new Date().toISOString()
+                };
+                const msgObj = {
+                    id: 'msg_2027_' + Date.now(),
+                    sender: 'admin',
+                    text: messageText,
+                    createdAt: new Date().toISOString(),
+                    status: 'open',
+                    readByClient: false
+                };
+                if (db && id && String(id).length > 5) {
+                    const currentMsgs = p.messages || [];
+                    await updateDoc(doc(db, "projects", id), {
+                        ...updatedFields,
+                        messages: [...currentMsgs, msgObj]
+                    });
+                }
+                if (!p.messages) p.messages = [];
+                p.messages.push(msgObj);
+                Object.assign(p, updatedFields);
+                await logAuditEvent('2027_plan_ticket_sent', `2027 Abonnementsvoorstel als ticket in klantenportaal geplaatst voor ${proj.client || 'klant'}.`);
+            }
+        });
     });
 
     document.getElementById('btn-modal-copy-facturen')?.addEventListener('click', () => {
