@@ -18,9 +18,12 @@ export function generate2027ProposalText(project, planId) {
     
     // Determine historical pricing context if available
     const oldPrice = p.subscriptionPrice || (info?.currentPlanId === 'legacy_22' ? '22,00' : null);
-    const oldPriceNote = oldPrice && oldPrice !== targetPlan.price
-        ? ` (ter vervanging van het eerdere/historische tarief van € ${oldPrice}/jr)`
-        : '';
+    let pricingDetails = `• Jaartarief: € ${targetPlan.price} excl. BTW per jaar`;
+    if (planId === 'transition_2027_loyalty') {
+        pricingDetails = `• Speciaal Trouwe Klant Tarief 2027: € 95,00 excl. BTW voor 2027 (in plaats van € 150,-)\n• Vanaf 2028: regulier € 150,00 excl. BTW per jaar`;
+    } else if (oldPrice && oldPrice !== targetPlan.price) {
+        pricingDetails += ` (ter vervanging van het eerdere/historische tarief van € ${oldPrice}/jr)`;
+    }
 
     const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
 
@@ -33,7 +36,7 @@ Om ervoor te zorgen dat jouw website ook in 2027 gegarandeerd snel, veilig en co
 Voor ${domain} hebben we het volgende serviceplan klaargezet:
 
 👉 Serviceplan 2027: ${targetPlan.name}
-• Jaartarief: € ${targetPlan.price} excl. BTW per jaar${oldPriceNote}
+${pricingDetails}
 • Facturatieperiode: Jaarlijks per 1 januari (eerste periode: 2027)
 • Inbegrepen specificaties:
   - High-speed NVMe Cloud Hosting & Dataverkeer
@@ -42,6 +45,7 @@ Voor ${domain} hebben we het volgende serviceplan klaargezet:
   - Tot 5 Professionele Zakelijke Mailboxen (DKIM/SPF beveiligd)
   - 24/7 Automatische Uptime Monitoring & DDoS mitigatie
   - Dagelijkse Cloud Back-ups met herstelservice
+  - Inclusief 30 minuten per jaar gratis service voor kleine content- & tekstwijzigingen (bijv. openingstijden, foto's of contactgegevens bijwerken)
   - Directe telefonische & e-mail ondersteuning bij vragen
 
 Je kunt jouw actuele websitegegevens en dit 2027 abonnement direct inzien en met 1 klik digitaal bevestigen via jouw persoonlijke klantenportaal:
@@ -67,6 +71,11 @@ export function generate2027WhatsAppText(project, planId) {
     const targetPlan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
     const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
 
+    let pricingLine = `Tarief: € ${targetPlan.price},- excl. BTW per jaar (facturatie jan 2027)`;
+    if (planId === 'transition_2027_loyalty') {
+        pricingLine = `*Speciaal Trouwe Klant Tarief 2027: € 95,-* excl. BTW (ipv € 150,-! Vanaf 2028 pas € 150,-/jr)`;
+    }
+
     return `Hoi ${clientName},
 
 Even een update m.b.t. ${domain} voor 2027! 🚀
@@ -74,8 +83,8 @@ Even een update m.b.t. ${domain} voor 2027! 🚀
 Om je website snel, veilig en 24/7 gemonitord te houden, hebben we het hosting- en serviceplan voor komend jaar klaargezet:
 
 *${targetPlan.name}*
-Tarief: € ${targetPlan.price},- excl. BTW per jaar (facturatie jan 2027)
-Inclusief: NVMe hosting, domein & DNS, SSL, zakelijke mail, dagelijkse back-ups & continue uptime monitoring.
+${pricingLine}
+Inclusief: NVMe hosting, domein & DNS, SSL, zakelijke mail, dagelijkse back-ups, 24/7 uptime monitoring én 30 min. gratis contentwijzigingen per jaar!
 
 Je kunt het plan direct bekijken en bevestigen in je klantenportaal:
 ${portalUrl}
@@ -150,6 +159,7 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
                         </label>
                         <select id="modal-2027-plan-select" class="admin-input" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; cursor: pointer; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px;">
                             <option value="managed_nl" ${selectedPlanId === 'managed_nl' ? 'selected' : ''}>🌐 Managed Cloud Hosting All-in (.nl) (€ 150,-/jr)</option>
+                            <option value="transition_2027_loyalty" ${selectedPlanId === 'transition_2027_loyalty' ? 'selected' : ''}>⭐ Trouwe Klant Overgangstarief 2027 (€ 95,-/jr)</option>
                             <option value="managed_com" ${selectedPlanId === 'managed_com' ? 'selected' : ''}>🌐 Managed Cloud Hosting All-in (.com) (€ 165,-/jr)</option>
                             <option value="managed_multi" ${selectedPlanId === 'managed_multi' ? 'selected' : ''}>🌐 Managed Multi-Domein .nl + .com (€ 175,-/jr)</option>
                             <option value="managed_custom" ${selectedPlanId === 'managed_custom' ? 'selected' : ''}>🌐 Managed Cloud Hosting Custom TLD (€ 175,-/jr)</option>

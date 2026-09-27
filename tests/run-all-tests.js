@@ -285,11 +285,24 @@ test("generate2027ProposalText and WhatsApp generator produce accurate client co
     assert.ok(emailBody.includes("Beste Angela Stenekes"), "Must address client personally");
     assert.ok(emailBody.includes("angelastenekes.nl"), "Must reference client domain");
     assert.ok(emailBody.includes("€ 150,00 excl. BTW"), "Must state correct plan price");
+    assert.ok(emailBody.includes("30 minuten per jaar"), "Must include 30 minutes content update perk");
     assert.ok(emailBody.includes("https://creationaltfix.nl/crm/status/?id=proj_angela"), "Must include direct status portal link");
+
+    // Loyalty plan test
+    const loyaltyBody = generate2027ProposalText(mockProj, "transition_2027_loyalty");
+    assert.ok(loyaltyBody.includes("€ 95,00"), "Loyalty plan must show € 95,00 for 2027");
+    assert.ok(loyaltyBody.includes("€ 150,00"), "Loyalty plan must state standard transition to € 150,00 in 2028");
 
     const waBody = generate2027WhatsAppText(mockProj, "allin_apk");
     assert.ok(waBody.includes("Hoi Angela Stenekes"), "WhatsApp message must address client");
     assert.ok(waBody.includes("€ 500,00,- excl. BTW"), "WhatsApp message must state all-in APK price");
+});
+
+test("SUBSCRIPTION_PLANS contains transition_2027_loyalty with correct rate and perks", () => {
+    assert.ok(SUBSCRIPTION_PLANS["transition_2027_loyalty"], "transition_2027_loyalty must exist in SUBSCRIPTION_PLANS");
+    assert.equal(SUBSCRIPTION_PLANS["transition_2027_loyalty"].price, "95,00");
+    assert.ok(SUBSCRIPTION_PLANS["transition_2027_loyalty"].desc.includes("30 min. service"));
+    assert.ok(SUBSCRIPTION_PLANS["managed_nl"].desc.includes("30 min. service"));
 });
 
 // ========================================================
@@ -355,6 +368,7 @@ const filesToCheck = [
     "crm/admin/js/project.js",
     "crm/admin/js/modules/admin-tables.js",
     "crm/admin/js/modules/admin-stats.js",
+    "crm/admin/js/modules/admin-subscriptions.js",
     "crm/admin/js/modules/bookkeeping-data.js",
     "crm/admin/js/modules/subscription-2027.js",
     "crm/status/js/status.js",

@@ -45,6 +45,7 @@ import {
     getConsecutiveFailures
 } from "../../js/uptime-monitor.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
+import { initSubscriptionsTab } from "./modules/admin-subscriptions.js";
 
 
 
@@ -419,6 +420,55 @@ function setupNavigation() {
             if (targetView === 'monitoring') {
                 initMonitoringTab();
             }
+            if (targetView === 'subscriptions') {
+                initSubscriptionsTab(cachedProjects, {
+                    onRefresh: () => loadProjects(),
+                    onSavePlan: async (proj, plan) => {
+                        const updatedFields = {
+                            subscriptionPlan2027Id: plan.id,
+                            subscriptionPlan2027Name: plan.name,
+                            subscriptionPlan2027Price: plan.price,
+                            subscriptionPlan2027Status: 'voorgesteld',
+                            subscriptionPlan2027ProposedAt: new Date().toISOString()
+                        };
+                        if (db && proj.id && String(proj.id).length > 5) {
+                            await updateDoc(doc(db, "projects", proj.id), updatedFields);
+                        }
+                        Object.assign(proj, updatedFields);
+                        initSubscriptionsTab(cachedProjects);
+                        await logAuditEvent('2027_plan_proposed', `2027 Abonnementsplan voorgesteld: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
+                    },
+                    onSendPortalTicket: async (proj, plan, messageText) => {
+                        const updatedFields = {
+                            subscriptionPlan2027Id: plan.id,
+                            subscriptionPlan2027Name: plan.name,
+                            subscriptionPlan2027Price: plan.price,
+                            subscriptionPlan2027Status: 'voorgesteld',
+                            subscriptionPlan2027ProposedAt: new Date().toISOString()
+                        };
+                        const msgObj = {
+                            id: 'msg_2027_' + Date.now(),
+                            sender: 'admin',
+                            text: messageText,
+                            createdAt: new Date().toISOString(),
+                            status: 'open',
+                            readByClient: false
+                        };
+                        if (db && proj.id && String(proj.id).length > 5) {
+                            const currentMsgs = proj.messages || [];
+                            await updateDoc(doc(db, "projects", proj.id), {
+                                ...updatedFields,
+                                messages: [...currentMsgs, msgObj]
+                            });
+                        }
+                        if (!proj.messages) proj.messages = [];
+                        proj.messages.push(msgObj);
+                        Object.assign(proj, updatedFields);
+                        initSubscriptionsTab(cachedProjects);
+                        await logAuditEvent('2027_plan_ticket_sent', `2027 Abonnementsvoorstel als ticket in klantenportaal geplaatst voor ${proj.client || 'klant'}.`);
+                    }
+                });
+            }
 
         });
     });
@@ -719,6 +769,7 @@ window.openProjectDetails = (id) => {
                     <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
                         <select id="modal-select-subscription" class="admin-input" style="font-size: 0.78rem; padding: 6px 8px; margin: 0; flex: 1; cursor: pointer;">
                             <option value="managed_nl" ${currentPlanId === 'managed_nl' ? 'selected' : ''}>🌐 Managed Cloud Hosting All-in (€ 150,-/jr)</option>
+                            <option value="transition_2027_loyalty" ${currentPlanId === 'transition_2027_loyalty' ? 'selected' : ''}>⭐ Trouwe Klant Overgangstarief 2027 (€ 95,-/jr)</option>
                             <option value="managed_multi" ${currentPlanId === 'managed_multi' ? 'selected' : ''}>🌐 Managed Multi-Domein .nl + .com (€ 175,-/jr)</option>
                             <option value="security_apk" ${currentPlanId === 'security_apk' ? 'selected' : ''}>🛡️ Jaarlijkse Website APK (€ 350,-/jr)</option>
                             <option value="allin_apk" ${currentPlanId === 'allin_apk' ? 'selected' : ''}>🚀 Managed Hosting All-in + APK (€ 500,-/jr)</option>

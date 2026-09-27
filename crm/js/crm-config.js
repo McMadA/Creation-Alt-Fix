@@ -66,7 +66,15 @@ export const SUBSCRIPTION_PLANS = {
         price: "150,00", 
         cycle: "jaar", 
         badge: "Aanbevolen", 
-        desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups" 
+        desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups + 30 min. service per jaar" 
+    },
+    "transition_2027_loyalty": { 
+        id: "transition_2027_loyalty", 
+        name: "Trouwe Klant Overgangstarief 2027", 
+        price: "95,00", 
+        cycle: "jaar", 
+        badge: "Trouwe Klant", 
+        desc: "Speciaal overgangstarief voor 2027 (€ 95,-), per 2028 standaard € 150,-/jr. Incl. NVMe hosting, SSL, 5 mailboxen & 30 min. service" 
     },
     "managed_com": { 
         id: "managed_com", 
@@ -74,7 +82,7 @@ export const SUBSCRIPTION_PLANS = {
         price: "165,00", 
         cycle: "jaar", 
         badge: ".com Domein", 
-        desc: "NVMe hosting, 1x .com domein, SSL, 5 mailboxen, dagelijkse backups" 
+        desc: "NVMe hosting, 1x .com domein, SSL, 5 mailboxen, dagelijkse backups + 30 min. service per jaar" 
     },
     "managed_multi": { 
         id: "managed_multi", 
@@ -82,7 +90,7 @@ export const SUBSCRIPTION_PLANS = {
         price: "175,00", 
         cycle: "jaar", 
         badge: "Multi-domein", 
-        desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen" 
+        desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen, dagelijkse backups + 30 min. service per jaar" 
     },
     "managed_custom": { 
         id: "managed_custom", 
@@ -90,7 +98,7 @@ export const SUBSCRIPTION_PLANS = {
         price: "175,00", 
         cycle: "jaar", 
         badge: "Custom TLD", 
-        desc: "NVMe hosting, internationale TLD registratie (.eu, .de, .org), SSL, 5 mailboxen" 
+        desc: "NVMe hosting, internationale TLD registratie (.eu, .de, .org), SSL, 5 mailboxen + 30 min. service per jaar" 
     },
     "security_apk": { 
         id: "security_apk", 
@@ -98,7 +106,7 @@ export const SUBSCRIPTION_PLANS = {
         price: "350,00", 
         cycle: "jaar", 
         badge: "Onderhoud", 
-        desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart" 
+        desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart voor aanpassingen" 
     },
     "allin_apk": { 
         id: "allin_apk", 
@@ -114,7 +122,7 @@ export const SUBSCRIPTION_PLANS = {
         price: "22,00", 
         cycle: "jaar", 
         badge: "Oud Tarief", 
-        desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 2027)" 
+        desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 31-12-2026)" 
     },
     "none": { 
         id: "none", 
