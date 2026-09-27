@@ -15,8 +15,8 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         kvk: "59520353",
         currentPlanName: "Historisch Budget: € 22,00 / jr",
         currentPlanId: "legacy_22",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Vaste tariefstructuur 2027: € 150,-/jr incl. NVMe hosting, SSL, SPF/DKIM en dagelijkse backups (TASK-817).",
+        recommendedPlanId: "transition_2027_loyalty",
+        recommendedReason: "Trouwe Klant Overgangstarief 2027: € 95,- voor 2027 (per 2028 standaard € 150,-/jr). Incl. NVMe hosting, SSL, 5 mailboxen & 30 min. service.",
         latestInvoice: {
             number: "2026-004",
             date: "27-05-2026",
@@ -34,8 +34,8 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         kvk: "89192036",
         currentPlanName: "Historisch Budget: € 22,00 / jr",
         currentPlanId: "legacy_22",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Vaste tariefstructuur: € 150,-/jr incl. NVMe hosting, SSL, zakelijke mailbox en monitoring.",
+        recommendedPlanId: "transition_2027_loyalty",
+        recommendedReason: "Trouwe Klant Overgangstarief 2027: € 95,- voor 2027 (per 2028 standaard € 150,-/jr). Incl. NVMe hosting, SSL, zakelijke mailbox & 30 min. service.",
         latestInvoice: {
             number: "2026-003",
             date: "27-05-2026",
@@ -53,8 +53,8 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         kvk: "02075792",
         currentPlanName: "Historisch Budget: € 22,00 / jr",
         currentPlanId: "legacy_22",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Vaste tariefstructuur: € 150,-/jr incl. NVMe hosting, SSL en storingsopvolging.",
+        recommendedPlanId: "transition_2027_loyalty",
+        recommendedReason: "Trouwe Klant Overgangstarief 2027: € 95,- voor 2027 (per 2028 standaard € 150,-/jr). Incl. NVMe hosting, SSL, storingsopvolging & 30 min. service.",
         latestInvoice: {
             number: "2026-005",
             date: "03-06-2026",
@@ -72,8 +72,8 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         kvk: "01145302",
         currentPlanName: "Hosting & Multi-Domein: € 95,00 / jr",
         currentPlanId: "legacy_22",
-        recommendedPlanId: "allin_apk",
-        recommendedReason: "Multi-domein (.nl + .com) webshop beheer + jaarlijkse security APK & supporturen (€ 500,-/jr).",
+        recommendedPlanId: "managed_nl",
+        recommendedReason: "Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr). NVMe hosting, SSL, zakelijke mail & 30 min. service per jaar.",
         latestInvoice: {
             number: "2026-008",
             date: "22-07-2026",
@@ -94,7 +94,7 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         currentPlanName: "Nieuwe Website Oplevering (Urenbasis)",
         currentPlanId: "none",
         recommendedPlanId: "managed_nl",
-        recommendedReason: "Nieuwe website livegang: Managed Cloud Hosting & .nl domein All-in (€ 150,-/jr).",
+        recommendedReason: "Nieuwe website livegang: Managed Cloud Hosting & .nl domein All-in (€ 150,-/jr). Incl. 30 min. service per jaar.",
         latestInvoice: {
             number: "2026-009",
             date: "22-07-2026",
@@ -109,10 +109,10 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         clientName: "Livian Design (Lianne Steinfelder)",
         relatieId: 1,
         kvk: "98849794",
-        currentPlanName: "Eenmalig Maatwerk (€ 50,-)",
+        currentPlanName: "Eenmalig Maatwerk (Rustend)",
         currentPlanId: "none",
         recommendedPlanId: "none",
-        recommendedReason: "Eenmalig software realisatie project zonder doorlopende hosting.",
+        recommendedReason: "Eenmalig project (software realisatie). Geen potentie / geen doorlopend abonnement vereist, tenzij ze zelf weer contact opneemt.",
         latestInvoice: {
             number: "2026-001",
             date: "24-03-2026",
@@ -128,15 +128,15 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         currentPlanName: "In Ontwikkeling (Fase 4)",
         currentPlanId: "managed_nl",
         recommendedPlanId: "managed_nl",
-        recommendedReason: "Bedrijfswebsite: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr) bij oplevering.",
+        recommendedReason: "Bedrijfswebsite: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr) bij oplevering. Incl. NVMe hosting, SSL & 30 min. service.",
         latestInvoice: null
     },
     "arnolddesign.nl": {
         clientName: "Arnold Design",
         currentPlanName: "Design & AI Scrape Shield (Fase 3)",
-        currentPlanId: "managed_nl",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Atelier Portfolio & AI Shield: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        currentPlanId: "transition_2027_loyalty",
+        recommendedPlanId: "transition_2027_loyalty",
+        recommendedReason: "Trouwe Klant Overgangstarief 2027: € 95,- voor 2027 (per 2028 standaard € 150,-/jr). Incl. atelier portfolio hosting, AI shield & 30 min. service.",
         latestInvoice: null
     },
     "vanderplaats.nl": {
@@ -149,18 +149,18 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
     },
     "capybaraculture.com": {
         clientName: "Capybara Culture",
-        currentPlanName: "Community Platform & Merchandise",
-        currentPlanId: "managed_nl",
-        recommendedPlanId: "managed_multi",
-        recommendedReason: "Internationaal platform: Managed Cloud Hosting & Domeinbeheer (€ 250,-/jr).",
+        currentPlanName: "Eigen Project Allard (Vimexx intern)",
+        currentPlanId: "internal_project",
+        recommendedPlanId: "none",
+        recommendedReason: "Eigen intern project van Allard: geen CRM hostingabonnement vereist. Directe factuur van Vimexx registrar wordt intern direct doorgestuurd/doorbelast naar dit project.",
         latestInvoice: null
     },
     "naaiatelier-willa.nl": {
         clientName: "Naaiatelier Willa",
         currentPlanName: "MKB Portfolio & Atelier",
-        currentPlanId: "managed_nl",
-        recommendedPlanId: "managed_nl",
-        recommendedReason: "Atelier website: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        currentPlanId: "transition_2027_loyalty",
+        recommendedPlanId: "transition_2027_loyalty",
+        recommendedReason: "Trouwe Klant Overgangstarief 2027: € 95,- voor 2027 (per 2028 standaard € 150,-/jr). Incl. atelier website hosting & 30 min. service.",
         latestInvoice: null
     },
     "pomppop.nl": {
@@ -173,10 +173,10 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
     },
     "qolipa.nl": {
         clientName: "Qolipa Webshop & Brand",
-        currentPlanName: "E-Commerce & Multi-Domein",
-        currentPlanId: "managed_multi",
-        recommendedPlanId: "allin_apk",
-        recommendedReason: "Webshop multi-domein (.nl + .com) + jaarlijkse security APK & updates (€ 500,-/jr).",
+        currentPlanName: "Eigen Project Allard (Vimexx intern)",
+        currentPlanId: "internal_project",
+        recommendedPlanId: "none",
+        recommendedReason: "Eigen intern project van Allard: geen CRM hostingabonnement vereist. Directe factuur van Vimexx registrar wordt intern direct doorgestuurd/doorbelast naar dit project.",
         latestInvoice: null
     },
     "justin.nl": {

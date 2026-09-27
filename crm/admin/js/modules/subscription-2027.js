@@ -166,7 +166,8 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
                             <option value="security_apk" ${selectedPlanId === 'security_apk' ? 'selected' : ''}>🛡️ Jaarlijkse Website & Security APK (€ 350,-/jr)</option>
                             <option value="allin_apk" ${selectedPlanId === 'allin_apk' ? 'selected' : ''}>🚀 Managed Hosting All-in + Security APK Totaal (€ 500,-/jr)</option>
                             <option value="legacy_22" ${selectedPlanId === 'legacy_22' ? 'selected' : ''}>⏳ Historisch Tarief (€ 22,-/jr) [Niet aanbevolen]</option>
-                            <option value="none" ${selectedPlanId === 'none' ? 'selected' : ''}>❌ Geen Hosting (€ 0,-)</option>
+                            <option value="internal_project" ${selectedPlanId === 'internal_project' ? 'selected' : ''}>📁 Eigen Intern Project Allard (Vimexx intern)</option>
+                            <option value="none" ${selectedPlanId === 'none' ? 'selected' : ''}>❌ Geen Hosting / Rustend (€ 0,-)</option>
                         </select>
                     </div>
 

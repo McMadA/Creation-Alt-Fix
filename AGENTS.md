@@ -2,6 +2,26 @@
 
 ## Recent Insights
 
+- **[2026-09-27] 2027 Klanten Abonnementsclassificatie & Interne Factuurafhandeling ([crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js), [crm/admin/js/modules/admin-subscriptions.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-subscriptions.js), [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js), [crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html))**:
+  - **Trouwe Klant Overgangstarief 2027 (€ 95,- voor 2027 → € 150,- in 2028)**:
+    - *Stenekes Riool & Grondwerk* (`stenekesrioolspecialist.nl`)
+    - *Arnold Design* (`arnolddesign.nl`)
+    - *De Knipperij / Angela Stenekes* (`angelastenekes.nl`)
+    - *Naaiatelier Willa* (`naaiatelier-willa.nl`)
+    - *Scholte Elektrotechniek* (`scholte-elektrotechniek.nl`)
+  - **Managed Cloud Hosting All-in (.nl) (€ 150,-/jr)**:
+    - *F-Truck Store* (`ftruckstore.nl`): NVMe cloud, zakelijke mail, SSL & 30 min. service.
+    - *BakkertjeSieg* (`bakkertjesieg.nl`): Livegang cloud hosting, SSL & 30 min. service.
+    - *Besseling Installatietechniek* (`besselinginstallatietechniek.nl` / subpad): Bedrijfswebsite cloud hosting & 30 min. service.
+  - **Eenmalig / Rustend Project (€ 0,-)**:
+    - *Livian Design* (`liviandesign.nl`): Was eenmalig maatwerk software project. Geen toekomstpotentie tenzij klant zelf contact opneemt.
+  - **Eigen Projecten Allard (Vimexx intern)**:
+    - *Qolipa Webshop & Brand* (`qolipa.nl`) & *Capybara Culture* (`capybaraculture.com`): Geen CRM abonnement. Directe registratie- en hostingfactuur van Vimexx wordt intern rechtstreeks doorbelast/doorgestuurd naar dat project.
+  - **Admin Subscriptions Tab & KPI Updates**:
+    - Interne projecten worden gemarkeerd als `Intern Beheer` met directe factuur notitie.
+    - Rustende/eenmalige projecten worden gemarkeerd als `Rustend` zonder foutieve herinnerings- of migratiewarschuwingen.
+    - Beleidsmemo-banner toegevoegd direct boven de migratietabel. Unit tests geslaagd (37/37).
+
 - **[2026-09-27] 2027 Abonnementsmatrix, 30 Min. Service & Admin Abonnementen Tab ([crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html), [crm/admin/js/modules/admin-subscriptions.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-subscriptions.js), [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js), [crm/admin/js/modules/subscription-2027.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/subscription-2027.js))**:
   - **30 Minuten Service Inbegrepen**: Alle basis Managed Cloud pakketten (€ 150,-/jr en hoger) zijn officieel uitgebreid met 30 minuten per jaar aan gratis kleine content-/tekstwijzigingen (openingstijden, foto's, adresgegevens). Dit haalt elke weerstand weg bij klanten om over te stappen van het verouderde € 22,- tarief naar € 150,-.
   - **Trouwe Klant Overgangstarief 2027 (`transition_2027_loyalty`)**: Speciaal voor historische klanten (zoals Angela, Scholte en Stenekes) is een overgangsplan toegevoegd: € 95,- excl. BTW voor heel 2027, waarna vanaf 2028 het standaardtarief van € 150,-/jr geldt.

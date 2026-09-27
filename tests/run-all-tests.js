@@ -237,11 +237,27 @@ console.log("\n📌 SUITE 4: Bookkeeping & Plan Recommendations");
 const { getPiBoekhoudingInfo } = await import("../crm/admin/js/modules/bookkeeping-data.js");
 
 test("getPiBoekhoudingInfo identifies recorded clients and generates dynamic advice", () => {
-    // Known client
+    // Known clients with specific plans
     const angelaInfo = getPiBoekhoudingInfo({ domainName: "angelastenekes.nl", client: "Angela" });
     assert.ok(angelaInfo !== null);
     assert.equal(angelaInfo.kvk, "59520353");
-    assert.equal(angelaInfo.recommendedPlanId, "managed_nl");
+    assert.equal(angelaInfo.recommendedPlanId, "transition_2027_loyalty", "Angela must be on Trouwe Klant plan");
+
+    const besselingInfo = getPiBoekhoudingInfo({ domainName: "creationaltfix.nl/besselinginstallatietechniek/", client: "Besseling" });
+    assert.equal(besselingInfo.recommendedPlanId, "managed_nl", "Besseling must be on Managed Cloud Hosting All-in (.nl)");
+
+    const ftruckInfo = getPiBoekhoudingInfo({ domainName: "ftruckstore.nl", client: "F-Truck Store" });
+    assert.equal(ftruckInfo.recommendedPlanId, "managed_nl", "F-Truck Store must be on Managed Cloud Hosting All-in (.nl)");
+
+    const livianInfo = getPiBoekhoudingInfo({ domainName: "liviandesign.nl", client: "Livian Design" });
+    assert.equal(livianInfo.recommendedPlanId, "none", "Livian Design is one-off / resting");
+
+    const qolipaInfo = getPiBoekhoudingInfo({ domainName: "qolipa.nl", client: "Qolipa" });
+    assert.equal(qolipaInfo.currentPlanId, "internal_project", "Qolipa is Allard internal project with Vimexx passthrough");
+    assert.equal(qolipaInfo.recommendedPlanId, "none");
+
+    const capyInfo = getPiBoekhoudingInfo({ domainName: "capybaraculture.com", client: "Capybara Culture" });
+    assert.equal(capyInfo.currentPlanId, "internal_project", "Capybara Culture is Allard internal project with Vimexx passthrough");
 
     // Dynamic advice for unknown .nl domain
     const dynNl = getPiBoekhoudingInfo({ domainName: "nieuweklant.nl", client: "Nieuwe Klant" });

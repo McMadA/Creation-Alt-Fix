@@ -124,13 +124,21 @@ export const SUBSCRIPTION_PLANS = {
         badge: "Oud Tarief", 
         desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 31-12-2026)" 
     },
+    "internal_project": { 
+        id: "internal_project", 
+        name: "Eigen Project (Vimexx intern)", 
+        price: "0,00", 
+        cycle: "intern", 
+        badge: "Intern", 
+        desc: "Eigen project van Allard. Factuur van Vimexx registrar wordt intern direct doorgestuurd/doorbelast." 
+    },
     "none": { 
         id: "none", 
         name: "Geen / Eenmalig Project (€ 0,-)", 
         price: "0,00", 
         cycle: "n.v.t.", 
-        badge: "Geen", 
-        desc: "Geen doorlopende hosting of onderhoudskosten" 
+        badge: "Eenmalig", 
+        desc: "Eenmalig project zonder doorlopende hosting of service (rustend, tenzij klant contact opneemt)" 
     }
 };
 

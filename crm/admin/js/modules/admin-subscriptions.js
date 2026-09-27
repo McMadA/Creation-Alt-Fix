@@ -55,7 +55,9 @@ export function calculateSubscriptionKPIs(projects = []) {
     projects.forEach(p => {
         const info = getPiBoekhoudingInfo(p);
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
-        const isLegacy = planId === 'legacy_22' || info?.currentPlanId === 'legacy_22';
+        const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
+        const isOneOff = (planId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
+        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
         const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
         const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
 
@@ -69,12 +71,14 @@ export function calculateSubscriptionKPIs(projects = []) {
             legacyCount++;
         }
 
-        // Calculate expected 2027 revenue
-        const targetPlanId = p.subscriptionPlan2027Id || (isLegacy ? 'transition_2027_loyalty' : planId);
-        const planObj = SUBSCRIPTION_PLANS[targetPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
-        const priceNum = parseFloat((planObj.price || '0').replace(',', '.'));
-        if (!isNaN(priceNum) && planObj.id !== 'none') {
-            totalRevenue += priceNum;
+        // Calculate expected 2027 revenue (exclude internal and one-off projects)
+        if (!isInternal && !isOneOff) {
+            const targetPlanId = p.subscriptionPlan2027Id || (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || planId));
+            const planObj = SUBSCRIPTION_PLANS[targetPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+            const priceNum = parseFloat((planObj.price || '0').replace(',', '.'));
+            if (!isNaN(priceNum) && planObj.id !== 'none' && planObj.id !== 'internal_project') {
+                totalRevenue += priceNum;
+            }
         }
     });
 
@@ -106,7 +110,9 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
     const filtered = projects.filter(p => {
         const info = getPiBoekhoudingInfo(p);
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
-        const isLegacy = planId === 'legacy_22' || info?.currentPlanId === 'legacy_22';
+        const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
+        const isOneOff = (planId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
+        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
         const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
         const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
 
@@ -128,26 +134,60 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         const safeDomain = rawDomain ? escapeHtml(rawDomain) : '<span style="color:#64748b; font-style:italic;">Geen domein</span>';
         const domainHref = rawDomain ? (rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`) : '#';
 
-        // Current Plan
+        // Project category
         const currentPlanId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
         const currentPlan = SUBSCRIPTION_PLANS[currentPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
-        const isLegacy = currentPlanId === 'legacy_22' || info?.currentPlanId === 'legacy_22';
+        const isInternal = currentPlanId === 'internal_project' || info?.currentPlanId === 'internal_project';
+        const isOneOff = (currentPlanId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
+        const isLegacy = (currentPlanId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
 
+        // Current Plan Badge
         let currentPlanBadge = `<span style="font-size: 0.78rem; color: #38bdf8; font-weight: 600;">${escapeHtml(p.subscriptionPlanName || info?.currentPlanName || currentPlan.name)} (€ ${escapeHtml(p.subscriptionPrice || currentPlan.price)}/jr)</span>`;
-        if (isLegacy) {
+        if (isInternal) {
+            currentPlanBadge = `<span class="badge" style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid #64748b; font-size: 0.75rem;"><i class="fas fa-user-shield"></i> Eigen Project</span>`;
+        } else if (isOneOff) {
+            currentPlanBadge = `<span class="badge" style="background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border: 1px solid #475569; font-size: 0.75rem;">Eenmalig</span>`;
+        } else if (isLegacy) {
             currentPlanBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; font-size: 0.75rem;">⏳ Historisch (€ 22,-/jr)</span>`;
         }
 
         // 2027 Proposed Plan
-        const recPlanId = p.subscriptionPlan2027Id || (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || 'managed_nl'));
+        const recPlanId = p.subscriptionPlan2027Id || (isInternal ? 'internal_project' : (isOneOff ? 'none' : (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || 'managed_nl'))));
         const recPlan = SUBSCRIPTION_PLANS[recPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
+
+        let planDetailsHtml = '';
+        if (isInternal) {
+            planDetailsHtml = `
+                <strong style="color: #cbd5e1; font-size: 0.85rem;"><i class="fas fa-folder-open text-accent"></i> Eigen Project Allard</strong>
+                <div style="font-size: 0.74rem; color: #94a3b8; line-height: 1.3;">Directe Vimexx registrar factuur doorgestuurd</div>
+            `;
+        } else if (isOneOff) {
+            planDetailsHtml = `
+                <strong style="color: #94a3b8; font-size: 0.85rem;">Geen actief abonnement</strong>
+                <div style="font-size: 0.74rem; color: #64748b; line-height: 1.3;">Rustend (tenzij klant contact opneemt)</div>
+            `;
+        } else if (recPlanId === 'transition_2027_loyalty') {
+            planDetailsHtml = `
+                <strong style="color: #fde047; font-size: 0.85rem;">⭐ Trouwe Klant Overgangstarief</strong>
+                <div style="font-size: 0.75rem; color: #34d399; font-weight: 700;">€ 95,- <span style="font-weight: 400; color: #94a3b8;">/ jr 2027 (→ € 150,- in '28)</span></div>
+            `;
+        } else {
+            planDetailsHtml = `
+                <strong style="color: #e2e8f0; font-size: 0.85rem;">${escapeHtml(recPlan.name)}</strong>
+                <div style="font-size: 0.75rem; color: #34d399; font-weight: 700;">€ ${escapeHtml(recPlan.price)} / jr excl. BTW</div>
+            `;
+        }
 
         // 2027 Status
         const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
         const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
         let statusHtml = '';
 
-        if (isConfirmed) {
+        if (isInternal) {
+            statusHtml = `<span class="badge" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #64748b; font-size: 0.75rem;"><i class="fas fa-check"></i> Intern Beheer</span>`;
+        } else if (isOneOff) {
+            statusHtml = `<span class="badge" style="background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid #475569; font-size: 0.75rem;">Rustend</span>`;
+        } else if (isConfirmed) {
             statusHtml = `<span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Bevestigd</span>`;
         } else if (isProposed) {
             statusHtml = `<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border: 1px solid #818cf8; font-size: 0.75rem;"><i class="fas fa-paper-plane"></i> Voorstel Verzonden</span>`;
@@ -157,24 +197,34 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
             statusHtml = `<span class="badge badge-secondary" style="font-size: 0.75rem;">Concept</span>`;
         }
 
+        // Actions
+        let actionsHtml = '';
+        if (isInternal) {
+            actionsHtml = `
+                <span style="font-size: 0.75rem; color: #64748b; margin-right: 6px; font-style: italic;">Intern project</span>
+                <a href="project.html?id=${escapeHtml(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none;" title="Open Werkplek">
+                    <i class="fas fa-desktop"></i>
+                </a>
+            `;
+        } else {
+            actionsHtml = `
+                <button type="button" class="btn btn-sm btn-action-proposal" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Open communicatie modal">
+                    <i class="fas fa-paper-plane"></i> Bericht
+                </button>
+                <a href="project.html?id=${escapeHtml(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none; margin-left: 4px;" title="Open Werkplek">
+                    <i class="fas fa-desktop"></i>
+                </a>
+            `;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
             <td>${rawDomain ? `<a href="${domainHref}" target="_blank" rel="noopener" style="color: #38bdf8; text-decoration: none;"><i class="fas fa-globe"></i> ${safeDomain}</a>` : safeDomain}</td>
             <td>${currentPlanBadge}</td>
-            <td>
-                <strong style="color: #e2e8f0; font-size: 0.85rem;">${escapeHtml(recPlan.name)}</strong>
-                <div style="font-size: 0.75rem; color: #34d399; font-weight: 700;">€ ${escapeHtml(recPlan.price)} / jr excl. BTW</div>
-            </td>
+            <td>${planDetailsHtml}</td>
             <td>${statusHtml}</td>
-            <td style="white-space: nowrap;">
-                <button type="button" class="btn btn-sm btn-action-proposal" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Open communicatie modal">
-                    <i class="fas fa-paper-plane"></i> Bericht Sturen
-                </button>
-                <a href="project.html?id=${escapeHtml(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none; margin-left: 4px;" title="Open Werkplek">
-                    <i class="fas fa-desktop"></i>
-                </a>
-            </td>
+            <td style="white-space: nowrap;">${actionsHtml}</td>
         `;
 
         tr.querySelector('.btn-action-proposal')?.addEventListener('click', () => {
