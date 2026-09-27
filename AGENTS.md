@@ -2,6 +2,16 @@
 
 ## Recent Insights
 
+- **[2026-09-27] 2027 Abonnementsmatrix, 30 Min. Service & Admin Abonnementen Tab ([crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html), [crm/admin/js/modules/admin-subscriptions.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-subscriptions.js), [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js), [crm/admin/js/modules/subscription-2027.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/subscription-2027.js))**:
+  - **30 Minuten Service Inbegrepen**: Alle basis Managed Cloud pakketten (€ 150,-/jr en hoger) zijn officieel uitgebreid met 30 minuten per jaar aan gratis kleine content-/tekstwijzigingen (openingstijden, foto's, adresgegevens). Dit haalt elke weerstand weg bij klanten om over te stappen van het verouderde € 22,- tarief naar € 150,-.
+  - **Trouwe Klant Overgangstarief 2027 (`transition_2027_loyalty`)**: Speciaal voor historische klanten (zoals Angela, Scholte en Stenekes) is een overgangsplan toegevoegd: € 95,- excl. BTW voor heel 2027, waarna vanaf 2028 het standaardtarief van € 150,-/jr geldt.
+  - **Nieuw Admin Tabje 'Abonnementen 2027'**: Geplaatst in het zijmenu direct onder 'Uptime & Monitoring' met:
+    1. 4 live KPI kaarten (Totale Jaaromzet, Gemigreerde Klanten, Oude Tarieven alert, Bevestigingspercentage).
+    2. Visuele Creation+Alt+Fix 2027 Tarievenmatrix met badges en specificaties.
+    3. Live Klanten Migratietabel met statusfilters (`all`, `legacy`, `voorgesteld`, `bevestigd`) en directe 1-click actieknoppen voor het 2027 voorstelmodal.
+  - **Automated Tests**: 37 tests geslaagd in `tests/run-all-tests.js` (100% pass).
+
+
 - **[2026-09-27] 2027 Abonnementsmigratie & Klantcommunicatie Suite ([crm/admin/js/modules/subscription-2027.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/subscription-2027.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules))**:
   - **Doel**: Alle klanten met een verouderd of eenmalig tarief (zoals `legacy_22` € 22,-/jr) per 1 januari 2027 migreren naar een professioneel Managed Cloud Hosting & Service Abonnement (€ 150,- tot € 500,-/jr).
   - **Communicatiemotor & Modals**:
