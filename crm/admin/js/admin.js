@@ -112,6 +112,23 @@ const API = {
             for (const p of projectsList) {
                 if (p.tasks && Array.isArray(p.tasks)) {
                     p.tasks = p.tasks.filter(t => !t.id?.includes('501') && !t.title?.includes('TASK-501') && !t.title?.includes('Google Ads') && !t.title?.includes('400'));
+                    
+                    // Sanitize Livian Design: strip internal Creation+Alt+Fix tasks from old ID 6 collision
+                    const pName = (p.client || p.companyName || '').toLowerCase();
+                    if (pName.includes('livian')) {
+                        p.tasks = p.tasks.filter(t => {
+                            const tStr = (t.title || t.id || '').toUpperCase();
+                            return !tStr.includes('TASK-805') && !tStr.includes('TASK-807') && !tStr.includes('TASK-811') && !tStr.includes('TASK-812') && !tStr.includes('CREATION') && !tStr.includes('HOOFDWEBSITE') && !tStr.includes('TASK-');
+                        });
+                        if (p.tasks.length === 0 || p.tasks.length < 4) {
+                            p.tasks = [
+                                { id: "livian_t1", title: "Project Intake & Interieurportfolio Scope", status: "done", completed: true, dueDate: "2026-03-24" },
+                                { id: "livian_t2", title: "Design Concept & Sfeerbeelden Akkoord", status: "done", completed: true, dueDate: "2026-03-24" },
+                                { id: "livian_t3", title: "Showcase & Contactformulier Ontwikkeling", status: "done", completed: true, dueDate: "2026-03-24" },
+                                { id: "livian_t4", title: "Oplevering & Livegang creationaltfix.nl/liviandesign/", status: "done", completed: true, dueDate: "2026-03-24" }
+                            ];
+                        }
+                    }
                 }
             }
 
@@ -352,6 +369,9 @@ function filterAndRenderTables() {
     renderTablesData(filtered);
 }
 
+// Veiligheidsschild / backward-compatibility fallback tegen cached aanroepen
+window.renderProjectsTable = () => filterAndRenderTables();
+
 function setupSearchAndFilters() {
     document.getElementById('admin-search-input')?.addEventListener('input', () => filterAndRenderTables());
     document.getElementById('admin-status-filter')?.addEventListener('change', () => filterAndRenderTables());
@@ -413,6 +433,31 @@ function setupNavigation() {
                     area.classList.add('hidden');
                 }
             });
+
+            // Dynamische header-titel per tabblad
+            const VIEW_TITLES = {
+                dashboard: 'Dashboard <span class="accent">Overzicht</span>',
+                leads: 'Leads <span class="accent">&amp; Intake</span>',
+                projects: 'Projecten <span class="accent">&amp; Klantdossiers</span>',
+                kanban: 'Taken <span class="accent">&amp; Kanban Sprintbord</span>',
+                monitoring: 'Uptime <span class="accent">&amp; DNS Monitoring</span>',
+                subscriptions: 'Abonnementen <span class="accent">&amp; 2027 Migratie</span>',
+                settings: 'Systeem <span class="accent">Instellingen</span>'
+            };
+            const headerTitle = document.getElementById('admin-main-header-title');
+            if (headerTitle && VIEW_TITLES[targetView]) {
+                headerTitle.innerHTML = VIEW_TITLES[targetView];
+            }
+
+            // Toolbar synchronisatie: alleen tonen op tabel-overzichten
+            const mainToolbar = document.getElementById('admin-main-toolbar') || document.querySelector('.admin-toolbar');
+            if (mainToolbar) {
+                if (['dashboard', 'leads', 'projects'].includes(targetView)) {
+                    mainToolbar.classList.remove('hidden');
+                } else {
+                    mainToolbar.classList.add('hidden');
+                }
+            }
 
             if (targetView === 'settings') {
                 initSettingsTab();
@@ -1973,9 +2018,15 @@ async function handleExecuteTodoSync() {
     try {
         const summary = await syncTodoToFirestore(cachedProjects, currentParsedTasks, db, updateDoc, setDoc, doc);
         
-        // Re-render Kanban board and stats
+        // Re-render Kanban board, tables and update stats
         renderKanbanBoard();
-        renderProjectsTable(cachedProjects);
+        filterAndRenderTables();
+        try {
+            const stats = await API.getDashboardStats();
+            updateDashboardStatsUI(stats);
+        } catch (statsErr) {
+            console.warn("Kon dashboard stats niet direct herberekenen:", statsErr);
+        }
         
         if (statusMsg) {
             statusMsg.innerHTML = `
@@ -2370,9 +2421,15 @@ async function executeScanAllMonitors(isSilent = false) {
         if (scanSpinner) scanSpinner.classList.remove('fa-spin');
         if (scanBtnText) scanBtnText.innerText = 'Nu Alle Domeinen Scannen';
 
+        const statusLabel = document.getElementById('monitoring-scan-status-label');
+        if (statusLabel) statusLabel.innerText = 'Alle domeinen gecontroleerd!';
+        if (progressBar) progressBar.style.width = '100%';
+        if (progressText) progressText.innerText = 'Voltooid (100%)';
+
         setTimeout(() => {
             if (progressContainer) progressContainer.classList.add('hidden');
-        }, 1200);
+            if (statusLabel) statusLabel.innerText = 'Bezig met scannen van DNS-records en HTTPS endpoints...';
+        }, 1500);
     }
 }
 
@@ -2477,7 +2534,9 @@ function renderMonitorsTable() {
                                 ${domainIgnoredTag}
                             </div>
                             <div style="font-size: 0.74rem; color: var(--color-text-secondary); margin-top: 2px;">
-                                ${escapeHtml(r.name)} • <span style="color: var(--color-accent);">${escapeHtml(r.client)}</span>
+                                ${(!r.client || !r.name || r.client.trim().toLowerCase() === r.name.trim().toLowerCase())
+                                    ? `<span style="color: var(--color-accent);">${escapeHtml(r.client || r.name || 'Website')}</span>`
+                                    : `${escapeHtml(r.name)} • <span style="color: var(--color-accent);">${escapeHtml(r.client)}</span>`}
                             </div>
                         </div>
                     </td>
@@ -2542,8 +2601,10 @@ function renderMonitorsTable() {
     const noerrorDns = nonIgnored.filter(r => r.dnsStatus === 'NOERROR').length;
     const dnsHealth = nonIgnored.length > 0 ? Math.round((noerrorDns / nonIgnored.length) * 100) : 100;
 
+    const onlineCount = nonIgnored.length - down; // All domains responding 200 OK (both optimal and degraded)
+
     const kpiOperational = document.getElementById('kpi-mon-operational');
-    if (kpiOperational) kpiOperational.innerHTML = `${operational} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ ${nonIgnored.length}</span>`;
+    if (kpiOperational) kpiOperational.innerHTML = `${onlineCount} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ ${nonIgnored.length} Online</span>`;
 
     const kpiDown = document.getElementById('kpi-mon-down');
     if (kpiDown) kpiDown.innerHTML = `${down} <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">incidenten</span>`;
@@ -2554,7 +2615,9 @@ function renderMonitorsTable() {
             kpiDownSub.innerText = `${down} domein(en) vereisen directe actie!`;
             kpiDownSub.style.color = '#f87171';
         } else {
-            kpiDownSub.innerText = ignoredCount > 0 ? `Geen actieve uitval (${ignoredCount} genegeerd)` : "Geen actieve DNS/HTTP uitval";
+            kpiDownSub.innerText = degraded > 0 
+                ? `${operational} optimaal, ${degraded} vertraagd` 
+                : (ignoredCount > 0 ? `Geen actieve uitval (${ignoredCount} genegeerd)` : "Geen actieve DNS/HTTP uitval");
             kpiDownSub.style.color = 'var(--color-text-secondary)';
         }
     }
@@ -2571,13 +2634,28 @@ function renderMonitorsTable() {
     const statMonitoring = document.getElementById('stat-monitoring');
     const statMonitoringSub = document.getElementById('stat-monitoring-sub');
     if (statMonitoring) {
-        const dotClass = down > 0 ? 'down' : (degraded > 0 ? 'degraded' : 'operational');
-        statMonitoring.innerHTML = `<span class="monitoring-pulse-dot ${dotClass}"></span> <span id="stat-monitoring-text">${operational}/${total} Live</span>`;
-        statMonitoring.style.color = down > 0 ? '#f87171' : (degraded > 0 ? '#fbbf24' : '#10b981');
+        if (down > 0) {
+            statMonitoring.innerHTML = `<span class="monitoring-pulse-dot down"></span> <span id="stat-monitoring-text">${onlineCount}/${total} Live</span>`;
+            statMonitoring.style.color = '#f87171';
+        } else if (degraded > 0) {
+            statMonitoring.innerHTML = `<span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">${onlineCount}/${total} Online</span>`;
+            statMonitoring.style.color = '#10b981';
+        } else {
+            statMonitoring.innerHTML = `<span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">${total}/${total} Live</span>`;
+            statMonitoring.style.color = '#10b981';
+        }
     }
     if (statMonitoringSub) {
-        statMonitoringSub.innerText = down > 0 ? `🚨 ${down} domein(en) down!` : `DNS, SSL & HTTP OK (~${avgLatency}ms)`;
-        statMonitoringSub.style.color = down > 0 ? '#f87171' : 'var(--color-text-secondary)';
+        if (down > 0) {
+            statMonitoringSub.innerText = `🚨 ${down} domein(en) down!`;
+            statMonitoringSub.style.color = '#f87171';
+        } else if (degraded > 0) {
+            statMonitoringSub.innerText = `DNS & SSL OK (${degraded} vertraagd, ~${avgLatency}ms)`;
+            statMonitoringSub.style.color = 'var(--color-text-secondary)';
+        } else {
+            statMonitoringSub.innerText = `DNS, SSL & HTTP OK (~${avgLatency}ms)`;
+            statMonitoringSub.style.color = 'var(--color-text-secondary)';
+        }
     }
 
     const sidebarAlertBadge = document.getElementById('admin-uptime-alert-count');

@@ -152,7 +152,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         }
 
         // 2027 Proposed Plan
-        const recPlanId = p.subscriptionPlan2027Id || (isInternal ? 'internal_project' : (isOneOff ? 'none' : (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || 'managed_nl'))));
+        const recPlanId = p.subscriptionPlan2027Id || (isInternal ? 'internal_project' : (isOneOff ? 'none' : (info?.recommendedPlanId || (isLegacy ? 'transition_2027_loyalty' : 'managed_nl'))));
         const recPlan = SUBSCRIPTION_PLANS[recPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
 
         let planDetailsHtml = '';

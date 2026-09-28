@@ -13,7 +13,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, isAdminEmail, formatProjectStatus, isClientAuthActivated } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, sanitizeUrl, isAdminEmail, formatProjectStatus, isClientAuthActivated } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
@@ -586,7 +586,7 @@ function renderProjectWorkspace(p) {
                 signedText.innerHTML = `Akkoord ${signer} ${dateStr ? '(' + dateStr + ')' : ''}`;
             }
             if (pdfDlBtn && p.proposalPdfUrl) {
-                pdfDlBtn.href = p.proposalPdfUrl;
+                pdfDlBtn.href = sanitizeUrl(p.proposalPdfUrl);
                 pdfDlBtn.classList.remove('hidden');
             } else if (pdfDlBtn) {
                 pdfDlBtn.classList.add('hidden');
@@ -1064,7 +1064,7 @@ function renderFilesList(files) {
                     </div>
                 </div>
             </div>
-            <a href="${escapeHtml(f.url)}" target="_blank" class="btn btn-secondary btn-sm" style="color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3); white-space: nowrap; margin-left: 10px;">
+            <a href="${escapeHtml(sanitizeUrl(f.url))}" target="_blank" class="btn btn-secondary btn-sm" style="color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3); white-space: nowrap; margin-left: 10px;">
                 <i class="fas fa-download"></i> Downloaden
             </a>
         </div>`;
@@ -1076,7 +1076,8 @@ function renderFilesList(files) {
     document.getElementById('btn-download-all-files')?.addEventListener('click', () => {
         files.forEach((f, i) => {
             setTimeout(() => {
-                window.open(f.url, '_blank');
+                const safeUrl = sanitizeUrl(f.url);
+                if (safeUrl !== '#') window.open(safeUrl, '_blank');
             }, i * 300); // stagger to prevent popup blocker
         });
     });
@@ -1160,12 +1161,12 @@ function renderAdminMessages(messages) {
             <div class="admin-msg-footer">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.72rem; color: var(--color-text-secondary);">Ticket Status:</span>
-                    <button type="button" class="admin-ticket-status-btn ${statusBtnClass}" data-action="toggle-status" data-id="${msg.id}" title="Klik om status te wijzigen">
+                    <button type="button" class="admin-ticket-status-btn ${statusBtnClass}" data-action="toggle-status" data-id="${escapeHtml(msg.id)}" title="Klik om status te wijzigen">
                         ${statusBtnLabel}
                     </button>
                 </div>
                 <div class="admin-msg-actions">
-                    <button type="button" class="btn btn-sm" data-action="delete-msg" data-id="${msg.id}" style="background: transparent; color: #f87171; border: none; padding: 2px 6px; cursor: pointer;" title="Bericht verwijderen">
+                    <button type="button" class="btn btn-sm" data-action="delete-msg" data-id="${escapeHtml(msg.id)}" style="background: transparent; color: #f87171; border: none; padding: 2px 6px; cursor: pointer;" title="Bericht verwijderen">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>

@@ -3,15 +3,36 @@
  * Creation+Alt+Fix - Server-Side Healthcheck & cURL Probe Endpoint
  * [TASK-827] Live Webserver Uptime, SSL & HTTP Code Resolver
  * 
- * Provides:
- * 1. Low-latency cURL probe directly from the Vimexx server environment
- * 2. Real HTTP status code verification (200, 301, 404, 500)
- * 3. SSL certificate validation & handshake verification
- * 4. Safe domain sanitization & SSRF protection
+ * Hardened Security Features:
+ * 1. Origin-validated CORS (denies wildcards)
+ * 2. Strict DNS Pinning via CURLOPT_RESOLVE (defeats TOCTOU DNS rebinding)
+ * 3. Disabled CURLOPT_FOLLOWLOCATION (defeats redirect SSRF to loopback/private services)
+ * 4. Protocol restriction to HTTPS/HTTP only
+ * 5. IP-based rate limiting & private RFC1918 / Cloud Metadata SSRF filtering
  */
 
-// Allow CORS from CRM portals & localhost
-header("Access-Control-Allow-Origin: *");
+// Restrict CORS to authorized origins
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'https://creationaltfix.nl',
+    'https://www.creationaltfix.nl',
+    'https://portal.creationaltfix.nl'
+];
+$originMatched = false;
+if (!empty($origin)) {
+    foreach ($allowedOrigins as $allowed) {
+        if ($origin === $allowed || preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+            header("Access-Control-Allow-Origin: " . $origin);
+            header("Vary: Origin");
+            $originMatched = true;
+            break;
+        }
+    }
+}
+if (!$originMatched) {
+    header("Access-Control-Allow-Origin: https://creationaltfix.nl");
+}
+
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
@@ -20,6 +41,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
+
+// IP-based Rate Limiter (Max 60 calls per minute per IP to prevent DoS)
+$clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+$rateFile = sys_get_temp_dir() . '/caf_hc_' . md5($clientIp);
+$now = time();
+$rateData = ['count' => 0, 'window' => $now];
+
+if (file_exists($rateFile)) {
+    $raw = @file_get_contents($rateFile);
+    if ($raw) {
+        $parsed = @json_decode($raw, true);
+        if (is_array($parsed) && isset($parsed['window']) && ($now - $parsed['window']) < 60) {
+            $rateData = $parsed;
+        }
+    }
+}
+$rateData['count']++;
+if ($rateData['count'] > 60) {
+    http_response_code(429);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Te veel verzoeken (rate limit bereikt). Probeer het over een minuut opnieuw.'
+    ]);
+    exit;
+}
+@file_put_contents($rateFile, json_encode($rateData));
 
 $rawDomain = $_GET['domain'] ?? '';
 $cleanDomain = strtolower(trim($rawDomain));
@@ -44,7 +91,7 @@ if ($resolvedIp === $cleanDomain || filter_var($resolvedIp, FILTER_VALIDATE_IP, 
         'domain' => $cleanDomain,
         'http_code' => 0,
         'ssl_valid' => false,
-        'message' => 'DNS resolutie mislukt of privé IP-bereik geblokkeerd.',
+        'message' => 'DNS resolutie mislukt of privé/intern IP-bereik geblokkeerd.',
         'latency_ms' => 0
     ]);
     exit;
@@ -57,8 +104,14 @@ $ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_NOBODY => true, // HEAD request
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_MAXREDIRS => 3,
+    CURLOPT_FOLLOWLOCATION => false, // Disables redirect SSRF into internal networks
+    CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP,
+    CURLOPT_REDIR_PROTOCOLS => 0,
+    // DNS Pinning: forces cURL to use the verified IP, defeating TOCTOU DNS rebinding
+    CURLOPT_RESOLVE => [
+        "{$cleanDomain}:443:{$resolvedIp}",
+        "{$cleanDomain}:80:{$resolvedIp}"
+    ],
     CURLOPT_TIMEOUT => 5,
     CURLOPT_CONNECTTIMEOUT => 3,
     CURLOPT_SSL_VERIFYPEER => true,

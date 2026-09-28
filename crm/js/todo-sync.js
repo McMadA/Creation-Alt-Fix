@@ -34,7 +34,7 @@ export const PROJECT_PROFILES = {
         proposalPrice: "0,00"
     },
     HOOFDWEBSITE: {
-        id: "6",
+        id: "caf_hoofdwebsite",
         matchKeys: ["hoofdwebsite", "creation+alt+fix (hoofdwebsite", "marketing site", "epic-05", "epic-07", "task-805", "task-807", "task-811", "task-812"],
         client: "Creation+Alt+Fix (Hoofdwebsite)",
         companyName: "Creation+Alt+Fix (Hoofdwebsite)",
@@ -390,19 +390,42 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
 
         // Find existing project in current projects
         let existingProj = currentProjects.find(p => {
-            if (String(p.id) === String(profile.id)) return true;
             const pName = (p.client || p.companyName || '').toLowerCase();
             const targetName = profile.client.toLowerCase();
             if (pName === targetName) return true;
-            if (profile.matchKeys.some(mk => pName.includes(mk))) return true;
+            if (profile.matchKeys && profile.matchKeys.some(mk => pName.includes(mk))) return true;
+            // Only match by ID if client name or matchKeys also align to avoid cross-project numeric ID collision
+            if (profile.id && String(p.id) === String(profile.id) && (pName.includes(targetName) || (profile.matchKeys && profile.matchKeys.some(mk => pName.includes(mk))))) return true;
             return false;
         });
 
         let isNewlyCreated = false;
         if (!existingProj) {
+            // Special fallback for Hoofdwebsite: if separate Hoofdwebsite document does not exist, attach to CRM_PORTAL project
+            if (profile.client.includes('Hoofdwebsite') || (profile.matchKeys && profile.matchKeys.includes('hoofdwebsite'))) {
+                const crmProj = currentProjects.find(p => {
+                    const pName = (p.client || p.companyName || '').toLowerCase();
+                    return pName.includes('creation+alt+fix') || pName.includes('crm & portaal');
+                });
+                if (crmProj) {
+                    existingProj = crmProj;
+                }
+            }
+        }
+
+        if (!existingProj) {
             // No auto-provisioning of deleted or unknown projects to prevent ghost mock data
             console.log(`[TodoSync] Project "${profile.client}" niet gevonden in CRM database. Wordt overgeslagen.`);
             continue;
+        }
+
+        // Sanitize Livian Design: ensure internal Creation+Alt+Fix tasks from old ID 6 collision are cleaned
+        const existingClientName = (existingProj.client || existingProj.companyName || '').toLowerCase();
+        if (existingClientName.includes('livian')) {
+            existingProj.tasks = (existingProj.tasks || []).filter(t => {
+                const tStr = (t.title || t.id || '').toUpperCase();
+                return !tStr.includes('TASK-805') && !tStr.includes('TASK-807') && !tStr.includes('TASK-811') && !tStr.includes('TASK-812') && !tStr.includes('CREATION') && !tStr.includes('HOOFDWEBSITE');
+            });
         }
 
         // Merge existing tasks with new parsed tasks

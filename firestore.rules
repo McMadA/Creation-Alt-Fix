@@ -4,13 +4,69 @@ service cloud.firestore {
 
     // ============================================================
     // Helper: Check if the authenticated user is an admin
-    // Authenticated via admin email whitelist OR exists in 'admins' collection
+    // Authenticated via admin email whitelist (with verified email)
+    // OR exists in 'admins' collection
     // ============================================================
     function isAdmin() {
       return request.auth != null && (
-        (request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']) ||
+        (request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']
+         && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com')) ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid))
       );
+    }
+
+    // ============================================================
+    // Helper: Check if authenticated user is the verified client owner
+    // ============================================================
+    function isVerifiedClient(docData) {
+      return request.auth != null && (
+        docData.clientUid == request.auth.uid ||
+        (docData.email == request.auth.token.email 
+         && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com'))
+      );
+    }
+
+    // ============================================================
+    // Helper: Validates client update constraints
+    // Prevents privilege escalation, status tampering, and IDOR
+    // ============================================================
+    function isValidClientUpdate() {
+      let diff = request.resource.data.diff(resource.data);
+      let affected = diff.affectedKeys();
+      
+      return affected.hasOnly([
+        // Milestone acceptances
+        'status', 'statusClass', 'proposalAcceptedAt', 'proposalSignedBy', 
+        'proposalPdfUrl', 'proposalPdfName', 'designAcceptedAt', 
+        // Client uploads & communication
+        'files', 'messages', 'tickets', 'annotations',
+        // Profile & billing self-service
+        'client', 'companyName', 'contactName', 'phone', 
+        'streetAndNumber', 'address', 'postalCode', 'city', 
+        'kvkNumber', 'kvk', 'vatNumber', 'btwNummer', 'updatedAt',
+        'clientUid',
+        // 2027 Subscription confirmation
+        'subscriptionPlan2027Status', 'subscriptionPlan2027ConfirmedAt',
+        'subscriptionPlan2027Id', 'subscriptionPlan2027Name', 'subscriptionPlan2027Price', 'subscriptionPlan2027ProposedAt',
+        'subscriptionPlanId', 'subscriptionPlanName', 'subscriptionPrice', 'subscriptionCycle'
+      ])
+      // 1. Status tamper protection: clients can only transition to phase 3/4 milestone states
+      && (!('status' in affected)
+          || request.resource.data.status == resource.data.status
+          || request.resource.data.status in ['Wacht op Design & Ontwerp', 'In Ontwikkeling'])
+      // 2. Client UID protection: cannot overwrite or rebind existing UID
+      && (!('clientUid' in affected)
+          || resource.data.clientUid == request.resource.data.clientUid
+          || (resource.data.clientUid == null && request.resource.data.clientUid == request.auth.uid))
+      // 3. Stored XSS protection: proposal URL must use secure https protocol
+      && (!('proposalPdfUrl' in affected)
+          || request.resource.data.proposalPdfUrl == null
+          || request.resource.data.proposalPdfUrl.matches('^https://.*'))
+      // 4. Price tamper protection: cannot forge arbitrary subscription prices
+      && (!('subscriptionPlan2027Price' in affected)
+          || request.resource.data.subscriptionPlan2027Price in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00', '0,00'])
+      && (!('subscriptionPrice' in affected)
+          || request.resource.data.subscriptionPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00', '0,00']);
     }
 
     // ============================================================
@@ -33,6 +89,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ============================================================
+    // Audit Trail Collection (WORM - Write Once, Read Many)
+    // Immutable log of security and workflow events
+    // ============================================================
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
 
     // ============================================================
     // Projects Collection
@@ -40,47 +105,23 @@ service cloud.firestore {
     // ============================================================
     match /projects/{projectId} {
 
-      // CREATE: Anyone can create a new project (public intake form)
-      allow create: if true;
+      // CREATE: Validate schema and sanitize public intake submission
+      allow create: if request.resource.data.keys().hasAll(['client', 'email', 'service'])
+                    && request.resource.data.client is string
+                    && request.resource.data.client.size() >= 2
+                    && request.resource.data.client.size() <= 120
+                    && request.resource.data.email is string
+                    && request.resource.data.email.matches('.*@.*\\..*');
 
-      // GET (single document): 
+      // GET & LIST:
       //   - Admins can read any project
-      //   - Authenticated clients can read their OWN project (matched by clientUid or authenticated email)
-      allow get: if isAdmin()
-                 || (request.auth != null && (
-                      resource.data.clientUid == request.auth.uid
-                      || resource.data.email == request.auth.token.email
-                    ));
-
-      // LIST (query all documents):
-      //   - Only admins can list/query all projects
-      //   - Clients can list projects where their email or UID matches
-      allow list: if isAdmin()
-                  || (request.auth != null && (
-                       resource.data.clientUid == request.auth.uid
-                       || resource.data.email == request.auth.token.email
-                     ));
+      //   - Clients can read projects matched by clientUid or verified email
+      allow get, list: if isAdmin() || isVerifiedClient(resource.data);
 
       // UPDATE:
       //   - Admins can update any field
-      //   - Authenticated clients can update status fields (digital signature, proposal PDF, design accept, files, messages, tickets, annotations)
-      //     and their company / contact / billing profile details.
-      allow update: if isAdmin()
-                    || (request.auth != null 
-                        && (resource.data.clientUid == request.auth.uid || resource.data.email == request.auth.token.email)
-                        && request.resource.data.diff(resource.data).affectedKeys()
-                           .hasOnly([
-                             'status', 'statusClass', 'proposalAcceptedAt', 'proposalSignedBy', 
-                             'proposalPdfUrl', 'proposalPdfName', 'designAcceptedAt', 
-                             'files', 'messages', 'tickets', 'annotations',
-                             'client', 'companyName', 'contactName', 'phone', 
-                             'streetAndNumber', 'address', 'postalCode', 'city', 
-                             'kvkNumber', 'kvk', 'vatNumber', 'btwNummer', 'updatedAt',
-                             'clientUid',
-                             'subscriptionPlan2027Status', 'subscriptionPlan2027ConfirmedAt',
-                             'subscriptionPlan2027Id', 'subscriptionPlan2027Name', 'subscriptionPlan2027Price', 'subscriptionPlan2027ProposedAt',
-                             'subscriptionPlanId', 'subscriptionPlanName', 'subscriptionPrice', 'subscriptionCycle'
-                           ]));
+      //   - Clients can update allowed fields within strict integrity boundaries
+      allow update: if isAdmin() || (isVerifiedClient(resource.data) && isValidClientUpdate());
 
       // DELETE: Only admins
       allow delete: if isAdmin();

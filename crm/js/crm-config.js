@@ -173,6 +173,24 @@ export function escapeHtml(str) {
 }
 
 /**
+ * Sanitizes URLs to prevent javascript:, data:, vbscript: and malicious protocol injection.
+ * Whitelists https://, http://, /, mailto: and tel: schemes.
+ * @param {string} url
+ * @returns {string} Safe URL or '#' if dangerous
+ */
+export function sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return '#';
+    const trimmed = url.trim();
+    // Neutralize control characters
+    if (/[\x00-\x1F\x7F]/.test(trimmed)) return '#';
+    // Whitelist safe web protocols and relative paths
+    if (/^(https?:\/\/|\/|mailto:|tel:)/i.test(trimmed)) {
+        return trimmed;
+    }
+    return '#';
+}
+
+/**
  * Checks if email belongs to an administrator.
  * @param {string} email
  * @returns {boolean}

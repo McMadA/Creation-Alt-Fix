@@ -315,6 +315,45 @@ test("project.js properly imports and binds bookkeeping and plan symbols into lo
     );
 });
 
+test("admin.js and todo-sync.js prevent renderProjectsTable ReferenceError and ID collisions", async () => {
+    const adminJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/admin.js"), "utf-8");
+    assert.ok(
+        !adminJs.includes("renderProjectsTable(cachedProjects)"),
+        "admin.js must not call undefined renderProjectsTable(cachedProjects); must call filterAndRenderTables"
+    );
+    assert.ok(
+        adminJs.includes("window.renderProjectsTable ="),
+        "admin.js must provide safe window.renderProjectsTable alias to shield against legacy cached calls"
+    );
+    assert.ok(
+        adminJs.includes("filterAndRenderTables()"),
+        "admin.js handleExecuteTodoSync must refresh tables with filterAndRenderTables()"
+    );
+
+    const { PROJECT_PROFILES } = await import("../crm/js/todo-sync.js");
+    assert.notEqual(
+        PROJECT_PROFILES.HOOFDWEBSITE.id,
+        "6",
+        "HOOFDWEBSITE profile ID must not be '6' to prevent collision with Livian Design (id: 6)"
+    );
+});
+
+test("5 audited CRM features: F-Truck plan, Uptime KPI, client dedup, and header/toolbar sync", async () => {
+    const { getPiBoekhoudingInfo } = await import("../crm/admin/js/modules/bookkeeping-data.js");
+    const ftruckInfo = getPiBoekhoudingInfo({ domainName: "ftruckstore.nl", client: "F-Truck Store" });
+    assert.equal(ftruckInfo.recommendedPlanId, "managed_nl", "F-Truck Store must be assigned managed_nl (€ 150,-) instead of € 95,-");
+
+    const adminJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/admin.js"), "utf-8");
+    assert.ok(adminJs.includes("admin-main-header-title"), "admin.js must dynamically update admin-main-header-title");
+    assert.ok(adminJs.includes("admin-main-toolbar"), "admin.js must synchronize toolbar visibility");
+    assert.ok(adminJs.includes("onlineCount"), "admin.js must compute onlineCount to prevent false offline alarms");
+    assert.ok(adminJs.includes("r.client.trim().toLowerCase() === r.name.trim().toLowerCase()"), "admin.js must deduplicate identical client and name");
+
+    const indexHtml = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/index.html"), "utf-8");
+    assert.ok(indexHtml.includes('id="admin-main-header-title"'), "index.html must have id='admin-main-header-title'");
+    assert.ok(indexHtml.includes('id="admin-main-toolbar"'), "index.html must have id='admin-main-toolbar'");
+});
+
 test("generate2027ProposalText and WhatsApp generator produce accurate client communication", async () => {
     const { generate2027ProposalText, generate2027WhatsAppText } = await import("../crm/admin/js/modules/subscription-2027.js");
     const mockProj = {

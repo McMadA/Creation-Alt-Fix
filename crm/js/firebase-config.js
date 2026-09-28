@@ -18,5 +18,6 @@ export {
     formatProjectStatus,
     formatCurrency,
     normalizeDomain,
-    isClientAuthActivated
+    isClientAuthActivated,
+    sanitizeUrl
 } from "./crm-config.js";

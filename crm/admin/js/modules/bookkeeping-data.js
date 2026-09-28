@@ -71,7 +71,7 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         relatieId: 9,
         kvk: "01145302",
         currentPlanName: "Hosting & Multi-Domein: € 95,00 / jr",
-        currentPlanId: "legacy_22",
+        currentPlanId: "legacy_multi",
         recommendedPlanId: "managed_nl",
         recommendedReason: "Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr). NVMe hosting, SSL, zakelijke mail & 30 min. service per jaar.",
         latestInvoice: {
