@@ -2372,18 +2372,20 @@ function setupFormHandlers() {
                     status: 'open',
                     readByClient: false
                 };
+                if (!currentProjectData.messages) currentProjectData.messages = [];
+                const updatedMsgs = [...currentProjectData.messages, msgObj];
                 if (db && currentProjectId) {
-                    const currentMsgs = currentProjectData.messages || [];
                     await updateDoc(doc(db, "projects", currentProjectId), {
                         ...updatedFields,
-                        messages: [...currentMsgs, msgObj]
+                        messages: updatedMsgs
                     });
                 }
-                if (!currentProjectData.messages) currentProjectData.messages = [];
-                currentProjectData.messages.push(msgObj);
+                currentProjectData.messages = updatedMsgs;
                 Object.assign(currentProjectData, updatedFields);
                 renderSubscriptionAndInvoiceCard(currentProjectData);
-                renderTicketsList(currentProjectData.messages);
+                if (typeof renderAdminMessages === 'function') {
+                    renderAdminMessages(currentProjectData.messages);
+                }
                 await logAuditEvent('2027_plan_ticket_sent', `2027 Abonnementsvoorstel als ticket in klantenportaal geplaatst voor ${proj.client || 'klant'}.`);
             }
         });

@@ -13,6 +13,7 @@ export function generate2027ProposalText(project, planId) {
     const p = project || {};
     const clientName = p.client || p.contactName || p.companyName || 'Beste relatie';
     const domain = p.domainName || p.domain || 'jouw website';
+    const clientEmail = (p.email || p.clientEmail || '').trim();
     const targetPlan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
     const info = getPiBoekhoudingInfo(p);
     
@@ -26,6 +27,10 @@ export function generate2027ProposalText(project, planId) {
     }
 
     const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
+
+    const loginEmailLine = clientEmail 
+        ? `• Inloggen kan direct met jouw e-mailadres: ${clientEmail}`
+        : `• Inloggen kan direct met jouw geregistreerde e-mailadres`;
 
     return `Beste ${clientName},
 
@@ -48,8 +53,15 @@ ${pricingDetails}
   - Inclusief 30 minuten per jaar gratis service voor kleine content- & tekstwijzigingen (bijv. openingstijden, foto's of contactgegevens bijwerken)
   - Directe telefonische & e-mail ondersteuning bij vragen
 
-Je kunt jouw actuele websitegegevens en dit 2027 abonnement direct inzien en met 1 klik digitaal bevestigen via jouw persoonlijke klantenportaal:
+Je kunt jouw actuele websitegegevens en dit 2027 abonnement direct inzien en met 1 klik digitaal bevestigen via ons vernieuwde klantenportaal:
 🔗 ${portalUrl}
+
+🔐 Inloggen in het vernieuwde CRM / Klantenportaal:
+We zijn onlangs overgestapt op een gloednieuw CRM en klantenportaal. Om voor de eerste keer in te loggen:
+${loginEmailLine}
+• Omdat dit een nieuw systeem is, klik je bij de eerste keer inloggen op "Wachtwoord vergeten?" of "Eerste keer inloggen" om eenmalig jouw wachtwoord in te stellen.
+• Je ontvangt dan direct per e-mail een veilige link om jouw eigen wachtwoord aan te maken.
+⚠️ Let op: deze e-mail voor wachtwoordherstel kan soms in de spam- / ongewenste e-mailmap belanden. Controleer deze map als je het bericht na een minuutje nog niet in je inbox ziet.
 
 Mocht je hier vooraf vragen over hebben of willen overleggen over specifieke wensen (zoals extra domeinen of een jaarlijkse security APK), laat het me gerust even weten.
 
@@ -68,6 +80,7 @@ export function generate2027WhatsAppText(project, planId) {
     const p = project || {};
     const clientName = p.client || p.contactName || 'beste';
     const domain = p.domainName || p.domain || 'je website';
+    const clientEmail = (p.email || p.clientEmail || '').trim();
     const targetPlan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
     const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
 
@@ -75,6 +88,8 @@ export function generate2027WhatsAppText(project, planId) {
     if (planId === 'transition_2027_loyalty') {
         pricingLine = `*Speciaal Trouwe Klant Tarief 2027: € 95,-* excl. BTW (ipv € 150,-! Vanaf 2028 pas € 150,-/jr)`;
     }
+
+    const emailNote = clientEmail ? `Inloggen kan met *${clientEmail}*. ` : '';
 
     return `Hoi ${clientName},
 
@@ -86,8 +101,11 @@ Om je website snel, veilig en 24/7 gemonitord te houden, hebben we het hosting- 
 ${pricingLine}
 Inclusief: NVMe hosting, domein & DNS, SSL, zakelijke mail, dagelijkse back-ups, 24/7 uptime monitoring én 30 min. gratis contentwijzigingen per jaar!
 
-Je kunt het plan direct bekijken en bevestigen in je klantenportaal:
+Je kunt het plan direct bekijken en bevestigen in je vernieuwde klantenportaal:
 ${portalUrl}
+
+🔐 *Inloggen in het nieuwe portaal:*
+${emailNote}Omdat we zijn overgestapt op een nieuw CRM, klik je bij de 1e keer even op "Wachtwoord vergeten" om je wachtwoord in te stellen (check evt. je spambox voor de resetmail!).
 
 Laat gerust weten als je nog vragen hebt! 👍`;
 }

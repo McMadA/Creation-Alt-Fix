@@ -502,6 +502,28 @@
             return false;
         }
 
+        function getResolvedRedirectUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl');
+            if (returnUrl) {
+                const decoded = decodeURIComponent(returnUrl);
+                if (decoded.startsWith('status/') && !decoded.includes('//')) {
+                    return decoded;
+                }
+            }
+            return "status/";
+        }
+
+        // Pre-fill email if passed in query string
+        const initUrlParams = new URLSearchParams(window.location.search);
+        const emailFromUrl = initUrlParams.get('email');
+        if (emailFromUrl) {
+            const emailInp = document.getElementById('client-email');
+            if (emailInp) emailInp.value = decodeURIComponent(emailFromUrl);
+            const firstEmailInp = document.getElementById('first-login-email');
+            if (firstEmailInp) firstEmailInp.value = decodeURIComponent(emailFromUrl);
+        }
+
         // Automatisch doorsturen als de klant al ingelogd is
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -512,7 +534,7 @@
                 }
                 const userIsClient = await isClient(email, user.uid);
                 if (userIsClient) {
-                    window.location.href = "status/";
+                    window.location.href = getResolvedRedirectUrl();
                 }
             }
         });
@@ -544,7 +566,7 @@
 
                 const userIsClient = await isClient(userEmail, userCred.user.uid);
                 if (userIsClient) {
-                    window.location.href = "status/";
+                    window.location.href = getResolvedRedirectUrl();
                 } else {
                     await signOut(auth);
                     errDiv.innerText = t.portalErrNoProject;

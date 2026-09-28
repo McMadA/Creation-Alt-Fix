@@ -305,6 +305,14 @@ test("project.js properly imports and binds bookkeeping and plan symbols into lo
         projectJs.includes("import { open2027SubscriptionModal }"),
         "project.js must import open2027SubscriptionModal for 2027 communication"
     );
+    assert.ok(
+        !projectJs.includes("renderTicketsList"),
+        "project.js must not reference undefined renderTicketsList; must use renderAdminMessages"
+    );
+    assert.ok(
+        projectJs.includes("renderAdminMessages(currentProjectData.messages)"),
+        "project.js onSendPortalTicket must update message thread with renderAdminMessages"
+    );
 });
 
 test("generate2027ProposalText and WhatsApp generator produce accurate client communication", async () => {
@@ -313,6 +321,7 @@ test("generate2027ProposalText and WhatsApp generator produce accurate client co
         id: "proj_angela",
         client: "Angela Stenekes",
         domainName: "angelastenekes.nl",
+        email: "angelastenekes@hotmail.com",
         phone: "0612345678"
     };
 
@@ -322,15 +331,21 @@ test("generate2027ProposalText and WhatsApp generator produce accurate client co
     assert.ok(emailBody.includes("€ 150,00 excl. BTW"), "Must state correct plan price");
     assert.ok(emailBody.includes("30 minuten per jaar"), "Must include 30 minutes content update perk");
     assert.ok(emailBody.includes("https://creationaltfix.nl/crm/status/?id=proj_angela"), "Must include direct status portal link");
+    assert.ok(emailBody.includes("angelastenekes@hotmail.com"), "Must include client login email");
+    assert.ok(emailBody.includes("Wachtwoord vergeten"), "Must instruct client to use password reset for first login");
+    assert.ok(emailBody.includes("spam- / ongewenste e-mailmap"), "Must alert client to check spam folder for reset email");
 
     // Loyalty plan test
     const loyaltyBody = generate2027ProposalText(mockProj, "transition_2027_loyalty");
     assert.ok(loyaltyBody.includes("€ 95,00"), "Loyalty plan must show € 95,00 for 2027");
     assert.ok(loyaltyBody.includes("€ 150,00"), "Loyalty plan must state standard transition to € 150,00 in 2028");
+    assert.ok(loyaltyBody.includes("angelastenekes@hotmail.com"), "Loyalty plan text must also include login email");
 
     const waBody = generate2027WhatsAppText(mockProj, "allin_apk");
     assert.ok(waBody.includes("Hoi Angela Stenekes"), "WhatsApp message must address client");
     assert.ok(waBody.includes("€ 500,00,- excl. BTW"), "WhatsApp message must state all-in APK price");
+    assert.ok(waBody.includes("angelastenekes@hotmail.com"), "WhatsApp text must include login email");
+    assert.ok(waBody.includes("spambox"), "WhatsApp text must mention spam check");
 });
 
 test("SUBSCRIPTION_PLANS contains transition_2027_loyalty with correct rate and perks", () => {

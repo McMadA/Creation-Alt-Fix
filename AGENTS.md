@@ -2,6 +2,12 @@
 
 ## Recent Insights
 
+- **[2026-09-28] Klantenportaal Directe Link Toegang & returnUrl Routing ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html))**:
+  - **Beveiligingsmodel**: Directe links naar het statusportaal (`/crm/status/?id=...`) zijn conform AVG/GDPR en `firestore.rules` strikt afgeschermd achter Firebase Authentication om vertrouwelijke offertes, facturen, KVK-gegevens en privéchats te beschermen.
+  - **Ongeauthenticeerde Bezoekers**: Wanneer een klant zonder actieve sessie op de link klikt, wordt zij doorgestuurd naar `/crm/index.html`. 
+  - **Naadloze returnUrl Routing**: `status.js` geeft nu automatisch `?returnUrl=status/?id=...` mee en `crm/index.html` stuurt na inloggen direct door naar het specifieke project. Tevens ondersteunt het inlogscherm de 'Eerste keer inloggen / inloglink' flow.
+  - **Beheerdersactivatie**: Zodra de beheerder in de Project Werkplek (`admin/project.html`) op `Her-activeer / Koppel Account in Auth` klikt (of `Stuur Wachtwoord Reset E-mail`), ontvangt de klant een e-mail van Firebase om in 5 seconden een wachtwoord in te stellen, waarna de directe link permanent met 1 klik werkt.
+
 - **[2026-09-28] 2027 Abonnementsakkoord Notificatie- & Firestore Flow ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/js/email-notifications.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/email-notifications.js), [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules))**:
   - **Notificatie Mechanisme**: Wanneer een klant in het portaal klikt op `[ Akkoord met 2027 Serviceplan ]`, wordt:
     1. Direct een automatische e-mail verstuurd naar `info@creationaltfix.nl` via **EmailJS** (`notifyAdminNewMessage`), met daarin de klantnaam, het gekozen plan, de jaarlijkse prijs en een directe link naar het Admin Dashboard (met automatische FormSubmit HTTP fallback als back-up).

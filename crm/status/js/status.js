@@ -134,8 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                console.warn("Geen ingelogde klant. Stuur door naar inlogpagina.");
-                window.location.href = "../index.html";
+                console.warn("Geen ingelogde klant. Stuur door naar inlogpagina met returnUrl.");
+                const currentQuery = window.location.search || '';
+                const returnPath = currentQuery ? `status/${currentQuery}` : 'status/';
+                window.location.href = `../index.html?returnUrl=${encodeURIComponent(returnPath)}`;
                 return;
             }
 
