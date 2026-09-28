@@ -4,6 +4,8 @@
  * for proposal scope drafting, deliverables estimation, and aftercare email generation.
  */
 
+import { sanitizeUrl } from "./crm-config.js";
+
 const GEMINI_STORAGE_KEY = 'caf_gemini_api_key';
 const GEMINI_MODEL_STORAGE_KEY = 'caf_gemini_model';
 export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
@@ -54,8 +56,9 @@ async function callGeminiApi(promptText, systemInstruction = '') {
         throw new Error("Geen Gemini API sleutel geconfigureerd.");
     }
 
-    const model = getGeminiModel();
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const rawModel = getGeminiModel() || DEFAULT_GEMINI_MODEL;
+    const cleanModel = /^[a-zA-Z0-9_.-]+$/.test(rawModel) ? rawModel : DEFAULT_GEMINI_MODEL;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cleanModel)}:generateContent`;
 
     const requestBody = {
         contents: [
@@ -74,7 +77,10 @@ async function callGeminiApi(promptText, systemInstruction = '') {
 
     const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey.trim()
+        },
         body: JSON.stringify(requestBody)
     });
 
@@ -316,6 +322,10 @@ Geef UITSLUITEND valide JSON terug zonder markdown backticks.`;
             const rawResponse = await callGeminiApi(prompt);
             const cleaned = rawResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(cleaned);
+            if (parsed.suggestedPrototypeUrl) {
+                const safeUrl = sanitizeUrl(parsed.suggestedPrototypeUrl);
+                parsed.suggestedPrototypeUrl = safeUrl === '#' ? `https://${domain}` : safeUrl;
+            }
             return {
                 ...parsed,
                 isAiGenerated: true

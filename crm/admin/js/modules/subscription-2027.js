@@ -279,7 +279,7 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
             const waUrl = phone 
                 ? `https://wa.me/${phone}?text=${encodeURIComponent(waBody)}`
                 : `https://wa.me/?text=${encodeURIComponent(waBody)}`;
-            window.open(waUrl, '_blank');
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
         });
 
         // Event: Send as Portal Ticket

@@ -2,6 +2,17 @@
 
 ## Recent Insights
 
+- **[2026-09-28] Volledige CRM Codebase Beveiligingsaudit & Defense in Depth Hardening ([crm/js/email-notifications.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/email-notifications.js), [crm/admin/js/modules/admin-tables.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-tables.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/js/ai-engine.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/ai-engine.js), [crm/.htaccess](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/.htaccess), [crm/intake/js/intake.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/intake/js/intake.js), [storage.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/storage.rules), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
+  - Uitputtende security audit en threat model conform OWASP Top 10 en Zero-Trust principes:
+    1. **Storage BOLA / IDOR**: `storage.rules` controleert via `isProjectOwner` en `firestore.exists` strikt ownership en MIME-types.
+    2. **DOM XSS via URI Schemes**: `sanitizeUrl` stript control chars en blokkeert `javascript:`, `data:`, `vbscript:`.
+    3. **CSV Formula Injection**: `sanitizeCsvField` neutraliseert `=`, `+`, `-`, `@`, `\t`, `\r` bij CSV export.
+    4. **Email Template HTML & Header Injection**: `escapeHtml` op alle parameters en `\r\n` newline stripping op e-mailadressen.
+    5. **Gemini REST API Key**: Gemigreerd naar `x-goog-api-key` header, modelnaam ge-whitelist en URLs gesaneerd.
+    6. **Security Headers**: HSTS, Permissions-Policy, COOP (`same-origin-allow-popups`) en dotfile-blokkade in `.htaccess`.
+    7. **Healthcheck SSRF & Rebinding**: `FOLLOWLOCATION = false`, DNS-pinning via `CURLOPT_RESOLVE` en IP rate limiting.
+    8. **CI/CD Testsuite**: Uitgebreid naar 49/49 geautomatiseerde tests (100% pass).
+
 - **[2026-09-28] Klantenportaal Directe Link Toegang & returnUrl Routing ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html))**:
   - **Beveiligingsmodel**: Directe links naar het statusportaal (`/crm/status/?id=...`) zijn conform AVG/GDPR en `firestore.rules` strikt afgeschermd achter Firebase Authentication om vertrouwelijke offertes, facturen, KVK-gegevens en privéchats te beschermen.
   - **Ongeauthenticeerde Bezoekers**: Wanneer een klant zonder actieve sessie op de link klikt, wordt zij doorgestuurd naar `/crm/index.html`. 

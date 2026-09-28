@@ -1388,8 +1388,11 @@ function renderAdminStaging(p) {
             const dateStr = pin.createdAt ? new Date(pin.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Zojuist';
             const author = escapeHtml(pin.author || 'Klant');
 
+            const safePinId = escapeHtml(pin.id);
+            const safeDevice = escapeHtml(pin.device || 'desktop');
+
             return `
-                <div id="admin-pin-card-${pin.id}" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; transition: border-color 0.3s;">
+                <div id="admin-pin-card-${safePinId}" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; transition: border-color 0.3s;">
                     <div style="display: flex; align-items: flex-start; gap: 12px; max-width: 70%;">
                         <span class="pin-badge" style="width: 26px; height: 26px; border-radius: 50%; background: ${isResolved ? '#10b981' : 'var(--color-accent)'}; color: ${isResolved ? '#fff' : '#000'}; font-weight: 800; font-size: 0.78rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
                             ${isResolved ? '<i class="fas fa-check"></i>' : pinNum}
@@ -1397,12 +1400,12 @@ function renderAdminStaging(p) {
                         <div>
                             <div style="font-weight: 600; color: #fff; font-size: 0.88rem; line-height: 1.4;">${escapeHtml(pin.comment)}</div>
                             <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 3px;">
-                                <strong>${author}</strong> • ${catLabel} • Viewport: <code>${pin.device || 'desktop'}</code> • Geplaatst op: ${dateStr}
+                                <strong>${author}</strong> • ${catLabel} • Viewport: <code>${safeDevice}</code> • Geplaatst op: ${dateStr}
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" class="btn btn-sm ${isResolved ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-resolve-pin" data-id="${pin.id}" style="font-size: 0.8rem; padding: 5px 12px;">
+                        <button type="button" class="btn btn-sm ${isResolved ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-resolve-pin" data-id="${safePinId}" style="font-size: 0.8rem; padding: 5px 12px;">
                             ${isResolved ? '<i class="fas fa-undo"></i> Heropenen' : '<i class="fas fa-check-circle"></i> Markeer als Opgelost'}
                         </button>
                     </div>
@@ -1904,22 +1907,36 @@ function setupFormHandlers() {
         if (!email) return alert("Vul eerst een geldig e-mailadres in.");
         if (!confirm(`Wilt u het Firebase Auth account aanmaken en activeren voor ${email}?`)) return;
 
-        const tempPassword = 'CAF-' + Math.random().toString(36).substring(2, 8);
+        const randBytes = new Uint8Array(18);
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+            window.crypto.getRandomValues(randBytes);
+        } else {
+            for (let i = 0; i < 18; i++) randBytes[i] = Math.floor(Math.random() * 256);
+        }
+        const charset = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
+        let tempPassword = 'CAF-';
+        for (let i = 0; i < 16; i++) tempPassword += charset[randBytes[i] % charset.length];
+
         try {
             let clientUid = null;
             try {
                 const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, tempPassword);
                 clientUid = userCred.user.uid;
+                await signOut(secondaryAuth).catch(() => {});
             } catch (authErr) {
                 console.warn("Auth account match/exists:", authErr.message);
+                await signOut(secondaryAuth).catch(() => {});
             }
 
             if (db && currentProjectId) {
-                await updateDoc(doc(db, "projects", currentProjectId), {
+                const updatePayload = {
                     email: email,
-                    isClientAccount: true,
-                    clientUid: clientUid || null
-                });
+                    isClientAccount: true
+                };
+                if (clientUid) {
+                    updatePayload.clientUid = clientUid;
+                }
+                await updateDoc(doc(db, "projects", currentProjectId), updatePayload);
                 currentProjectData.isClientAccount = true;
                 if (clientUid) currentProjectData.clientUid = clientUid;
             }

@@ -54,6 +54,7 @@ console.log("📌 SUITE 1: Core Configuration & Utilities");
 
 const { 
     escapeHtml, 
+    sanitizeUrl,
     isAdminEmail, 
     formatProjectStatus, 
     formatCurrency, 
@@ -70,6 +71,22 @@ test("escapeHtml prevents XSS injection", () => {
     assert.equal(escapeHtml(null), "");
     assert.equal(escapeHtml(undefined), "");
     assert.equal(escapeHtml(12345), "12345");
+});
+
+test("sanitizeUrl strips dangerous schemes and control characters", () => {
+    assert.equal(sanitizeUrl("javascript:alert(1)"), "#");
+    assert.equal(sanitizeUrl("JAVASCRIPT:alert('xss')"), "#");
+    assert.equal(sanitizeUrl("data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="), "#");
+    assert.equal(sanitizeUrl("vbscript:msgbox(1)"), "#");
+    assert.equal(sanitizeUrl("java\x00script:alert(1)"), "#");
+    assert.equal(sanitizeUrl("javascript\n:alert(1)"), "#");
+    assert.equal(sanitizeUrl("https://creationaltfix.nl/crm/"), "https://creationaltfix.nl/crm/");
+    assert.equal(sanitizeUrl("http://example.com"), "http://example.com");
+    assert.equal(sanitizeUrl("mailto:info@creationaltfix.nl"), "mailto:info@creationaltfix.nl");
+    assert.equal(sanitizeUrl("tel:+31619135453"), "tel:+31619135453");
+    assert.equal(sanitizeUrl("/crm/status/index.html"), "/crm/status/index.html");
+    assert.equal(sanitizeUrl(""), "#");
+    assert.equal(sanitizeUrl(null), "#");
 });
 
 test("isAdminEmail accurately checks authorized admins", () => {
@@ -598,6 +615,56 @@ test("Admin tables and modal provide direct Klantview preview shortcuts", () => 
     assert.ok(adminContent.includes('status/index.html?preview=true&id='), "admin.js must provide Klantview preview in Klantkaart modal");
 });
 
+
+// ========================================================
+// 11. APPLICATION SECURITY & THREAT DEFENSES
+// ========================================================
+console.log("\n📌 SUITE 11: Application Security & Threat Defenses");
+
+const { sanitizeCsvField } = await import("../crm/admin/js/modules/admin-tables.js");
+
+test("sanitizeCsvField neutralizes spreadsheet formula injection (CWE-1236)", () => {
+    assert.equal(sanitizeCsvField("=cmd|' /C calc'!A0"), "'=cmd|' /C calc'!A0", "Must prepend single quote to formula starting with =");
+    assert.equal(sanitizeCsvField("+12345"), "'+12345", "Must prepend single quote to +");
+    assert.equal(sanitizeCsvField("-500"), "'-500", "Must prepend single quote to -");
+    assert.equal(sanitizeCsvField("@SUM(A1:A10)"), "'@SUM(A1:A10)", "Must prepend single quote to @");
+    assert.equal(sanitizeCsvField("\tmalicious"), "'\tmalicious", "Must prepend single quote to tab");
+    assert.equal(sanitizeCsvField("\rmalicious"), "'\rmalicious", "Must prepend single quote to CR");
+    assert.equal(sanitizeCsvField('Normal "Quoted" Company'), 'Normal ""Quoted"" Company', "Must escape double quotes");
+    assert.equal(sanitizeCsvField(null), "");
+    assert.equal(sanitizeCsvField(undefined), "");
+    assert.equal(sanitizeCsvField("Safe Project Name"), "Safe Project Name");
+});
+
+test("storage.rules enforces cross-service Firestore ownership verification and MIME whitelist", () => {
+    const storageRulesPath = path.join(ROOT_DIR, "storage.rules");
+    const rules = fs.readFileSync(storageRulesPath, "utf-8");
+    assert.ok(rules.includes("function isProjectOwner(projectId)"), "Must define isProjectOwner");
+    assert.ok(rules.includes("firestore.exists(/databases/(default)/documents/projects/$(projectId))"), "Must verify firestore.exists");
+    assert.ok(rules.includes("request.resource.size < 10 * 1024 * 1024"), "Must enforce 10MB limit");
+    assert.ok(!rules.includes("text/.*"), "Must not allow wildcard text/.* (MIME execution vector)");
+    assert.ok(!rules.includes("image/.*"), "Must not allow wildcard image/.* (SVG XSS vector)");
+});
+
+test("crm/.htaccess enforces modern security headers and dotfile blocking", () => {
+    const htaccessPath = path.join(ROOT_DIR, "crm/.htaccess");
+    const htaccess = fs.readFileSync(htaccessPath, "utf-8");
+    assert.ok(htaccess.includes("Strict-Transport-Security"), "Must enforce HSTS");
+    assert.ok(htaccess.includes("Permissions-Policy"), "Must configure Permissions-Policy");
+    assert.ok(htaccess.includes("X-Content-Type-Options \"nosniff\""), "Must enforce nosniff");
+    assert.ok(htaccess.includes("X-Frame-Options \"SAMEORIGIN\""), "Must configure X-Frame-Options");
+    assert.ok(htaccess.includes("Cross-Origin-Opener-Policy"), "Must configure Cross-Origin-Opener-Policy");
+    assert.ok(htaccess.includes('FilesMatch "^\\.(?!well-known)"'), "Must block dotfiles");
+});
+
+test("healthcheck.php enforces SSRF, DNS pinning, and rate limiting defenses", () => {
+    const healthcheckPath = path.join(ROOT_DIR, "crm/api/healthcheck.php");
+    const php = fs.readFileSync(healthcheckPath, "utf-8");
+    assert.ok(php.includes("CURLOPT_FOLLOWLOCATION => false"), "Must disable FOLLOWLOCATION to prevent redirect SSRF");
+    assert.ok(php.includes("CURLOPT_RESOLVE"), "Must pin DNS via CURLOPT_RESOLVE to prevent TOCTOU DNS rebinding");
+    assert.ok(php.includes("CURLPROTO_HTTPS | CURLPROTO_HTTP"), "Must restrict protocols to HTTPS and HTTP");
+    assert.ok(php.includes("60"), "Must enforce rate limiting threshold");
+});
 
 // ========================================================
 // FINAL SUMMARY

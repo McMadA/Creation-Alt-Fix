@@ -23,6 +23,7 @@
  */
 
 import { EMAILJS_CONFIG } from './firebase-config.js';
+import { escapeHtml } from './crm-config.js';
 
 // ============================================================
 // Configuration
@@ -105,6 +106,12 @@ function markSent(key) {
 // ============================================================
 
 function buildAdminAlertHtml({ clientName, clientEmail, projectName, messagePreview, category }) {
+    const safeClient = escapeHtml(clientName || 'Klant');
+    const safeEmail = escapeHtml(clientEmail || '—');
+    const safeProject = escapeHtml(projectName || 'Project');
+    const safeCategory = escapeHtml(category || 'Algemeen');
+    const safePreview = escapeHtml(messagePreview || '');
+
     return `
     <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; border-radius: 16px; overflow: hidden; border: 1px solid rgba(99,102,241,0.3);">
         <div style="background: linear-gradient(135deg, #6366f1, #22d3ee); padding: 24px 28px;">
@@ -112,13 +119,13 @@ function buildAdminAlertHtml({ clientName, clientEmail, projectName, messagePrev
         </div>
         <div style="padding: 28px; color: #e2e8f0;">
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <tr><td style="padding: 8px 0; color: #94a3b8; width: 120px;">Klant:</td><td style="padding: 8px 0; color: #f8fafc; font-weight: 600;">${clientName}</td></tr>
-                <tr><td style="padding: 8px 0; color: #94a3b8;">E-mail:</td><td style="padding: 8px 0; color: #22d3ee;">${clientEmail}</td></tr>
-                <tr><td style="padding: 8px 0; color: #94a3b8;">Project:</td><td style="padding: 8px 0; color: #f8fafc;">${projectName}</td></tr>
-                <tr><td style="padding: 8px 0; color: #94a3b8;">Categorie:</td><td style="padding: 8px 0; color: #f8fafc;">${category || 'Algemeen'}</td></tr>
+                <tr><td style="padding: 8px 0; color: #94a3b8; width: 120px;">Klant:</td><td style="padding: 8px 0; color: #f8fafc; font-weight: 600;">${safeClient}</td></tr>
+                <tr><td style="padding: 8px 0; color: #94a3b8;">E-mail:</td><td style="padding: 8px 0; color: #22d3ee;">${safeEmail}</td></tr>
+                <tr><td style="padding: 8px 0; color: #94a3b8;">Project:</td><td style="padding: 8px 0; color: #f8fafc;">${safeProject}</td></tr>
+                <tr><td style="padding: 8px 0; color: #94a3b8;">Categorie:</td><td style="padding: 8px 0; color: #f8fafc;">${safeCategory}</td></tr>
             </table>
             <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 16px; margin-bottom: 20px;">
-                <p style="margin: 0; color: #f1f5f9; line-height: 1.6;">"${messagePreview}"</p>
+                <p style="margin: 0; color: #f1f5f9; line-height: 1.6;">"${safePreview}"</p>
             </div>
             <a href="${ADMIN_URL}" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600;">Bekijk in Admin Dashboard →</a>
         </div>
@@ -130,12 +137,16 @@ function buildAdminAlertHtml({ clientName, clientEmail, projectName, messagePrev
 
 function buildClientNotificationHtml({ clientName, projectName, messagePreview, type }) {
     const isPhaseUpdate = type === 'phase';
+    const safeClient = escapeHtml(clientName || 'Klant');
+    const safeProject = escapeHtml(projectName || 'Project');
+    const safePreview = isPhaseUpdate ? messagePreview : escapeHtml(messagePreview || '');
+
     const title = isPhaseUpdate 
         ? '🚀 Projectupdate: Nieuwe Mijlpaal Bereikt!' 
         : '💬 Allard heeft gereageerd op je bericht';
     const subtitle = isPhaseUpdate
-        ? `Er is een update voor je project "${projectName}".`
-        : `Je hebt een nieuw antwoord ontvangen voor het project "${projectName}".`;
+        ? `Er is een update voor je project "${safeProject}".`
+        : `Je hebt een nieuw antwoord ontvangen voor het project "${safeProject}".`;
 
     return `
     <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; border-radius: 16px; overflow: hidden; border: 1px solid rgba(99,102,241,0.3);">
@@ -143,10 +154,10 @@ function buildClientNotificationHtml({ clientName, projectName, messagePreview, 
             <h1 style="color: #fff; margin: 0; font-size: 1.3rem;">${title}</h1>
         </div>
         <div style="padding: 28px; color: #e2e8f0;">
-            <p style="margin: 0 0 8px; font-size: 1.05rem; color: #f8fafc;">Hallo ${clientName},</p>
+            <p style="margin: 0 0 8px; font-size: 1.05rem; color: #f8fafc;">Hallo ${safeClient},</p>
             <p style="color: #94a3b8; margin: 0 0 20px; line-height: 1.6;">${subtitle}</p>
             <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-                <p style="margin: 0; color: #f1f5f9; line-height: 1.6;">${messagePreview}</p>
+                <p style="margin: 0; color: #f1f5f9; line-height: 1.6;">${safePreview}</p>
             </div>
             <a href="${PORTAL_URL}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 1rem;">Bekijk in je Klantenportaal →</a>
             <p style="margin: 16px 0 0; font-size: 0.85rem; color: #64748b;">Of ga direct naar: <a href="${PORTAL_URL}" style="color: #22d3ee;">${PORTAL_URL}</a></p>
@@ -157,6 +168,7 @@ function buildClientNotificationHtml({ clientName, projectName, messagePreview, 
         </div>
     </div>`;
 }
+
 
 // ============================================================
 // Phase Transition Descriptions
@@ -222,12 +234,13 @@ export async function notifyAdminNewMessage({ clientName, clientEmail, projectNa
  * Sends branded email to client's email via EmailJS (client template).
  */
 export async function notifyClientAdminReply({ clientEmail, clientName, projectName, messagePreview }) {
-    if (!clientEmail) {
-        console.warn('[CRM Notify] No client email provided, skipping notification');
+    const cleanEmail = (clientEmail || '').replace(/[\r\n]/g, '').trim();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+        console.warn('[CRM Notify] No valid client email provided, skipping notification');
         return false;
     }
 
-    const throttleKey = `client_reply_${clientEmail}_${Date.now().toString().slice(0, -5)}`;
+    const throttleKey = `client_reply_${cleanEmail}_${Date.now().toString().slice(0, -5)}`;
     if (isThrottled(throttleKey)) {
         console.log('[CRM Notify] Client reply notification throttled');
         return false;
@@ -239,7 +252,7 @@ export async function notifyClientAdminReply({ clientEmail, clientName, projectN
 
         await window.emailjs.send(EMAILJS_CONFIG.serviceId, TEMPLATES.clientNotification, {
             to_name: clientName || 'Klant',
-            to_email: clientEmail,
+            to_email: cleanEmail,
             from_name: 'Allard (Creation+Alt+Fix)',
             reply_to: 'info@creationaltfix.nl',
             subject: `💬 Allard heeft gereageerd — ${projectName}`,
@@ -248,7 +261,7 @@ export async function notifyClientAdminReply({ clientEmail, clientName, projectN
         });
 
         markSent(throttleKey);
-        console.log(`[CRM Notify] ✅ Klant notificatie verstuurd naar ${clientEmail}`);
+        console.log(`[CRM Notify] ✅ Klant notificatie verstuurd naar ${cleanEmail}`);
         return true;
     } catch (err) {
         console.error('[CRM Notify] Client reply notification failed:', err);
@@ -262,12 +275,13 @@ export async function notifyClientAdminReply({ clientEmail, clientName, projectN
  * Sends branded milestone update to client's email.
  */
 export async function notifyClientPhaseChange({ clientEmail, clientName, projectName, newPhaseLabel }) {
-    if (!clientEmail) {
-        console.warn('[CRM Notify] No client email for phase notification, skipping');
+    const cleanEmail = (clientEmail || '').replace(/[\r\n]/g, '').trim();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+        console.warn('[CRM Notify] No valid client email for phase notification, skipping');
         return false;
     }
 
-    const throttleKey = `phase_${clientEmail}_${newPhaseLabel}`;
+    const throttleKey = `phase_${cleanEmail}_${newPhaseLabel}`;
     if (isThrottled(throttleKey)) {
         console.log('[CRM Notify] Phase notification throttled');
         return false;
@@ -281,7 +295,7 @@ export async function notifyClientPhaseChange({ clientEmail, clientName, project
 
         await window.emailjs.send(EMAILJS_CONFIG.serviceId, TEMPLATES.clientNotification, {
             to_name: clientName || 'Klant',
-            to_email: clientEmail,
+            to_email: cleanEmail,
             from_name: 'Creation+Alt+Fix',
             reply_to: 'info@creationaltfix.nl',
             subject: `🚀 Mijlpaal bereikt — ${projectName}: ${newPhaseLabel}`,

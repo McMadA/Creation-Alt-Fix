@@ -3,7 +3,7 @@
  * Handles rendering, filtering, sorting and CSV export for CRM project tables.
  */
 
-import { escapeHtml, formatProjectStatus, BRANDING } from "../../../js/crm-config.js";
+import { escapeHtml, sanitizeUrl, formatProjectStatus, BRANDING } from "../../../js/crm-config.js";
 
 // Sorteer Status
 export let currentSortColumn = 'updated';
@@ -255,9 +255,11 @@ export function renderTablesData(projectsToRender, handlers = {}) {
         if (!domain || domain.trim() === '' || domain.toLowerCase() === 'nog geen domein' || domain.toLowerCase() === 'geen' || domain.toLowerCase() === 'n.v.t.') {
             return `<span style="color: var(--color-text-secondary); font-style: italic; font-size: 0.85rem;">Geen domein</span>`;
         }
-        const cleanDomain = escapeHtml(domain.trim());
-        const href = (cleanDomain.startsWith('http://') || cleanDomain.startsWith('https://')) ? cleanDomain : 'https://' + cleanDomain;
-        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="table-domain-link" title="Open ${cleanDomain}"><i class="fas fa-globe"></i> ${cleanDomain}</a>`;
+        const trimmed = domain.trim();
+        const rawHref = (trimmed.startsWith('http://') || trimmed.startsWith('https://')) ? trimmed : 'https://' + trimmed;
+        const safeHref = sanitizeUrl(rawHref);
+        const cleanDomain = escapeHtml(trimmed);
+        return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer" class="table-domain-link" title="Open ${cleanDomain}"><i class="fas fa-globe"></i> ${cleanDomain}</a>`;
     };
 
     const createRow = (p) => {
@@ -342,6 +344,19 @@ export function renderTablesData(projectsToRender, handlers = {}) {
 }
 
 /**
+ * Sanitizes a value against CSV formula injection (CWE-1236).
+ * Neutralizes leading =, +, -, @, tab, or carriage return characters.
+ */
+export function sanitizeCsvField(val) {
+    if (val === null || val === undefined) return '';
+    let str = String(val);
+    if (/^[=+\-@\t\r]/.test(str)) {
+        str = "'" + str;
+    }
+    return str.replace(/"/g, '""');
+}
+
+/**
  * Exports current project dataset to CSV.
  */
 export function exportProjectsToCSV(cachedProjects) {
@@ -367,23 +382,23 @@ export function exportProjectsToCSV(cachedProjects) {
         const numWithVat = (numPrice * (1 + (BRANDING.defaultVatPercentage / 100))).toFixed(2).replace('.', ',');
 
         return [
-            `"${p.id || ''}"`,
-            `"${(p.client || p.companyName || '').replace(/"/g, '""')}"`,
-            `"${(p.companyName || p.client || '').replace(/"/g, '""')}"`,
-            `"${(p.contactName || p.client || '').replace(/"/g, '""')}"`,
-            `"${(p.email || '').replace(/"/g, '""')}"`,
-            `"${(p.phone || p.telephone || '').replace(/"/g, '""')}"`,
-            `"${(p.domainName || p.domain || '').replace(/"/g, '""')}"`,
-            `"${(p.service || '').replace(/"/g, '""')}"`,
-            `"${statusInfo.label.split(':')[0]}"`,
-            `"${statusInfo.label.replace(/"/g, '""')}"`,
-            `"${priceClean}"`,
-            `"${numWithVat}"`,
-            `"${(p.goals || '').replace(/"/g, '""')}"`,
+            `"${sanitizeCsvField(p.id)}"`,
+            `"${sanitizeCsvField(p.client || p.companyName)}"`,
+            `"${sanitizeCsvField(p.companyName || p.client)}"`,
+            `"${sanitizeCsvField(p.contactName || p.client)}"`,
+            `"${sanitizeCsvField(p.email)}"`,
+            `"${sanitizeCsvField(p.phone || p.telephone)}"`,
+            `"${sanitizeCsvField(p.domainName || p.domain)}"`,
+            `"${sanitizeCsvField(p.service)}"`,
+            `"${sanitizeCsvField(statusInfo.label.split(':')[0])}"`,
+            `"${sanitizeCsvField(statusInfo.label)}"`,
+            `"${sanitizeCsvField(priceClean)}"`,
+            `"${sanitizeCsvField(numWithVat)}"`,
+            `"${sanitizeCsvField(p.goals)}"`,
             doneTasks,
             tasks.length,
-            `"${(p.date || '').replace(/"/g, '""')}"`,
-            `"${new Date().toLocaleDateString('nl-NL')}"`
+            `"${sanitizeCsvField(p.date)}"`,
+            `"${sanitizeCsvField(new Date().toLocaleDateString('nl-NL'))}"`
         ].join(";");
     });
 

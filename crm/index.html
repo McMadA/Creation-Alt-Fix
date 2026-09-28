@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         :root {
             --bg-dark: #0a0e1a;
@@ -619,9 +619,19 @@
                     `;
                 } catch (err) {
                     console.error("Reset error:", err);
-                    alert(t.portalErrReset);
-                    btn.innerHTML = originalBtn;
-                    btn.disabled = false;
+                    // Anti-enumeration: treat non-existent account as success display
+                    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
+                        const box = document.getElementById('forgot-password-box');
+                        box.innerHTML = `
+                            <h2><i class="fas fa-check-circle" style="color: #10b981;"></i> ${t.portalResetSentTitle}</h2>
+                            <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 15px;">${t.portalResetSentDesc}</p>
+                            <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> ${t.portalBtnBackToLogin}</button>
+                        `;
+                    } else {
+                        alert(t.portalErrReset);
+                        btn.innerHTML = originalBtn;
+                        btn.disabled = false;
+                    }
                 }
             }
         });
@@ -672,9 +682,24 @@
                     `;
                 } catch (err) {
                     console.error("First login reset error:", err);
-                    alert(t.portalErrReset);
-                    btn.innerHTML = originalBtn;
-                    btn.disabled = false;
+                    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
+                        const box = document.getElementById('first-login-box');
+                        box.innerHTML = `
+                            <div style="text-align: center; padding: 10px 0;">
+                                <div style="width: 56px; height: 56px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                    <i class="fas fa-check" style="color: #10b981; font-size: 1.5rem;"></i>
+                                </div>
+                                <h2 style="color: #10b981; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;">${t.portalFirstLoginSent}</h2>
+                                <p style="font-size: 0.92rem; color: var(--text-main); margin-bottom: 8px; line-height: 1.6;">${t.portalFirstLoginSentDesc}</p>
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;"><i class="fas fa-envelope" style="margin-right: 4px;"></i> ${email}</p>
+                                <button onclick="window.location.reload()" class="btn-submit"><i class="fas fa-sign-in-alt"></i> ${t.portalBtnBackToLogin}</button>
+                            </div>
+                        `;
+                    } else {
+                        alert(t.portalErrReset);
+                        btn.innerHTML = originalBtn;
+                        btn.disabled = false;
+                    }
                 }
             }
         });

@@ -9,7 +9,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, formatProjectStatus, isAdminEmail, SUBSCRIPTION_PLANS } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, sanitizeUrl, formatProjectStatus, isAdminEmail, SUBSCRIPTION_PLANS } from "../../js/firebase-config.js";
 import { getPiBoekhoudingInfo } from "../../admin/js/modules/bookkeeping-data.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
@@ -689,7 +689,7 @@ function renderSubscriptionSection(data) {
         if (plan.price === "0,00") {
             priceEl.innerHTML = `€ 0,- <span style="font-size: 0.78rem; color: var(--text-muted);">${currentLang === 'en' ? '/ one-off project' : '/ eenmalig project'}</span>`;
         } else {
-            priceEl.innerHTML = `€ ${data.subscriptionPrice || plan.price} <span style="font-size: 0.78rem; color: var(--text-muted);">${currentLang === 'en' ? '/ year excl. VAT' : '/ jaar excl. BTW'}</span>`;
+            priceEl.innerHTML = `€ ${escapeHtml(data.subscriptionPrice || plan.price)} <span style="font-size: 0.78rem; color: var(--text-muted);">${currentLang === 'en' ? '/ year excl. VAT' : '/ jaar excl. BTW'}</span>`;
         }
     }
     if (domainEl) domainEl.innerText = domainVal;
@@ -923,7 +923,8 @@ function renderProposalSection(data) {
         if (dlBtn) {
             dlBtn.onclick = async () => {
                 if (data.proposalPdfUrl) {
-                    window.open(data.proposalPdfUrl, '_blank');
+                    const safePdfUrl = sanitizeUrl(data.proposalPdfUrl);
+                    if (safePdfUrl !== '#') window.open(safePdfUrl, '_blank');
                 } else {
                     const originalText = dlBtn.innerHTML;
                     dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF...';
@@ -1199,7 +1200,8 @@ function setupProposalActionFlow(data) {
                 if (dlBtn) {
                     dlBtn.onclick = async () => {
                         if (pdfDownloadUrl) {
-                            window.open(pdfDownloadUrl, '_blank');
+                            const safeUrl = sanitizeUrl(pdfDownloadUrl);
+                            if (safeUrl !== '#') window.open(safeUrl, '_blank');
                         } else {
                             const { doc: pDoc, filename } = await generateProposalPDF(projData, true);
                             pDoc.save(filename);
@@ -1444,7 +1446,7 @@ function renderFilesSection(data) {
     const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
     filesListContainer.innerHTML = files.map(f => {
         const dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString(localeStr) : (currentLang === 'en' ? 'earlier' : 'eerder');
-        const safeUrl = escapeHtml(f.url);
+        const safeUrl = escapeHtml(sanitizeUrl(f.url));
         const safeName = escapeHtml(f.name);
         return `
             <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 8px;">
@@ -1708,7 +1710,8 @@ export function resolveStagingUrl(p) {
     if (/bakkertjesieg\.nl(\/)?$/i.test(url)) {
         url = url.replace(/\/+$/, '') + '/new/';
     }
-    return url;
+    const safe = sanitizeUrl(url);
+    return safe === '#' ? null : safe;
 }
 
 /**
@@ -1747,7 +1750,7 @@ function showIframeCORSFallback(url, container) {
                     : 'The hosting server blocks loading this site in a preview frame. This is a security setting and does not affect your website.'}
             </p>
         </div>
-        <a href="${url}" target="_blank" rel="noopener noreferrer" 
+        <a href="${sanitizeUrl(url)}" target="_blank" rel="noopener noreferrer" 
            style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">
             <i class="fas fa-external-link-alt"></i>
             ${isNL ? 'Open in nieuw venster' : 'Open in new window'}
@@ -1894,7 +1897,8 @@ function setupInvoiceDownload(data) {
         invCard.classList.remove('hidden');
         invCard.onclick = async () => {
             if (data.invoicePdfUrl) {
-                window.open(data.invoicePdfUrl, '_blank');
+                const safeUrl = sanitizeUrl(data.invoicePdfUrl);
+                if (safeUrl !== '#') window.open(safeUrl, '_blank');
                 return;
             }
             const origHtml = invCard.innerHTML;
@@ -2019,7 +2023,7 @@ function setupProfileModal() {
                     feedback.style.background = 'rgba(239, 68, 68, 0.15)';
                     feedback.style.border = '1px solid rgba(239, 68, 68, 0.35)';
                     feedback.style.color = '#f87171';
-                    feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Kon gegevens niet opslaan: ' + err.message;
+                    feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Kon gegevens niet opslaan: ' + escapeHtml(err.message);
                 }
             } finally {
                 btnSave.innerHTML = origHtml;
@@ -2157,7 +2161,7 @@ function renderAnnotationPins(annotations) {
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm" data-action="delete-pin" data-id="${pin.id}" style="background: transparent; color: #f87171; border: none; padding: 4px; cursor: pointer;" title="Verwijder pin">
+                    <button type="button" class="btn btn-sm" data-action="delete-pin" data-id="${escapeHtml(pin.id)}" style="background: transparent; color: #f87171; border: none; padding: 4px; cursor: pointer;" title="Verwijder pin">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>

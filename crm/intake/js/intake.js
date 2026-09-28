@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, inMemoryPersistence, setPersistence, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { sendIntakeNotification } from "./notifications.js";
 import { firebaseConfig } from "../../js/firebase-config.js";
@@ -15,10 +15,16 @@ secondaryAuth.languageCode = 'nl';
 setPersistence(secondaryAuth, inMemoryPersistence).catch(console.warn);
 
 function generateTempPassword() {
-    const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
+    const randBytes = new Uint8Array(18);
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(randBytes);
+    } else {
+        for (let i = 0; i < 18; i++) randBytes[i] = Math.floor(Math.random() * 256);
+    }
     let code = 'CAF-';
-    for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (let i = 0; i < 16; i++) {
+        code += chars.charAt(randBytes[i] % chars.length);
     }
     return code;
 }
@@ -383,9 +389,9 @@ function validateCurrentStep() {
         const company = document.getElementById('companyName').value.trim();
         const contact = document.getElementById('contactName').value.trim();
         const email = document.getElementById('email').value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-        if (!company || !contact || !email || !emailRegex.test(email)) {
+        if (!company || company.length > 200 || !contact || !email || !emailRegex.test(email)) {
             alert(t.intakeValidationRequired);
             return false;
         }
@@ -703,6 +709,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (rErr) {
                 console.warn("Reset email warning:", rErr.message);
             }
+        } finally {
+            await signOut(secondaryAuth).catch(() => {});
         }
 
         // Detect TLD and recommended hosting plan
