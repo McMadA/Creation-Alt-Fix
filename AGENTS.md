@@ -2,6 +2,22 @@
 
 ## Recent Insights
 
+- **[2026-09-28] 2027 Abonnementsakkoord Notificatie- & Firestore Flow ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/js/email-notifications.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/email-notifications.js), [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules))**:
+  - **Notificatie Mechanisme**: Wanneer een klant in het portaal klikt op `[ Akkoord met 2027 Serviceplan ]`, wordt:
+    1. Direct een automatische e-mail verstuurd naar `info@creationaltfix.nl` via **EmailJS** (`notifyAdminNewMessage`), met daarin de klantnaam, het gekozen plan, de jaarlijkse prijs en een directe link naar het Admin Dashboard (met automatische FormSubmit HTTP fallback als back-up).
+    2. Een officieel timestamped bevestigingsticket toegevoegd aan de Firestore `messages`-thread van het project (`status: 'resolved'`), zichtbaar voor zowel klant als beheerder in de in-app chat.
+    3. De projectstatus in Firestore geüpdatet met `subscriptionPlan2027Status: 'bevestigd'` en `subscriptionPlan2027ConfirmedAt: ISO`.
+    4. In het Admin Dashboard (`crm/admin/index.html`) wordt de status direct realtime groen (`✅ 2027 Bevestigd`) en telt de omzet-KPI voor 2027 automatisch op.
+  - **Beveiligingsupdate `firestore.rules`**: `subscriptionPlan2027Name` en `subscriptionPlan2027Price` toegevoegd aan de whitelist voor client updates, waardoor `permission-denied` fouten bij klantakkoorden definitief voorkomen worden. Tests uitgebreid naar 42/42 geslaagd.
+
+- **[2026-09-28] Verwijdering Statische Placeholders & Data Leaks in CRM HTML ([crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html), [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
+  - **Probleem**: In diverse HTML-templates stonden hardcoded dummy waarden (zoals `185.104.29.148`, `25% Complete`, `Website Online (99.98%)`, `13/13 Live`, `0 berichten`, mock statussen `vandaag`, statische `0`-tellingen en klantnamen `(Angela, Scholte, Stenekes)` in KPI-ondertitels) die kortstondig zichtbaar waren voor gebruikers voordat Firebase Firestore / API's gegevens hadden ingeladen.
+  - **Oplossing**:
+    1. **Klantenportaal (`status/index.html`)**: Alle mock teksten en getallen vervangen door neutrale loading states (`—`, `<span style="opacity: 0.6;">Bezig met laden...</span>`, `Status controleren...`, `Controleren...`). Progress bar fill standaard op `width: 0%` i.p.v. `25%`.
+    2. **Admin Dashboard (`admin/index.html`)**: Dashboard KPI-statistieken (`#stat-leads`, `#stat-projects`, `#stat-waiting`, `#stat-delivered`, `#stat-tasks`, `#stat-monitoring-text`) gereset van statische `0` en `13/13 Live` naar dynamische `—`. Uptime KPI's en scan status gereset naar `—`. Hardcoded klantnamen in de abonnements-KPI subtitle vervangen door neutrale omschrijving `Historisch budgettarief (€ 22,-/jr)`.
+    3. **Project Werkstation (`admin/project.html`)**: Tabblad-tellers (`Taken & Deadlines`, `Berichten & Tickets`, `Live Staging`, `Notities`, `Bestanden`) en taakprogressietekst gereset naar `—`.
+    4. **CI/CD Quality Gate**: Nieuwe geautomatiseerde test toegevoegd aan Suite 9 van `tests/run-all-tests.js` die garandeert dat er geen statische mock data in de CRM HTML-bestanden achterblijft (42/42 tests geslaagd).
+
 - **[2026-09-27] 2027 Klanten Abonnementsclassificatie & Interne Factuurafhandeling ([crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js), [crm/admin/js/modules/admin-subscriptions.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-subscriptions.js), [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js), [crm/admin/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/index.html))**:
   - **Trouwe Klant Overgangstarief 2027 (€ 95,- voor 2027 → € 150,- in 2028)**:
     - *Stenekes Riool & Grondwerk* (`stenekesrioolspecialist.nl`)

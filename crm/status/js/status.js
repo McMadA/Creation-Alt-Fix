@@ -795,6 +795,20 @@ function renderSubscriptionSection(data) {
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
 
                 try {
+                    const existingMessages = (data && data.messages && Array.isArray(data.messages)) ? [...data.messages] : [];
+                    const confirmMsg = {
+                        id: 'sub2027_' + Date.now(),
+                        sender: 'client',
+                        author: data.client || data.companyName || (currentLang === 'en' ? 'Client' : 'Klant'),
+                        category: 'Abonnement 2027',
+                        content: currentLang === 'en'
+                            ? `✅ Digital Agreement: I agree with the 2027 service plan: ${plan2027.name} (€ ${plan2027.price}/yr excl. VAT).`
+                            : `✅ Digitaal Akkoord: Ik ga akkoord met het serviceplan voor 2027: ${plan2027.name} (€ ${plan2027.price}/jr excl. BTW).`,
+                        timestamp: new Date().toISOString(),
+                        status: 'resolved'
+                    };
+                    existingMessages.push(confirmMsg);
+
                     const updateObj = {
                         subscriptionPlan2027Id: plan2027.id,
                         subscriptionPlan2027Name: plan2027.name,
@@ -805,6 +819,7 @@ function renderSubscriptionSection(data) {
                         subscriptionPlanName: plan2027.name,
                         subscriptionPrice: plan2027.price,
                         subscriptionCycle: plan2027.cycle,
+                        messages: existingMessages,
                         updatedAt: new Date().toISOString()
                     };
                     if (db && currentProjectDocId) {
@@ -822,6 +837,7 @@ function renderSubscriptionSection(data) {
                     }).catch(console.warn);
 
                     renderSubscriptionSection(data);
+                    renderMessagesSection(data);
                     
                     alert(currentLang === 'en' 
                         ? 'Thank you! Your 2027 service plan has been confirmed.'

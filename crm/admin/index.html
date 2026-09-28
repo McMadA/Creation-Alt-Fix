@@ -191,7 +191,7 @@
                     <div class="kanban-column" id="kanban-col-todo">
                         <div class="kanban-column-header">
                             <h3><i class="fas fa-inbox text-accent"></i> To Do / Backlog</h3>
-                            <span class="kanban-count-badge" id="count-kanban-todo">0</span>
+                            <span class="kanban-count-badge" id="count-kanban-todo">—</span>
                         </div>
                         <div class="kanban-cards-list" id="list-kanban-todo">
                             <!-- Injected by JS -->
@@ -202,7 +202,7 @@
                     <div class="kanban-column" id="kanban-col-inprogress">
                         <div class="kanban-column-header">
                             <h3><i class="fas fa-spinner" style="color: #fbbf24;"></i> In Behandeling</h3>
-                            <span class="kanban-count-badge" id="count-kanban-inprogress">0</span>
+                            <span class="kanban-count-badge" id="count-kanban-inprogress">—</span>
                         </div>
                         <div class="kanban-cards-list" id="list-kanban-inprogress">
                             <!-- Injected by JS -->
@@ -213,7 +213,7 @@
                     <div class="kanban-column" id="kanban-col-review">
                         <div class="kanban-column-header">
                             <h3><i class="fas fa-search" style="color: #c084fc;"></i> Review & Feedback</h3>
-                            <span class="kanban-count-badge" id="count-kanban-review">0</span>
+                            <span class="kanban-count-badge" id="count-kanban-review">—</span>
                         </div>
                         <div class="kanban-cards-list" id="list-kanban-review">
                             <!-- Injected by JS -->
@@ -224,7 +224,7 @@
                     <div class="kanban-column" id="kanban-col-done">
                         <div class="kanban-column-header">
                             <h3><i class="fas fa-check-circle" style="color: #34d399;"></i> Voltooid</h3>
-                            <span class="kanban-count-badge" id="count-kanban-done">0</span>
+                            <span class="kanban-count-badge" id="count-kanban-done">—</span>
                         </div>
                         <div class="kanban-cards-list" id="list-kanban-done">
                             <!-- Injected by JS -->
@@ -264,7 +264,7 @@
                 <div id="monitoring-scan-progress-container" class="hidden" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 12px 16px; border: 1px solid rgba(99, 102, 241, 0.3);">
                     <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #c7d2fe; margin-bottom: 8px; font-weight: 600;">
                         <span><i class="fas fa-satellite-dish fa-spin" style="color: var(--color-accent); margin-right: 6px;"></i> <span id="monitoring-scan-status-label">Bezig met scannen van DNS-records en HTTPS endpoints...</span></span>
-                        <span id="monitoring-scan-status-text">0 / 13</span>
+                        <span id="monitoring-scan-status-text">—</span>
                     </div>
                     <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 6px; overflow: hidden;">
                         <div class="scan-progress-bar" id="monitoring-scan-bar" style="width: 0%;"></div>
@@ -279,7 +279,7 @@
                             <span class="monitoring-pulse-dot operational"></span>
                         </div>
                         <div class="monitoring-kpi-val" id="kpi-mon-operational" style="color: #34d399;">
-                            13 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">/ 13</span>
+                            —
                         </div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Domeinen live en bereikbaar</div>
                     </div>
@@ -290,7 +290,7 @@
                             <span class="monitoring-pulse-dot down"></span>
                         </div>
                         <div class="monitoring-kpi-val" id="kpi-mon-down" style="color: #f87171;">
-                            0 <span style="font-size: 0.95rem; font-weight: 500; color: #94a3b8;">incidenten</span>
+                            —
                         </div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);" id="kpi-mon-down-sub">Geen actieve DNS/HTTP uitval</div>
                     </div>
@@ -763,40 +763,40 @@
                     <div class="stat-card">
                         <i class="fas fa-inbox stat-icon" style="color: var(--color-accent);"></i>
                         <div class="stat-label">Nieuwe Leads</div>
-                        <div class="stat-value" id="stat-leads" style="color: var(--color-accent);">0</div>
+                        <div class="stat-value" id="stat-leads" style="color: var(--color-accent);">—</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Fase 1: Intake formulieren</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-code stat-icon" style="color: #818cf8;"></i>
                         <div class="stat-label">Actieve Projecten</div>
-                        <div class="stat-value" id="stat-projects" style="color: #818cf8;">0</div>
+                        <div class="stat-value" id="stat-projects" style="color: #818cf8;">—</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Fase 2-4: Design & Code</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-clock stat-icon" style="color: #fbbf24;"></i>
                         <div class="stat-label">Wachten op Klant</div>
-                        <div class="stat-value" id="stat-waiting" style="color: #fbbf24;">0</div>
+                        <div class="stat-value" id="stat-waiting" style="color: #fbbf24;">—</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Offerte of Design review</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-rocket stat-icon" style="color: #34d399;"></i>
                         <div class="stat-label">Opgeleverd & Live</div>
-                        <div class="stat-value" id="stat-delivered" style="color: #34d399;">0</div>
+                        <div class="stat-value" id="stat-delivered" style="color: #34d399;">—</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Fase 5: Live &amp; Voldaan</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-tasks stat-icon" style="color: #c084fc;"></i>
                         <div class="stat-label">Open Taken</div>
-                        <div class="stat-value" id="stat-tasks" style="color: #c084fc;">0</div>
+                        <div class="stat-value" id="stat-tasks" style="color: #c084fc;">—</div>
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;">Deliverables op Kanban</div>
                     </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="document.querySelector('[data-view=monitoring]').click()" title="Klik voor Realtime Uptime &amp; DNS Monitoring">
                         <i class="fas fa-heartbeat stat-icon" style="color: #10b981;" id="stat-monitoring-icon"></i>
                         <div class="stat-label">Uptime &amp; Monitoring</div>
                         <div class="stat-value" id="stat-monitoring" style="color: #10b981; display: flex; align-items: center; gap: 8px; font-size: 1.55rem;">
-                            <span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">13/13 Live</span>
+                            <span class="monitoring-pulse-dot operational"></span> <span id="stat-monitoring-text">—</span>
                         </div>
-                        <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;" id="stat-monitoring-sub">DNS, SSL &amp; HTTP OK</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 4px;" id="stat-monitoring-sub">Controleren...</div>
                     </div>
                 </div>
 

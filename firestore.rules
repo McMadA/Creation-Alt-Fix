@@ -78,7 +78,7 @@ service cloud.firestore {
                              'kvkNumber', 'kvk', 'vatNumber', 'btwNummer', 'updatedAt',
                              'clientUid',
                              'subscriptionPlan2027Status', 'subscriptionPlan2027ConfirmedAt',
-                             'subscriptionPlan2027Id', 'subscriptionPlan2027ProposedAt',
+                             'subscriptionPlan2027Id', 'subscriptionPlan2027Name', 'subscriptionPlan2027Price', 'subscriptionPlan2027ProposedAt',
                              'subscriptionPlanId', 'subscriptionPlanName', 'subscriptionPrice', 'subscriptionCycle'
                            ]));
 
