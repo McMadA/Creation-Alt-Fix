@@ -39,10 +39,12 @@ try {
 let currentProjectId = null;
 let currentProjectData = null;
 
-// --- Plans & Bookkeeping Records (Modularized) ---
 import { SUBSCRIPTION_PLANS } from "../../js/crm-config.js";
 import { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
+import { renderBillingCardHtml, createMolliePaymentLink, generateBillingWhatsAppUrl } from "./modules/project-billing.js";
+import { renderVisualPulseBadge } from "./modules/project-timeline.js";
+import { Toast } from "../../js/core/toast.js";
 export { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo };
 
 
@@ -362,6 +364,18 @@ function renderProjectWorkspace(p) {
     document.getElementById('project-title-display').innerText = clientName;
     document.title = `Project: ${clientName} - Creation+Alt+Fix Admin`;
     document.getElementById('project-date-display').innerText = dateSubmitted;
+    
+    // Update Visual Pulse Badge
+    const pulseContainer = document.getElementById('project-visual-pulse-container');
+    if (pulseContainer) {
+        pulseContainer.innerHTML = renderVisualPulseBadge(p.activityLogs || p.timeline || []);
+    }
+
+    // Update Billing & Mollie Card
+    const billingContainer = document.getElementById('project-billing-container');
+    if (billingContainer) {
+        billingContainer.innerHTML = renderBillingCardHtml(p);
+    }
     
     // Determine Phase & Harmonized Status
     const statusInfo = formatProjectStatus(status, p.statusClass);
@@ -1637,6 +1651,62 @@ function setupFormHandlers() {
                 changeProjectPhase(phaseNum);
             }
         });
+    });
+
+    // Dedicated Facturen & Mollie iDEAL Action Handlers
+    document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+
+        if (action === 'billing:create-ideal-link') {
+            const p = currentProjectData;
+            if (!p) return;
+            const amount = p.proposalPrice || 150;
+            const invNumber = `FAC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            try {
+                const linkData = await createMolliePaymentLink({
+                    projectId: currentProjectId,
+                    clientName: p.client || p.companyName || 'Klant',
+                    invoiceNumber: invNumber,
+                    amountIncl: amount * 1.21,
+                    description: `Oplevering ${p.client || 'Project'} - Creation+Alt+Fix`
+                });
+                const newInvoice = {
+                    invoiceNumber: invNumber,
+                    invoiceDate: new Date().toISOString().split('T')[0],
+                    amountExcl: amount,
+                    amountVat: amount * 0.21,
+                    amountIncl: amount * 1.21,
+                    status: 'open',
+                    molliePaymentId: linkData.paymentId,
+                    mollieCheckoutUrl: linkData.checkoutUrl
+                };
+                const updatedInvoices = [...(p.invoices || []), newInvoice];
+                p.invoices = updatedInvoices;
+                if (db && currentProjectId) {
+                    await updateDoc(doc(db, "projects", currentProjectId), { invoices: updatedInvoices });
+                }
+                renderProjectWorkspace(p);
+                Toast.show({ title: "iDEAL Betaallink Aangemaakt", message: `Factuur ${invNumber} gegenereerd met Mollie URL.`, type: "success" });
+            } catch (err) {
+                console.error("Fout bij aanmaken Mollie link:", err);
+                Toast.show({ title: "Fout bij betaallink", message: err.message, type: "error" });
+            }
+        } else if (action === 'billing:copy-link') {
+            const url = btn.getAttribute('data-url');
+            if (url) {
+                navigator.clipboard.writeText(url);
+                Toast.show({ title: "Betaallink Gekopieerd", type: "info", duration: 2500 });
+            }
+        } else if (action === 'billing:share-whatsapp') {
+            const url = btn.getAttribute('data-url');
+            const inv = btn.getAttribute('data-inv');
+            const amount = parseFloat(btn.getAttribute('data-amount') || 0);
+            const p = currentProjectData;
+            const waUrl = generateBillingWhatsAppUrl(p?.phone, p?.client || 'Klant', inv, amount, url);
+            window.open(waUrl, '_blank');
+        }
     });
 
     // 1. Save Intake Changes Form

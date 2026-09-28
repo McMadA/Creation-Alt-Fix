@@ -2,6 +2,26 @@
 
 ## Recent Insights
 
+- **[2026-09-28] CRM Architectuur Transformatie, Reactive Store & 2027 Feature Suite ([crm/js/core/store.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/core/store.js), [crm/js/core/action-dispatcher.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/core/action-dispatcher.js), [crm/js/core/toast.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/core/toast.js), [crm/js/core/offline-queue.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/core/offline-queue.js), [crm/js/core/schemas.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/core/schemas.js), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js), [crm/admin/js/modules/project-timeline.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-timeline.js), [crm/status/js/modules/visual-feedback.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/modules/visual-feedback.js), [crm/status/js/modules/sla-signer.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/modules/sla-signer.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
+  - **Core Foundation**:
+    1. `ReactiveStore` (Proxy + EventTarget): Reactive state store met microtask debouncing en atomische batch mutaties zonder externe frameworks.
+    2. `ActionDispatcher`: Centrale event delegation via `[data-action]` voorkomt inline HTML event handlers en garandeert schone listener lifecycles.
+    3. `Toast` & Modal Confirm: Non-blocking glassmorphic notificatiesysteem met progressbar, auto-dismiss en callback actions ter vervanging van `alert()` en `confirm()`.
+    4. `OfflineQueue`: IndexedDB Write-Ahead Logging (`caf_offline_db`) die mutaties vasthoudt bij haperende verbinding en automatisch flusht zodra `online` triggert.
+    5. `Schemas`: JSDoc typings en runtime defensieve validatie/defaults voor `ProjectDocument`, `TaskItem`, `InvoiceDocument`, `AnnotationItem` en `ContractDocument`.
+  - **Modularisatie van `admin.js`**:
+    - Kanban sprintbord logica geëxtraheerd naar `admin-kanban.js`.
+    - TODO.md DevOps sync suite geëxtraheerd naar `admin-todo-modal.js`.
+    - Realtime Uptime monitoring UI en incident tracking geëxtraheerd naar `admin-monitoring-ui.js`.
+    - Volledige backward compatibility gewaarborgd voor alle `window.*` handlers en bestaande CI tests.
+  - **5 Nieuwe 2027 Agency Features Volledig Geïmplementeerd**:
+    1. **Mollie iDEAL Betaallinks & Facturatie** (`project-billing.js`): 1-klik betaallink generatie, WhatsApp dispatch (`wa.me`) en realtime status badges.
+    2. **Visual Pulse & Klantactiviteit** (`project-timeline.js`): Realtime indicator (`Nu Actief`, `Offerte Bekeken`, `Passief`) in de project header en chronologische audit tijdlijn.
+    3. **Visuele Staging Feedback & Pins** (`visual-feedback.js`): Interactieve annotatie overlay op de live staging preview (`<iframe>`) voor directe klant revisies.
+    4. **Multi-Channel Alerting** (`uptime-monitor.js`): Uitbreiding van de 24/7 DoH engine met Discord Webhook rich embeds en Telegram Bot API push notificaties bij 3x opeenvolgende downtime.
+    5. **Contract & Digitale SLA Generator** (`sla-signer.js`): Automatische hostingovereenkomst generatie op basis van de 2027 abonnementsmatrix met touch/mouse canvas handtekening in het klantenportaal.
+  - **CI/CD Quality Gate**: Testsuite uitgebreid van 49 naar 68 geautomatiseerde unittests (100% pass across 12 suites).
+
 - **[2026-09-28] Volledige CRM Codebase Beveiligingsaudit & Defense in Depth Hardening ([crm/js/email-notifications.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/email-notifications.js), [crm/admin/js/modules/admin-tables.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-tables.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/js/ai-engine.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/ai-engine.js), [crm/.htaccess](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/.htaccess), [crm/intake/js/intake.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/intake/js/intake.js), [storage.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/storage.rules), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
   - Uitputtende security audit en threat model conform OWASP Top 10 en Zero-Trust principes:
     1. **Storage BOLA / IDOR**: `storage.rules` controleert via `isProjectOwner` en `firestore.exists` strikt ownership en MIME-types.

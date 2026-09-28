@@ -782,14 +782,111 @@ export async function dispatchDowntimeAlert(report, options = {}) {
         if (res.ok) {
             localStorage.setItem(throttleKey, Date.now().toString());
             console.log(`🚨 Beheerder downtime alert succesvol verzonden naar info@creationaltfix.nl voor ${report.domain}`);
-            return true;
         }
     } catch (err) {
         console.warn("Fout bij verzenden beheerder downtime alert:", err.message);
     }
 
+    // Multi-Channel Alerting (Discord / Telegram)
+    try {
+        await dispatchMultiChannelDowntimeAlert(report, options);
+    } catch (e) {
+        console.warn("[Monitor] Multi-channel alert waarschuwing:", e);
+    }
+
     localStorage.setItem(throttleKey, Date.now().toString());
     return true;
+}
+
+/**
+ * Sends a rich downtime embed to a configured Discord Webhook.
+ * @param {Object} report 
+ * @param {string} webhookUrl 
+ */
+export async function sendDiscordWebhookAlert(report, webhookUrl) {
+    if (!webhookUrl || typeof webhookUrl !== 'string' || !webhookUrl.startsWith('https://')) return false;
+
+    try {
+        const payload = {
+            username: "Creation+Alt+Fix Sentry",
+            avatar_url: "https://creationaltfix.nl/images/logo.png",
+            embeds: [{
+                title: `🚨 DOWNTIME ALERT: ${report.domain} IS DOWN!`,
+                description: `**Klant/Project:** ${report.name || report.domain} ${report.client ? `(${report.client})` : ''}\n**HTTP Status:** ${report.httpCode || 'Geen response'}\n**DNS Status:** ${report.dnsStatus || 'Onbekend'}\n**Incident Tijdstip:** ${new Date().toLocaleString('nl-NL')}`,
+                color: 15158332, // #e74c3c
+                fields: [
+                    { name: "Domein", value: String(report.domain), inline: true },
+                    { name: "Gemeten Fouten", value: `${report.consecutiveFailures || REQUIRED_CONSECUTIVE_FAILURES}x achter elkaar`, inline: true }
+                ],
+                footer: { text: "Creation+Alt+Fix 24/7 DoH Uptime Engine" },
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        return res.ok;
+    } catch (e) {
+        console.warn("[Monitor] Discord alert mislukt:", e);
+        return false;
+    }
+}
+
+/**
+ * Sends an urgent downtime message via Telegram Bot API.
+ * @param {Object} report 
+ * @param {string} botToken 
+ * @param {string} chatId 
+ */
+export async function sendTelegramAlert(report, botToken, chatId) {
+    if (!botToken || !chatId) return false;
+
+    try {
+        const text = `🚨 <b>DOWNTIME ALERT: ${report.domain} IS DOWN!</b>\n\n` +
+            `🏢 <b>Project:</b> ${report.name || report.domain}\n` +
+            `🌐 <b>Domein:</b> ${report.domain}\n` +
+            `⚠️ <b>Statuscode:</b> ${report.httpCode || 'Geen verbinding'}\n` +
+            `⏱️ <b>Tijdstip:</b> ${new Date().toLocaleString('nl-NL')}\n\n` +
+            `<a href="https://portal.creationaltfix.nl/crm/admin/">👉 Open Admin Dashboard</a>`;
+
+        const url = `https://api.telegram.org/bot${encodeURIComponent(botToken)}/sendMessage`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML',
+                disable_web_page_preview: true
+            })
+        });
+        return res.ok;
+    } catch (e) {
+        console.warn("[Monitor] Telegram alert mislukt:", e);
+        return false;
+    }
+}
+
+/**
+ * Dispatches multi-channel alerts across Discord and Telegram.
+ * @param {Object} report 
+ * @param {Object} [options] 
+ */
+export async function dispatchMultiChannelDowntimeAlert(report, options = {}) {
+    const discordUrl = options.discordWebhookUrl || (typeof localStorage !== 'undefined' ? localStorage.getItem('caf_webhook_discord') : null);
+    const tgToken = options.telegramBotToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('caf_webhook_telegram_token') : null);
+    const tgChat = options.telegramChatId || (typeof localStorage !== 'undefined' ? localStorage.getItem('caf_webhook_telegram_chat') : null);
+
+    const tasks = [];
+    if (discordUrl) tasks.push(sendDiscordWebhookAlert(report, discordUrl));
+    if (tgToken && tgChat) tasks.push(sendTelegramAlert(report, tgToken, tgChat));
+
+    if (tasks.length > 0) {
+        await Promise.allSettled(tasks);
+    }
 }
 
 /**

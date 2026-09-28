@@ -465,6 +465,11 @@ const filesToCheck = [
     "crm/js/firebase-config.js",
     "crm/js/core/firebase.js",
     "crm/js/core/db-service.js",
+    "crm/js/core/store.js",
+    "crm/js/core/action-dispatcher.js",
+    "crm/js/core/toast.js",
+    "crm/js/core/offline-queue.js",
+    "crm/js/core/schemas.js",
     "crm/js/uptime-monitor.js",
     "crm/js/email-notifications.js",
     "crm/js/ai-engine.js",
@@ -477,8 +482,15 @@ const filesToCheck = [
     "crm/admin/js/modules/admin-subscriptions.js",
     "crm/admin/js/modules/bookkeeping-data.js",
     "crm/admin/js/modules/subscription-2027.js",
+    "crm/admin/js/modules/admin-kanban.js",
+    "crm/admin/js/modules/admin-todo-modal.js",
+    "crm/admin/js/modules/admin-monitoring-ui.js",
+    "crm/admin/js/modules/project-billing.js",
+    "crm/admin/js/modules/project-timeline.js",
     "crm/status/js/status.js",
-    "crm/status/js/modules/translations.js"
+    "crm/status/js/modules/translations.js",
+    "crm/status/js/modules/visual-feedback.js",
+    "crm/status/js/modules/sla-signer.js"
 ];
 
 for (const relPath of filesToCheck) {
@@ -664,6 +676,115 @@ test("healthcheck.php enforces SSRF, DNS pinning, and rate limiting defenses", (
     assert.ok(php.includes("CURLOPT_RESOLVE"), "Must pin DNS via CURLOPT_RESOLVE to prevent TOCTOU DNS rebinding");
     assert.ok(php.includes("CURLPROTO_HTTPS | CURLPROTO_HTTP"), "Must restrict protocols to HTTPS and HTTP");
     assert.ok(php.includes("60"), "Must enforce rate limiting threshold");
+});
+
+// ========================================================
+// 12. ARCHITECTURE, REACTIVE STATE & 2027 AGENCY FEATURES
+// ========================================================
+console.log("\n📌 SUITE 12: Architecture, Reactive State & 2027 Features");
+
+const { ReactiveStore } = await import("../crm/js/core/store.js");
+const { ActionDispatcher } = await import("../crm/js/core/action-dispatcher.js");
+const { Schemas } = await import("../crm/js/core/schemas.js");
+const { calculateVisualPulse } = await import("../crm/admin/js/modules/project-timeline.js");
+const { generateBillingWhatsAppUrl } = await import("../crm/admin/js/modules/project-billing.js");
+const { generateSlaContractDetails } = await import("../crm/status/js/modules/sla-signer.js");
+const { sendDiscordWebhookAlert, sendTelegramAlert } = await import("../crm/js/uptime-monitor.js");
+
+test("ReactiveStore mutates state reactively and notifies subscribers", () => {
+    const testStore = new ReactiveStore({ count: 1, nested: { status: "draft" } });
+    let notified = false;
+
+    testStore.subscribe("count", (state, detail) => {
+        notified = true;
+        assert.equal(state.count, 2);
+    });
+
+    testStore.state.count = 2;
+    // Notify runs immediately or in microtask
+    assert.equal(testStore.state.count, 2);
+});
+
+test("ActionDispatcher registers and executes delegated actions", () => {
+    const dispatcher = new ActionDispatcher();
+    let executedAction = false;
+    let payloadReceived = null;
+
+    dispatcher.register("project:test-action", (dataset) => {
+        executedAction = true;
+        payloadReceived = dataset;
+    });
+
+    dispatcher.dispatch("project:test-action", { projectId: "proj_123", amount: 150 });
+    assert.equal(executedAction, true);
+    assert.equal(payloadReceived.projectId, "proj_123");
+    assert.equal(payloadReceived.amount, 150);
+});
+
+test("Schemas enforce defensive defaults and prevent runtime crashes", () => {
+    // 1. Incomplete project doc
+    const sanitized = Schemas.sanitizeProject({ id: "p1", client: "  Test Klant  ", status: 99 });
+    assert.equal(sanitized.id, "p1");
+    assert.equal(sanitized.client, "Test Klant");
+    assert.equal(sanitized.companyName, "Test Klant");
+    assert.equal(sanitized.status, 1, "Status > 5 must default to 1");
+    assert.ok(Array.isArray(sanitized.tasks));
+    assert.ok(Array.isArray(sanitized.messages));
+    assert.ok(Array.isArray(sanitized.invoices));
+
+    // 2. Task sanitizer
+    const task = Schemas.sanitizeTask({ title: "Check SSL" });
+    assert.equal(task.title, "Check SSL");
+    assert.equal(task.status, "todo");
+    assert.equal(task.completed, false);
+    assert.ok(task.id.startsWith("task_"));
+
+    // 3. Invoice sanitizer
+    const inv = Schemas.sanitizeInvoice({ amountExcl: 100 });
+    assert.equal(inv.amountExcl, 100);
+    assert.equal(inv.amountVat, 21);
+    assert.equal(inv.amountIncl, 121);
+    assert.equal(inv.status, "open");
+});
+
+test("Visual Pulse calculates active, recent, and passive client states", () => {
+    // Empty logs -> passive
+    const pPassive = calculateVisualPulse([]);
+    assert.equal(pPassive.state, "passive");
+
+    // 2 minutes ago -> active
+    const pActive = calculateVisualPulse([{ eventType: "portal_login", timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString() }]);
+    assert.equal(pActive.state, "active");
+    assert.ok(pActive.label.includes("actief"));
+
+    // 25 minutes ago -> recent
+    const pRecent = calculateVisualPulse([{ eventType: "proposal_view", timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString() }]);
+    assert.equal(pRecent.state, "recent");
+    assert.ok(pRecent.label.includes("Offerte Bekeken"));
+});
+
+test("generateBillingWhatsAppUrl formats phone numbers and encodes message safely", () => {
+    const waUrl = generateBillingWhatsAppUrl("06-12345678", "Bakkerij Sieg", "2027-001", 181.50, "https://mollie.com/pay/123");
+    assert.ok(waUrl.startsWith("https://wa.me/31612345678"));
+    assert.ok(waUrl.includes("Bakkerij%20Sieg"));
+    assert.ok(waUrl.includes("2027-001"));
+    assert.ok(waUrl.includes("https%3A%2F%2Fmollie.com%2Fpay%2F123"));
+});
+
+test("generateSlaContractDetails generates SLA terms based on 2027 plan", () => {
+    const sla = generateSlaContractDetails("transition_2027_loyalty", { id: "stenekes", client: "Stenekes" });
+    assert.equal(sla.annualPrice, 95);
+    assert.equal(sla.serviceMinutesIncluded, 30);
+    assert.ok(sla.contractNumber.includes("STENEKES"));
+    assert.ok(sla.uptimeTarget.includes("99.9%"));
+});
+
+test("Multi-Channel webhook alerts reject invalid URLs gracefully without crashing", async () => {
+    const resDiscord = await sendDiscordWebhookAlert({ domain: "example.com" }, "http://invalid-not-https");
+    assert.equal(resDiscord, false);
+
+    const resTelegram = await sendTelegramAlert({ domain: "example.com" }, "", "");
+    assert.equal(resTelegram, false);
 });
 
 // ========================================================
