@@ -58,6 +58,7 @@ const {
     formatProjectStatus, 
     formatCurrency, 
     normalizeDomain,
+    isClientAuthActivated,
     BRANDING,
     SUBSCRIPTION_PLANS,
     ADMIN_EMAILS
@@ -79,6 +80,24 @@ test("isAdminEmail accurately checks authorized admins", () => {
     assert.equal(isAdminEmail(""), false);
     assert.equal(isAdminEmail(null), false);
 });
+
+test("isClientAuthActivated requires valid email and authentic activation flags", () => {
+    // 1. Projects WITHOUT email must NEVER evaluate to activated
+    assert.equal(isClientAuthActivated({ isClientAccount: true }), false, "Missing email must be false even if isClientAccount is true");
+    assert.equal(isClientAuthActivated({ email: "", isClientAccount: true }), false, "Empty email must be false");
+    assert.equal(isClientAuthActivated({ email: "   ", clientUid: "valid_uid_123" }), false, "Whitespace email must be false");
+    assert.equal(isClientAuthActivated({ email: "invalid-email-format", isClientAccount: true }), false, "Email without @ must be false");
+    assert.equal(isClientAuthActivated(null), false, "Null project must be false");
+    assert.equal(isClientAuthActivated({}), false, "Empty project must be false");
+
+    // 2. Legacy mock UIDs without isClientAccount must be false
+    assert.equal(isClientAuthActivated({ email: "client@bedrijf.nl", clientUid: "QVzS7PyJkeXi7mM50HOgXsSiQFe2" }), false, "Mock UID must be ignored");
+
+    // 3. Valid email with authentic clientUid or isClientAccount flag must evaluate to true
+    assert.equal(isClientAuthActivated({ email: "client@bedrijf.nl", clientUid: "auth_user_999" }), true, "Authentic UID with email must be true");
+    assert.equal(isClientAuthActivated({ email: "client@bedrijf.nl", isClientAccount: true }), true, "isClientAccount with email must be true");
+});
+
 
 test("formatProjectStatus maps all 5 workflow phases correctly", () => {
     // Fase 1
@@ -471,6 +490,38 @@ test("Generic table, stats and core modules contain no hardcoded personal KVKs",
         assert.ok(!content.includes("59520353"), `${rel} must not contain personal KVK 59520353`);
         assert.ok(!content.includes("89192036"), `${rel} must not contain personal KVK 89192036`);
     }
+});
+
+
+// ========================================================
+// 10. ADMIN KLANTVIEW PREVIEW ENGINE
+// ========================================================
+console.log("\n📌 SUITE 10: Admin Klantview Preview Engine");
+
+test("Project workstation HTML contains Klantview tab, iframe, and preview button", () => {
+    const projectHtmlPath = path.join(ROOT_DIR, "crm/admin/project.html");
+    const content = fs.readFileSync(projectHtmlPath, "utf-8");
+    assert.ok(content.includes('id="btn-open-client-portal"'), "Must have #btn-open-client-portal button in header");
+    assert.ok(content.includes('data-tab="tab-clientview"'), "Must have [data-tab='tab-clientview'] navigation button");
+    assert.ok(content.includes('id="tab-clientview"'), "Must have #tab-clientview pane container");
+    assert.ok(content.includes('id="clientview-iframe"'), "Must have #clientview-iframe embedded viewport");
+    assert.ok(content.includes('btn-device-switch'), "Must have device responsive switchers (Desktop, Tablet, Mobile)");
+});
+
+test("Client portal HTML contains sticky admin preview banner", () => {
+    const statusHtmlPath = path.join(ROOT_DIR, "crm/status/index.html");
+    const content = fs.readFileSync(statusHtmlPath, "utf-8");
+    assert.ok(content.includes('id="admin-preview-banner"'), "Must have #admin-preview-banner in status portal");
+});
+
+test("Admin tables and modal provide direct Klantview preview shortcuts", () => {
+    const tablesJsPath = path.join(ROOT_DIR, "crm/admin/js/modules/admin-tables.js");
+    const tablesContent = fs.readFileSync(tablesJsPath, "utf-8");
+    assert.ok(tablesContent.includes('status/index.html?preview=true&id='), "admin-tables.js must link directly to Klantview preview");
+
+    const adminJsPath = path.join(ROOT_DIR, "crm/admin/js/admin.js");
+    const adminContent = fs.readFileSync(adminJsPath, "utf-8");
+    assert.ok(adminContent.includes('status/index.html?preview=true&id='), "admin.js must provide Klantview preview in Klantkaart modal");
 });
 
 

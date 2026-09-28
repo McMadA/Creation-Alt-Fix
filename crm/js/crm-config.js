@@ -182,6 +182,25 @@ export function isAdminEmail(email) {
 }
 
 /**
+ * Evaluates whether a client project has an active, authenticated Firebase Auth account.
+ * Crucially requires a valid email address; an account without an email can NEVER be activated.
+ * Filters out legacy mock UIDs.
+ * 
+ * @param {Object} p - Project document
+ * @returns {boolean}
+ */
+export function isClientAuthActivated(p) {
+    if (!p) return false;
+    const email = (p.email || '').trim().toLowerCase();
+    if (!email || !email.includes('@')) return false;
+
+    // Check for authentic non-mock UID
+    const hasAuthenticUid = Boolean(p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2');
+    return Boolean(hasAuthenticUid || p.isClientAccount);
+}
+
+
+/**
  * Standardizes project status badge and phase metadata.
  * @param {string} rawStatus 
  * @param {string} [fallbackStatusClass]

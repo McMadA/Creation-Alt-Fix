@@ -10,7 +10,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail, formatProjectStatus, BRANDING } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, ADMIN_EMAILS, isAdminEmail, formatProjectStatus, BRANDING, isClientAuthActivated } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel } from "../../js/ai-engine.js";
 import { parseTodoMarkdown, mapTaskToProject, syncTodoToFirestore, exportKanbanToTodoMarkdown, PROJECT_PROFILES } from "../../js/todo-sync.js";
@@ -534,7 +534,8 @@ window.openProjectDetails = (id) => {
     const dateSubmitted = p.date || "Onbekend";
     const status = p.status || "Nieuwe Lead";
     const originalEmail = p.email || ""; // Track original email for change detection
-    const isAuthActivated = Boolean((p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2') || p.isClientAccount);
+    const hasValidEmail = Boolean(email && email.trim() && email.includes('@'));
+    const isAuthActivated = isClientAuthActivated(p);
 
     // Parse extra/secondary domains
     const extraDomainsList = Array.isArray(p.additionalDomains) 
@@ -630,7 +631,8 @@ window.openProjectDetails = (id) => {
                     <span style="font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-top: 2px;">Ingediend op: ${s.dateSubmitted}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <a href="project.html?id=${s.safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;"><i class="fas fa-external-link-alt"></i> Open Werkplek</a>
+                    <a href="project.html?id=${s.safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;"><i class="fas fa-desktop"></i> Open Werkplek</a>
+                    <a href="../status/index.html?preview=true&id=${s.safeId}" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none; background: rgba(34, 211, 238, 0.12); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.35); display: inline-flex; align-items: center; gap: 6px;" title="Bekijk het klantenportaal zoals deze klant het ziet (Directe Klantview)"><i class="fas fa-eye"></i> Klantview</a>
                     <select onchange="window.updateProjectPhaseFromModal('${s.safeId}', this.value)" class="admin-input" style="padding: 4px 8px; font-size: 0.8rem; margin: 0; width: auto; cursor: pointer; background: rgba(15,23,42,0.9); border: 1px solid var(--color-primary-light); color: #fff; border-radius: 6px;" title="Wijzig status/fase direct">
                         <option value="1" ${currentPhase === 1 ? 'selected' : ''}>Fase 1: Intake Voltooid</option>
                         <option value="2" ${currentPhase === 2 ? 'selected' : ''}>Fase 2: Wacht op Akkoord (Offerte)</option>
@@ -711,25 +713,28 @@ window.openProjectDetails = (id) => {
                     <input type="url" id="edit-designUrl" class="admin-input" value="${s.designUrl}" style="margin: 4px 0 0 0;" placeholder="https://www.figma.com/design/... of preview URL">
                 </div>
 
-                <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : 'rgba(99, 102, 241, 0.05)'}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.2)'};">
+                <div class="intake-box" style="margin-top: 15px; background: ${isAuthActivated ? 'rgba(16, 185, 129, 0.05)' : (!hasValidEmail ? 'rgba(239, 68, 68, 0.05)' : 'rgba(99, 102, 241, 0.05)')}; border: 1px solid ${isAuthActivated ? 'rgba(16, 185, 129, 0.3)' : (!hasValidEmail ? 'rgba(239, 68, 68, 0.3)' : 'rgba(99, 102, 241, 0.2)')};">
                     <h4 style="margin-top: 0;"><i class="fas fa-key"></i> Klantenportaal Inlog (Firebase Auth)</h4>
                     <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">
                         Gekoppeld account e-mailadres: <strong>${s.email || 'Nog geen e-mail ingevuld'}</strong>
-                        ${isAuthActivated 
-                            ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
-                            : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`}
+                        ${!hasValidEmail 
+                            ? `<span style="color: #f87171; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-triangle"></i> Niet geactiveerd (Geen e-mailadres)</span>` 
+                            : (isAuthActivated 
+                                ? `<span style="color: #34d399; font-weight: 600; margin-left: 8px;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>` 
+                                : `<span style="color: #fbbf24; font-weight: 600; margin-left: 8px;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`)}
                     </p>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button type="button" class="btn btn-primary btn-sm" id="btn-activate-auth">
-                            <i class="fas fa-user-plus"></i> ${isAuthActivated ? 'Her-activeer / Koppel Account' : 'Activeer Klantaccount'}
+                        <button type="button" class="btn btn-primary btn-sm" id="btn-activate-auth" ${!hasValidEmail ? 'disabled style="opacity: 0.6; cursor: not-allowed;" title="Vul eerst een geldig e-mailadres in"' : ''}>
+                            <i class="fas fa-user-plus"></i> ${!hasValidEmail ? 'Vul e-mail in om te activeren' : (isAuthActivated ? 'Her-activeer / Koppel Account' : 'Activeer Klantaccount')}
                         </button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-auth">
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-auth" ${!hasValidEmail ? 'disabled style="opacity: 0.6; cursor: not-allowed;" title="Geen e-mailadres ingesteld"' : ''}>
                             <i class="fas fa-paper-plane"></i> Wachtwoord Reset
                         </button>
                     </div>
                 </div>
 
-                <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+                <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <a href="../status/index.html?preview=true&id=${s.safeId}" target="_blank" class="btn btn-secondary" style="text-decoration: none; background: rgba(34, 211, 238, 0.12); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.35); display: inline-flex; align-items: center; gap: 6px;" title="Bekijk het klantenportaal zoals deze klant het ziet (Directe Klantview)"><i class="fas fa-eye"></i> Klantview</a>
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Wijzigingen Opslaan</button>
                 </div>
             </form>
@@ -1028,6 +1033,11 @@ window.saveKlantkaartChanges = async (e, id) => {
         designUrl: document.getElementById('edit-designUrl')?.value || '',
         figmaUrl: document.getElementById('edit-designUrl')?.value || '',
     };
+
+    if (!newEmail) {
+        updatedData.isClientAccount = false;
+        updatedData.clientUid = null;
+    }
 
     const itemIndex = cachedProjects.findIndex(p => p.id == id);
     if (itemIndex !== -1) {

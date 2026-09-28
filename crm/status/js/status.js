@@ -7,9 +7,9 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, formatProjectStatus } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, formatProjectStatus, isAdminEmail } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
 import { notifyAdminNewMessage } from "../../js/email-notifications.js";
@@ -107,7 +107,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auth State Observer
     if (auth) {
         onAuthStateChanged(auth, async (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestedId = urlParams.get('id') || urlParams.get('project') || urlParams.get('projectId');
+            const isPreviewParam = urlParams.has('preview');
+
+            // Check if admin preview data was stored in sessionStorage for instant 0ms load from Workstation
+            let cachedPreviewData = null;
+            if (requestedId) {
+                try {
+                    const raw = sessionStorage.getItem('caf_preview_project_' + requestedId);
+                    if (raw) cachedPreviewData = JSON.parse(raw);
+                } catch (e) {}
+            }
+
             if (!user) {
+                // If not logged in, but preview is active with valid cached project from Workstation:
+                if (requestedId && cachedPreviewData) {
+                    clientProjectsList = [{ id: requestedId, data: cachedPreviewData }];
+                    currentProjectDocId = requestedId;
+                    document.getElementById('loader')?.classList.add('hidden');
+                    document.getElementById('no-project-view')?.classList.add('hidden');
+                    document.getElementById('dashboard-content')?.classList.remove('hidden');
+                    renderAdminPreviewBanner(requestedId, cachedPreviewData);
+                    renderDashboard(cachedPreviewData);
+                    return;
+                }
+
                 console.warn("Geen ingelogde klant. Stuur door naar inlogpagina.");
                 window.location.href = "../index.html";
                 return;
@@ -115,15 +140,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const userEmail = (user.email || '').toLowerCase();
             const safeEmailDisplay = escapeHtml(userEmail);
+            const isAdmin = isAdminEmail(userEmail);
+
+            if (isAdmin && (isPreviewParam || requestedId)) {
+                // Admin Klantview Mode!
+                let projectDocData = cachedPreviewData;
+                if (!projectDocData && db && requestedId) {
+                    try {
+                        const snap = await getDoc(doc(db, "projects", requestedId));
+                        if (snap.exists()) {
+                            projectDocData = snap.data();
+                        }
+                    } catch (e) {
+                        console.warn("Fout bij ophalen project in admin preview:", e);
+                    }
+                }
+
+                if (projectDocData && requestedId) {
+                    clientProjectsList = [{ id: requestedId, data: projectDocData }];
+                    currentProjectDocId = requestedId;
+                    document.getElementById('loader')?.classList.add('hidden');
+                    document.getElementById('no-project-view')?.classList.add('hidden');
+                    document.getElementById('dashboard-content')?.classList.remove('hidden');
+                    renderAdminPreviewBanner(requestedId, projectDocData);
+                    renderDashboard(projectDocData);
+                    subscribeToProjectDoc(requestedId);
+                    return;
+                }
+
+                // If admin didn't specify an ID, fetch all projects to allow previewing any client
+                if (db) {
+                    try {
+                        const allSnaps = await getDocs(collection(db, "projects"));
+                        const allList = [];
+                        allSnaps.forEach(d => allList.push({ id: d.id, data: d.data() }));
+                        if (allList.length > 0) {
+                            clientProjectsList = allList;
+                            const firstProj = allList[0];
+                            currentProjectDocId = firstProj.id;
+                            document.getElementById('loader')?.classList.add('hidden');
+                            document.getElementById('no-project-view')?.classList.add('hidden');
+                            document.getElementById('dashboard-content')?.classList.remove('hidden');
+                            
+                            // Multi-project selector dropdown
+                            const multiSelector = document.getElementById('multi-project-selector');
+                            const projectDropdown = document.getElementById('project-dropdown');
+                            if (multiSelector && projectDropdown) {
+                                multiSelector.classList.remove('hidden');
+                                projectDropdown.innerHTML = allList.map((p, idx) => {
+                                    const name = escapeHtml(p.data.client || p.data.companyName || `Project #${idx + 1}`);
+                                    const service = escapeHtml(p.data.service || 'Dienst');
+                                    return `<option value="${escapeHtml(p.id)}">${name} - ${service}</option>`;
+                                }).join('');
+                            }
+                            
+                            renderAdminPreviewBanner(firstProj.id, firstProj.data);
+                            renderDashboard(firstProj.data);
+                            subscribeToProjectDoc(firstProj.id);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn("Fout bij laden van alle projecten voor beheerder:", e);
+                    }
+                }
+            }
+
             document.getElementById('user-email-display').innerHTML = `<i class="fas fa-user-circle"></i> ${safeEmailDisplay}`;
 
-            // Fetch client's projects from Firestore
+            // Fetch client's projects from Firestore (regular client login)
             await loadClientProjects(userEmail, user.uid);
         });
     } else {
         document.getElementById('loader')?.classList.add('hidden');
         document.getElementById('no-project-view')?.classList.remove('hidden');
     }
+
 
     // File Upload Handler
     document.getElementById('file-upload-input')?.addEventListener('change', async (e) => {
@@ -179,7 +270,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function renderAdminPreviewBanner(docId, data) {
+    const banner = document.getElementById('admin-preview-banner');
+    if (!banner) return;
+    const clientName = data.client || data.companyName || 'Onbekende Klant';
+    const email = data.email || 'Geen e-mailadres ingesteld';
+
+    banner.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <span class="badge" style="background: #22d3ee; color: #0f172a; font-weight: 700; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fas fa-eye"></i> Beheerder Klantview
+            </span>
+            <span style="font-size: 0.88rem; color: #f8fafc;">
+                Je bekijkt dit klantenportaal zoals de klant (<strong>${escapeHtml(clientName)}</strong> • <em>${escapeHtml(email)}</em>) het ziet.
+            </span>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">
+                <i class="fas fa-shield-alt"></i> Live Sync
+            </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="../admin/project.html?id=${escapeHtml(docId)}" class="btn-preview-nav" style="background: rgba(99, 102, 241, 0.25); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.5); padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-arrow-left"></i> Terug naar Werkplek
+            </a>
+            <a href="../admin/index.html" class="btn-preview-nav" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-columns"></i> Dashboard
+            </a>
+        </div>
+    `;
+    banner.classList.remove('hidden');
+    banner.style.display = 'flex';
+
+    // Update user badge in top nav to indicate admin preview
+    const userEmailDisplay = document.getElementById('user-email-display');
+    if (userEmailDisplay) {
+        userEmailDisplay.innerHTML = `<i class="fas fa-user-shield" style="color: #22d3ee;"></i> <strong style="color: #22d3ee;">Klantview:</strong> ${escapeHtml(clientName)}`;
+    }
+}
+
 let currentDocUnsubscribe = null;
+
 
 function subscribeToProjectDoc(docId) {
     if (currentDocUnsubscribe) {

@@ -83,8 +83,8 @@
                     <button type="button" id="btn-open-gemini-modal" class="btn btn-secondary btn-sm" title="Configureer Gemini AI API Sleutel">
                         <i class="fas fa-brain" style="color: var(--color-accent);"></i> Gemini AI
                     </button>
-                    <a id="btn-open-client-portal" href="../status/index.html" target="_blank" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-external-link-alt"></i> Klantenportaal
+                    <a id="btn-open-client-portal" href="../status/index.html" target="_blank" class="btn btn-secondary btn-sm" style="background: rgba(34, 211, 238, 0.12); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.35); text-decoration: none;" title="Open Klantenportaal zoals deze klant het ziet (Klantview)">
+                        <i class="fas fa-eye"></i> Klantview Preview
                     </a>
                     <button id="logout-btn" class="btn btn-secondary btn-sm" title="Uitloggen">
                         <i class="fas fa-sign-out-alt"></i>
@@ -133,6 +133,9 @@
                 </button>
                 <button class="tab-btn" data-tab="tab-files">
                     <i class="fas fa-folder-open"></i> Bestanden (<span id="tab-files-count">0</span>)
+                </button>
+                <button class="tab-btn" data-tab="tab-clientview" style="color: #22d3ee; font-weight: 600;">
+                    <i class="fas fa-eye"></i> Klantview Live Preview
                 </button>
             </nav>
 
@@ -619,6 +622,50 @@
                             </div>
                             <div id="project-files-list">
                                 <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 8: Live Klantview Preview -->
+                    <div id="tab-clientview" class="tab-pane">
+                        <div class="workspace-card" style="padding: 20px;">
+                            <div class="workspace-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
+                                <div>
+                                    <h3 style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.15rem;">
+                                        <i class="fas fa-eye" style="color: #22d3ee;"></i> Klantview Live Preview
+                                        <span class="badge" style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); font-size: 0.72rem; padding: 2px 8px; border-radius: 10px;">Directe Klantbeleving</span>
+                                    </h3>
+                                    <p style="font-size: 0.84rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
+                                        Bekijk precies hoe het klantenportaal eruitziet voor <strong id="clientview-client-name" style="color: #fff;">deze klant</strong> (inclusief offerte, fasen, taken, uptime en bestanden) zonder in te loggen.
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                    <!-- Device Viewport Switcher -->
+                                    <div class="btn-group" style="display: inline-flex; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                                        <button type="button" class="btn-device-switch active" data-width="100%" title="Desktop weergave (100%)" style="background: var(--color-primary, #6366f1); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-desktop"></i> Desktop
+                                        </button>
+                                        <button type="button" class="btn-device-switch" data-width="768px" title="Tablet weergave (768px)" style="background: none; border: none; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-tablet-alt"></i> Tablet
+                                        </button>
+                                        <button type="button" class="btn-device-switch" data-width="400px" title="Mobiel weergave (400px)" style="background: none; border: none; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-mobile-alt"></i> Mobiel
+                                        </button>
+                                    </div>
+                                    <button type="button" id="btn-refresh-clientview" class="btn btn-secondary btn-sm" title="Herlaad Klantview">
+                                        <i class="fas fa-sync-alt"></i> Herladen
+                                    </button>
+                                    <a id="btn-external-clientview" href="../status/index.html" target="_blank" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-external-link-alt"></i> In Nieuw Tabblad Openen
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Embedded Preview Viewport Frame -->
+                            <div id="clientview-viewport-wrapper" style="width: 100%; display: flex; justify-content: center; background: #070a12; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; min-height: 820px; box-shadow: inset 0 2px 12px rgba(0,0,0,0.6); padding: 10px 0;">
+                                <div id="clientview-frame-container" style="width: 100%; max-width: 100%; transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center;">
+                                    <iframe id="clientview-iframe" src="about:blank" style="width: 100%; height: 860px; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: #0a0e1a;"></iframe>
+                                </div>
                             </div>
                         </div>
                     </div>

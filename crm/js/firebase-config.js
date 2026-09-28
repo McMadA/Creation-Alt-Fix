@@ -17,5 +17,6 @@ export {
     isAdminEmail,
     formatProjectStatus,
     formatCurrency,
-    normalizeDomain
+    normalizeDomain,
+    isClientAuthActivated
 } from "./crm-config.js";

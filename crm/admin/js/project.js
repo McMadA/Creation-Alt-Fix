@@ -13,7 +13,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, sendPasswordResetEmail, createUserWithEmailAndPassword, inMemoryPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, isAdminEmail, formatProjectStatus } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, isAdminEmail, formatProjectStatus, isClientAuthActivated } from "../../js/firebase-config.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
@@ -205,9 +205,60 @@ function setupTabNavigation() {
             const targetId = btn.getAttribute('data-tab');
             const targetPane = document.getElementById(targetId);
             if (targetPane) targetPane.classList.add('active');
+
+            if (targetId === 'tab-clientview' && currentProjectId) {
+                initOrRefreshClientviewIframe();
+            }
         });
     });
+
+    setupClientviewControls();
 }
+
+function initOrRefreshClientviewIframe(forceReload = false) {
+    const iframe = document.getElementById('clientview-iframe');
+    if (!iframe || !currentProjectId) return;
+
+    if (currentProjectData) {
+        try {
+            sessionStorage.setItem('caf_preview_project_' + currentProjectId, JSON.stringify(currentProjectData));
+        } catch (e) {}
+    }
+
+    const expectedSrc = `../status/index.html?preview=true&id=${encodeURIComponent(currentProjectId)}`;
+    if (forceReload || iframe.src === 'about:blank' || iframe.dataset.loadedId !== currentProjectId) {
+        iframe.src = expectedSrc;
+        iframe.dataset.loadedId = currentProjectId;
+    }
+}
+
+function setupClientviewControls() {
+    // Viewport switcher (Desktop 100%, Tablet 768px, Mobile 400px)
+    document.querySelectorAll('.btn-device-switch').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-device-switch').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'none';
+                b.style.color = '#94a3b8';
+            });
+            this.classList.add('active');
+            this.style.background = 'var(--color-primary, #6366f1)';
+            this.style.color = '#fff';
+
+            const targetWidth = this.getAttribute('data-width') || '100%';
+            const container = document.getElementById('clientview-frame-container');
+            if (container) {
+                container.style.maxWidth = targetWidth;
+            }
+        });
+    });
+
+    // Refresh button
+    document.getElementById('btn-refresh-clientview')?.addEventListener('click', () => {
+        initOrRefreshClientviewIframe(true);
+    });
+}
+
 
 // --- Load Project Data from Firestore ---
 async function loadProjectData(projectId) {
@@ -304,7 +355,8 @@ function renderProjectWorkspace(p) {
     const status = p.status || 'Nieuwe Lead';
     const designUrl = p.designUrl || p.figmaUrl || '';
     const proposalPrice = p.proposalPrice || '';
-    const isAuthActivated = Boolean((p.clientUid && p.clientUid !== 'QVzS7PyJkeXi7mM50HOgXsSiQFe2') || p.isClientAccount);
+    const hasValidEmail = Boolean(email && email.trim() && email.includes('@'));
+    const isAuthActivated = isClientAuthActivated(p);
 
     // Header updates
     document.getElementById('project-title-display').innerText = clientName;
@@ -414,12 +466,55 @@ function renderProjectWorkspace(p) {
     // Populate Auth Info Box
     document.getElementById('auth-email-display').innerText = email || 'Geen e-mailadres ingesteld';
     const authStatusBadge = document.getElementById('auth-status-badge');
-    if (isAuthActivated) {
+    const btnActivateAuth = document.getElementById('btn-activate-auth');
+    const btnActivateText = document.getElementById('btn-activate-auth-text');
+    const btnResetAuth = document.getElementById('btn-reset-auth');
+
+    if (!hasValidEmail) {
+        authStatusBadge.innerHTML = `<span style="color: #f87171; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-exclamation-triangle"></i> Niet geactiveerd (Geen e-mailadres)</span>`;
+        if (btnActivateText) btnActivateText.innerText = 'Vul e-mailadres in om te activeren';
+        if (btnActivateAuth) {
+            btnActivateAuth.disabled = true;
+            btnActivateAuth.style.opacity = '0.6';
+            btnActivateAuth.style.cursor = 'not-allowed';
+            btnActivateAuth.title = 'Vul eerst een geldig e-mailadres in bij Klantgegevens';
+        }
+        if (btnResetAuth) {
+            btnResetAuth.disabled = true;
+            btnResetAuth.style.opacity = '0.6';
+            btnResetAuth.style.cursor = 'not-allowed';
+            btnResetAuth.title = 'Geen e-mailadres om reset naar te sturen';
+        }
+    } else if (isAuthActivated) {
         authStatusBadge.innerHTML = `<span style="color: #34d399; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>`;
-        document.getElementById('btn-activate-auth-text').innerText = 'Her-activeer / Koppel Account in Auth';
+        if (btnActivateText) btnActivateText.innerText = 'Her-activeer / Koppel Account in Auth';
+        if (btnActivateAuth) {
+            btnActivateAuth.disabled = false;
+            btnActivateAuth.style.opacity = '1';
+            btnActivateAuth.style.cursor = 'pointer';
+            btnActivateAuth.title = '';
+        }
+        if (btnResetAuth) {
+            btnResetAuth.disabled = false;
+            btnResetAuth.style.opacity = '1';
+            btnResetAuth.style.cursor = 'pointer';
+            btnResetAuth.title = '';
+        }
     } else {
         authStatusBadge.innerHTML = `<span style="color: #fbbf24; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`;
-        document.getElementById('btn-activate-auth-text').innerText = 'Activeer Klantaccount & Stuur Inlog-Mail';
+        if (btnActivateText) btnActivateText.innerText = 'Activeer Klantaccount & Stuur Inlog-Mail';
+        if (btnActivateAuth) {
+            btnActivateAuth.disabled = false;
+            btnActivateAuth.style.opacity = '1';
+            btnActivateAuth.style.cursor = 'pointer';
+            btnActivateAuth.title = '';
+        }
+        if (btnResetAuth) {
+            btnResetAuth.disabled = false;
+            btnResetAuth.style.opacity = '1';
+            btnResetAuth.style.cursor = 'pointer';
+            btnResetAuth.title = '';
+        }
     }
 
     // Populate Right Sidebar Quick Info
@@ -511,6 +606,29 @@ function renderProjectWorkspace(p) {
     renderTimelineAndNotes(p.internalNotes || [], p.auditLog || []);
     renderFilesList(p.files || []);
     renderSubscriptionAndInvoiceCard(p);
+
+    // Update Klantview Preview links & state
+    const clientviewUrl = `../status/index.html?preview=true&id=${encodeURIComponent(currentProjectId)}`;
+    const headerPortalBtn = document.getElementById('btn-open-client-portal');
+    if (headerPortalBtn) {
+        headerPortalBtn.href = clientviewUrl;
+    }
+    const extClientviewBtn = document.getElementById('btn-external-clientview');
+    if (extClientviewBtn) {
+        extClientviewBtn.href = clientviewUrl;
+    }
+    const clientviewNameEl = document.getElementById('clientview-client-name');
+    if (clientviewNameEl) {
+        clientviewNameEl.innerText = clientName;
+    }
+    try {
+        sessionStorage.setItem('caf_preview_project_' + currentProjectId, JSON.stringify(p));
+    } catch (e) {}
+
+    const clientviewTab = document.getElementById('tab-clientview');
+    if (clientviewTab && clientviewTab.classList.contains('active')) {
+        initOrRefreshClientviewIframe();
+    }
 }
 
 // --- Pi-Boekhouding & Subscription Management Card ---
@@ -1570,6 +1688,11 @@ function setupFormHandlers() {
             targetDeliveryDate: document.getElementById('edit-targetDeliveryDate')?.value || ''
         };
 
+        if (!newEmail) {
+            updatedData.isClientAccount = false;
+            updatedData.clientUid = null;
+        }
+
         currentProjectData = { ...currentProjectData, ...updatedData };
 
         if (db) {
@@ -1707,6 +1830,69 @@ function setupFormHandlers() {
         const noteInput = document.getElementById('internal-note-input');
         addInternalNote(noteInput.value);
         noteInput.value = '';
+    });
+
+    // Live feedback when typing/editing email in Project Workstation
+    document.getElementById('edit-email')?.addEventListener('input', (e) => {
+        const liveEmail = e.target.value.trim().toLowerCase();
+        const liveHasValidEmail = Boolean(liveEmail && liveEmail.includes('@'));
+        const liveProj = { ...(currentProjectData || {}), email: liveEmail };
+        const liveIsActivated = isClientAuthActivated(liveProj);
+
+        const emailDisplay = document.getElementById('auth-email-display');
+        const authStatusBadge = document.getElementById('auth-status-badge');
+        const btnActivateAuth = document.getElementById('btn-activate-auth');
+        const btnActivateText = document.getElementById('btn-activate-auth-text');
+        const btnResetAuth = document.getElementById('btn-reset-auth');
+
+        if (emailDisplay) emailDisplay.innerText = liveEmail || 'Geen e-mailadres ingesteld';
+
+        if (!liveHasValidEmail) {
+            if (authStatusBadge) authStatusBadge.innerHTML = `<span style="color: #f87171; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-exclamation-triangle"></i> Niet geactiveerd (Geen e-mailadres)</span>`;
+            if (btnActivateText) btnActivateText.innerText = 'Vul e-mailadres in om te activeren';
+            if (btnActivateAuth) {
+                btnActivateAuth.disabled = true;
+                btnActivateAuth.style.opacity = '0.6';
+                btnActivateAuth.style.cursor = 'not-allowed';
+                btnActivateAuth.title = 'Vul eerst een geldig e-mailadres in bij Klantgegevens';
+            }
+            if (btnResetAuth) {
+                btnResetAuth.disabled = true;
+                btnResetAuth.style.opacity = '0.6';
+                btnResetAuth.style.cursor = 'not-allowed';
+                btnResetAuth.title = 'Geen e-mailadres om reset naar te sturen';
+            }
+        } else if (liveIsActivated) {
+            if (authStatusBadge) authStatusBadge.innerHTML = `<span style="color: #34d399; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-check-circle"></i> Geactiveerd in Firebase Auth</span>`;
+            if (btnActivateText) btnActivateText.innerText = 'Her-activeer / Koppel Account in Auth';
+            if (btnActivateAuth) {
+                btnActivateAuth.disabled = false;
+                btnActivateAuth.style.opacity = '1';
+                btnActivateAuth.style.cursor = 'pointer';
+                btnActivateAuth.title = '';
+            }
+            if (btnResetAuth) {
+                btnResetAuth.disabled = false;
+                btnResetAuth.style.opacity = '1';
+                btnResetAuth.style.cursor = 'pointer';
+                btnResetAuth.title = '';
+            }
+        } else {
+            if (authStatusBadge) authStatusBadge.innerHTML = `<span style="color: #fbbf24; font-weight: 600; font-size: 0.8rem;"><i class="fas fa-exclamation-circle"></i> Niet geactiveerd in Firebase Auth</span>`;
+            if (btnActivateText) btnActivateText.innerText = 'Activeer Klantaccount & Stuur Inlog-Mail';
+            if (btnActivateAuth) {
+                btnActivateAuth.disabled = false;
+                btnActivateAuth.style.opacity = '1';
+                btnActivateAuth.style.cursor = 'pointer';
+                btnActivateAuth.title = '';
+            }
+            if (btnResetAuth) {
+                btnResetAuth.disabled = false;
+                btnResetAuth.style.opacity = '1';
+                btnResetAuth.style.cursor = 'pointer';
+                btnResetAuth.title = '';
+            }
+        }
     });
 
     // 5. Activate Firebase Auth Button
