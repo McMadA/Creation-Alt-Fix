@@ -118,11 +118,11 @@ export const SUBSCRIPTION_PLANS = {
     },
     "legacy_22": { 
         id: "legacy_22", 
-        name: "Historisch / Oud Tarief (€ 22,- / jr)", 
+        name: "Historisch Budget Tarief", 
         price: "22,00", 
         cycle: "jaar", 
-        badge: "Oud Tarief", 
-        desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 31-12-2026)" 
+        badge: "Huidig Tarief", 
+        desc: "12x € 1,- webhosting + € 10,- .nl domeinregistratie (lopend t/m 31-12-2026)" 
     },
     "internal_project": { 
         id: "internal_project", 

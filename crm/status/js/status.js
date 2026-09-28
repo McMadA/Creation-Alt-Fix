@@ -9,7 +9,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, formatProjectStatus, isAdminEmail } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, formatProjectStatus, isAdminEmail, SUBSCRIPTION_PLANS } from "../../js/firebase-config.js";
+import { getPiBoekhoudingInfo } from "../../admin/js/modules/bookkeeping-data.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
 import { notifyAdminNewMessage } from "../../js/email-notifications.js";
@@ -652,21 +653,27 @@ async function renderClientUptimeSection(data) {
 }
 
 
-const SUBSCRIPTION_PLANS = {
-    "managed_nl": { id: "managed_nl", name: "Managed Cloud Hosting & .nl Domein All-in", price: "150,00", cycle: "jaar", badge: "Aanbevolen", desc: "NVMe hosting, 1x .nl domein, SSL, 5 mailboxen, dagelijkse backups" },
-    "managed_multi": { id: "managed_multi", name: "Managed Cloud Hosting Multi-Domein (.nl + .com)", price: "175,00", cycle: "jaar", badge: "Multi-domein", desc: "NVMe hosting, .nl + .com registraties, SSL, 5 mailboxen" },
-    "security_apk": { id: "security_apk", name: "Jaarlijkse Website & Security APK", price: "350,00", cycle: "jaar", badge: "Onderhoud", desc: "Security audit, optimalisaties, SEO check + 2u strippenkaart" },
-    "allin_apk": { id: "allin_apk", name: "Managed Hosting All-in + Security APK Totaal", price: "500,00", cycle: "jaar", badge: "Full Service", desc: "Managed hosting, domein, mailboxen + jaarlijkse APK & 2u strippenkaart" },
-    "legacy_22": { id: "legacy_22", name: "Historisch / Oud Tarief (€ 22,- / jr)", price: "22,00", cycle: "jaar", badge: "Oud Tarief", desc: "12x € 1,- hosting + € 10,- domein (uitfaseren per 2027)" },
-    "none": { id: "none", name: "Geen / Eenmalig Project (€ 0,-)", price: "0,00", cycle: "n.v.t.", badge: "Geen", desc: "Geen doorlopende hosting of onderhoudskosten" }
-};
-
 function renderSubscriptionSection(data) {
     const subCard = document.getElementById('subscription-card');
     if (!subCard) return;
 
-    const planId = data.subscriptionPlanId || 'managed_nl';
-    const plan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
+    const info = getPiBoekhoudingInfo ? getPiBoekhoudingInfo(data) : null;
+
+    // Resolve CURRENT active plan:
+    // 1. Explicitly saved Firestore subscriptionPlanId (if admin applied it or client confirmed it)
+    // 2. Otherwise use the client's current historical bookkeeping plan (e.g. legacy_22)
+    // 3. Otherwise fallback to recommended plan or managed_nl
+    let planId = data.subscriptionPlanId;
+    if (!planId && info) {
+        if (info.currentPlanId && info.currentPlanId !== 'none') {
+            planId = info.currentPlanId;
+        } else if (info.recommendedPlanId && info.recommendedPlanId !== 'none') {
+            planId = info.recommendedPlanId;
+        }
+    }
+    if (!planId) planId = 'managed_nl';
+
+    const plan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['legacy_22'] || SUBSCRIPTION_PLANS['managed_nl'];
     const domainVal = data.domainName || data.domain || (data.client ? data.client.toLowerCase().replace(/[^a-z0-9]/g, '') + '.nl' : '-');
 
     const nameEl = document.getElementById('client-sub-plan-name');
@@ -687,22 +694,36 @@ function renderSubscriptionSection(data) {
     if (badgeText) badgeText.innerText = plan.badge || (currentLang === 'en' ? 'Active' : 'Actief');
 
     if (featuresList) {
-        const features = [
-            '<i class="fas fa-bolt text-accent"></i> ' + (currentLang === 'en' ? 'Ultra-fast NVMe Cloud Storage' : 'Snelle NVMe Cloud Opslag'),
-            '<i class="fas fa-lock text-accent"></i> ' + (currentLang === 'en' ? 'Free SSL / HTTPS Security' : 'SSL / HTTPS Beveiliging'),
-            '<i class="fas fa-envelope text-accent"></i> ' + (currentLang === 'en' ? '5 Professional Mailboxes (SPF/DKIM)' : '5 Zakelijke Mailboxen (SPF/DKIM)'),
-            '<i class="fas fa-shield-alt text-accent"></i> ' + (currentLang === 'en' ? 'Daily Cloud Backups' : 'Dagelijkse Cloud Back-ups')
-        ];
+        let features = [];
+        if (planId === 'legacy_22') {
+            features = [
+                '<i class="fas fa-globe text-accent"></i> ' + (currentLang === 'en' ? '1x .nl Domain Registration & DNS' : '1x .nl Domeinregistratie & DNS'),
+                '<i class="fas fa-server text-accent"></i> ' + (currentLang === 'en' ? 'Basic Webhosting (12x € 1,- / mo)' : 'Basis Webhosting (12x € 1,- / mnd)'),
+                '<i class="fas fa-lock text-accent"></i> ' + (currentLang === 'en' ? 'SSL / HTTPS Security' : 'SSL / HTTPS Beveiliging'),
+                '<i class="fas fa-calendar-check text-accent"></i> ' + (currentLang === 'en' ? 'Active until Dec 31, 2026' : 'Lopend t/m 31 december 2026')
+            ];
+        } else {
+            const hasServiceMin = (plan.desc || '').includes('30 min. service');
+            features = [
+                '<i class="fas fa-bolt text-accent"></i> ' + (currentLang === 'en' ? 'Ultra-fast NVMe Cloud Storage' : 'Snelle NVMe Cloud Opslag'),
+                '<i class="fas fa-lock text-accent"></i> ' + (currentLang === 'en' ? 'Free SSL / HTTPS Security' : 'SSL / HTTPS Beveiliging'),
+                '<i class="fas fa-envelope text-accent"></i> ' + (currentLang === 'en' ? '5 Professional Mailboxes (SPF/DKIM)' : '5 Zakelijke Mailboxen (SPF/DKIM)'),
+                '<i class="fas fa-shield-alt text-accent"></i> ' + (currentLang === 'en' ? 'Daily Cloud Backups' : 'Dagelijkse Cloud Back-ups')
+            ];
+            if (hasServiceMin) {
+                features.push('<i class="fas fa-tools text-accent"></i> ' + (currentLang === 'en' ? '30 Min. Annual Content Updates Included' : '30 Min. Service per Jaar Inbegrepen'));
+            }
+        }
         featuresList.innerHTML = features.map(f => `<span style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">${f}</span>`).join('');
     }
 
     // Render 2027 Subscription Banner & Confirmation Engine
     const banner2027 = document.getElementById('client-2027-subscription-banner');
     if (banner2027) {
-        const plan2027Id = data.subscriptionPlan2027Id || (planId === 'legacy_22' ? 'managed_nl' : planId);
-        const plan2027 = SUBSCRIPTION_PLANS[plan2027Id] || SUBSCRIPTION_PLANS['managed_nl'];
+        const plan2027Id = data.subscriptionPlan2027Id || (info && info.recommendedPlanId) || (planId === 'legacy_22' ? 'transition_2027_loyalty' : planId);
+        const plan2027 = SUBSCRIPTION_PLANS[plan2027Id] || SUBSCRIPTION_PLANS['transition_2027_loyalty'] || SUBSCRIPTION_PLANS['managed_nl'];
         const is2027Confirmed = data.subscriptionPlan2027Status === 'bevestigd';
-        const has2027Proposal = data.subscriptionPlan2027Status === 'voorgesteld' || planId === 'legacy_22';
+        const has2027Proposal = data.subscriptionPlan2027Status === 'voorgesteld' || planId === 'legacy_22' || (info && info.recommendedPlanId && info.recommendedPlanId !== planId);
 
         if (is2027Confirmed) {
             banner2027.style.display = 'block';
@@ -731,32 +752,32 @@ function renderSubscriptionSection(data) {
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
                         <div>
                             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #818cf8; letter-spacing: 0.5px;">
-                                🚀 ${currentLang === 'en' ? '2027 Service Plan Renewal' : 'Vernieuwing Serviceplan 2027'}
+                                🚀 ${currentLang === 'en' ? 'Recommended for 2027' : 'Aanbevolen Pakket voor 2027'}
                             </span>
                             <h4 style="margin: 4px 0 0 0; font-size: 1.05rem; color: #fff;">
-                                ${currentLang === 'en' ? 'Cloud Uptime, Speed & Maintenance' : 'Continuïteit, Cloud Uptime & Onderhoud'}
+                                ${escapeHtml(plan2027.name)}
                             </h4>
                         </div>
                         <div style="background: rgba(99,102,241,0.25); border: 1px solid #818cf8; color: #c7d2fe; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; font-weight: 600;">
-                            ${currentLang === 'en' ? 'Awaiting Confirmation' : 'Wacht op Bevestiging'}
+                            ${escapeHtml(plan2027.badge || (currentLang === 'en' ? 'Recommendation' : 'Aanbevolen Overstap'))}
                         </div>
                     </div>
                     <p style="color: #cbd5e1; font-size: 0.86rem; margin: 0 0 12px 0; line-height: 1.45;">
                         ${currentLang === 'en' 
-                            ? `Starting January 1st, 2027, all websites transition to our high-speed Cloud & 24/7 monitoring SLA. For <strong>${escapeHtml(domainVal)}</strong> the following plan is prepared:`
-                            : `Per 1 januari 2027 stappen we over op onze continue Cloud Hosting & Uptime monitoring standaard. Voor jouw domein <strong>${escapeHtml(domainVal)}</strong> staat het volgende plan klaargezet:`
+                            ? `Your website is currently on the historical budget plan. Starting January 1st, 2027, all websites upgrade to our high-speed Cloud & 24/7 monitoring SLA. For <strong>${escapeHtml(domainVal)}</strong> the following plan is recommended:`
+                            : `Jouw website draait momenteel op het eerdere historische budgettarief (€ 22,-/jr). Per 1 januari 2027 stappen we over op onze continue Cloud Hosting & Uptime monitoring standaard. Voor jouw domein <strong>${escapeHtml(domainVal)}</strong> staat het volgende pakket speciaal aanbevolen:`
                         }
                     </p>
                     <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                         <div>
                             <strong style="color: #fff; font-size: 0.95rem;">${escapeHtml(plan2027.name)}</strong>
                             <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
-                                ${currentLang === 'en' ? 'NVMe storage, SSL, mailboxes, 24/7 DoH uptime monitoring & daily backups.' : 'NVMe servers, SSL, 5 mailboxen, 24/7 DoH uptime monitoring & dagelijkse back-ups.'}
+                                ${escapeHtml(plan2027.desc || (currentLang === 'en' ? 'NVMe storage, SSL, mailboxes, 24/7 DoH uptime monitoring & daily backups.' : 'NVMe servers, SSL, 5 mailboxen, 24/7 DoH uptime monitoring & dagelijkse back-ups.'))}
                             </div>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 1.15rem; font-weight: 800; color: #34d399;">€ ${escapeHtml(plan2027.price)} <span style="font-size: 0.75rem; font-weight: 400; color: #94a3b8;">${currentLang === 'en' ? '/ yr excl. VAT' : '/ jr excl. BTW'}</span></div>
-                            <span style="font-size: 0.7rem; color: #94a3b8;">${currentLang === 'en' ? 'Invoiced Jan 2027' : 'Facturatie jan 2027'}</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">${currentLang === 'en' ? 'Starts Jan 1, 2027' : 'Ingangsdatum: 1 jan 2027'}</span>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: flex-end;">
@@ -1674,7 +1695,7 @@ export function resolveStagingUrl(p) {
 
 /**
  * [TASK-830] Shows a user-friendly fallback banner when the staging iframe 
- * is blocked by X-Frame-Options, CSP frame-ancestors, or CORS headers.
+ * is verified to be blocked by X-Frame-Options, CSP frame-ancestors, or CORS headers.
  */
 function showIframeCORSFallback(url, container) {
     if (document.getElementById('staging-cors-fallback')) return; // already shown
@@ -1684,6 +1705,7 @@ function showIframeCORSFallback(url, container) {
 
     const banner = document.createElement('div');
     banner.id = 'staging-cors-fallback';
+    banner.dataset.verifiedBlocked = 'true';
     banner.style.cssText = `
         background: rgba(245, 158, 11, 0.12); 
         border: 1px solid rgba(245, 158, 11, 0.4); 
@@ -1720,6 +1742,31 @@ function showIframeCORSFallback(url, container) {
         iframeWrapper.parentNode.insertBefore(banner, iframeWrapper);
     } else {
         container.appendChild(banner);
+    }
+}
+
+/**
+ * [TASK-830] Verifies via server-side probe if the target domain genuinely sends
+ * X-Frame-Options (DENY/SAMEORIGIN) or CSP frame-ancestors headers.
+ * NEVER attempts client-side contentDocument probing to avoid false-positive SOP exceptions.
+ */
+async function checkIframeSecurityHeaders(url, container) {
+    if (!url || typeof url !== 'string') return;
+    try {
+        const urlObj = new URL(url);
+        const domain = urlObj.hostname;
+        const basePath = (typeof window !== 'undefined' && window.location.pathname.includes('/crm/')) ? '/crm' : '';
+        const proxyUrl = `${basePath}/api/healthcheck.php?domain=${encodeURIComponent(domain)}`;
+        
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(3500) });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.success && data.frame_blocked === true) {
+                showIframeCORSFallback(url, container);
+            }
+        }
+    } catch (e) {
+        // If probe fails or runs offline, do not show false-positive warning
     }
 }
 
@@ -1760,26 +1807,21 @@ function renderStagingSection(data) {
             iframe.src = resolvedUrl;
             iframe.dataset.loadedUrl = resolvedUrl;
 
-            // [TASK-830] CORS/X-Frame-Options fallback: detect iframe blocking
+            // [TASK-830] Clear any old fallback banner on URL switch
             const corsFallbackBanner = document.getElementById('staging-cors-fallback');
             if (corsFallbackBanner) corsFallbackBanner.remove();
+
+            iframe.onload = () => {
+                const b = document.getElementById('staging-cors-fallback');
+                if (b && !b.dataset.verifiedBlocked) b.remove();
+            };
 
             iframe.onerror = () => {
                 showIframeCORSFallback(resolvedUrl, stagingCard);
             };
-            // Also detect via a timeout — onerror doesn't always fire for X-Frame-Options blocks
-            setTimeout(() => {
-                try {
-                    // If the iframe loaded but was blocked, contentDocument will throw or be null
-                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                    if (!iframeDoc || !iframeDoc.body || iframeDoc.body.innerHTML === '') {
-                        showIframeCORSFallback(resolvedUrl, stagingCard);
-                    }
-                } catch (e) {
-                    // Cross-origin access denied = iframe is blocked
-                    showIframeCORSFallback(resolvedUrl, stagingCard);
-                }
-            }, 4000);
+
+            // Verify genuinely blocked headers via server probe instead of client-side DOM inspection
+            checkIframeSecurityHeaders(resolvedUrl, stagingCard);
         }
         if (urlDisplay) urlDisplay.innerText = resolvedUrl;
         if (mockupUrl) mockupUrl.innerText = resolvedUrl;

@@ -116,8 +116,8 @@
             <section class="card">
                 <div class="project-header">
                     <div class="project-title">
-                        <h1 id="client-name-display">Mijn Project</h1>
-                        <p id="service-name-display">Website & Software Realisatie</p>
+                        <h1 id="client-name-display"><span style="opacity: 0.6;">Bezig met laden...</span></h1>
+                        <p id="service-name-display">—</p>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                         <span id="project-deadline-badge" class="badge badge-concept hidden" style="margin-top: 0; font-size: 0.82rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); color: #c7d2fe;">
@@ -126,7 +126,7 @@
                         <!-- Public Uptime & Monitoring Status Badge [TASK-827] -->
                         <div id="client-uptime-badge" class="badge hidden" style="margin-top: 0; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 7px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; cursor: pointer;" title="Klik om de live server- en domeinstatus te bekijken">
                             <span class="monitoring-pulse-dot operational" id="client-uptime-dot" style="width: 8px; height: 8px;"></span>
-                            <span id="client-uptime-badge-text">Website Online (99.98%)</span>
+                            <span id="client-uptime-badge-text">Status controleren...</span>
                             <i class="fas fa-shield-alt" style="font-size: 0.75rem; margin-left: 2px;"></i>
                         </div>
                         <span id="status-badge" class="badge badge-active"><i class="fas fa-spinner fa-spin"></i> Status ophalen</span>
@@ -136,10 +136,10 @@
                 <div class="progress-container">
                     <div class="progress-info">
                         <span data-translate-key="statusProgressLabel">Projectvoortgang</span>
-                        <strong id="progress-percent-display">25% Complete</strong>
+                        <strong id="progress-percent-display">—</strong>
                     </div>
                     <div class="progress-bar-bg">
-                        <div id="progress-bar-fill" class="progress-bar-fill" style="width: 25%;"></div>
+                        <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
                     </div>
                 </div>
             </section>
@@ -150,7 +150,7 @@
                 
                 <div class="timeline">
                     <!-- Step 1 -->
-                    <div id="step-1" class="step-card active">
+                    <div id="step-1" class="step-card">
                         <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
                         <div class="step-number" data-translate-key="stage1Number">Fase 1</div>
                         <div class="step-title" data-translate-key="stage1Title">Intake Voltooid</div>
@@ -217,7 +217,7 @@
                     <div id="offerte-success-msg" class="hidden" style="margin-top: 15px; padding: 18px 20px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; color: #34d399;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div>
-                                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusOfferteAcceptedTitle">Offerte Geaccepteerd!</strong> <span data-translate-key="statusOfferteAcceptedOn">Je hebt op</span> <span id="accepted-date">vandaag</span> <span data-translate-key="statusOfferteAcceptedNotice">akkoord gegeven op deze offerte.</span>
+                                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusOfferteAcceptedTitle">Offerte Geaccepteerd!</strong> <span data-translate-key="statusOfferteAcceptedOn">Je hebt op</span> <span id="accepted-date">—</span> <span data-translate-key="statusOfferteAcceptedNotice">akkoord gegeven op deze offerte.</span>
                             </div>
                             <button id="btn-download-proposal-pdf" type="button" class="btn-akkoord" style="background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
                                 <i class="fas fa-file-pdf"></i> <span data-translate-key="statusDownloadPdfBtn">Download Officiële Offerte (PDF)</span>
@@ -251,7 +251,7 @@
                     </div>
 
                     <div id="design-success-msg" class="hidden" style="margin-top: 15px; padding: 14px 20px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; color: #c084fc;">
-                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusDesignApprovedTitle">Design Goedgekeurd!</strong> <span data-translate-key="statusDesignApprovedOn">Je hebt op</span> <span id="design-accepted-date">vandaag</span> <span data-translate-key="statusDesignApprovedNotice">akkoord gegeven op het ontwerp. De ontwikkeling is gestart.</span>
+                        <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i> <strong data-translate-key="statusDesignApprovedTitle">Design Goedgekeurd!</strong> <span data-translate-key="statusDesignApprovedOn">Je hebt op</span> <span id="design-accepted-date">—</span> <span data-translate-key="statusDesignApprovedNotice">akkoord gegeven op het ontwerp. De ontwikkeling is gestart.</span>
                     </div>
                 </div>
             </section>
@@ -461,15 +461,15 @@
                         </p>
                     </div>
                     <div id="client-sub-badge" style="background: rgba(34, 211, 238, 0.12); border: 1px solid var(--color-accent); color: var(--color-accent); font-weight: 700; font-size: 0.82rem; padding: 4px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-check-circle"></i> <span id="client-sub-badge-text">Actief Pakket</span>
+                        <i class="fas fa-circle-notch fa-spin"></i> <span id="client-sub-badge-text">Laden...</span>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
                         <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;" data-translate-key="statusSubPlanLabel">Actueel Pakket</div>
-                        <div id="client-sub-plan-name" style="font-weight: 700; color: #fff; font-size: 1.05rem;">Managed Cloud Hosting All-in</div>
-                        <div id="client-sub-plan-price" style="color: #34d399; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">€ 150,- <span style="font-size: 0.78rem; color: var(--text-muted);">/ jaar excl. BTW</span></div>
+                        <div id="client-sub-plan-name" style="font-weight: 700; color: #fff; font-size: 1.05rem;">Bezig met laden...</div>
+                        <div id="client-sub-plan-price" style="color: #34d399; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">—</div>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
                         <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;" data-translate-key="statusSubDomainLabel">Gekoppeld Domein</div>
@@ -510,16 +510,16 @@
                         <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Website Bereikbaarheid</div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span class="monitoring-pulse-dot operational" id="client-card-status-dot"></span>
-                            <span id="client-card-status-text" style="font-weight: 700; color: #34d399; font-size: 0.95rem;">Operationeel</span>
+                            <span id="client-card-status-text" style="font-weight: 700; color: #94a3b8; font-size: 0.95rem;">Controleren...</span>
                         </div>
-                        <div id="client-card-uptime-stat" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Uptime: 99.98%</div>
+                        <div id="client-card-uptime-stat" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Uptime: —</div>
                     </div>
 
                     <!-- Indicator 2: SSL & HTTPS -->
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
                         <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">SSL Beveiliging</div>
                         <div style="display: flex; align-items: center; gap: 6px; color: #34d399; font-weight: 700; font-size: 0.95rem;">
-                            <i class="fas fa-lock" id="client-card-ssl-icon"></i> <span id="client-card-ssl-text">SSL Geldig &amp; Actief</span>
+                            <i class="fas fa-lock" id="client-card-ssl-icon"></i> <span id="client-card-ssl-text">Controleren...</span>
                         </div>
                         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">256-bit TLS Encryptie</div>
                     </div>
@@ -528,16 +528,16 @@
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
                         <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">DNS-over-HTTPS (DoH)</div>
                         <div style="display: flex; align-items: center; gap: 6px; color: #38bdf8; font-weight: 700; font-size: 0.95rem;">
-                            <i class="fas fa-network-wired"></i> <span id="client-card-dns-text">NOERROR (Geverifieerd)</span>
+                            <i class="fas fa-network-wired"></i> <span id="client-card-dns-text">Controleren...</span>
                         </div>
-                        <div id="client-card-dns-ip" style="font-size: 0.72rem; color: #94a3b8; font-family: monospace; margin-top: 4px;">185.104.29.148</div>
+                        <div id="client-card-dns-ip" style="font-size: 0.72rem; color: #94a3b8; font-family: monospace; margin-top: 4px;">—</div>
                     </div>
 
                     <!-- Indicator 4: Responsetijd -->
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
                         <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Responsetijd</div>
-                        <div style="color: #38bdf8; font-weight: 700; font-size: 0.95rem;" id="client-card-latency">~45 ms</div>
-                        <div id="client-card-last-checked" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Laatste controle: Zojuist</div>
+                        <div style="color: #38bdf8; font-weight: 700; font-size: 0.95rem;" id="client-card-latency">—</div>
+                        <div id="client-card-last-checked" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Laatste controle: —</div>
                     </div>
                 </div>
             </section>
@@ -647,17 +647,17 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                     <div>
                         <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;" data-translate-key="statusSigningProjectLabel">Project / Offerte</span>
-                        <div id="sign-modal-project-title" style="font-weight: 700; color: #fff; font-size: 1.05rem;">Creation+Alt+Fix Offerte</div>
+                        <div id="sign-modal-project-title" style="font-weight: 700; color: #fff; font-size: 1.05rem;">—</div>
                     </div>
                     <div style="text-align: right;">
                         <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;" data-translate-key="statusSigningTotalLabel">Totaalbedrag Offerte (excl. 21% BTW)</span>
-                        <div id="sign-modal-total-price" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: var(--color-accent);">€ 0,00</div>
+                        <div id="sign-modal-total-price" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: var(--color-accent);">—</div>
                     </div>
                 </div>
                 <div id="sign-modal-vat-calc" style="font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
-                    <span>Excl. 21% BTW: <strong id="sign-modal-price-ex" style="color: #cbd5e1;">€ 0,00</strong></span>
-                    <span>21% BTW: <strong id="sign-modal-price-vat" style="color: #cbd5e1;">€ 0,00</strong></span>
-                    <span>Incl. BTW: <strong id="sign-modal-price-inc" style="color: #34d399;">€ 0,00</strong></span>
+                    <span>Excl. 21% BTW: <strong id="sign-modal-price-ex" style="color: #cbd5e1;">—</strong></span>
+                    <span>21% BTW: <strong id="sign-modal-price-vat" style="color: #cbd5e1;">—</strong></span>
+                    <span>Incl. BTW: <strong id="sign-modal-price-inc" style="color: #34d399;">—</strong></span>
                 </div>
             </div>
 

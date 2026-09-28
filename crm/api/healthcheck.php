@@ -50,6 +50,7 @@ if ($resolvedIp === $cleanDomain || filter_var($resolvedIp, FILTER_VALIDATE_IP, 
     exit;
 }
 
+$headers = [];
 $url = "https://" . $cleanDomain . "/";
 $ch = curl_init($url);
 
@@ -63,7 +64,14 @@ curl_setopt_array($ch, [
     CURLOPT_SSL_VERIFYPEER => true,
     CURLOPT_SSL_VERIFYHOST => 2,
     CURLOPT_USERAGENT => 'CreationAltFix-UptimeMonitor/2.0 (+https://creationaltfix.nl)',
-    CURLOPT_HEADER => false
+    CURLOPT_HEADERFUNCTION => function($curl, $header) use (&$headers) {
+        $len = strlen($header);
+        $parts = explode(':', $header, 2);
+        if (count($parts) === 2) {
+            $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
+        }
+        return $len;
+    }
 ]);
 
 $start = microtime(true);
@@ -80,6 +88,14 @@ curl_close($ch);
 $reachable = ($curlErrno === 0 && $httpCode >= 200 && $httpCode < 400);
 $sslValid = ($curlErrno !== CURLE_SSL_CONNECT_ERROR && $curlErrno !== CURLE_PEER_FAILED_VERIFICATION);
 
+$xFrame = strtolower($headers['x-frame-options'] ?? '');
+$csp = strtolower($headers['content-security-policy'] ?? '');
+$frameBlocked = (
+    strpos($xFrame, 'deny') !== false ||
+    strpos($xFrame, 'sameorigin') !== false ||
+    preg_match("/frame-ancestors\s+[^;]*(none|'none'|self|'self')/i", $csp) === 1
+);
+
 echo json_encode([
     'success' => true,
     'domain' => $cleanDomain,
@@ -88,5 +104,7 @@ echo json_encode([
     'ssl_valid' => $sslValid,
     'latency_ms' => $elapsedMs,
     'ip' => $primaryIp ?: $resolvedIp,
+    'frame_blocked' => $frameBlocked,
+    'x_frame_options' => $headers['x-frame-options'] ?? null,
     'message' => $reachable ? "Bereikbaar (HTTP {$httpCode})" : ($curlError ?: "HTTP status {$httpCode}")
 ], JSON_PRETTY_PRINT);
