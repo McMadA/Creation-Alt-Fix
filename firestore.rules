@@ -118,13 +118,20 @@ service cloud.firestore {
       //   - Clients can read projects matched by clientUid or verified email
       allow get, list: if isAdmin() || isVerifiedClient(resource.data);
 
-      // UPDATE:
-      //   - Admins can update any field
-      //   - Clients can update allowed fields within strict integrity boundaries
       allow update: if isAdmin() || (isVerifiedClient(resource.data) && isValidClientUpdate());
 
       // DELETE: Only admins
       allow delete: if isAdmin();
     }
+
+
+    // ============================================================
+    // Autonome Leads Factory Collection
+    // Exclusief toegankelijk voor geauthenticeerde beheerders
+    // ============================================================
+    match /leads_factory/{leadId} {
+      allow read, write: if isAdmin();
+    }
   }
 }
+

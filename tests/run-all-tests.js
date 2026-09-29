@@ -788,6 +788,117 @@ test("Multi-Channel webhook alerts reject invalid URLs gracefully without crashi
 });
 
 // ========================================================
+// 13. AUTONOME LEAD DISCOVERY & CONCEPT FACTORY (factory/ & crm/admin/)
+// ========================================================
+
+console.log("\n📌 SUITE 13: 24/7 Autonome Lead Discovery & Concept Factory");
+
+const { enrichBusinessProfile } = await import("../factory/enrichment/deep-intelligence.js");
+const { buildOutreachPitch } = await import("../factory/generator/agy-generator.js");
+const { LeadFactoryEngine } = await import("../factory/run-engine.js");
+
+test("Geografische & Sector configuraties zijn compleet en valide", () => {
+    const regions = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, "factory/config/regions.json"), "utf-8"));
+    const sectors = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, "factory/config/sectors.json"), "utf-8"));
+
+    assert.ok(regions.length >= 10, "Moet minimaal 10 regio's/dorpen bevatten");
+    const hoogezand = regions.find(r => r.name === "Hoogezand");
+    assert.ok(hoogezand, "Hoogezand moet primair aanwezig zijn");
+    assert.equal(hoogezand.postalCodes[0], "9601");
+
+    assert.ok(sectors.length >= 5, "Moet minimaal 5 categorieën bevatten");
+    const bouw = sectors.find(s => s.category.includes("Bouw"));
+    assert.ok(bouw && bouw.keywords.includes("schilder"), "Schilder moet in bouwsector zitten");
+});
+
+testAsync("enrichBusinessProfile normaliseert telefoons, WhatsApp en berekent potentie", async () => {
+    const rawMock = {
+        name: "Schildersbedrijf Groningen Test",
+        slug: "schildersbedrijf-groningen-test",
+        category: "Schildersbedrijf",
+        address: "Hoofdstraat 1, Hoogezand",
+        phone: "06-12345678",
+        rating: 4.9,
+        reviewsCount: 14,
+        website: null
+    };
+
+    const enriched = await enrichBusinessProfile(rawMock);
+    assert.equal(enriched.normalizedPhone, "0612345678");
+    assert.equal(enriched.whatsAppNumber, "31612345678");
+    assert.equal(enriched.hasWhatsApp, true);
+    assert.ok(enriched.score >= 90, "Lead zonder website en hoge reviews moet hoge score krijgen");
+    assert.ok(enriched.suggestedServices.length >= 3, "Moet voorgestelde diensten bevatten");
+});
+
+test("buildOutreachPitch genereert persoonlijke email, WhatsApp en live concept URL", () => {
+    const mockLead = {
+        name: "Klusbedrijf De Vries",
+        slug: "klusbedrijf-de-vries",
+        category: "Timmerman & Klusbedrijf",
+        pitchHook: "We zagen dat je als vakman in regio Hoogezand uitstekend werk levert.",
+        rating: 5.0,
+        recommendedDomain: "klusbedrijf-de-vries.nl"
+    };
+
+    const pitch = buildOutreachPitch(mockLead);
+    assert.ok(pitch.subject.includes("Concept website voor Klusbedrijf De Vries"));
+    assert.ok(pitch.conceptUrl.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
+    assert.ok(pitch.bodyHtml.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
+    assert.ok(pitch.whatsAppText.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
+});
+
+test("LeadFactoryEngine deduplicatie en database persistentie", () => {
+    const engine = new LeadFactoryEngine();
+    const db = engine.loadDatabase();
+
+    assert.ok(Array.isArray(db.leads), "Database moet leads array bevatten");
+    const testBusiness = { slug: "test-bedrijf-duplicaat", phone: "0699887766" };
+
+    const mockDb = {
+        leads: [{ slug: "test-bedrijf-duplicaat", phone: "0699887766" }]
+    };
+
+    assert.equal(engine.isLeadProcessed(mockDb, testBusiness), true);
+    assert.equal(engine.isLeadProcessed(mockDb, { slug: "nieuw-bedrijf", phone: "0611223344" }), false);
+});
+
+test("applyCodeProtection injecteert Domain-Locking Killswitch, F12 blokkade en Auteurswet 1912", async () => {
+    const { applyCodeProtection } = await import("../factory/security/code-drm.js");
+    const rawHtml = "<html><head><title>Test</title></head><body><h1>Hallo</h1></body></html>";
+    const protectedHtml = applyCodeProtection(rawHtml, { name: "Schilder Test", slug: "schilder-test" });
+
+    assert.ok(protectedHtml.includes("caf-security-guard"), "Moet caf-security-guard script tag bevatten");
+    assert.ok(protectedHtml.includes("creationaltfix.nl"), "Moet geautoriseerd domein bevatten");
+    assert.ok(protectedHtml.includes("CAF_SECURITY_UNAUTHORIZED_HOST"), "Moet killswitch exception bevatten");
+    assert.ok(protectedHtml.includes("contextmenu"), "Moet contextmenu blocker bevatten");
+    assert.ok(protectedHtml.includes("F12"), "Moet F12 blocker bevatten");
+    assert.ok(protectedHtml.includes("AUTEURSWET 1912"), "Moet auteursrecht 1912 header bevatten");
+});
+
+test("Syntax validatie van alle nieuwe Lead Factory modules", () => {
+    const factoryFiles = [
+        "factory/config/factory-config.js",
+        "factory/discovery/maps-crawler.js",
+        "factory/enrichment/deep-intelligence.js",
+        "factory/generator/agy-generator.js",
+        "factory/security/code-drm.js",
+        "factory/server/factory-bridge.js",
+        "factory/deployer/vimexx-ftps.js",
+        "factory/run-engine.js",
+        "crm/admin/js/modules/admin-lead-factory.js"
+    ];
+
+    for (const f of factoryFiles) {
+        const fullPath = path.join(ROOT_DIR, f);
+        assert.ok(fs.existsSync(fullPath), `Bestand ${f} moet bestaan`);
+        const cmd = `node --check "${fullPath}"`;
+        execSync(cmd, { stdio: "pipe" });
+    }
+});
+
+
+// ========================================================
 // FINAL SUMMARY
 // ========================================================
 console.log("\n========================================================");

@@ -46,6 +46,8 @@ import {
 } from "../../js/uptime-monitor.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
 import { initSubscriptionsTab } from "./modules/admin-subscriptions.js";
+import { initLeadFactoryModule } from "./modules/admin-lead-factory.js";
+
 import { 
     renderKanbanBoard as renderKanbanBoardModule, 
     setupKanbanListeners as setupKanbanListenersModule, 
@@ -440,8 +442,9 @@ function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const contentAreas = document.querySelectorAll('.content-area');
     navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
+        item.addEventListener('click', async (e) => {
             e.preventDefault();
+
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
             
@@ -534,10 +537,150 @@ function setupNavigation() {
                     }
                 });
             }
+            if (targetView === 'lead-factory') {
+                await setupAndRenderLeadFactory();
+            }
 
         });
     });
 }
+
+/**
+ * Laadt de data voor het Autonome Leads Werkstation en initialiseert de module
+ */
+async function setupAndRenderLeadFactory() {
+    let leads = [];
+    if (db) {
+        try {
+            const querySnapshot = await getDocs(collection(db, "leads_factory"));
+            querySnapshot.forEach(docSnap => {
+                leads.push({ id: docSnap.id, ...docSnap.data() });
+            });
+        } catch (err) {
+            console.warn("[CRM] Kon leads niet ophalen uit Firestore:", err);
+        }
+    }
+
+    if (leads.length === 0) {
+        try {
+            const resp = await fetch('./data/leads.json');
+            if (resp.ok) {
+                const json = await resp.json();
+                if (json && Array.isArray(json.leads) && json.leads.length > 0) {
+                    leads = json.leads;
+                }
+            }
+        } catch (err) {
+            // Lokale bestandssysteem fetch fallback
+        }
+    }
+
+    if (leads.length === 0) {
+        const stored = localStorage.getItem('caf_leads_factory');
+        if (stored) {
+            try { leads = JSON.parse(stored); } catch {}
+        }
+    }
+
+    // Default demo leads voor Hoogezand als startpunt
+    if (leads.length === 0) {
+
+        leads = [
+            {
+                id: 'lead_demo_1',
+                slug: 'schildersbedrijf-hoogezand',
+                name: 'Schildersbedrijf Van der Veen',
+                category: 'Schilder & Wandafwerking',
+                address: 'Kerkstraat 42, 9601 AB Hoogezand',
+                phone: '06 28 49 10 22',
+                normalizedPhone: '0628491022',
+                whatsAppNumber: '31628491022',
+                hasWhatsApp: true,
+                hasWebsite: false,
+                website: null,
+                rating: 4.9,
+                reviewsCount: 16,
+                status: 'concept_ready',
+                liveUrl: 'https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/',
+                pitchHook: "We zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren, maar dat potentiële klanten via mobiel nog geen directe website kunnen bezoeken.",
+                pitch: {
+                    subject: "Concept website voor Schildersbedrijf Van der Veen in Hoogezand",
+                    bodyPlain: "Beste heer/mevrouw,\n\nWe zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren op Google Maps, maar dat potentiële klanten nog geen mobiele website kunnen bezoeken.\n\nWe hebben alvast een werkend concept voor je live gezet:\n👉 https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/\n\nVriendelijke groet,\nAllard Veldman - Creation+Alt+Fix\ninfo@creationaltfix.nl",
+                    whatsAppText: "Hoi! Allard hier van Creation+Alt+Fix. Ik zag jullie 4.9 sterren op Google in Hoogezand, maar zag dat er nog geen mobiele website was. Ik heb alvast een vrijblijvend concept klaargezet: https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/ - Wat vind je ervan?"
+                }
+            },
+            {
+                id: 'lead_demo_2',
+                slug: 'hovenier-groningen-oost',
+                name: 'Groen & Bestrating Noord',
+                category: 'Hovenier & Bestrating',
+                address: 'Noorderstraat 18, 9611 AS Sappemeer',
+                phone: '06 14 55 89 30',
+                normalizedPhone: '0614558930',
+                whatsAppNumber: '31614558930',
+                hasWhatsApp: true,
+                hasWebsite: false,
+                website: null,
+                rating: 4.8,
+                reviewsCount: 12,
+                status: 'concept_ready',
+                liveUrl: 'https://creationaltfix.nl/concept/hovenier-groningen-oost/',
+                pitchHook: "We zagen jouw vermelding voor Groen & Bestrating Noord op Google Maps in Sappemeer met 12 positieve recensies, maar zonder website.",
+                pitch: {
+                    subject: "Concept website voor Groen & Bestrating Noord",
+                    bodyPlain: "Beste Groen & Bestrating Noord,\n\nWe zagen jullie prachtige hoveniersprojecten in Sappemeer/Hoogezand. Omdat veel tuinbezitters via smartphone zoeken, hebben we alvast een snel concept voor jullie gemaakt:\n👉 https://creationaltfix.nl/concept/hovenier-groningen-oost/\n\nGroet,\nAllard Veldman - Creation+Alt+Fix",
+                    whatsAppText: "Hoi! Allard van Creation+Alt+Fix. Ik heb alvast een demonstratie website voor jullie hoveniersbedrijf klaargezet: https://creationaltfix.nl/concept/hovenier-groningen-oost/ - Kijk gerust even!"
+                }
+            }
+        ];
+        localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
+    }
+
+    initLeadFactoryModule(leads, {
+        onRefresh: async () => {
+            await setupAndRenderLeadFactory();
+        },
+        onSendEmail: async (lead) => {
+            const subject = encodeURIComponent(lead.pitch?.subject || `Concept website voor ${lead.name}`);
+            const body = encodeURIComponent(lead.pitch?.bodyPlain || `Bekijk hier je concept website: ${lead.liveUrl}`);
+            const mailto = `mailto:${lead.email || ''}?subject=${subject}&body=${body}`;
+            window.location.href = mailto;
+
+            lead.status = 'sent';
+            lead.sentAt = new Date().toISOString();
+            if (db) {
+                try {
+                    await setDoc(doc(db, "leads_factory", lead.id), lead, { merge: true });
+                } catch (e) { console.warn(e); }
+            }
+            const stored = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
+            const idx = stored.findIndex(s => s.id === lead.id);
+            if (idx >= 0) stored[idx] = lead; else stored.push(lead);
+            localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
+
+            initLeadFactoryModule(stored);
+            await logAuditEvent('lead_email_sent', `Concept acquisitiemail voorbereid en geopend voor ${lead.name}.`);
+        },
+        onUpdateStatus: async (lead, newStatus) => {
+            lead.status = newStatus;
+            lead.updatedAt = new Date().toISOString();
+            if (db) {
+                try {
+                    await setDoc(doc(db, "leads_factory", lead.id), lead, { merge: true });
+                } catch (e) { console.warn(e); }
+            }
+            const stored = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
+            const idx = stored.findIndex(s => s.id === lead.id);
+            if (idx >= 0) stored[idx] = lead; else stored.push(lead);
+            localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
+            initLeadFactoryModule(stored);
+        },
+        onTriggerCycle: () => {
+            alert("Autonome Engine Instructie:\n\nDe engine draait continu op jouw eigen Windows machine en gebruikt de 'agy' CLI (uit jouw AI abonnement).\n\nOm direct handmatig 1 extra concept te genereren, open een terminal en typ:\nnpm run factory:run\n\nOf start de 24/7 achtergrondservice via:\nnpm run factory:daemon");
+        }
+    });
+}
+
 
 // --- Modals & Editable Klantkaart ---
 window.openNewLeadModal = () => {

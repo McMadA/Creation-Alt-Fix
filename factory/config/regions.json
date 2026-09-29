@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Hoogezand",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9601", "9602", "9603"],
+    "lat": 53.1616,
+    "lng": 6.7583,
+    "priority": 1
+  },
+  {
+    "name": "Sappemeer",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9611"],
+    "lat": 53.1642,
+    "lng": 6.7869,
+    "priority": 1
+  },
+  {
+    "name": "Foxhol",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9607"],
+    "lat": 53.1764,
+    "lng": 6.7197,
+    "priority": 2
+  },
+  {
+    "name": "Kolham",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9615"],
+    "lat": 53.1847,
+    "lng": 6.7486,
+    "priority": 2
+  },
+  {
+    "name": "Westerbroek",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9608"],
+    "lat": 53.1894,
+    "lng": 6.6667,
+    "priority": 2
+  },
+  {
+    "name": "Kropswolde",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9606"],
+    "lat": 53.1417,
+    "lng": 6.7222,
+    "priority": 2
+  },
+  {
+    "name": "Kiel-Windeweer",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9605"],
+    "lat": 53.1097,
+    "lng": 6.7778,
+    "priority": 3
+  },
+  {
+    "name": "Zuidbroek",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9636"],
+    "lat": 53.1889,
+    "lng": 6.8667,
+    "priority": 3
+  },
+  {
+    "name": "Noordbroek",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9635"],
+    "lat": 53.2167,
+    "lng": 6.8722,
+    "priority": 3
+  },
+  {
+    "name": "Muntendam",
+    "municipality": "Midden-Groningen",
+    "postalCodes": ["9649"],
+    "lat": 53.1361,
+    "lng": 6.8722,
+    "priority": 3
+  },
+  {
+    "name": "Veendam",
+    "municipality": "Veendam",
+    "postalCodes": ["9641", "9642", "9645", "9646"],
+    "lat": 53.1000,
+    "lng": 6.8750,
+    "priority": 4
+  },
+  {
+    "name": "Groningen",
+    "municipality": "Groningen",
+    "postalCodes": ["9700", "9711", "9724", "9728"],
+    "lat": 53.2194,
+    "lng": 6.5665,
+    "priority": 5
+  }
+]

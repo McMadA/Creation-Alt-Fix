@@ -4,7 +4,10 @@
   "description": "Creation+Alt+Fix Proprietary CRM, DNS Monitoring & Client Portal Suite",
   "type": "module",
   "scripts": {
-    "test": "node tests/run-all-tests.js"
+    "test": "node tests/run-all-tests.js",
+    "factory:run": "node factory/run-engine.js --limit=1",
+    "factory:daemon": "node factory/run-engine.js --daemon --interval=30",
+    "bridge:start": "node factory/server/factory-bridge.js"
   },
   "keywords": [
     "crm",
@@ -14,5 +17,10 @@
     "firestore"
   ],
   "author": "Allard Veldman <info@creationaltfix.nl>",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "basic-ftp": "^6.2.1",
+    "dotenv": "^18.0.4",
+    "playwright": "^1.63.0"
+  }
 }

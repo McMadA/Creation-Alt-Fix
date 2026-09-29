@@ -66,7 +66,9 @@
                 <a href="#" class="nav-item" data-view="kanban"><i class="fas fa-columns"></i> Taken & Kanban</a>
                 <a href="#" class="nav-item" data-view="monitoring"><i class="fas fa-heartbeat" style="color: #10b981;"></i> Uptime &amp; Monitoring <span id="admin-uptime-alert-count" class="badge badge-danger hidden" style="margin-left: auto; padding: 2px 7px; font-size: 0.72rem; border-radius: 10px;">0</span></a>
                 <a href="#" class="nav-item" data-view="subscriptions"><i class="fas fa-file-invoice-dollar" style="color: #818cf8;"></i> Abonnementen &amp; 2027 <span class="badge" style="margin-left: auto; padding: 2px 7px; font-size: 0.7rem; border-radius: 10px; background: rgba(99,102,241,0.25); color: #c7d2fe; border: 1px solid rgba(99,102,241,0.4);">2027</span></a>
+                <a href="#" class="nav-item" data-view="lead-factory"><i class="fas fa-magic" style="color: #38bdf8;"></i> Autonome Leads <span id="admin-lead-factory-count" class="badge" style="margin-left: auto; padding: 2px 7px; font-size: 0.7rem; border-radius: 10px; background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3);">—</span></a>
                 <a href="#" class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Instellingen</a>
+
             </nav>
             <div class="sidebar-footer">
                 <button id="logout-btn" class="btn btn-secondary btn-sm"><i class="fas fa-sign-out-alt"></i> Uitloggen</button>
@@ -592,7 +594,138 @@
                 </div>
             </div>
 
+            <!-- TAB: Autonome Leads & Concept Machine -->
+            <div class="content-area hidden" id="view-lead-factory">
+                <div class="monitoring-toolbar" style="margin-bottom: 24px;">
+                    <div>
+                        <h2 style="font-size: 1.45rem; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-magic" style="color: #38bdf8;"></i> Autonome Lead Discovery &amp; Concept Machine
+                        </h2>
+                        <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin: 0; line-height: 1.45;">
+                            24/7 lokale AI-website generator aangedreven door de Antigravity CLI (<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #38bdf8;">agy</code>). Review de klaargezette concepten en verstuur met 1 klik een persoonlijke pitch via <strong style="color: #fff;">info@creationaltfix.nl</strong> of WhatsApp.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <span id="bridge-status-badge" class="badge" style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 7px 12px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-circle" id="bridge-status-dot" style="font-size: 0.55rem;"></i> <span id="bridge-status-text">Bridge: Verbinding zoeken...</span>
+                        </span>
+                        <button class="btn btn-primary" id="btn-trigger-factory-cycle" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-bolt" id="factory-spin-icon"></i> <span id="factory-trigger-btn-text">Nieuwe Lead Scannen</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-toggle-daemon" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-play" id="daemon-icon" style="color: #34d399;"></i> <span id="daemon-btn-text">24/7 Modus: Start</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-refresh-lead-factory" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-sync-alt"></i> <span>Verversen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Activity Console Drawer -->
+                <div id="factory-activity-drawer" class="admin-card hidden" style="margin-bottom: 24px; background: rgba(3,7,18,0.92); border: 1px solid rgba(56,189,248,0.3); border-radius: 10px; padding: 16px 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.84rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-terminal"></i> Realtime Engine Console (agy &amp; Maps Scanners)
+                        </span>
+                        <span id="factory-drawer-status" style="font-size: 0.78rem; color: #34d399;"><i class="fas fa-circle-notch fa-spin"></i> Bezig...</span>
+                    </div>
+                    <div id="factory-console-output" style="max-height: 140px; overflow-y: auto; font-family: monospace; font-size: 0.82rem; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px;">
+                        <!-- Live log regels -->
+                    </div>
+                </div>
+
+
+                <!-- KPI Kaarten -->
+                <div class="monitoring-kpis" style="margin-bottom: 24px;">
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Klaar voor Beoordeling</span>
+                            <i class="fas fa-layer-group" style="color: #38bdf8;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-factory-ready" style="color: #38bdf8;">
+                            —
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Wacht op 1-klik goedkeuring</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">E-mails Verzonden</span>
+                            <i class="fas fa-paper-plane" style="color: #34d399;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-factory-sent" style="color: #34d399;">
+                            —
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Via Vimexx SMTP info@</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">WhatsApp Geopend</span>
+                            <i class="fab fa-whatsapp" style="color: #10b981;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-factory-whatsapp" style="color: #10b981;">
+                            —
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Mobiele chat outreach</div>
+                    </div>
+
+                    <div class="monitoring-kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Totaal Gescand</span>
+                            <i class="fas fa-search-location" style="color: #fbbf24;"></i>
+                        </div>
+                        <div class="monitoring-kpi-val" id="kpi-factory-total" style="color: #fbbf24;">
+                            —
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Regio Hoogezand &amp; Groningen</div>
+                    </div>
+                </div>
+
+                <!-- Zoek en filter bar -->
+                <div class="admin-toolbar" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+                    <div style="flex: 1; min-width: 260px;">
+                        <input type="text" id="factory-search-input" class="admin-input" placeholder="🔍 Zoek concept op bedrijfsnaam, branche, adres of telefoon..." style="margin: 0;">
+                    </div>
+                    <div style="width: 220px;">
+                        <select id="factory-status-filter" class="admin-input" style="margin: 0; cursor: pointer;">
+                            <option value="all">Alle Concepten</option>
+                            <option value="concept_ready" selected>✨ Klaar voor Review</option>
+                            <option value="sent">✉️ Reeds Verzonden</option>
+                            <option value="skipped">⏭️ Overgeslagen / Gearchiveerd</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- De Concepten Stapel Grid -->
+                <div id="factory-leads-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+                    <!-- Wordt dynamisch gerenderd door admin-lead-factory.js -->
+                </div>
+            </div>
+
+            <!-- Modal: Live Concept Preview & Inspection -->
+            <div id="factory-preview-modal" class="modal hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div class="modal-card" style="width: 95%; max-width: 1200px; height: 90vh; background: #0B0F19; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);">
+                    <div style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.95);">
+                        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                            <span id="preview-modal-title" style="font-weight: 700; color: #fff; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Concept Preview</span>
+                            <span id="preview-modal-url-badge" class="badge badge-concept" style="font-size: 0.72rem;">URL</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button id="btn-preview-device-desktop" class="btn btn-secondary btn-sm" title="Desktop weergave" style="padding: 6px 12px;"><i class="fas fa-desktop"></i> Desktop</button>
+                            <button id="btn-preview-device-mobile" class="btn btn-secondary btn-sm" title="Mobiele weergave" style="padding: 6px 12px;"><i class="fas fa-mobile-alt"></i> Mobiel (375px)</button>
+                            <a id="preview-external-link" href="#" target="_blank" class="btn btn-primary btn-sm" style="padding: 6px 12px;"><i class="fas fa-external-link-alt"></i> Open Extern</a>
+                            <button id="btn-close-preview-modal" class="btn btn-secondary btn-sm" style="color: #ef4444; padding: 6px 12px;"><i class="fas fa-times"></i> Sluiten</button>
+                        </div>
+                    </div>
+                    <div id="preview-iframe-wrapper" style="flex: 1; background: #030712; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 12px;">
+                        <iframe id="factory-preview-iframe" src="about:blank" style="width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.1); background: #fff; border-radius: 8px; transition: width 0.3s ease;"></iframe>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-area hidden" id="view-settings">
+
                 <div style="margin-bottom: 24px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-cog" style="color: var(--color-accent-alt);"></i> Systeem &amp; CRM Instellingen

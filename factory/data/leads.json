@@ -1,0 +1,147 @@
+{
+  "updatedAt": "2026-09-29T11:43:08.534Z",
+  "totalScanned": 6,
+  "totalQualified": 1,
+  "totalGenerated": 1,
+  "totalSent": 0,
+  "leads": [
+    {
+      "id": "lead_1790682188534_berends",
+      "name": "Berends",
+      "slug": "berends",
+      "category": "Aannemer voor bestrating",
+      "rating": null,
+      "reviewsCount": 0,
+      "address": "Julianastraat 40, 9601 LR Hoogezand",
+      "phone": "06 27319414",
+      "website": "http://www.berendsbestrating.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Berends/@53.1616,6.7583,13z/data=!4m6!3m5!1s0x47c82afc3ea8dc1b:0xc62e9672b844b9f7!8m2!3d53.1635672!4d6.7366897!16s%2Fg%2F11dyzl715z?entry=ttu&g_ep=EgoyMDI2MDkyMy4wIKXMDSoASAFQAw%3D%3D",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:42:15.362Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0627319414",
+      "whatsAppNumber": "31627319414",
+      "hasWhatsApp": true,
+      "score": 50,
+      "pitchHook": "We zagen jouw vermelding voor Berends op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of verouderde site.",
+      "strengths": [
+        "Heeft een bestaande webvermelding die gemoderniseerd kan worden",
+        "Direct telefonisch bereikbaar (06 27319414)"
+      ],
+      "recommendedDomain": "berends.nl",
+      "email": null,
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/berends/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Concept website voor Berends in Hoogezand",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px;\">\n  <p>Beste Berends,</p>\n  \n  <p>We zagen jouw vermelding voor Berends op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of verouderde site.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers, hebben we alvast een werkend demonstratie-concept voor je gemaakt:</p>\n  \n  <div style=\"margin: 25px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/berends/\" style=\"background: #2563EB; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in:</strong></p>\n  <ul>\n    <li>Volledig geoptimaliseerd voor mobiel (supersnel ladend)</li>\n    <li>Jouw echte Google beoordelingen (uitstekende reputatie) uitgelicht</li>\n    <li>Directe knoppen voor potentiële klanten om te bellen of een WhatsApp te sturen</li>\n    <li>Lokale vindbaarheid (SEO) in regio Hoogezand / Groningen</li>\n  </ul>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>berends.nl</em>)? We kunnen deze binnen 24 uur voor je inrichten en personaliseren.</p>\n  \n  <p>Stuur gerust een berichtje terug of bel me even op <a href=\"tel:+31612345678\" style=\"color: #2563EB;\">06 - 12 34 56 78</a> voor een vrijblijvend praatje.</p>\n  \n  <p style=\"margin-top: 30px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB;\">info@creationaltfix.nl</a>\n  </p>\n</div>",
+        "bodyPlain": "Beste Berends,\n\nWe zagen jouw vermelding voor Berends op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of verouderde site.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers, hebben we alvast een vrijblijvend concept voor je live gezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/berends/\n\nWat zit hierin:\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (hoge score) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n- Lokale vindbaarheid in en rondom Hoogezand\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder je eigen domeinnaam (berends.nl).\n\nBel of app me gerust op 06 - 12 34 56 78 of reageer op deze mail!\n\nMet vriendelijke groet,\nAllard Veldman - Creation+Alt+Fix\ninfo@creationaltfix.nl | creationaltfix.nl",
+        "whatsAppText": "Hoi Berends! Allard hier van Creation+Alt+Fix. Ik zag jullie mooie Google vermelding in Hoogezand, maar zag dat je nog geen mobiele website had. Ik heb alvast een vrijblijvend concept voor je klaargezet: https://creationaltfix.nl/concept/berends/ - Leuk om te horen wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/berends/"
+      },
+      "createdAt": "2026-09-29T11:43:08.534Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "name": "Rode Pimpernel Vaste Plantenkwekerij -Tuinontwerp De",
+      "slug": "rode-pimpernel-vaste-plantenkwekerij-tuinontwerp-de",
+      "category": "Kwekerij",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Hullenweg 16, 9301 ZD Roden",
+      "phone": "050 501 9319",
+      "website": "http://www.rodepimpernel.nl/contact/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Rode+Pimpernel+Vaste+Plantenkwekerij+-Tuinontwerp+De/data=!4m7!3m6!1s0x47c83698ee9d7663:0xc4e45e55efa8b59e!8m2!3d53.124694!4d6.411385!16s%2Fg%2F11b6d82_4s!19sChIJY3ad7pg2yEcRnrWo71Ve5MQ?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:41:42.207Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T11:41:50.061Z"
+    },
+    {
+      "name": "Prins & Tuin",
+      "slug": "prins-tuin",
+      "category": "Tuin- en landschapsarchitect",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Julianastraat 14, 9601 LR Hoogezand",
+      "phone": "06 15119928",
+      "website": "http://prins-tuin.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Prins+%26+Tuin/data=!4m7!3m6!1s0x47c82a89a5cf5f7b:0x4ba391f7329ab21e!8m2!3d53.1638829!4d6.7389585!16s%2Fg%2F11b8t6_7rr!19sChIJe1_PpYkqyEcRHrKaMveRo0s?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:41:44.134Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T11:41:50.061Z"
+    },
+    {
+      "name": "Renkema tuinen",
+      "slug": "renkema-tuinen",
+      "category": "Tuin- en landschapsarchitect",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "A. Einsteinlaan 22A, 9615 TM Kolham",
+      "phone": "06 53887038",
+      "website": "http://renkematuinen.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Renkema+tuinen/data=!4m7!3m6!1s0xa89a3077750d0349:0x5084b1d1c542953c!8m2!3d53.1694887!4d6.7477219!16s%2Fg%2F11tc1d8b57!19sChIJSQMNdXcwmqgRPJVCxdGxhFA?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:41:46.108Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T11:41:50.061Z"
+    },
+    {
+      "name": "Klussen- en hoveniersbedrijf Ippen",
+      "slug": "klussen-en-hoveniersbedrijf-ippen",
+      "category": "Tuinman",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Burgemeester van Royenstraat West 33, 9602 CR Hoogezand",
+      "phone": "06 44379707",
+      "website": "http://www.ippen.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Klussen-+en+hoveniersbedrijf+Ippen/data=!4m7!3m6!1s0x47c82baa8561e9b9:0x2b52869fef089aa8!8m2!3d53.1569615!4d6.7274148!16s%2Fg%2F1tcy3k2h!19sChIJuelhhaoryEcRqJoI75-GUis?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:41:48.045Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T11:41:50.061Z"
+    },
+    {
+      "name": "Hoveniersbedrijf-Hammenga",
+      "slug": "hoveniersbedrijf-hammenga",
+      "category": "Tuin- en landschapsarchitect",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Slochterdijk 52, 9619 TD Froombosch",
+      "phone": "06 47389394",
+      "website": "https://www.hovenier-hammenga.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Hoveniersbedrijf-Hammenga/data=!4m7!3m6!1s0x47c82b3d0ecc4a7b:0xf739d2ccd24f15b4!8m2!3d53.1885911!4d6.7876115!16s%2Fg%2F11f6djpmdr!19sChIJe0rMDj0ryEcRtBVP0szSOfc?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T11:41:49.969Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T11:41:50.061Z"
+    }
+  ]
+}

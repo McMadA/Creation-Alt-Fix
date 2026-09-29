@@ -11,3 +11,10 @@ scripts/vimexx-credentials.json
 scripts/crm-credentials.json
 scripts/*.clixml
 *.clixml
+.env
+.env.*
+*.env
+factory/config/.env
+*.token
+*bridge-token*
+

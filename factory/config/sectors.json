@@ -1,0 +1,74 @@
+[
+  {
+    "category": "Bouw, Installatie & Afbouw",
+    "keywords": [
+      "schilder",
+      "timmerman",
+      "klusbedrijf",
+      "loodgieter",
+      "elektricien",
+      "stukadoor",
+      "tegelzetter",
+      "dakdekker",
+      "metselaar",
+      "interieurbouwer",
+      "kozijnen monteur",
+      "glazenwasser",
+      "vloerenlegger"
+    ],
+    "targetAudience": "Bouw en klus zzp'ers die via mond-tot-mondreclame werken maar op Google en mobiel onzichtbaar zijn"
+  },
+  {
+    "category": "Tuin & Buitenleven",
+    "keywords": [
+      "hovenier",
+      "tuinman",
+      "bestrating",
+      "stratenmaker",
+      "boomverzorging",
+      "tuinonderhoud"
+    ],
+    "targetAudience": "Lokale groen- en grondwerkers die foto's van recente projecten en direct offerteaanvragen nodig hebben"
+  },
+  {
+    "category": "Uiterlijke Verzorging & Welzijn",
+    "keywords": [
+      "kapper",
+      "thuiskapster",
+      "kapsalon",
+      "schoonheidssalon",
+      "nagelstudio",
+      "pedicure",
+      "massagepraktijk",
+      "wimperextensions",
+      "tatoeëerder"
+    ],
+    "targetAudience": "Zelfstandige behandelaars met praktijk aan huis of ambulant die een professionele afspraak/prijslijst site willen"
+  },
+  {
+    "category": "Zakelijke Dienstverlening & Coaching",
+    "keywords": [
+      "zzp boekhouder",
+      "administratiekantoor",
+      "personal trainer",
+      "leefstijlcoach",
+      "loopbaancoach",
+      "rijschool",
+      "fotograaf",
+      "hondentrimsalon"
+    ],
+    "targetAudience": "Dienstverleners die vertrouwen en expertise moeten uitstralen naar particulieren of mkb"
+  },
+  {
+    "category": "Ambacht & Lokale Horeca",
+    "keywords": [
+      "catering",
+      "foodtruck",
+      "meubelmaker",
+      "fietsenmaker",
+      "taartenmaker",
+      "patisserie"
+    ],
+    "targetAudience": "Lokale ambachtslieden en cateraars die bestellingen en portfolio's willen tonen"
+  }
+]
