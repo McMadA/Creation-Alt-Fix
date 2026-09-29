@@ -2,6 +2,15 @@
 
 ## Recent Insights
 
+- **[2026-09-29] Weight Change Lead Generation Concept Page ([factory/leads/weight-change/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/weight-change/index.html))**:
+  - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor Weight Change (Erasmusweg 2A, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), HealthAndBeautyBusiness JSON-LD schema, 4-sterren Google Review showcase, voedingsdeskundige dienstenoverzicht en direct WhatsApp/bel offerteformulier.
+
+- **[2026-09-29] Stuc-noord Lead Generation Concept Page ([factory/leads/stuc-noord/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/stuc-noord/index.html))**:
+  - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor Stuc-noord (Boomgaard 71, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), HomeAndConstructionBusiness JSON-LD schema, diensten- en kwaliteitsgarantie showcase, klantbeoordeling en interactief WhatsApp offerteaanvraag formulier.
+
+- **[2026-09-29] Model Interactie & Sessie Handshake**:
+  - Geverifieerd dat de assistent operationeel is en reageert volgens de gestelde CKE-richtlijnen en beknopte communicatie-instructies.
+
 - **[2026-09-29] M&A delivery service Lead Generation Concept Page ([factory/leads/m-en-a-delivery-service/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/m-en-a-delivery-service/index.html))**:
   - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor M&A delivery service (Nijverheidsweg 12, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness & DeliveryService JSON-LD schema, koeriersdiensten showcase, interactief offerteformulier en directe WhatsApp/bel CTA's.
 
