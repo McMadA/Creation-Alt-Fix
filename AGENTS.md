@@ -2,6 +2,9 @@
 
 ## Recent Insights
 
+- **[2026-09-29] M&A delivery service Lead Generation Concept Page ([factory/leads/m-en-a-delivery-service/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/m-en-a-delivery-service/index.html))**:
+  - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor M&A delivery service (Nijverheidsweg 12, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness & DeliveryService JSON-LD schema, koeriersdiensten showcase, interactief offerteformulier en directe WhatsApp/bel CTA's.
+
 - **[2026-09-29] Hakkeling Fiets Reparaties Lead Generation Concept Page ([factory/leads/hakkeling-fiets-reparaties/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/hakkeling-fiets-reparaties/index.html))**:
   - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor Hakkeling Fiets Reparaties (Kerkstraat 199, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness & BikeStore JSON-LD schema, Google Reviews integratie, interactief reparatie-offerteformulier en directe WhatsApp/bel CTA's.
 

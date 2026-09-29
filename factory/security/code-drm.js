@@ -68,23 +68,6 @@ export function applyCodeProtection(html, business) {
     }
   }, { capture: true });
 
-  // 4. DEVTOOLS DETECTIE & BLUR TRAP
-  let devToolsOpen = false;
-  const threshold = 160;
-  setInterval(function() {
-    const widthDiff = window.outerWidth - window.innerWidth > threshold;
-    const heightDiff = window.outerHeight - window.innerHeight > threshold;
-    if ((widthDiff || heightDiff) && !devToolsOpen) {
-      devToolsOpen = true;
-      document.body.style.filter = 'blur(10px)';
-      document.body.style.pointerEvents = 'none';
-      showSecurityToast("Ontwikkelaarstools gedetecteerd. Layout vervaagd conform Creation+Alt+Fix licentievoorwaarden.");
-    } else if (!widthDiff && !heightDiff && devToolsOpen) {
-      devToolsOpen = false;
-      document.body.style.filter = '';
-      document.body.style.pointerEvents = '';
-    }
-  }, 1000);
 
   function showSecurityToast(msg) {
     let t = document.getElementById('caf-sec-toast');
