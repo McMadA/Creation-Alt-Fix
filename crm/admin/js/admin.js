@@ -2140,9 +2140,13 @@ function renderMonitorsTable() {
             const rowClass = isIgnored ? 'row-monitor-ignored' : '';
             const latencyClass = r.latencyMs < 200 ? 'latency-fast' : (r.latencyMs < 800 ? 'latency-medium' : 'latency-slow');
             const latencyPct = Math.min(100, Math.round((r.latencyMs / 1500) * 100));
-            const httpBadge = r.httpCode === 200 
-                ? `<span class="tech-badge ssl-ok"><i class="fas fa-check"></i> 200 OK</span>`
-                : `<span class="tech-badge ssl-fail"><i class="fas fa-exclamation-triangle"></i> ${r.httpCode || 'ERR'}</span>`;
+            const isHttpSuccess = r.httpCode >= 200 && r.httpCode < 300;
+            const isHttpRedirect = r.httpCode >= 300 && r.httpCode < 400;
+            const httpBadge = isHttpSuccess 
+                ? `<span class="tech-badge ssl-ok"><i class="fas fa-check"></i> ${r.httpCode} OK</span>`
+                : (isHttpRedirect
+                    ? `<span class="tech-badge ssl-ok" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399;"><i class="fas fa-arrow-right"></i> ${r.httpCode}</span>`
+                    : `<span class="tech-badge ssl-fail"><i class="fas fa-exclamation-triangle"></i> ${r.httpCode || 'ERR'}</span>`);
             
             const sslBadge = r.sslValid
                 ? `<span class="tech-badge ssl-ok"><i class="fas fa-lock"></i> SSL Geldig</span>`
@@ -2414,7 +2418,7 @@ window.openMonitorDetailModal = async (domainName) => {
                     <i class="fas fa-lock"></i> HTTPS &amp; SSL Certificaat Status
                 </h4>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.83rem;">
-                    <div><strong>HTTP Responscode:</strong> <span class="tech-badge ${report.httpCode === 200 ? 'ssl-ok' : 'ssl-fail'}">HTTP ${report.httpCode}</span></div>
+                    <div><strong>HTTP Responscode:</strong> <span class="tech-badge ${(report.httpCode >= 200 && report.httpCode < 400) ? 'ssl-ok' : 'ssl-fail'}">HTTP ${report.httpCode}</span></div>
                     <div><strong>SSL Handshake:</strong> <span class="tech-badge ${report.sslValid ? 'ssl-ok' : 'ssl-fail'}">${report.sslValid ? '✓ Succesvol (TLS OK)' : '✗ Fout / Verlopen'}</span></div>
                     <div><strong>Totale Responsetijd:</strong> <span>${report.latencyMs} ms</span></div>
                     <div><strong>Subpad:</strong> <code>${escapeHtml(report.path || '/')}</code></div>

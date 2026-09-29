@@ -60,11 +60,11 @@ const server = http.createServer(async (req, res) => {
 
   // CORS Origin Validatie (Strikte whitelist en veilige URL parsing ter voorkoming van CWE-346)
   function validateOrigin(orig) {
-    if (!orig) return true; // Directe non-browser of loopback requests
+    if (!orig || orig === 'null') return true; // Directe non-browser of loopback requests
     try {
       const u = new URL(orig);
-      // Alleen HTTPS voor creationaltfix.nl en officiële subdomeinen
-      if (u.protocol === 'https:' && (u.hostname === 'creationaltfix.nl' || u.hostname.endsWith('.creationaltfix.nl'))) {
+      // HTTPS en HTTP voor creationaltfix.nl en officiële subdomeinen
+      if ((u.protocol === 'https:' || u.protocol === 'http:') && (u.hostname === 'creationaltfix.nl' || u.hostname.endsWith('.creationaltfix.nl'))) {
         return true;
       }
       // Lokale ontwikkeldomeinen (strikte loopback hostname match, geen startsWith lekken)
@@ -85,21 +85,23 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Preflight OPTIONS afhandeling
+  // Preflight OPTIONS afhandeling (inclusief Chrome Private Network Access - PNA)
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': origin || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, x-caf-auth',
+      'Access-Control-Allow-Headers': 'Content-Type, x-caf-auth, Access-Control-Request-Private-Network',
+      'Access-Control-Allow-Private-Network': 'true',
       'Access-Control-Max-Age': '86400'
     });
     res.end();
     return;
   }
 
-  // Standaard response headers
+  // Standaard response headers (inclusief PNA voor browser loopback cross-origin access)
   res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-caf-auth');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-caf-auth, Access-Control-Request-Private-Network');
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
   res.setHeader('Content-Type', 'application/json');
 
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
@@ -227,6 +229,51 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200);
     res.end(JSON.stringify({ message: "24/7 Daemon gepauzeerd", isDaemonActive: false }));
     return;
+  }
+
+  // 6. Statische bestanden serveren voor lokaal CRM Dashboard (http://127.0.0.1:3847/admin/)
+  if (req.method === 'GET' && !pathname.startsWith('/api/')) {
+    const CRM_DIR = path.join(ROOT_DIR, 'crm');
+    
+    // Redirect / of /admin naar /admin/
+    if (pathname === '/' || pathname === '/admin') {
+      res.writeHead(302, { 'Location': '/admin/' });
+      res.end();
+      return;
+    }
+
+    let relPath = pathname;
+    if (relPath.startsWith('/crm/')) relPath = relPath.substring(5);
+    if (relPath.endsWith('/')) relPath += 'index.html';
+
+    const safePath = path.normalize(path.join(CRM_DIR, relPath));
+
+    // Strikte path-traversal guard
+    if (safePath.startsWith(CRM_DIR) && fs.existsSync(safePath) && fs.statSync(safePath).isFile()) {
+      const ext = path.extname(safePath).toLowerCase();
+      const MIME_MAP = {
+        '.html': 'text/html; charset=utf-8',
+        '.js': 'application/javascript; charset=utf-8',
+        '.css': 'text/css; charset=utf-8',
+        '.json': 'application/json; charset=utf-8',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon',
+        '.webp': 'image/webp',
+        '.woff2': 'font/woff2',
+        '.woff': 'font/woff'
+      };
+      const contentType = MIME_MAP[ext] || 'application/octet-stream';
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Access-Control-Allow-Origin': origin || '*',
+        'Access-Control-Allow-Private-Network': 'true'
+      });
+      fs.createReadStream(safePath).pipe(res);
+      return;
+    }
   }
 
   // 404 Not Found

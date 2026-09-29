@@ -710,6 +710,8 @@ test("healthcheck.php enforces SSRF, DNS pinning, and rate limiting defenses", (
     assert.ok(php.includes("CURLOPT_RESOLVE"), "Must pin DNS via CURLOPT_RESOLVE to prevent TOCTOU DNS rebinding");
     assert.ok(php.includes("CURLPROTO_HTTPS | CURLPROTO_HTTP"), "Must restrict protocols to HTTPS and HTTP");
     assert.ok(php.includes("60"), "Must enforce rate limiting threshold");
+    assert.ok(!php.includes("CURLE_PEER_FAILED_VERIFICATION"), "Must not reference non-standard PHP constant CURLE_PEER_FAILED_VERIFICATION");
+    assert.ok(php.includes("catch (\\Throwable"), "Must wrap healthcheck in Throwable exception boundary");
 });
 
 // ========================================================

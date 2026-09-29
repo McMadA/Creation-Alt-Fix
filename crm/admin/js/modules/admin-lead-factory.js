@@ -89,6 +89,7 @@ export function initLeadFactoryModule(leads = [], handlers = {}) {
 let _bridgeToken = '';
 let _isBridgeOnline = false;
 let _isDaemonActive = false;
+let _activeBridgeHost = 'http://127.0.0.1:3847';
 
 /**
  * Haalt de auth token op voor de bridge
@@ -110,7 +111,7 @@ async function getBridgeAuthToken() {
 }
 
 /**
- * Controleert de status van de lokale bridge op 127.0.0.1:3847
+ * Controleert de status van de lokale bridge (127.0.0.1:3847 en localhost:3847)
  */
 export async function checkBridgeStatus(handlers = {}) {
     const badge = document.getElementById('bridge-status-badge');
@@ -119,18 +120,51 @@ export async function checkBridgeStatus(handlers = {}) {
     const daemonBtnText = document.getElementById('daemon-btn-text');
     const daemonIcon = document.getElementById('daemon-icon');
 
+    // Maak statusbadge interactief voor beheerder-diagnostiek
+    if (badge && !badge._hasClickListener) {
+        badge.style.cursor = 'pointer';
+        badge.addEventListener('click', () => {
+            if (!_isBridgeOnline) {
+                alert("Lead Factory Bridge Status:\n\nDe server draait lokaal op poort 3847.\nAls je op https://portal.creationaltfix.nl zit, kan een browserbeveiliging (zoals Mixed Content in Firefox of Chrome Private Network Access) cross-origin verbinding blokkeren.\n\nTip: Je kunt het CRM ook direct lokaal openen via:\nhttp://127.0.0.1:3847/admin/\n(Daar werkt alles 100% lokaal zonder browserblokkades)");
+            } else {
+                alert(`Lead Factory Bridge Status: Verbonden!\nActieve host: ${_activeBridgeHost}\n24/7 Daemon: ${_isDaemonActive ? 'Actief' : 'Gepauzeerd'}`);
+            }
+        });
+        badge._hasClickListener = true;
+    }
+
     try {
         const token = await getBridgeAuthToken();
         const headers = token ? { 'x-caf-auth': token } : {};
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 2000);
-        const resp = await fetch('http://127.0.0.1:3847/api/status', { 
-            headers,
-            signal: controller.signal 
-        });
-        clearTimeout(timeout);
 
-        if (resp.ok) {
+        // Bepaal kandidaat hosts (huidige loopback origin eerst indien van toepassing)
+        const candidates = [];
+        if (window.location.port === '3847') candidates.push(window.location.origin);
+        candidates.push('http://127.0.0.1:3847', 'http://localhost:3847');
+
+        let resp = null;
+        let lastErr = null;
+
+        for (const host of candidates) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 2000);
+                const r = await fetch(`${host}/api/status`, { 
+                    headers,
+                    signal: controller.signal 
+                });
+                clearTimeout(timeout);
+                if (r.ok) {
+                    resp = r;
+                    _activeBridgeHost = host;
+                    break;
+                }
+            } catch (candErr) {
+                lastErr = candErr;
+            }
+        }
+
+        if (resp && resp.ok) {
             const data = await resp.json();
             _isBridgeOnline = true;
             _isDaemonActive = data.isDaemonActive;
@@ -139,6 +173,7 @@ export async function checkBridgeStatus(handlers = {}) {
                 badge.style.background = 'rgba(52, 211, 153, 0.2)';
                 badge.style.color = '#34d399';
                 badge.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+                badge.title = `Bridge actief op ${_activeBridgeHost}. Klik voor details.`;
             }
             if (dot) dot.style.color = '#34d399';
             if (text) text.textContent = 'Bridge: Verbonden (3847)';
@@ -161,13 +196,17 @@ export async function checkBridgeStatus(handlers = {}) {
             }
 
             return data;
+        } else {
+            throw lastErr || new Error("Geen respons van bridge");
         }
     } catch (err) {
         _isBridgeOnline = false;
+        console.warn('[Lead Factory Bridge] Verbinding controleren:', err);
         if (badge) {
             badge.style.background = 'rgba(239, 68, 68, 0.2)';
             badge.style.color = '#f87171';
             badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            badge.title = 'Bridge offline of geblokkeerd door browser. Klik voor opties.';
         }
         if (dot) dot.style.color = '#f87171';
         if (text) text.textContent = 'Bridge: Offline';
@@ -184,7 +223,7 @@ async function handleTriggerBridgeScan(handlers = {}) {
     const triggerText = document.getElementById('factory-trigger-btn-text');
 
     if (!_isBridgeOnline) {
-        alert("De lokale Factory Bridge server is momenteel niet actief.\n\nStart de bridge op de achtergrond via:\n- Dubbelklik op 'scripts/start-lead-factory-bridge.bat'\n- Of voer uit in de terminal: npm run bridge:start");
+        alert("De lokale Factory Bridge server is momenteel niet bereikbaar.\n\nControles:\n1. Zorg dat de bridge draait: npm run bridge:start\n2. Open je het dashboard via HTTPS (portal.creationaltfix.nl)? In browsers zoals Firefox kan Mixed Content een verbinding naar 127.0.0.1 blokkeren.\n\nTip: Open het CRM lokaal via: http://127.0.0.1:3847/admin/");
         return;
     }
 
@@ -194,7 +233,7 @@ async function handleTriggerBridgeScan(handlers = {}) {
         if (spinIcon) spinIcon.className = 'fas fa-spinner fa-spin';
         if (triggerText) triggerText.textContent = 'Scan gestart...';
 
-        const resp = await fetch('http://127.0.0.1:3847/api/trigger', {
+        const resp = await fetch(`${_activeBridgeHost}/api/trigger`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -225,7 +264,7 @@ async function handleTriggerBridgeScan(handlers = {}) {
  */
 async function handleToggleBridgeDaemon(handlers = {}) {
     if (!_isBridgeOnline) {
-        alert("De lokale Factory Bridge server is offline. Start eerst 'scripts/start-lead-factory-bridge.bat'.");
+        alert("De lokale Factory Bridge server is offline. Tip: Open het dashboard via http://127.0.0.1:3847/admin/ of start de bridge.");
         return;
     }
 
@@ -233,7 +272,7 @@ async function handleToggleBridgeDaemon(handlers = {}) {
     const endpoint = _isDaemonActive ? '/api/daemon/stop' : '/api/daemon/start';
 
     try {
-        const resp = await fetch(`http://127.0.0.1:3847${endpoint}`, {
+        const resp = await fetch(`${_activeBridgeHost}${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

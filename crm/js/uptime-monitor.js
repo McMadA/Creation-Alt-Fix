@@ -466,16 +466,17 @@ export async function probeDomainHttps(domain, path = "/") {
     // 1. Try internal healthcheck proxy if on live host (Vimexx cURL endpoint)
     try {
         const basePath = (typeof window !== 'undefined' && window.location.pathname.includes('/crm/')) ? '/crm' : '';
-        const proxyUrl = `${basePath}/api/healthcheck.php?domain=${encodeURIComponent(cleanDomain)}`;
-        const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(3500) });
+        const pathParam = (path && path !== '/') ? `&path=${encodeURIComponent(path)}` : '';
+        const proxyUrl = `${basePath}/api/healthcheck.php?domain=${encodeURIComponent(cleanDomain)}${pathParam}`;
+        const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(6500) });
         if (proxyRes.ok) {
             const proxyData = await proxyRes.json();
-            if (proxyData && proxyData.success) {
-                probeResult.reachable = proxyData.reachable;
+            if (proxyData && (proxyData.success || proxyData.reachable !== undefined)) {
+                probeResult.reachable = !!proxyData.reachable;
                 probeResult.latencyMs = proxyData.latency_ms || Math.round(performance.now() - startTime);
                 probeResult.sslValid = !!proxyData.ssl_valid;
                 probeResult.httpCode = proxyData.http_code;
-                probeResult.message = proxyData.message || (proxyData.reachable ? "Bereikbaar (200 OK)" : "Niet bereikbaar");
+                probeResult.message = proxyData.message || (proxyData.reachable ? `Bereikbaar (${proxyData.http_code || 200})` : "Niet bereikbaar");
                 return probeResult;
             }
         }
