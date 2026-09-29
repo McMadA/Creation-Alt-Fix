@@ -120,9 +120,14 @@ export async function checkBridgeStatus(handlers = {}) {
     const daemonIcon = document.getElementById('daemon-icon');
 
     try {
+        const token = await getBridgeAuthToken();
+        const headers = token ? { 'x-caf-auth': token } : {};
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 2000);
-        const resp = await fetch('http://127.0.0.1:3847/api/status', { signal: controller.signal });
+        const resp = await fetch('http://127.0.0.1:3847/api/status', { 
+            headers,
+            signal: controller.signal 
+        });
         clearTimeout(timeout);
 
         if (resp.ok) {

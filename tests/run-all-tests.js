@@ -661,19 +661,42 @@ test("storage.rules enforces cross-service Firestore ownership verification and 
     assert.ok(rules.includes("function isProjectOwner(projectId)"), "Must define isProjectOwner");
     assert.ok(rules.includes("firestore.exists(/databases/(default)/documents/projects/$(projectId))"), "Must verify firestore.exists");
     assert.ok(rules.includes("request.resource.size < 10 * 1024 * 1024"), "Must enforce 10MB limit");
+    assert.ok(rules.includes("request.auth.token.email_verified == true"), "Must require verified email or google sign-in");
     assert.ok(!rules.includes("text/.*"), "Must not allow wildcard text/.* (MIME execution vector)");
     assert.ok(!rules.includes("image/.*"), "Must not allow wildcard image/.* (SVG XSS vector)");
 });
 
-test("crm/.htaccess enforces modern security headers and dotfile blocking", () => {
-    const htaccessPath = path.join(ROOT_DIR, "crm/.htaccess");
-    const htaccess = fs.readFileSync(htaccessPath, "utf-8");
-    assert.ok(htaccess.includes("Strict-Transport-Security"), "Must enforce HSTS");
-    assert.ok(htaccess.includes("Permissions-Policy"), "Must configure Permissions-Policy");
-    assert.ok(htaccess.includes("X-Content-Type-Options \"nosniff\""), "Must enforce nosniff");
-    assert.ok(htaccess.includes("X-Frame-Options \"SAMEORIGIN\""), "Must configure X-Frame-Options");
-    assert.ok(htaccess.includes("Cross-Origin-Opener-Policy"), "Must configure Cross-Origin-Opener-Policy");
-    assert.ok(htaccess.includes('FilesMatch "^\\.(?!well-known)"'), "Must block dotfiles");
+test("crm/.htaccess and website/.htaccess enforce modern security headers, CSP, and dotfile blocking", () => {
+    const crmHtaccessPath = path.join(ROOT_DIR, "crm/.htaccess");
+    const crmHtaccess = fs.readFileSync(crmHtaccessPath, "utf-8");
+    assert.ok(crmHtaccess.includes("Strict-Transport-Security"), "CRM must enforce HSTS");
+    assert.ok(crmHtaccess.includes("Permissions-Policy"), "CRM must configure Permissions-Policy");
+    assert.ok(crmHtaccess.includes("X-Content-Type-Options \"nosniff\""), "CRM must enforce nosniff");
+    assert.ok(crmHtaccess.includes("X-Frame-Options \"SAMEORIGIN\""), "CRM must configure X-Frame-Options");
+    assert.ok(crmHtaccess.includes("Cross-Origin-Opener-Policy"), "CRM must configure Cross-Origin-Opener-Policy");
+    assert.ok(crmHtaccess.includes('FilesMatch "^\\.(?!well-known)"'), "CRM must block dotfiles");
+
+    const webHtaccessPath = path.join(ROOT_DIR, "website/.htaccess");
+    const webHtaccess = fs.readFileSync(webHtaccessPath, "utf-8");
+    assert.ok(webHtaccess.includes("Strict-Transport-Security"), "Website must enforce HSTS");
+    assert.ok(webHtaccess.includes("Content-Security-Policy"), "Website must configure HTTP Content-Security-Policy");
+    assert.ok(webHtaccess.includes('FilesMatch "^\\.(?!well-known)"'), "Website must block dotfiles");
+
+    const dataHtaccessPath = path.join(ROOT_DIR, "crm/admin/data/.htaccess");
+    assert.ok(fs.existsSync(dataHtaccessPath), "crm/admin/data/.htaccess must exist");
+    const dataHtaccess = fs.readFileSync(dataHtaccessPath, "utf-8");
+    assert.ok(dataHtaccess.includes("Require all denied"), "crm/admin/data must deny web access");
+});
+
+test("factory bridge and FTPS client enforce strict TLS and origin parsing", () => {
+    const ftpsPath = path.join(ROOT_DIR, "factory/deployer/vimexx-ftps.js");
+    const ftpsContent = fs.readFileSync(ftpsPath, "utf-8");
+    assert.ok(ftpsContent.includes("rejectUnauthorized: process.env.FTP_REJECT_UNAUTHORIZED !== 'false'"), "FTPS must reject unauthorized certificates by default");
+
+    const bridgePath = path.join(ROOT_DIR, "factory/server/factory-bridge.js");
+    const bridgeContent = fs.readFileSync(bridgePath, "utf-8");
+    assert.ok(bridgeContent.includes("new URL(orig)"), "Bridge must parse URL safely to defeat CWE-346 prefix bypass");
+    assert.ok(bridgeContent.includes("u.hostname === 'localhost' || u.hostname === '127.0.0.1'"), "Bridge must strictly match loopback hostnames");
 });
 
 test("healthcheck.php enforces SSRF, DNS pinning, and rate limiting defenses", () => {

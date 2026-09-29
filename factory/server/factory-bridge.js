@@ -58,12 +58,26 @@ const server = http.createServer(async (req, res) => {
   const origin = req.headers['origin'] || '';
   const host = req.headers['host'] || '';
 
-  // CORS Origin Validatie (Alleen creationaltfix.nl en lokale ontwikkeldomeinen)
-  const isAllowedOrigin = !origin || 
-    origin === 'https://creationaltfix.nl' || 
-    origin.endsWith('.creationaltfix.nl') || 
-    origin.startsWith('http://localhost') || 
-    origin.startsWith('http://127.0.0.1');
+  // CORS Origin Validatie (Strikte whitelist en veilige URL parsing ter voorkoming van CWE-346)
+  function validateOrigin(orig) {
+    if (!orig) return true; // Directe non-browser of loopback requests
+    try {
+      const u = new URL(orig);
+      // Alleen HTTPS voor creationaltfix.nl en officiële subdomeinen
+      if (u.protocol === 'https:' && (u.hostname === 'creationaltfix.nl' || u.hostname.endsWith('.creationaltfix.nl'))) {
+        return true;
+      }
+      // Lokale ontwikkeldomeinen (strikte loopback hostname match, geen startsWith lekken)
+      if ((u.protocol === 'http:' || u.protocol === 'https:') && (u.hostname === 'localhost' || u.hostname === '127.0.0.1')) {
+        return true;
+      }
+    } catch {
+      return false;
+    }
+    return false;
+  }
+
+  const isAllowedOrigin = validateOrigin(origin);
 
   if (!isAllowedOrigin) {
     res.writeHead(403, { 'Content-Type': 'application/json' });
@@ -90,12 +104,12 @@ const server = http.createServer(async (req, res) => {
 
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const pathname = url.pathname;
+  const clientToken = req.headers['x-caf-auth'] || url.searchParams.get('token');
+  const isAuthenticated = clientToken === AUTH_TOKEN;
 
   // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken
   if (req.method === 'POST') {
-    const clientToken = req.headers['x-caf-auth'];
-    // Als verzoek lokaal komt en token klopt niet, weiger direct
-    if (clientToken !== AUTH_TOKEN) {
+    if (!isAuthenticated) {
       res.writeHead(401);
       res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
       return;
@@ -104,25 +118,38 @@ const server = http.createServer(async (req, res) => {
 
   // --- ROUTING ---
 
-  // 1. GET /api/status
+  // 1. GET /api/status (Openbare heartbeat, gevoelige logs & wachtrij alleen voor geauthenticeerde beheerders)
   if (req.method === 'GET' && pathname === '/api/status') {
     const db = engine.loadDatabase();
-    res.writeHead(200);
-    res.end(JSON.stringify({
+    const baseResponse = {
       online: true,
       port: PORT,
       isDaemonActive,
-      isCycleRunning,
-      totalLeadsInQueue: db.leads.filter(l => l.status === 'concept_ready').length,
-      totalScanned: db.totalScanned || 0,
-      totalQualified: db.totalQualified || 0,
-      recentLogs: RECENT_LOGS.slice(-15)
-    }));
+      isCycleRunning
+    };
+
+    if (isAuthenticated) {
+      Object.assign(baseResponse, {
+        authenticated: true,
+        totalLeadsInQueue: db.leads.filter(l => l.status === 'concept_ready').length,
+        totalScanned: db.totalScanned || 0,
+        totalQualified: db.totalQualified || 0,
+        recentLogs: RECENT_LOGS.slice(-15)
+      });
+    }
+
+    res.writeHead(200);
+    res.end(JSON.stringify(baseResponse));
     return;
   }
 
-  // 2. GET /api/logs
+  // 2. GET /api/logs (Vereist authenticatietoken)
   if (req.method === 'GET' && pathname === '/api/logs') {
+    if (!isAuthenticated) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: "Niet geautoriseerd: x-caf-auth token vereist voor log inspectie" }));
+      return;
+    }
     res.writeHead(200);
     res.end(JSON.stringify({ logs: RECENT_LOGS }));
     return;
