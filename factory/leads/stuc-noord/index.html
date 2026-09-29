@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stuc-noord | Professioneel Stukadoorsbedrijf in Hoogezand & Regio Groningen</title>
+  <meta name="description" content="Stuc-noord is hét vakkundige stukadoorsbedrijf in Hoogezand en omstreken. Vakmanschap op maat, strakke wanden en plafonds, betrouwbaar en snel gereed volgens afspraak. Vraag vrijblijvend een offerte aan!">
+  <link rel="canonical" href="https://stuc-noord.nl">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    "name": "Stuc-noord",
+    "image": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=1200&auto=format&fit=crop",
+    "telephone": "06 25505161",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Boomgaard 71",
+      "addressLocality": "Hoogezand",
+      "postalCode": "9603 HL",
+      "addressCountry": "NL"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 53.1558,
+      "longitude": 6.7456
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "07:30",
+      "closes": "18:00"
+    },
+    "priceRange": "€€",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "1"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --bg-card: #131B2E;
+      --bg-card-hover: #1A243D;
+      --cyan: #06B6D4;
+      --cyan-glow: rgba(6, 182, 212, 0.25);
+      --indigo: #6366F1;
+      --indigo-glow: rgba(99, 102, 241, 0.25);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(6, 182, 212, 0.3);
+      --success: #10B981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    body {
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Concept Banner */
+    .concept-banner {
+      background: linear-gradient(90deg, #1E1B4B, #0F172A);
+      color: #E0E7FF;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      font-family: sans-serif;
+      position: relative;
+      z-index: 100;
+    }
+
+    /* Sticky Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-glass);
+      transition: all 0.3s ease;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--cyan), var(--indigo));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #fff;
+      box-shadow: 0 4px 15px var(--cyan-glow);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #fff, #CBD5E1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-sub {
+      font-size: 0.75rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-links {
+      display: none;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, var(--cyan), #0891B2);
+      color: #042F2E;
+      font-weight: 700;
+      box-shadow: 0 4px 14px var(--cyan-glow);
+    }
+
+    .btn-cyan:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+      color: #000;
+    }
+
+    .btn-whatsapp {
+      background: #128C7E;
+      color: #fff;
+    }
+
+    .btn-whatsapp:hover {
+      background: #075E54;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(18, 140, 126, 0.35);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      padding: 5rem 0 4rem;
+      overflow: hidden;
+      background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+                  radial-gradient(circle at 20% 70%, rgba(6, 182, 212, 0.12) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid var(--border-accent);
+      color: var(--cyan);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .badge-indigo {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.3);
+      color: #A5B4FC;
+    }
+
+    .hero-title {
+      font-size: 2.6rem;
+      line-height: 1.15;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      letter-spacing: -1px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--cyan), var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-usp-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-glass);
+      text-align: left;
+    }
+
+    .usp-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .usp-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(6, 182, 212, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .usp-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .usp-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 4.5rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .section-tag {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-size: 2.1rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.5px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 2rem;
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .service-icon-box {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15));
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+      color: var(--cyan);
+    }
+
+    .service-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .service-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .service-pill {
+      font-size: 0.8rem;
+      color: var(--cyan);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Why Choose Us */
+    .why-section {
+      background: #0D1322;
+      border-top: 1px solid var(--border-glass);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .why-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .why-box:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(99, 102, 241, 0.04);
+    }
+
+    .why-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .why-box h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .why-box p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    /* Reviews Section */
+    .reviews-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 750px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .rating-stars {
+      color: #FBBF24;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .quote-text {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #F1F5F9;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .reviewer-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .reviewer-name {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .reviewer-badge {
+      font-size: 0.8rem;
+      color: var(--success);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    /* Contact Section */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .contact-info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 2.25rem;
+    }
+
+    .contact-info-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-info-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      font-size: 0.95rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(6, 182, 212, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .contact-text-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .contact-text-val {
+      font-weight: 600;
+      color: #fff;
+      font-size: 1.05rem;
+    }
+
+    /* Form */
+    .contact-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 2.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #CBD5E1;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #0B0F19;
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* Footer */
+    footer {
+      background: #070A12;
+      border-top: 1px solid var(--border-glass);
+      padding: 2.5rem 0;
+      margin-top: auto;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Responsive Queries */
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
+      }
+      .hero-title {
+        font-size: 3.4rem;
+      }
+    }
+
+    @media (max-width: 868px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-usp-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Subtiele Concept Banner -->
+  <div style="background: linear-gradient(90deg, #1E1B4B, #0F172A); color: #E0E7FF; padding: 10px 20px; font-size: 0.85rem; text-align: center; border-bottom: 1px solid rgba(99,102,241,0.3); font-family: sans-serif;">
+    ✨ <strong>Concept Demonstratie</strong> gemaakt door Creation+Alt+Fix voor Stuc-noord • <a href="https://creationaltfix.nl" target="_blank" style="color: #38BDF8; text-decoration: underline; margin-left: 6px;">Website overnemen of aanpassen?</a>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="logo-box">
+          <div class="logo-badge">SN</div>
+          <div class="logo-text">
+            <span class="logo-title">Stuc-noord</span>
+            <span class="logo-sub">Stukadoorsbedrijf</span>
+          </div>
+        </a>
+
+        <div class="nav-links">
+          <a href="#diensten" class="nav-link">Diensten</a>
+          <a href="#waarom" class="nav-link">Waarom Ons</a>
+          <a href="#ervaringen" class="nav-link">Ervaringen</a>
+          <a href="#contact" class="nav-link">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <a href="tel:0625505161" class="btn btn-outline" style="display: none; @media(min-width: 500px){display:inline-flex;}">
+            📞 06 25505161
+          </a>
+          <a href="https://wa.me/31625505161?text=Hallo%20Stuc-noord,%20ik%20wil%20graag%20vrijblijvend%20informatie%20of%20een%20offerte%20aanvragen." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+            💬 WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badges">
+          <span class="badge">📍 Lokaal in Hoogezand</span>
+          <span class="badge badge-indigo">⚡ Binnen 24u Reactie</span>
+          <span class="badge">⭐ 5 Sterren Kwaliteit</span>
+        </div>
+
+        <h1 class="hero-title">
+          Strak Stukadoorswerk Met <span>Oog Voor Perfectie</span>
+        </h1>
+
+        <p class="hero-desc">
+          Zoek je een betrouwbare stukadoor voor wanden en plafonds die spiegelglad worden opgeleverd? Stuc-noord combineert traditioneel vakmanschap met moderne precisie in Hoogezand en omstreken.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-cyan">
+            Direct Vrijblijvende Offerte
+          </a>
+          <a href="tel:0625505161" class="btn btn-outline">
+            Bel 06 25505161
+          </a>
+        </div>
+
+        <div class="hero-usp-row">
+          <div class="usp-item">
+            <div class="usp-icon">✓</div>
+            <div>
+              <div class="usp-text">Vakmanschap op Maat</div>
+              <div class="usp-sub">Persoonlijke service</div>
+            </div>
+          </div>
+          <div class="usp-item">
+            <div class="usp-icon">✓</div>
+            <div>
+              <div class="usp-text">Eerlijke Tarieven</div>
+              <div class="usp-sub">Geen verrassingen achteraf</div>
+            </div>
+          </div>
+          <div class="usp-item">
+            <div class="usp-icon">✓</div>
+            <div>
+              <div class="usp-text">100% Tevredenheidsgarantie</div>
+              <div class="usp-sub">Klaar volgens afspraak</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diensten Section -->
+  <section id="diensten">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Wat Wij Doen</span>
+        <h2 class="section-title">Onze Specialistische Diensten</h2>
+        <p class="section-desc">Van renovatie en nieuwbouw tot fijnkorrelig pleisterwerk en sausklare wanden.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Dienst 1 -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box">📐</div>
+            <h3>Vakmanschap op Maat</h3>
+            <p>Iedere woning en ruimte is uniek. Wij luisteren naar jouw wensen en zorgen voor een strakke, egale afwerking die naadloos aansluit op jouw interieur.</p>
+          </div>
+          <span class="service-pill">Persoonlijke aandacht →</span>
+        </div>
+
+        <!-- Dienst 2 -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box">💬</div>
+            <h3>Snelle & Duidelijke Communicatie</h3>
+            <p>Geen weken wachten op een offerte. Binnen 24 uur heb je helder contact en een transparante prijsopgave zonder kleine lettertjes of verborgen kosten.</p>
+          </div>
+          <span class="service-pill">Altijd duidelijkheid →</span>
+        </div>
+
+        <!-- Dienst 3 -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box">📍</div>
+            <h3>Regionale Service in Groningen</h3>
+            <p>Gevestigd aan Boomgaard in Hoogezand. Als lokale vakman zijn we snel ter plaatse in Hoogezand, Sappemeer, Groningen en omringende dorpen.</p>
+          </div>
+          <span class="service-pill">Lokaal & flexibel →</span>
+        </div>
+
+        <!-- Dienst 4 -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box">🛡️</div>
+            <h3>Garantie op Kwaliteit</h3>
+            <p>Wij zijn pas tevreden wanneer jij 100% glimlacht bij het resultaat. We werken schoon, netjes afgeplakt en laten de werkplek altijd opgeruimd achter.</p>
+          </div>
+          <span class="service-pill">100% Tevreden →</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waarom Kiezen Voor Ons -->
+  <section id="waarom" class="why-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Betrouwbaarheid</span>
+        <h2 class="section-title">Waarom Kiezen Voor Stuc-noord?</h2>
+        <p class="section-desc">Kwaliteit en afspraak is afspraak. Dat is de nuchtere noordelijke werkwijze.</p>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-box">
+          <div class="why-num">01</div>
+          <h3>Afspraak is Afspraak</h3>
+          <p>We starten op de afgesproken dag en ronden het project binnen de geplande tijd af, zodat jij snel verder kunt met inrichten.</p>
+        </div>
+        <div class="why-box">
+          <div class="why-num">02</div>
+          <h3>Schoon & Nauwkeurig</h3>
+          <p>Goede bescherming van vloeren, kozijnen en meubels. Wij werken stof- en spatarm en ruimen na oplevering grondig op.</p>
+        </div>
+        <div class="why-box">
+          <div class="why-num">03</div>
+          <h3>Duurzame Materialen</h3>
+          <p>We gebruiken uitsluitend hoogwaardige A-merk gipsen en hechtprimers voor een scheurvrij en blijvend strak eindresultaat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Klantbeoordeling -->
+  <section id="ervaringen">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Klanttevredenheid</span>
+        <h2 class="section-title">Echte Ervaringen</h2>
+        <p class="section-desc">Bekijk wat opdrachtgevers zeggen over onze service en oplevering.</p>
+      </div>
+
+      <div class="reviews-card">
+        <div class="rating-stars">★★★★★</div>
+        <p class="quote-text">
+          “Vriendelijke service, betrouwbaar en snel klaar volgens afspraak!”
+        </p>
+        <div class="reviewer-meta">
+          <span class="reviewer-name">Tevreden Opdrachtgever</span>
+          <span class="reviewer-badge">✓ Geverifieerde Klantbeoordeling</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Offerte -->
+  <section id="contact" style="background: radial-gradient(circle at 50% 100%, rgba(6, 182, 212, 0.08) 0%, transparent 70%);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Offerte Aanvragen</span>
+        <h2 class="section-title">Direct Vrijblijvend Contact</h2>
+        <p class="section-desc">Ontvang binnen 24 uur een heldere reactie en richtprijs voor jouw stucwerk.</p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- Bedrijfsgegevens Card -->
+        <div class="contact-info-card">
+          <h3>Stuc-noord</h3>
+          <p>Heb je een vraag of wil je dat we langskomen om het werk op te nemen? Neem direct contact op per telefoon of WhatsApp.</p>
+
+          <div class="contact-detail">
+            <div class="contact-icon">📍</div>
+            <div>
+              <div class="contact-text-label">Adres & Werkplaats</div>
+              <div class="contact-text-val">Boomgaard 71, 9603 HL Hoogezand</div>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-icon">📞</div>
+            <div>
+              <div class="contact-text-label">Direct Bellen</div>
+              <a href="tel:0625505161" class="contact-text-val" style="color: var(--cyan);">06 25505161</a>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-icon">💬</div>
+            <div>
+              <div class="contact-text-label">WhatsApp</div>
+              <a href="https://wa.me/31625505161?text=Hallo%20Stuc-noord,%20ik%20heb%20een%20vraag%20over%20stucwerk." target="_blank" rel="noopener noreferrer" class="contact-text-val" style="color: #25D366;">Stuur een appje</a>
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; padding: 1.25rem; background: rgba(6, 182, 212, 0.05); border: 1px dashed var(--border-accent); border-radius: 10px;">
+            <strong style="color: var(--cyan); display: block; margin-bottom: 0.25rem;">Tip: foto's meesturen via WhatsApp</strong>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Stuur via WhatsApp gerust een paar foto's of bouwtekeningen mee voor een nog snellere prijsindicatie!</span>
+          </div>
+        </div>
+
+        <!-- Aanvraag Formulier -->
+        <form class="contact-form" id="leadForm" onsubmit="handleFormSubmit(event)">
+          <div class="form-group">
+            <label for="naam">Je Naam *</label>
+            <input type="text" id="naam" class="form-control" placeholder="Bijv. Mark de Vries" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="telefoon">Telefoonnummer *</label>
+              <input type="tel" id="telefoon" class="form-control" placeholder="06 12345678" required>
+            </div>
+            <div class="form-group">
+              <label for="plaats">Plaats / Regio</label>
+              <input type="text" id="plaats" class="form-control" placeholder="Bijv. Hoogezand">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="type_klus">Type Klus</label>
+            <select id="type_klus" class="form-control">
+              <option value="Wanden stucen (glad / sausklaar)">Wanden stucen (glad / sausklaar)</option>
+              <option value="Plafond stucen">Plafond stucen</option>
+              <option value="Renovatie / herstelwerkzaamheden">Renovatie / herstelwerkzaamheden</option>
+              <option value="Nieuwbouwwoning compleet">Nieuwbouwwoning compleet</option>
+              <option value="Overig">Overig</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="bericht">Beschrijving van de werkzaamheden (aantal m², ruimtes etc.)</label>
+            <textarea id="bericht" class="form-control" placeholder="Vertel kort wat er moet gebeuren..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-cyan" style="width: 100%; padding: 0.95rem; font-size: 1.05rem;">
+            Aanvraag Verzenden via WhatsApp
+          </button>
+          <div id="formSuccess" style="display: none; margin-top: 1rem; color: var(--success); text-align: center; font-size: 0.9rem;">
+            ✓ Aanvraag gereed gemaakt! Je wordt doorgestuurd...
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        <strong>Stuc-noord</strong> • Boomgaard 71, 9603 HL Hoogezand • Tel: 06 25505161
+      </div>
+      <div>
+        &copy; 2026 Stuc-noord. Alle rechten voorbehouden.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const naam = document.getElementById('naam').value.trim();
+      const telefoon = document.getElementById('telefoon').value.trim();
+      const plaats = document.getElementById('plaats').value.trim();
+      const typeKlus = document.getElementById('type_klus').value;
+      const bericht = document.getElementById('bericht').value.trim();
+
+      const text = `Hallo Stuc-noord,%0A%0AIk wil graag een vrijblijvende offerte aanvragen:%0A- Naam: ${encodeURIComponent(naam)}%0A- Telefoon: ${encodeURIComponent(telefoon)}%0A- Woonplaats: ${encodeURIComponent(plaats || 'Niet opgegeven')}%0A- Type klus: ${encodeURIComponent(typeKlus)}%0A- Omschrijving: ${encodeURIComponent(bericht || 'Geen extra toelichting')}`;
+
+      document.getElementById('formSuccess').style.display = 'block';
+
+      setTimeout(() => {
+        window.open(`https://wa.me/31625505161?text=${text}`, '_blank');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
