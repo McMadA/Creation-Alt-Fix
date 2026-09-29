@@ -657,7 +657,7 @@
 
                 <!-- KPI Kaarten -->
                 <div class="monitoring-kpis" style="margin-bottom: 24px;">
-                    <div class="monitoring-kpi-card">
+                    <div class="monitoring-kpi-card" id="kpi-card-factory-ready" style="cursor: pointer; transition: transform 0.15s, border-color 0.15s;" title="Klik om te filteren op 'Klaar voor Review'">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Klaar voor Beoordeling</span>
                             <i class="fas fa-layer-group" style="color: #38bdf8;"></i>
@@ -668,7 +668,7 @@
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Wacht op 1-klik goedkeuring</div>
                     </div>
 
-                    <div class="monitoring-kpi-card">
+                    <div class="monitoring-kpi-card" id="kpi-card-factory-sent" style="cursor: pointer; transition: transform 0.15s, border-color 0.15s;" title="Klik om te filteren op 'Reeds Verzonden'">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">E-mails Verzonden</span>
                             <i class="fas fa-paper-plane" style="color: #34d399;"></i>
@@ -679,7 +679,7 @@
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Handmatig geopend (mailto: info@)</div>
                     </div>
 
-                    <div class="monitoring-kpi-card">
+                    <div class="monitoring-kpi-card" id="kpi-card-factory-whatsapp" style="cursor: pointer; transition: transform 0.15s, border-color 0.15s;" title="Klik om te filteren op 'WhatsApp Contact'">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">WhatsApp Geopend</span>
                             <i class="fab fa-whatsapp" style="color: #10b981;"></i>
@@ -690,7 +690,7 @@
                         <div style="font-size: 0.75rem; color: var(--color-text-secondary);">Mobiele chat outreach</div>
                     </div>
 
-                    <div class="monitoring-kpi-card">
+                    <div class="monitoring-kpi-card" id="kpi-card-factory-total" style="cursor: pointer; transition: transform 0.15s, border-color 0.15s;" title="Klik om alle concepten te tonen">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700; letter-spacing: 0.5px;">Totaal Gescand</span>
                             <i class="fas fa-search-location" style="color: #fbbf24;"></i>
@@ -703,7 +703,7 @@
                 </div>
 
                 <!-- Zoek en filter bar -->
-                <div class="admin-toolbar" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+                <div class="admin-toolbar" style="display: flex; gap: 15px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
                     <div style="flex: 1; min-width: 260px;">
                         <input type="text" id="factory-search-input" class="admin-input" placeholder="🔍 Zoek concept op bedrijfsnaam, branche, adres of telefoon..." style="margin: 0;">
                     </div>
@@ -715,6 +715,22 @@
                             <option value="skipped">⏭️ Overgeslagen / Gearchiveerd</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Snelle Filterknoppen (Pills) -->
+                <div style="display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" id="pill-filter-ready" class="btn btn-primary btn-sm factory-filter-pill" data-filter="concept_ready" style="padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-sparkles"></i> <span>Klaar voor Review</span> (<span id="pill-count-ready">0</span>)
+                    </button>
+                    <button type="button" id="pill-filter-sent" class="btn btn-secondary btn-sm factory-filter-pill" data-filter="sent" style="padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-paper-plane"></i> <span>Reeds Verzonden</span> (<span id="pill-count-sent">0</span>)
+                    </button>
+                    <button type="button" id="pill-filter-all" class="btn btn-secondary btn-sm factory-filter-pill" data-filter="all" style="padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-layer-group"></i> <span>Alle Concepten</span> (<span id="pill-count-all">0</span>)
+                    </button>
+                    <button type="button" id="pill-filter-skipped" class="btn btn-secondary btn-sm factory-filter-pill" data-filter="skipped" style="padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-archive"></i> <span>Gearchiveerd</span> (<span id="pill-count-skipped">0</span>)
+                    </button>
                 </div>
 
                 <!-- De Concepten Stapel Grid -->

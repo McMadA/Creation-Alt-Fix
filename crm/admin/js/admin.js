@@ -639,15 +639,23 @@ async function setupAndRenderLeadFactory() {
         localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
     }
 
-    initLeadFactoryModule(leads, {
+    const factoryHandlers = {
         onRefresh: async () => {
             await setupAndRenderLeadFactory();
         },
-        onSendEmail: async (lead) => {
+        onSendEmail: async (lead, customEmail = null) => {
+            if (customEmail) lead.email = customEmail;
             const subject = encodeURIComponent(lead.pitch?.subject || `Concept website voor ${lead.name}`);
             const body = encodeURIComponent(lead.pitch?.bodyPlain || `Bekijk hier je concept website: ${lead.liveUrl}`);
             const mailto = `mailto:${lead.email || ''}?subject=${subject}&body=${body}`;
-            window.location.href = mailto;
+            
+            // Betrouwbare popup-veilige open actie
+            const link = document.createElement('a');
+            link.href = mailto;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
 
             lead.status = 'sent';
             lead.sentAt = new Date().toISOString();
@@ -661,11 +669,14 @@ async function setupAndRenderLeadFactory() {
             if (idx >= 0) stored[idx] = lead; else stored.push(lead);
             localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
 
-            initLeadFactoryModule(stored);
+            initLeadFactoryModule(stored, factoryHandlers);
             await logAuditEvent('lead_email_sent', `Concept acquisitiemail voorbereid en geopend voor ${lead.name}.`);
         },
         onUpdateStatus: async (lead, newStatus) => {
             lead.status = newStatus;
+            if (newStatus === 'concept_ready') {
+                lead.sentAt = null;
+            }
             lead.updatedAt = new Date().toISOString();
             if (db) {
                 try {
@@ -676,12 +687,15 @@ async function setupAndRenderLeadFactory() {
             const idx = stored.findIndex(s => s.id === lead.id);
             if (idx >= 0) stored[idx] = lead; else stored.push(lead);
             localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
-            initLeadFactoryModule(stored);
+            initLeadFactoryModule(stored, factoryHandlers);
+            await logAuditEvent('lead_status_updated', `Lead status voor ${lead.name} gewijzigd naar '${newStatus}'.`);
         },
         onTriggerCycle: () => {
             alert("Autonome Engine Instructie:\n\nDe engine draait continu op jouw eigen Windows machine en gebruikt de 'agy' CLI (uit jouw AI abonnement).\n\nOm direct handmatig 1 extra concept te genereren, open een terminal en typ:\nnpm run factory:run\n\nOf start de 24/7 achtergrondservice via:\nnpm run factory:daemon");
         }
-    });
+    };
+
+    initLeadFactoryModule(leads, factoryHandlers);
 }
 
 

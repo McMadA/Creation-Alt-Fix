@@ -8,79 +8,184 @@ import { escapeHtml, sanitizeUrl } from "../../../js/crm-config.js";
 let _leads = [];
 let _activeFilter = 'concept_ready';
 let _searchTerm = '';
+let _factoryHandlers = {};
+
+/**
+ * Werkt de tellers en styling van de snelle filterknoppen (pills) bij
+ */
+function updateFilterPillsUI() {
+    const readyCount = _leads.filter(l => l.status === 'concept_ready').length;
+    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent').length;
+    const skippedCount = _leads.filter(l => l.status === 'skipped' || l.status === 'skipped_has_website').length;
+    const totalCount = _leads.length;
+
+    const elReady = document.getElementById('pill-count-ready');
+    const elSent = document.getElementById('pill-count-sent');
+    const elSkipped = document.getElementById('pill-count-skipped');
+    const elAll = document.getElementById('pill-count-all');
+
+    if (elReady) elReady.textContent = readyCount;
+    if (elSent) elSent.textContent = sentCount;
+    if (elSkipped) elSkipped.textContent = skippedCount;
+    if (elAll) elAll.textContent = totalCount;
+
+    document.querySelectorAll('.factory-filter-pill').forEach(btn => {
+        const filter = btn.getAttribute('data-filter');
+        if (filter === _activeFilter) {
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+        } else {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        }
+    });
+}
 
 /**
  * Initialiseert de Autonome Leads view in het CRM Admin Dashboard
  */
 export function initLeadFactoryModule(leads = [], handlers = {}) {
     _leads = leads || [];
+    if (handlers && Object.keys(handlers).length > 0) {
+        _factoryHandlers = handlers;
+    }
 
-    // 1. Bereken KPI's en update sidebar badge
+    const readyCount = _leads.filter(l => l.status === 'concept_ready').length;
+    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent').length;
+
+    // Als er 0 leads op review wachten, maar er zijn wel verzonden leads, val dan terug op 'all'
+    if (readyCount === 0 && sentCount > 0 && _activeFilter === 'concept_ready') {
+        _activeFilter = 'all';
+    }
+
+    // 1. Bereken KPI's en update sidebar badge en pills
     updateFactoryKPIs(_leads);
+    updateFilterPillsUI();
+
+    const statusFilter = document.getElementById('factory-status-filter');
+    if (statusFilter) statusFilter.value = _activeFilter;
 
     // 2. Render de kaartenstapel
-    renderLeadCards(_leads, handlers);
+    renderLeadCards(_leads, _factoryHandlers);
 
     // 3. Setup zoekbalk listener
     const searchInput = document.getElementById('factory-search-input');
     if (searchInput && !searchInput._hasListener) {
         searchInput.addEventListener('input', (e) => {
             _searchTerm = (e.target.value || '').toLowerCase().trim();
-            renderLeadCards(_leads, handlers);
+            renderLeadCards(_leads, _factoryHandlers);
         });
         searchInput._hasListener = true;
     }
 
-    // 4. Setup statusfilter listener
-    const statusFilter = document.getElementById('factory-status-filter');
+    // 4. Setup statusfilter select listener
     if (statusFilter && !statusFilter._hasListener) {
         statusFilter.addEventListener('change', (e) => {
             _activeFilter = e.target.value;
-            renderLeadCards(_leads, handlers);
+            updateFilterPillsUI();
+            renderLeadCards(_leads, _factoryHandlers);
         });
         statusFilter._hasListener = true;
     }
 
-    // 5. Setup Refresh knop
+    // 5. Setup Filter Pill knoppen
+    document.querySelectorAll('.factory-filter-pill').forEach(pill => {
+        if (!pill._hasListener) {
+            pill.addEventListener('click', () => {
+                _activeFilter = pill.getAttribute('data-filter') || 'all';
+                if (statusFilter) statusFilter.value = _activeFilter;
+                updateFilterPillsUI();
+                renderLeadCards(_leads, _factoryHandlers);
+            });
+            pill._hasListener = true;
+        }
+    });
+
+    // 6. Setup KPI Card clicks voor directe navigatie
+    const kpiReady = document.getElementById('kpi-card-factory-ready');
+    if (kpiReady && !kpiReady._hasListener) {
+        kpiReady.addEventListener('click', () => {
+            _activeFilter = 'concept_ready';
+            if (statusFilter) statusFilter.value = _activeFilter;
+            updateFilterPillsUI();
+            renderLeadCards(_leads, _factoryHandlers);
+        });
+        kpiReady._hasListener = true;
+    }
+
+    const kpiSent = document.getElementById('kpi-card-factory-sent');
+    if (kpiSent && !kpiSent._hasListener) {
+        kpiSent.addEventListener('click', () => {
+            _activeFilter = 'sent';
+            if (statusFilter) statusFilter.value = _activeFilter;
+            updateFilterPillsUI();
+            renderLeadCards(_leads, _factoryHandlers);
+        });
+        kpiSent._hasListener = true;
+    }
+
+    const kpiWhatsApp = document.getElementById('kpi-card-factory-whatsapp');
+    if (kpiWhatsApp && !kpiWhatsApp._hasListener) {
+        kpiWhatsApp.addEventListener('click', () => {
+            _activeFilter = 'sent';
+            if (statusFilter) statusFilter.value = _activeFilter;
+            updateFilterPillsUI();
+            renderLeadCards(_leads, _factoryHandlers);
+        });
+        kpiWhatsApp._hasListener = true;
+    }
+
+    const kpiTotal = document.getElementById('kpi-card-factory-total');
+    if (kpiTotal && !kpiTotal._hasListener) {
+        kpiTotal.addEventListener('click', () => {
+            _activeFilter = 'all';
+            if (statusFilter) statusFilter.value = _activeFilter;
+            updateFilterPillsUI();
+            renderLeadCards(_leads, _factoryHandlers);
+        });
+        kpiTotal._hasListener = true;
+    }
+
+    // 7. Setup Refresh knop
     const refreshBtn = document.getElementById('btn-refresh-lead-factory');
     if (refreshBtn && !refreshBtn._hasListener) {
         refreshBtn.addEventListener('click', async () => {
             refreshBtn.classList.add('fa-spin');
-            if (handlers.onRefresh) await handlers.onRefresh();
-            await checkBridgeStatus(handlers);
+            if (_factoryHandlers.onRefresh) await _factoryHandlers.onRefresh();
+            await checkBridgeStatus(_factoryHandlers);
             refreshBtn.classList.remove('fa-spin');
         });
         refreshBtn._hasListener = true;
     }
 
-    // 6. Setup Trigger Cyclus knop (start direct via Lokale Bridge)
+    // 8. Setup Trigger Cyclus knop (start direct via Lokale Bridge)
     const triggerBtn = document.getElementById('btn-trigger-factory-cycle');
     if (triggerBtn && !triggerBtn._hasListener) {
         triggerBtn.addEventListener('click', async () => {
-            await handleTriggerBridgeScan(handlers);
+            await handleTriggerBridgeScan(_factoryHandlers);
         });
         triggerBtn._hasListener = true;
     }
 
-    // 7. Setup 24/7 Daemon Toggle knop
+    // 9. Setup 24/7 Daemon Toggle knop
     const daemonBtn = document.getElementById('btn-toggle-daemon');
     if (daemonBtn && !daemonBtn._hasListener) {
         daemonBtn.addEventListener('click', async () => {
-            await handleToggleBridgeDaemon(handlers);
+            await handleToggleBridgeDaemon(_factoryHandlers);
         });
         daemonBtn._hasListener = true;
     }
 
-    // 8. Setup Modal Preview Controls
+    // 10. Setup Modal Preview Controls
     setupPreviewModalListeners();
 
-    // 9. Start Bridge Polling & Status Check
-    checkBridgeStatus(handlers);
+    // 11. Start Bridge Polling & Status Check
+    checkBridgeStatus(_factoryHandlers);
     if (!window._cafBridgePollInterval) {
         window._cafBridgePollInterval = setInterval(() => {
             const view = document.getElementById('view-lead-factory');
             if (view && !view.classList.contains('hidden')) {
-                checkBridgeStatus(handlers);
+                checkBridgeStatus(_factoryHandlers);
             }
         }, 5000);
     }
@@ -374,6 +479,10 @@ export function renderLeadCards(leads = [], handlers = {}) {
     const container = document.getElementById('factory-leads-container');
     if (!container) return;
 
+    const effectiveHandlers = (handlers && Object.keys(handlers).length > 0) ? handlers : _factoryHandlers;
+    const readyCount = leads.filter(l => l.status === 'concept_ready').length;
+    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'whatsapp_sent').length;
+
     // Filteren op status en zoekterm
     let filtered = leads.filter(lead => {
         if (_activeFilter !== 'all') {
@@ -391,22 +500,76 @@ export function renderLeadCards(leads = [], handlers = {}) {
     });
 
     if (filtered.length === 0) {
+        if (_activeFilter === 'concept_ready' && sentCount > 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: rgba(15,23,42,0.7); border: 1px solid rgba(56,189,248,0.25); border-radius: 12px;">
+                    <i class="fas fa-check-circle" style="font-size: 2.8rem; color: #34d399; margin-bottom: 16px;"></i>
+                    <h3 style="color: #fff; font-size: 1.25rem; margin-bottom: 8px;">Alle actieve concepten zijn afgehandeld!</h3>
+                    <p style="color: #cbd5e1; max-width: 520px; margin: 0 auto 20px; font-size: 0.95rem; line-height: 1.5;">
+                        Er staan momenteel 0 leads in 'Klaar voor Review'. Er staan <strong>${sentCount} verzonden concept(en)</strong> in het systeem die je direct kunt openen, bekijken of heropenen.
+                    </p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button id="btn-empty-switch-sent" class="btn btn-primary" style="padding: 10px 20px; background: #2563eb;">
+                            <i class="fas fa-envelope-open-text"></i> Bekijk ${sentCount} Verzonden Concept(en)
+                        </button>
+                        <button id="btn-empty-switch-all" class="btn btn-secondary" style="padding: 10px 20px;">
+                            <i class="fas fa-folder-open"></i> Toon Alle Concepten (${leads.length})
+                        </button>
+                    </div>
+                </div>
+            `;
+            const btnSwitchSent = container.querySelector('#btn-empty-switch-sent');
+            if (btnSwitchSent) {
+                btnSwitchSent.addEventListener('click', () => {
+                    _activeFilter = 'sent';
+                    const sf = document.getElementById('factory-filter-status');
+                    if (sf) sf.value = 'sent';
+                    updateFilterPillsUI();
+                    renderLeadCards(leads, effectiveHandlers);
+                });
+            }
+            const btnSwitchAll = container.querySelector('#btn-empty-switch-all');
+            if (btnSwitchAll) {
+                btnSwitchAll.addEventListener('click', () => {
+                    _activeFilter = 'all';
+                    const sf = document.getElementById('factory-filter-status');
+                    if (sf) sf.value = 'all';
+                    updateFilterPillsUI();
+                    renderLeadCards(leads, effectiveHandlers);
+                });
+            }
+            return;
+        }
+
         container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: rgba(15,23,42,0.6); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px;">
-                <i class="fas fa-magic" style="font-size: 2.5rem; color: #38bdf8; margin-bottom: 16px; opacity: 0.6;"></i>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: rgba(15,23,42,0.6); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px;">
+                <i class="fas fa-search" style="font-size: 2.5rem; color: #38bdf8; margin-bottom: 16px; opacity: 0.6;"></i>
                 <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 8px;">Geen concepten gevonden</h3>
                 <p style="color: var(--color-text-secondary); max-width: 450px; margin: 0 auto 20px; font-size: 0.9rem;">
-                    Er zijn momenteel geen leads die voldoen aan de geselecteerde filters. Start een scan via de knop 'Nieuwe Lead Scannen' of via 'npm run factory:run'.
+                    Er zijn momenteel geen leads die voldoen aan het actieve filter.
                 </p>
+                <button id="btn-empty-switch-all" class="btn btn-secondary" style="padding: 8px 16px;">
+                    <i class="fas fa-folder-open"></i> Toon Alle Concepten (${leads.length})
+                </button>
             </div>
         `;
+        const btnSwitchAll = container.querySelector('#btn-empty-switch-all');
+        if (btnSwitchAll) {
+            btnSwitchAll.addEventListener('click', () => {
+                _activeFilter = 'all';
+                const sf = document.getElementById('factory-filter-status');
+                if (sf) sf.value = 'all';
+                updateFilterPillsUI();
+                renderLeadCards(leads, effectiveHandlers);
+            });
+        }
         return;
     }
 
     container.innerHTML = filtered.map(lead => renderSingleLeadCard(lead)).join('');
 
     // Koppel interactieve knoppen
-    attachCardActionListeners(container, leads, handlers);
+    attachCardActionListeners(container, leads, effectiveHandlers);
 }
 
 /**
@@ -416,14 +579,15 @@ function renderSingleLeadCard(lead) {
     const isReady = lead.status === 'concept_ready';
     const isSent = lead.status === 'sent' || lead.status === 'email_sent';
     const isWhatsApp = lead.status === 'whatsapp_sent';
+    const isArchived = lead.status?.includes('skipped');
 
     let statusBadge = `<span class="badge" style="background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4);"><i class="fas fa-sparkles"></i> Klaar voor Review</span>`;
     if (isSent) {
-        statusBadge = `<span class="badge" style="background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.4);"><i class="fas fa-check"></i> E-mail Verzonden</span>`;
+        statusBadge = `<span class="badge" style="background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.4);"><i class="fas fa-check-circle"></i> E-mail Verzonden</span>`;
     } else if (isWhatsApp) {
         statusBadge = `<span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.4);"><i class="fab fa-whatsapp"></i> WhatsApp Contact</span>`;
-    } else if (lead.status?.includes('skipped')) {
-        statusBadge = `<span class="badge" style="background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25);">Gearchiveerd</span>`;
+    } else if (isArchived) {
+        statusBadge = `<span class="badge" style="background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25);"><i class="fas fa-archive"></i> Gearchiveerd</span>`;
     }
 
     const ratingStars = lead.rating ? `⭐ ${lead.rating} (${lead.reviewsCount || 0} reviews)` : '⭐ 5.0 (Nieuw)';
@@ -431,7 +595,7 @@ function renderSingleLeadCard(lead) {
     const safeLiveUrl = sanitizeUrl(cleanUrl);
 
     return `
-        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.12); padding: 22px; transition: transform 0.2s, border-color 0.2s;">
+        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid ${isSent ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.12)'}; padding: 22px; transition: transform 0.2s, border-color 0.2s;">
             <div>
                 <!-- Top Header -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
@@ -464,39 +628,54 @@ function renderSingleLeadCard(lead) {
                 <div style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                     ${lead.address ? `<div><i class="fas fa-map-marker-alt" style="color: #ef4444; width: 16px;"></i> ${escapeHtml(lead.address)}</div>` : ''}
                     ${lead.phone ? `<div><i class="fas fa-phone-alt" style="color: #38bdf8; width: 16px;"></i> <a href="tel:${escapeHtml(lead.phone)}" style="color: #cbd5e1;">${escapeHtml(lead.phone)}</a></div>` : ''}
+                    ${lead.email ? `<div><i class="fas fa-envelope" style="color: #a78bfa; width: 16px;"></i> <a href="mailto:${escapeHtml(lead.email)}" style="color: #cbd5e1;">${escapeHtml(lead.email)}</a></div>` : ''}
                     <div><i class="fas fa-globe" style="color: #fbbf24; width: 16px;"></i> ${lead.hasWebsite ? escapeHtml(lead.website) : '<strong style="color: #f87171;">Geen website op Google Maps</strong>'}</div>
                 </div>
 
                 <!-- Pitch Hook preview -->
                 <div style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 18px; line-height: 1.45; font-style: italic; border-left: 2px solid #38bdf8; padding-left: 10px;">
-                    "${escapeHtml(lead.pitchHook || 'Geen pitch beschikbaar')}"
+                    "${escapeHtml(lead.pitchHook || lead.pitch?.subject || 'Geen pitch beschikbaar')}"
                 </div>
             </div>
 
             <!-- Footer Knoppen -->
             <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+                <!-- Rij 1: Inspectie & Live Preview (altijd beschikbaar!) -->
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary btn-sm btn-preview-concept" data-url="${safeLiveUrl}" data-name="${escapeHtml(lead.name)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm btn-preview-concept" data-url="${safeLiveUrl}" data-name="${escapeHtml(lead.name)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" title="Open live responsive preview van het concept">
                         <i class="fas fa-eye text-accent"></i> <span>Live Preview</span>
                     </button>
-                    <button class="btn btn-secondary btn-sm btn-view-pitch" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm btn-view-pitch" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" title="Bekijk volledige acquisitie pitch en e-mailtekst">
                         <i class="fas fa-envelope-open-text" style="color: #fbbf24;"></i> <span>Bekijk Pitch</span>
                     </button>
                 </div>
 
-                <!-- Primaire 1-Klik Acties -->
+                <!-- Rij 2: Acties op basis van status -->
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-primary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #2563eb;">
-                        <i class="fas fa-paper-plane"></i> <span>1-Klik Mail</span>
-                    </button>
-                    ${lead.hasWhatsApp ? `
-                        <button class="btn btn-secondary btn-sm btn-send-whatsapp-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #10b981; border-color: rgba(16,185,129,0.3);">
-                            <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                    ${isSent ? `
+                        <button class="btn btn-secondary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #38bdf8; border-color: rgba(56,189,248,0.3);" title="E-mail opnieuw openen in Outlook / Mail Client">
+                            <i class="fas fa-redo"></i> <span>Mail Heropenen</span>
                         </button>
-                    ` : ''}
-                    <button class="btn btn-secondary btn-sm btn-reject-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="color: #ef4444; border-color: rgba(239,68,68,0.25);" title="Afwijzen / Archiveren">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                        <button class="btn btn-secondary btn-sm btn-revert-review-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #f59e0b; border-color: rgba(245,158,11,0.3);" title="Herstel status naar 'Klaar voor Review'">
+                            <i class="fas fa-undo"></i> <span>Terug naar Review</span>
+                        </button>
+                    ` : isArchived ? `
+                        <button class="btn btn-secondary btn-sm btn-revert-review-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #38bdf8; border-color: rgba(56,189,248,0.3);" title="Herstel lead naar 'Klaar voor Review'">
+                            <i class="fas fa-undo"></i> <span>Herstellen naar Review</span>
+                        </button>
+                    ` : `
+                        <button class="btn btn-primary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #2563eb;" title="Open e-mail direct in Outlook / Mail Client">
+                            <i class="fas fa-paper-plane"></i> <span>1-Klik Mail</span>
+                        </button>
+                        ${lead.hasWhatsApp ? `
+                            <button class="btn btn-secondary btn-sm btn-send-whatsapp-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #10b981; border-color: rgba(16,185,129,0.3);" title="Verstuur via WhatsApp">
+                                <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-secondary btn-sm btn-reject-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="color: #ef4444; border-color: rgba(239,68,68,0.25);" title="Afwijzen / Archiveren">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    `}
                 </div>
             </div>
         </div>
@@ -507,6 +686,8 @@ function renderSingleLeadCard(lead) {
  * Koppelt event handlers aan de knoppen van de kaarten
  */
 function attachCardActionListeners(container, leads, handlers) {
+    const effectiveHandlers = (handlers && Object.keys(handlers).length > 0) ? handlers : _factoryHandlers;
+
     // 1. Live Preview Knop
     container.querySelectorAll('.btn-preview-concept').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -521,17 +702,21 @@ function attachCardActionListeners(container, leads, handlers) {
         btn.addEventListener('click', () => {
             const id = btn.getAttribute('data-lead-id');
             const lead = leads.find(l => (l.id || l.slug) === id);
-            if (lead) openPitchModal(lead, handlers);
+            if (lead) openPitchModal(lead, effectiveHandlers);
         });
     });
 
-    // 3. 1-Klik E-mail Verzenden
+    // 3. 1-Klik E-mail Verzenden / Heropenen
     container.querySelectorAll('.btn-send-email-action').forEach(btn => {
         btn.addEventListener('click', async () => {
             const id = btn.getAttribute('data-lead-id');
             const lead = leads.find(l => (l.id || l.slug) === id);
-            if (lead && handlers.onSendEmail) {
-                await handlers.onSendEmail(lead);
+            if (!lead) return;
+            if (!lead.email) {
+                // Open pitch modal zodat gebruiker het adres kan invullen
+                openPitchModal(lead, effectiveHandlers);
+            } else if (effectiveHandlers.onSendEmail) {
+                await effectiveHandlers.onSendEmail(lead);
             }
         });
     });
@@ -545,21 +730,32 @@ function attachCardActionListeners(container, leads, handlers) {
                 const text = encodeURIComponent(lead.pitch?.whatsAppText || `Hallo ${lead.name}, ik heb een website concept voor je klaarstaan: ${lead.liveUrl}`);
                 const waUrl = `https://wa.me/${lead.whatsAppNumber}?text=${text}`;
                 window.open(waUrl, '_blank');
-                if (handlers.onUpdateStatus) {
-                    handlers.onUpdateStatus(lead, 'whatsapp_sent');
+                if (effectiveHandlers.onUpdateStatus) {
+                    effectiveHandlers.onUpdateStatus(lead, 'whatsapp_sent');
                 }
             }
         });
     });
 
-    // 5. Afwijzen / Archiveren
+    // 5. Herstel naar 'Klaar voor Review'
+    container.querySelectorAll('.btn-revert-review-action').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-lead-id');
+            const lead = leads.find(l => (l.id || l.slug) === id);
+            if (lead && effectiveHandlers.onUpdateStatus) {
+                await effectiveHandlers.onUpdateStatus(lead, 'concept_ready');
+            }
+        });
+    });
+
+    // 6. Afwijzen / Archiveren
     container.querySelectorAll('.btn-reject-action').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.getAttribute('data-lead-id');
             const lead = leads.find(l => (l.id || l.slug) === id);
             if (lead && confirm(`Weet je zeker dat je concept voor "${lead.name}" wilt archiveren?`)) {
-                if (handlers.onUpdateStatus) {
-                    handlers.onUpdateStatus(lead, 'skipped');
+                if (effectiveHandlers.onUpdateStatus) {
+                    effectiveHandlers.onUpdateStatus(lead, 'skipped');
                 }
             }
         });
@@ -632,21 +828,21 @@ function setupPreviewModalListeners() {
 }
 
 /**
- * Toont een inspectievenster voor de e-mail & WhatsApp pitch met tabbladen
+ * Toont een inspectievenster voor de e-mail & WhatsApp pitch met tabbladen en transparante verzendacties
  */
 function openPitchModal(lead, handlers) {
+    const effectiveHandlers = (handlers && Object.keys(handlers).length > 0) ? handlers : _factoryHandlers;
     const pitch = lead.pitch || {};
     const subject = pitch.subject || `Concept website voor ${lead.name}`;
     const plainText = pitch.bodyPlain || '';
     const htmlBody = pitch.bodyHtml || `<p>${escapeHtml(plainText)}</p>`;
     const whatsAppText = pitch.whatsAppText || '';
     const archetypeLabel = pitch.archetypeLabel || lead.archetypeLabel || 'Vakmanschap (Archetype A)';
-
-    const mailtoUrl = `mailto:${encodeURIComponent(lead.email || '')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(plainText)}`;
+    const isSent = lead.status === 'sent' || lead.status === 'email_sent';
 
     const modalHtml = `
         <div id="factory-pitch-detail-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;">
-            <div style="background: #0B0F19; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 95%; max-width: 780px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+            <div style="background: #0B0F19; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 95%; max-width: 820px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
                 
                 <!-- Modal Header -->
                 <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.95);">
@@ -654,15 +850,35 @@ function openPitchModal(lead, handlers) {
                         <h3 style="color: #fff; margin: 0 0 4px 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-envelope-open-text text-accent"></i> Acquisitie Pitch: ${escapeHtml(lead.name)}
                         </h3>
-                        <span style="font-size: 0.76rem; color: #a5b4fc; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); padding: 2px 8px; border-radius: 4px;">
-                            <i class="fas fa-bullseye"></i> ${escapeHtml(archetypeLabel)}
-                        </span>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span style="font-size: 0.76rem; color: #a5b4fc; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); padding: 2px 8px; border-radius: 4px;">
+                                <i class="fas fa-bullseye"></i> ${escapeHtml(archetypeLabel)}
+                            </span>
+                            <span style="font-size: 0.76rem; ${isSent ? 'color: #34d399; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3);' : 'color: #38bdf8; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3);'} padding: 2px 8px; border-radius: 4px;">
+                                ${isSent ? '<i class="fas fa-check-circle"></i> E-mail Status: Reeds Geopend/Verzonden' : '<i class="fas fa-sparkles"></i> E-mail Status: Klaar voor Review'}
+                            </span>
+                        </div>
                     </div>
                     <button id="btn-close-pitch-detail" class="btn btn-secondary btn-sm" style="color: #ef4444;"><i class="fas fa-times"></i></button>
                 </div>
 
+                <!-- Ontvanger E-mail Input Balk -->
+                <div style="padding: 12px 20px; background: rgba(15,23,42,0.85); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 280px;">
+                        <label for="pitch-modal-email-input" style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600; white-space: nowrap;">
+                            <i class="fas fa-at" style="color: #38bdf8;"></i> Ontvanger E-mailadres:
+                        </label>
+                        <input type="email" id="pitch-modal-email-input" value="${escapeHtml(lead.email || '')}" placeholder="bijv. info@bedrijf.nl" style="flex: 1; padding: 6px 12px; background: #030712; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+                    </div>
+                    ${lead.phone ? `
+                        <div style="font-size: 0.82rem; color: #94a3b8;">
+                            <i class="fas fa-phone-alt" style="color: #38bdf8;"></i> ${escapeHtml(lead.phone)}
+                        </div>
+                    ` : ''}
+                </div>
+
                 <!-- Tab Selectie -->
-                <div style="display: flex; gap: 8px; padding: 12px 20px; background: rgba(15,23,42,0.6); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; gap: 8px; padding: 10px 20px; background: rgba(15,23,42,0.6); border-bottom: 1px solid rgba(255,255,255,0.08);">
                     <button id="tab-pitch-html" class="btn btn-primary btn-sm" style="padding: 6px 14px;"><i class="fas fa-code"></i> HTML E-mail</button>
                     <button id="tab-pitch-plain" class="btn btn-secondary btn-sm" style="padding: 6px 14px;"><i class="fas fa-align-left"></i> Tekst Mail (Spam-Safe)</button>
                     <button id="tab-pitch-wa" class="btn btn-secondary btn-sm" style="padding: 6px 14px; color: #10b981; border-color: rgba(16,185,129,0.3);"><i class="fab fa-whatsapp"></i> WhatsApp Bericht</button>
@@ -706,13 +922,26 @@ ${escapeHtml(plainText)}
 
                 <!-- Modal Footer Knoppen -->
                 <div style="padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 10px; background: rgba(15,23,42,0.95); flex-wrap: wrap;">
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btn-copy-pitch-subject" class="btn btn-secondary btn-sm"><i class="fas fa-copy"></i> Kopieer Onderwerp</button>
-                        <button id="btn-copy-pitch-text" class="btn btn-secondary btn-sm"><i class="fas fa-file-alt"></i> Kopieer Tekst</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button id="btn-copy-pitch-subject" class="btn btn-secondary btn-sm" title="Kopieer alleen de onderwerpregel"><i class="fas fa-copy"></i> Kopieer Onderwerp</button>
+                        <button id="btn-copy-pitch-text" class="btn btn-secondary btn-sm" title="Kopieer de volledige platte tekst"><i class="fas fa-file-alt"></i> Kopieer Tekst</button>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="${mailtoUrl}" class="btn btn-secondary btn-sm" style="color: #38bdf8; border-color: rgba(56,189,248,0.3);"><i class="fas fa-external-link-alt"></i> Open in Mail Client</a>
-                        <button id="btn-pitch-send-now" class="btn btn-primary btn-sm" style="background: #2563eb;"><i class="fas fa-paper-plane"></i> Verstuur via info@creationaltfix.nl</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        ${isSent ? `
+                            <button id="btn-pitch-revert-review" class="btn btn-secondary btn-sm" style="color: #f59e0b; border-color: rgba(245,158,11,0.3);" title="Herstel status naar 'Klaar voor Review'">
+                                <i class="fas fa-undo"></i> Zet terug naar 'Review'
+                            </button>
+                            <button id="btn-pitch-open-client" class="btn btn-primary btn-sm" style="background: #2563eb;" title="Open opnieuw in Outlook / Mail Client">
+                                <i class="fas fa-external-link-alt"></i> Opnieuw Openen in Mail
+                            </button>
+                        ` : `
+                            <button id="btn-pitch-mark-sent" class="btn btn-secondary btn-sm" style="color: #34d399; border-color: rgba(52,211,153,0.3);" title="Markeer als verzonden zonder mailprogramma te openen">
+                                <i class="fas fa-check"></i> Alleen Markeren als Verzonden
+                            </button>
+                            <button id="btn-pitch-open-client" class="btn btn-primary btn-sm" style="background: #2563eb;" title="Open concept e-mail direct in Outlook / Mail Client">
+                                <i class="fas fa-external-link-alt"></i> Open in Outlook / Mail Client
+                            </button>
+                        `}
                     </div>
                 </div>
             </div>
@@ -756,8 +985,43 @@ ${escapeHtml(plainText)}
         navigator.clipboard.writeText(plainText);
         alert("Volledige pitch tekst gekopieerd naar klembord!");
     };
-    div.querySelector('#btn-pitch-send-now').onclick = async () => {
-        div.remove();
-        if (handlers.onSendEmail) await handlers.onSendEmail(lead);
-    };
+
+    // Open in Outlook / Mail Client
+    const btnOpenClient = div.querySelector('#btn-pitch-open-client');
+    if (btnOpenClient) {
+        btnOpenClient.onclick = async () => {
+            const emailInput = div.querySelector('#pitch-modal-email-input');
+            const customEmail = emailInput ? emailInput.value.trim() : (lead.email || '');
+            div.remove();
+            if (effectiveHandlers.onSendEmail) {
+                await effectiveHandlers.onSendEmail(lead, customEmail);
+            }
+        };
+    }
+
+    // Zet terug naar 'Review'
+    const btnRevertReview = div.querySelector('#btn-pitch-revert-review');
+    if (btnRevertReview) {
+        btnRevertReview.onclick = async () => {
+            div.remove();
+            if (effectiveHandlers.onUpdateStatus) {
+                await effectiveHandlers.onUpdateStatus(lead, 'concept_ready');
+            }
+        };
+    }
+
+    // Alleen Markeren als Verzonden
+    const btnMarkSent = div.querySelector('#btn-pitch-mark-sent');
+    if (btnMarkSent) {
+        btnMarkSent.onclick = async () => {
+            const emailInput = div.querySelector('#pitch-modal-email-input');
+            if (emailInput && emailInput.value.trim()) {
+                lead.email = emailInput.value.trim();
+            }
+            div.remove();
+            if (effectiveHandlers.onUpdateStatus) {
+                await effectiveHandlers.onUpdateStatus(lead, 'sent');
+            }
+        };
+    }
 }
