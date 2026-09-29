@@ -231,9 +231,10 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 6. Statische bestanden serveren voor lokaal CRM Dashboard (http://127.0.0.1:3847/admin/)
+  // 6. Statische bestanden serveren voor lokaal CRM Dashboard (http://127.0.0.1:3847/admin/) en Concept Websites (/concept/[slug]/)
   if (req.method === 'GET' && !pathname.startsWith('/api/')) {
     const CRM_DIR = path.join(ROOT_DIR, 'crm');
+    const WEBSITE_DIR = path.join(ROOT_DIR, 'website');
     
     // Redirect / of /admin naar /admin/
     if (pathname === '/' || pathname === '/admin') {
@@ -242,15 +243,27 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    let relPath = pathname;
-    if (relPath.startsWith('/crm/')) relPath = relPath.substring(5);
-    if (relPath.endsWith('/')) relPath += 'index.html';
+    let targetFile = null;
 
-    const safePath = path.normalize(path.join(CRM_DIR, relPath));
+    if (pathname.startsWith('/concept/')) {
+      let rel = pathname;
+      if (rel.endsWith('/')) rel += 'index.html';
+      const candidate = path.normalize(path.join(WEBSITE_DIR, rel));
+      if (candidate.startsWith(WEBSITE_DIR) && fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+        targetFile = candidate;
+      }
+    } else {
+      let relPath = pathname;
+      if (relPath.startsWith('/crm/')) relPath = relPath.substring(5);
+      if (relPath.endsWith('/')) relPath += 'index.html';
+      const safePath = path.normalize(path.join(CRM_DIR, relPath));
+      if (safePath.startsWith(CRM_DIR) && fs.existsSync(safePath) && fs.statSync(safePath).isFile()) {
+        targetFile = safePath;
+      }
+    }
 
-    // Strikte path-traversal guard
-    if (safePath.startsWith(CRM_DIR) && fs.existsSync(safePath) && fs.statSync(safePath).isFile()) {
-      const ext = path.extname(safePath).toLowerCase();
+    if (targetFile) {
+      const ext = path.extname(targetFile).toLowerCase();
       const MIME_MAP = {
         '.html': 'text/html; charset=utf-8',
         '.js': 'application/javascript; charset=utf-8',
@@ -271,7 +284,7 @@ const server = http.createServer(async (req, res) => {
         'Access-Control-Allow-Origin': origin || '*',
         'Access-Control-Allow-Private-Network': 'true'
       });
-      fs.createReadStream(safePath).pipe(res);
+      fs.createReadStream(targetFile).pipe(res);
       return;
     }
   }

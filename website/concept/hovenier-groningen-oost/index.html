@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groen & Bestrating Noord | Hovenier & Sierbestrating Sappemeer</title>
+  <meta name="description" content="Vakkundige sierbestrating, tuinontwerp, houtbouw en tuinonderhoud in Sappemeer en Hoogezand door Groen & Bestrating Noord. Vraag direct een vrijblijvende offerte aan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --bg-surface: #0F172A;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(99, 102, 241, 0.18);
+      --card-hover-border: rgba(6, 182, 212, 0.4);
+      --accent-cyan: #06B6D4;
+      --accent-indigo: #6366F1;
+      --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #6366F1 100%);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --whatsapp-color: #25D366;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Concept Demonstratie Topbar */
+    .demo-bar {
+      background: linear-gradient(90deg, #1E1B4B, #0F172A);
+      color: #E0E7FF;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      font-family: sans-serif;
+      position: relative;
+      z-index: 100;
+    }
+
+    .demo-bar a {
+      color: #38BDF8;
+      text-decoration: underline;
+      margin-left: 6px;
+    }
+
+    /* Header & Nav */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 90;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 74px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #FFF;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-symbol {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--gradient-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .brand span {
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 11px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-gradient {
+      background: var(--gradient-accent);
+      color: #FFF;
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-gradient:hover {
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-whatsapp {
+      background: var(--whatsapp-color);
+      color: #FFF;
+    }
+
+    .btn-whatsapp:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 80px 0 60px;
+      text-align: center;
+      background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.14) 0%, transparent 65%);
+    }
+
+    .rating-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 50px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 22px;
+    }
+
+    .stars {
+      color: #FBBF24;
+      letter-spacing: 2px;
+    }
+
+    .hero-heading {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+
+    .hero-heading span {
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-intro {
+      max-width: 680px;
+      margin: 0 auto 34px;
+      color: var(--text-muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .usp-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .usp-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .usp-check {
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 0;
+    }
+
+    .section-head {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 50px;
+    }
+
+    .label-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Services */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .service-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-box:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .service-badge-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cyan);
+      margin-bottom: 20px;
+    }
+
+    .service-box h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .service-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .service-link {
+      color: var(--accent-cyan);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .service-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Why Us */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .why-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    .why-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .why-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .why-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Reviews */
+    .reviews-section {
+      background: rgba(15, 23, 42, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .review-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .review-quote {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: #E2E8F0;
+      margin-bottom: 22px;
+    }
+
+    .review-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+
+    .review-client {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .review-place {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .review-google {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Contact & Form */
+    .contact-container {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 40px;
+    }
+
+    .contact-details {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 36px;
+    }
+
+    .contact-details h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .contact-details p {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .contact-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-link-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: all 0.2s;
+    }
+
+    .contact-link-card:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+      transform: translateX(3px);
+    }
+
+    .contact-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(6, 182, 212, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cyan);
+    }
+
+    .contact-form-pane {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 36px;
+    }
+
+    .contact-form-pane h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .contact-form-pane p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-group.full {
+      grid-column: span 2;
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #E2E8F0;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #FFF;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+    }
+
+    textarea.input-field {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 40px 0 25px;
+      background: #070A11;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+      }
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+      .field-group.full {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-actions .btn-outline {
+        display: none;
+      }
+      .contact-details, .contact-form-pane {
+        padding: 22px;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    "name": "Groen & Bestrating Noord",
+    "telephone": "+31614558930",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Noorderstraat 18",
+      "addressLocality": "Sappemeer",
+      "postalCode": "9611 AS",
+      "addressCountry": "NL"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 53.1670,
+      "longitude": 6.7845
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "12"
+    },
+    "priceRange": "€€"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Concept Demonstratie Banner -->
+  <div class="demo-bar">
+    ✨ <strong>Concept Demonstratie</strong> gemaakt door Creation+Alt+Fix voor Groen & Bestrating Noord • <a href="https://creationaltfix.nl" target="_blank">Website overnemen of aanpassen?</a>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <a href="#" class="brand">
+        <div class="brand-symbol">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>Groen & Bestrating <span>Noord</span></div>
+      </a>
+
+      <div class="header-actions">
+        <a href="tel:0614558930" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          06 14 55 89 30
+        </a>
+        <a href="https://wa.me/31614558930?text=Hallo%20Groen%20%26%20Bestrating%20Noord,%20ik%20heb%20interesse%20in%20een%20vrijblijvende%20offerte." target="_blank" class="btn btn-whatsapp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.301-.15-1.78-.877-2.056-.977-.275-.1-.476-.15-.677.15-.2.3-.777.977-.952 1.177-.175.2-.351.225-.652.075-.3-.15-1.266-.467-2.41-1.488-.89-.794-1.492-1.775-1.667-2.076-.176-.3-.019-.462.13-.611.136-.134.301-.35.451-.525.151-.176.201-.301.302-.501.1-.2.05-.376-.025-.526-.076-.15-.677-1.631-.928-2.235-.244-.588-.493-.508-.677-.518l-.577-.01c-.2 0-.526.075-.802.375-.276.3-1.053 1.028-1.053 2.508s1.079 2.909 1.229 3.109c.15.2 2.124 3.243 5.145 4.549.719.311 1.28.497 1.718.636.723.23 1.381.197 1.901.12.579-.087 1.78-.727 2.03-1.43.251-.702.251-1.303.176-1.43-.075-.125-.276-.2-.577-.35zM12 2C6.477 2 2 6.477 2 12c0 1.892.524 3.662 1.433 5.178L2 22l4.98-1.308A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+          </svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="rating-badge">
+        <span class="stars">★★★★★</span>
+        <span><strong>4.8 / 5.0</strong> (12 reviews)</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Sierbestrating & Tuinaanleg met <br>
+        <span>Vakmanschap in Sappemeer</span>
+      </h1>
+
+      <p class="hero-intro">
+        Uw betrouwbare hovenier voor strakke opritten, keramische terrassen, schuttingen en complete tuinaanleg in Sappemeer, Hoogezand en omliggende regio.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#offerte" class="btn btn-gradient" style="padding: 14px 28px; font-size: 1.02rem;">
+          Vrijblijvende Offerte Aanvragen
+        </a>
+        <a href="tel:0614558930" class="btn btn-outline" style="padding: 14px 24px;">
+          Bel: 06 14 55 89 30
+        </a>
+      </div>
+
+      <div class="usp-row">
+        <div class="usp-pill"><span class="usp-check">✓</span> Lokaal in Sappemeer & Hoogezand</div>
+        <div class="usp-pill"><span class="usp-check">✓</span> Eerlijke, transparante tarieven</div>
+        <div class="usp-pill"><span class="usp-check">✓</span> Vrijblijvende inspectie vooraf</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diensten -->
+  <section id="diensten">
+    <div class="container">
+      <div class="section-head">
+        <span class="label-badge">Diensten</span>
+        <h2 class="section-title">Vakkundig Buitenwerk op Maat</h2>
+        <p class="section-subtitle">Van grondige voorbereiding tot duurzame oplevering van uw tuin en verharding.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-box">
+          <div class="service-badge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+          </div>
+          <h3>Sierbestrating & Opritten</h3>
+          <p>Strakke legging van keramische tegels, klinkers, grindpaden en zwaar belastbare opritten met gegarandeerde drainage.</p>
+          <a href="#offerte" class="service-link">Offerte aanvragen &rarr;</a>
+        </div>
+
+        <div class="service-box">
+          <div class="service-badge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+          <h3>Compleet Tuinontwerp & Aanleg</h3>
+          <p>Van schetsontwerp tot realisatie van moderne, onderhoudsvriendelijke droomtuinen die jarenlang mooi blijven.</p>
+          <a href="#offerte" class="service-link">Offerte aanvragen &rarr;</a>
+        </div>
+
+        <div class="service-box">
+          <div class="service-badge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3>Schuttingen, Vlonders & Overkappingen</h3>
+          <p>Duurzaam hout- en betonwerk voor privacy, comfortabele terrassen en gezellige, overdekte zithoeken.</p>
+          <a href="#offerte" class="service-link">Offerte aanvragen &rarr;</a>
+        </div>
+
+        <div class="service-box">
+          <div class="service-badge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Periodiek Tuinonderhoud</h3>
+          <p>Vakkundig snoeien, gazononderhoud, bemesting en seizoensklaar maken van particuliere tuinen in de regio.</p>
+          <a href="#offerte" class="service-link">Offerte aanvragen &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waarom Kiezen Voor Ons -->
+  <section style="background: rgba(15, 23, 42, 0.35);">
+    <div class="container">
+      <div class="section-head">
+        <span class="label-badge">Waarom Kiezen Voor Ons</span>
+        <h2 class="section-title">Kwaliteit Zonder Verrassingen</h2>
+        <p class="section-subtitle">Wij staan voor duidelijke communicatie, strakke planning en vakkundige uitvoering.</p>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-num">1</div>
+          <h3>Vakmanschap & Precisie</h3>
+          <p>Elke tegel, klinker en paal wordt met uiterste precisie waterpas en verzakkingsvrij aangelegd voor een langdurig resultaat.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num">2</div>
+          <h3>Vaste Afspraken</h3>
+          <p>Geen onverwachte meerprijzen achteraf. U ontvangt vooraf een transparante offerte met alle materiaalkosten helder gespecificeerd.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num">3</div>
+          <h3>Snelle & Nette Oplevering</h3>
+          <p>Wij werken efficiënt, houden rekening met uw woonomgeving en ruimen de werkplek na afloop altijd bezemschoon op.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Klantbeoordelingen -->
+  <section class="reviews-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="label-badge">Ervaringen</span>
+        <h2 class="section-title">Wat Klanten Zeggen</h2>
+        <p class="section-subtitle">Echte beoordelingen van tevreden huiseigenaren uit de omgeving.</p>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-item">
+          <div class="review-quote">
+            "Onze achtertuin en oprit opnieuw laten bestraten door Groen & Bestrating Noord. Super strak gelegd en keurig opgeruimd!"
+          </div>
+          <div class="review-meta">
+            <div>
+              <div class="review-client">Familie De Jonge</div>
+              <div class="review-place">Sappemeer</div>
+            </div>
+            <div class="review-google">
+              <span class="stars">★★★★★</span> (Google)
+            </div>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <div class="review-quote">
+            "Heel betrouwbaar team, duidelijke offerte vooraf en geen verrassingen achteraf. Echte aanrader!"
+          </div>
+          <div class="review-meta">
+            <div>
+              <div class="review-client">Annet V.</div>
+              <div class="review-place">Hoogezand</div>
+            </div>
+            <div class="review-google">
+              <span class="stars">★★★★★</span> (Google)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Offerte -->
+  <section id="offerte">
+    <div class="container">
+      <div class="contact-container">
+        <div class="contact-details">
+          <span class="label-badge">Direct Contact</span>
+          <h3>Neem Vrijblijvend Contact Op</h3>
+          <p>Heeft u plannen voor uw tuin of bestrating? Neem direct contact op voor advies ter plaatse of een snelle prijsopgave.</p>
+
+          <div class="contact-card-list">
+            <a href="tel:0614558930" class="contact-link-card">
+              <div class="contact-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Bellen</div>
+                <div style="font-weight: 600;">06 14 55 89 30</div>
+              </div>
+            </a>
+
+            <a href="https://wa.me/31614558930" target="_blank" class="contact-link-card">
+              <div class="contact-card-icon" style="color: #25D366; background: rgba(37, 211, 102, 0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.301-.15-1.78-.877-2.056-.977-.275-.1-.476-.15-.677.15-.2.3-.777.977-.952 1.177-.175.2-.351.225-.652.075-.3-.15-1.266-.467-2.41-1.488-.89-.794-1.492-1.775-1.667-2.076-.176-.3-.019-.462.13-.611.136-.134.301-.35.451-.525.151-.176.201-.301.302-.501.1-.2.05-.376-.025-.526-.076-.15-.677-1.631-.928-2.235-.244-.588-.493-.508-.677-.518l-.577-.01c-.2 0-.526.075-.802.375-.276.3-1.053 1.028-1.053 2.508s1.079 2.909 1.229 3.109c.15.2 2.124 3.243 5.145 4.549.719.311 1.28.497 1.718.636.723.23 1.381.197 1.901.12.579-.087 1.78-.727 2.03-1.43.251-.702.251-1.303.176-1.43-.075-.125-.276-.2-.577-.35zM12 2C6.477 2 2 6.477 2 12c0 1.892.524 3.662 1.433 5.178L2 22l4.98-1.308A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">WhatsApp</div>
+                <div style="font-weight: 600;">Stuur een bericht</div>
+              </div>
+            </a>
+
+            <div class="contact-link-card">
+              <div class="contact-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Locatie</div>
+                <div style="font-weight: 600;">Noorderstraat 18, 9611 AS Sappemeer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-pane">
+          <h3>Vraag een Vrijblijvende Offerte Aan</h3>
+          <p>Vul uw wensen in en wij nemen binnen 24 uur contact met u op.</p>
+
+          <form id="quoteForm" onsubmit="handleFormSubmit(event)">
+            <div class="field-row">
+              <div class="field-group">
+                <label for="naam">Naam *</label>
+                <input type="text" id="naam" class="input-field" placeholder="Bijv. Jan de Vries" required>
+              </div>
+              <div class="field-group">
+                <label for="telefoon">Telefoonnummer *</label>
+                <input type="tel" id="telefoon" class="input-field" placeholder="06 12345678" required>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="dienst">Gewenste Dienst</label>
+              <select id="dienst" class="input-field">
+                <option value="Sierbestrating & Opritten">Sierbestrating & Opritten</option>
+                <option value="Compleet Tuinontwerp & Aanleg">Compleet Tuinontwerp & Aanleg</option>
+                <option value="Schuttingen & Houtbouw">Schuttingen, Vlonders & Overkappingen</option>
+                <option value="Tuinonderhoud">Periodiek Tuinonderhoud</option>
+                <option value="Anders / Combinatie">Anders / Combinatie</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="bericht">Beschrijving van uw project</label>
+              <textarea id="bericht" class="input-field" placeholder="Vertel kort over de afmetingen, huidige situatie of specifieke wensen..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-gradient" style="width: 100%; justify-content: center; padding: 14px;">
+              Aanvraag Verzenden
+            </button>
+            <div id="formFeedback" style="display:none; margin-top: 14px; text-align: center; font-size: 0.92rem; color: #10B981; font-weight: 600;">
+              ✓ Bedankt! Uw aanvraag is verzonden. Wij nemen zo snel mogelijk contact op.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-row">
+      <div>
+        <strong>Groen & Bestrating Noord</strong> &bull; Sappemeer
+      </div>
+      <div>
+        &copy; 2026 Groen & Bestrating Noord. Alle rechten voorbehouden.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const feedback = document.getElementById('formFeedback');
+      btn.disabled = true;
+      btn.innerText = 'Bezig met verzenden...';
+      
+      setTimeout(() => {
+        btn.style.display = 'none';
+        feedback.style.display = 'block';
+      }, 700);
+    }
+  </script>
+</body>
+</html>

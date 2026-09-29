@@ -578,6 +578,78 @@ async function setupAndRenderLeadFactory() {
         }
     }
 
+    const defaultLeads = [
+        {
+            id: 'lead_berends',
+            slug: 'berends',
+            name: 'Berends Bestrating & Grondwerk',
+            category: 'Aannemer voor bestrating',
+            address: 'Julianastraat 40, 9601 LR Hoogezand',
+            phone: '06 27 31 94 14',
+            normalizedPhone: '0627319414',
+            whatsAppNumber: '31627319414',
+            hasWhatsApp: true,
+            hasWebsite: true,
+            website: 'http://www.berendsbestrating.nl/',
+            rating: 5.0,
+            reviewsCount: 1,
+            status: 'concept_ready',
+            liveUrl: 'https://creationaltfix.nl/concept/berends/',
+            pitchHook: "We zagen jouw vermelding voor Berends op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+            pitch: {
+                subject: "Veilige mobiele website-update voor Berends (concept)",
+                bodyPlain: "Beste Berends,\n\nWe zagen jouw vermelding voor Berends op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd'...\n\n👉 Bekijk hier jouw concept website: https://creationaltfix.nl/concept/berends/\n\nGroet,\nAllard Veldman - Creation+Alt+Fix",
+                whatsAppText: "Hoi Berends! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/berends/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!"
+            }
+        },
+        {
+            id: 'lead_demo_1',
+            slug: 'schildersbedrijf-hoogezand',
+            name: 'Schildersbedrijf Van der Veen',
+            category: 'Schilder & Wandafwerking',
+            address: 'Kerkstraat 42, 9601 AB Hoogezand',
+            phone: '06 28 49 10 22',
+            normalizedPhone: '0628491022',
+            whatsAppNumber: '31628491022',
+            hasWhatsApp: true,
+            hasWebsite: false,
+            website: null,
+            rating: 4.9,
+            reviewsCount: 16,
+            status: 'concept_ready',
+            liveUrl: 'https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/',
+            pitchHook: "We zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren, maar dat potentiële klanten via mobiel nog geen directe website kunnen bezoeken.",
+            pitch: {
+                subject: "Concept website voor Schildersbedrijf Van der Veen in Hoogezand",
+                bodyPlain: "Beste heer/mevrouw,\n\nWe zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren op Google Maps, maar dat potentiële klanten nog geen mobiele website kunnen bezoeken.\n\nWe hebben alvast een werkend concept voor je live gezet:\n👉 https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/\n\nVriendelijke groet,\nAllard Veldman - Creation+Alt+Fix\ninfo@creationaltfix.nl",
+                whatsAppText: "Hoi! Allard hier van Creation+Alt+Fix. Ik zag jullie 4.9 sterren op Google in Hoogezand, maar zag dat er nog geen mobiele website was. Ik heb alvast een vrijblijvend concept klaargezet: https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/ - Wat vind je ervan?"
+            }
+        },
+        {
+            id: 'lead_demo_2',
+            slug: 'hovenier-groningen-oost',
+            name: 'Groen & Bestrating Noord',
+            category: 'Hovenier & Bestrating',
+            address: 'Noorderstraat 18, 9611 AS Sappemeer',
+            phone: '06 14 55 89 30',
+            normalizedPhone: '0614558930',
+            whatsAppNumber: '31614558930',
+            hasWhatsApp: true,
+            hasWebsite: false,
+            website: null,
+            rating: 4.8,
+            reviewsCount: 12,
+            status: 'concept_ready',
+            liveUrl: 'https://creationaltfix.nl/concept/hovenier-groningen-oost/',
+            pitchHook: "We zagen jouw vermelding voor Groen & Bestrating Noord op Google Maps in Sappemeer met 12 positieve recensies, maar zonder website.",
+            pitch: {
+                subject: "Concept website voor Groen & Bestrating Noord",
+                bodyPlain: "Beste Groen & Bestrating Noord,\n\nWe zagen jullie prachtige hoveniersprojecten in Sappemeer/Hoogezand. Omdat veel tuinbezitters via smartphone zoeken, hebben we alvast een snel concept voor jullie gemaakt:\n👉 https://creationaltfix.nl/concept/hovenier-groningen-oost/\n\nGroet,\nAllard Veldman - Creation+Alt+Fix",
+                whatsAppText: "Hoi! Allard van Creation+Alt+Fix. Ik heb alvast een demonstratie website voor jullie hoveniersbedrijf klaargezet: https://creationaltfix.nl/concept/hovenier-groningen-oost/ - Kijk gerust even!"
+            }
+        }
+    ];
+
     if (leads.length === 0) {
         const stored = localStorage.getItem('caf_leads_factory');
         if (stored) {
@@ -585,57 +657,16 @@ async function setupAndRenderLeadFactory() {
         }
     }
 
-    // Default demo leads voor Hoogezand als startpunt
     if (leads.length === 0) {
-
-        leads = [
-            {
-                id: 'lead_demo_1',
-                slug: 'schildersbedrijf-hoogezand',
-                name: 'Schildersbedrijf Van der Veen',
-                category: 'Schilder & Wandafwerking',
-                address: 'Kerkstraat 42, 9601 AB Hoogezand',
-                phone: '06 28 49 10 22',
-                normalizedPhone: '0628491022',
-                whatsAppNumber: '31628491022',
-                hasWhatsApp: true,
-                hasWebsite: false,
-                website: null,
-                rating: 4.9,
-                reviewsCount: 16,
-                status: 'concept_ready',
-                liveUrl: 'https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/',
-                pitchHook: "We zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren, maar dat potentiële klanten via mobiel nog geen directe website kunnen bezoeken.",
-                pitch: {
-                    subject: "Concept website voor Schildersbedrijf Van der Veen in Hoogezand",
-                    bodyPlain: "Beste heer/mevrouw,\n\nWe zagen dat je als schilder in regio Hoogezand uitstekend werk levert met 4.9 sterren op Google Maps, maar dat potentiële klanten nog geen mobiele website kunnen bezoeken.\n\nWe hebben alvast een werkend concept voor je live gezet:\n👉 https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/\n\nVriendelijke groet,\nAllard Veldman - Creation+Alt+Fix\ninfo@creationaltfix.nl",
-                    whatsAppText: "Hoi! Allard hier van Creation+Alt+Fix. Ik zag jullie 4.9 sterren op Google in Hoogezand, maar zag dat er nog geen mobiele website was. Ik heb alvast een vrijblijvend concept klaargezet: https://creationaltfix.nl/concept/schildersbedrijf-hoogezand/ - Wat vind je ervan?"
-                }
-            },
-            {
-                id: 'lead_demo_2',
-                slug: 'hovenier-groningen-oost',
-                name: 'Groen & Bestrating Noord',
-                category: 'Hovenier & Bestrating',
-                address: 'Noorderstraat 18, 9611 AS Sappemeer',
-                phone: '06 14 55 89 30',
-                normalizedPhone: '0614558930',
-                whatsAppNumber: '31614558930',
-                hasWhatsApp: true,
-                hasWebsite: false,
-                website: null,
-                rating: 4.8,
-                reviewsCount: 12,
-                status: 'concept_ready',
-                liveUrl: 'https://creationaltfix.nl/concept/hovenier-groningen-oost/',
-                pitchHook: "We zagen jouw vermelding voor Groen & Bestrating Noord op Google Maps in Sappemeer met 12 positieve recensies, maar zonder website.",
-                pitch: {
-                    subject: "Concept website voor Groen & Bestrating Noord",
-                    bodyPlain: "Beste Groen & Bestrating Noord,\n\nWe zagen jullie prachtige hoveniersprojecten in Sappemeer/Hoogezand. Omdat veel tuinbezitters via smartphone zoeken, hebben we alvast een snel concept voor jullie gemaakt:\n👉 https://creationaltfix.nl/concept/hovenier-groningen-oost/\n\nGroet,\nAllard Veldman - Creation+Alt+Fix",
-                    whatsAppText: "Hoi! Allard van Creation+Alt+Fix. Ik heb alvast een demonstratie website voor jullie hoveniersbedrijf klaargezet: https://creationaltfix.nl/concept/hovenier-groningen-oost/ - Kijk gerust even!"
-                }
+        leads = defaultLeads;
+        localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
+    } else {
+        // Zorg dat geverifieerde live concepten (zoals Berends) altijd beschikbaar zijn
+        defaultLeads.forEach(dl => {
+            if (!leads.some(l => l.slug === dl.slug || l.id === dl.id)) {
+                leads.push(dl);
             }
-        ];
+        });
         localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
     }
 

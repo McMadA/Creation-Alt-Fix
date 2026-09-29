@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-09-29] Groen & Bestrating Noord Lead Generation Concept Page ([factory/leads/groen-en-bestrating-noord/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/groen-en-bestrating-noord/index.html))**:
+  - Een moderne responsive HTML5 single-page conceptsite gecreëerd voor Groen & Bestrating Noord (Sappemeer) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness JSON-LD schema, Google Reviews integratie, interactief offerteformulier en WhatsApp CTA's.
+
+- **[2026-09-29] Schildersbedrijf Van der Veen Lead Generation Concept Page**:
+  - Een moderne responsive HTML5 single-page conceptsite gecreëerd voor Schildersbedrijf Van der Veen (Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness JSON-LD schema, Google Reviews integratie, interactief offerteformulier en WhatsApp CTA's.
+
+
 - **[2026-09-29] CI/CD Zero-Dependency Resolutie & Lead Factory Dynamic Imports ([factory/config/factory-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/config/factory-config.js), [factory/deployer/vimexx-ftps.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/deployer/vimexx-ftps.js), [factory/discovery/maps-crawler.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/discovery/maps-crawler.js), [factory/video/build-motion-video.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/video/build-motion-video.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
   - **Probleem**: GitHub Actions workflow #199 faalde in Suite 13 met `ERR_MODULE_NOT_FOUND: Cannot find package 'dotenv'`. Oorzaak was dat de CI job direct `npm test` draait zonder `node_modules` (om de pipeline binnen enkele seconden te voltooien), terwijl de nieuwe Lead Factory modules statische imports bevatten naar `dotenv`, `playwright`, en `basic-ftp`.
   - **Oplossing**:

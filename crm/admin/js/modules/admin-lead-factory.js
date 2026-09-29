@@ -774,11 +774,22 @@ export function openConceptPreviewModal(url, title = 'Concept Website') {
 
     if (!modal || !iframe) return;
 
-    if (titleEl) titleEl.textContent = title;
-    if (urlBadge) urlBadge.textContent = url;
-    if (extLink) extLink.href = url;
+    let targetUrl = url;
 
-    iframe.src = url;
+    // Als we het CRM lokaal draaien via loopback (poort 3847 of localhost), transformeer naar de lokale bridge URL
+    const isLoopback = window.location.port === '3847' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+    if (isLoopback && url && url.includes('/concept/')) {
+        const parts = url.split('/concept/');
+        if (parts[1]) {
+            targetUrl = `/concept/${parts[1]}`;
+        }
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (urlBadge) urlBadge.textContent = targetUrl;
+    if (extLink) extLink.href = targetUrl;
+
+    iframe.src = targetUrl;
     modal.classList.remove('hidden');
 }
 
