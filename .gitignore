@@ -17,4 +17,7 @@ scripts/*.clixml
 factory/config/.env
 *.token
 *bridge-token*
+*.wav
+*.mp4
+factory/video/temp_rec_*
 
