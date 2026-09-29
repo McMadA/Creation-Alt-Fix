@@ -205,20 +205,20 @@ export function buildOutreachPitch(b) {
   
   <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>${domain}</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>
   
-  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href="tel:+31612345678" style="color: #2563EB; font-weight: 600;">06 - 12 34 56 78</a> voor een vrijblijvend praatje!</p>
+  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href="tel:+31619135453" style="color: #2563EB; font-weight: 600;">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>
   
   <p style="margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
     Met vriendelijke groet,<br><br>
     <strong>Allard Veldman</strong><br>
     Creation+Alt+Fix<br>
     <span style="font-size: 13px; color: #64748b;">
-      Hoogezand (Groningen) • KVK: 99986191<br>
+      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>
       <a href="https://creationaltfix.nl" style="color: #2563EB; text-decoration: none;">creationaltfix.nl</a> • <a href="mailto:info@creationaltfix.nl" style="color: #2563EB; text-decoration: none;">info@creationaltfix.nl</a>
     </span>
   </p>
   
   <p style="margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;">
-    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijder ik je gegevens direct uit mijn systeem.</em>
+    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>
   </p>
 </div>
 `.trim();
@@ -243,17 +243,17 @@ Transparant over de tarieven:
 
 Vind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (${domain}).
 
-Kijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 12 34 56 78!
+Kijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!
 
 Met vriendelijke groet,
 
 Allard Veldman
 Creation+Alt+Fix (Hoogezand, Groningen)
-KVK: 99986191
+KVK: 99986191 | Tel: +31 6 19135453
 info@creationaltfix.nl | https://creationaltfix.nl
 
 ---
-Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en ik verwijder je direct uit mijn systeem.
+Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).
 `.trim();
 
   // 5. WhatsApp Bericht (Kort, nuchter en persoonlijk)

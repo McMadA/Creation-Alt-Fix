@@ -28,6 +28,8 @@ export function generateSlaContractDetails(planId, projectData = {}) {
         serviceMinutesIncluded: planId === 'transition_2027_loyalty' || planId.startsWith('managed_') ? 30 : 60,
         uptimeTarget: "99.9% Streefnorm Uptime (Inspanningsverplichting)",
         uptimeSidenote: "Hosting en cloudinfrastructuur worden geleverd via externe datacenterproviders (o.a. Vimexx NVMe Cloud). Creation+Alt+Fix bewaakt de werking 24/7 proactief via DoH-healthchecks. De uptime-norm van 99,9% geldt als een inspanningsverplichting; storingen, datacenterincidenten of onderhoud bij de externe hostingpartij vallen buiten de directe invloed en gelden als overmacht.",
+        termAndRenewal: "12 maanden (B2B stilzwijgend verlengd met 12 maanden, 1 maand opzegtermijn)",
+        dpaIncluded: "Inclusief Verwerkersovereenkomst conform Artikel 28 AVG (Creation+Alt+Fix als verwerker)",
         backupSchedule: "Wekelijkse offsite cloudback-up (30 dagen bewaartermijn)",
         sslSecurity: "Gratis Let's Encrypt Wildcard SSL & HSTS / DNSSEC ondersteuning",
         supportChannel: "info@creationaltfix.nl & Realtime In-App Klantenportaal Chat",
@@ -135,6 +137,8 @@ export function renderSlaSigningModalHtml(contractDetails) {
                     <div style="margin-bottom: 6px;"><strong>Inbegrepen Service:</strong> ${contractDetails.serviceMinutesIncluded} minuten per jaar voor contentwijzigingen</div>
                     <div style="margin-bottom: 6px;"><strong>Beschikbaarheid (SLA):</strong> ${escapeHtml(contractDetails.uptimeTarget || '99.9% Streefnorm Uptime (Inspanningsverplichting)')}</div>
                     <div style="margin-bottom: 6px;"><strong>Back-up & Monitoring:</strong> ${escapeHtml(contractDetails.backupSchedule)}</div>
+                    <div style="margin-bottom: 6px;"><strong>Looptijd & Verlenging:</strong> ${escapeHtml(contractDetails.termAndRenewal || '12 maanden (B2B stilzwijgend verlengd)')}</div>
+                    <div style="margin-bottom: 6px;"><strong>Gegevensbescherming:</strong> ${escapeHtml(contractDetails.dpaIncluded || 'Verwerkersovereenkomst Art. 28 AVG inbegrepen')}</div>
                     ${contractDetails.uptimeSidenote ? `
                     <div style="margin-top: 8px; padding: 8px 10px; background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 11.5px; line-height: 1.4; color: #94a3b8;">
                         <strong style="color: #38bdf8;">Sidenote Externe Hosting:</strong> ${escapeHtml(contractDetails.uptimeSidenote)}
@@ -159,7 +163,7 @@ export function renderSlaSigningModalHtml(contractDetails) {
                 <div style="margin-bottom: 20px;">
                     <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; opacity: 0.85; cursor: pointer;">
                         <input type="checkbox" id="sla-terms-agree" style="margin-top: 2px;">
-                        <span>Ik verklaar bevoegd te zijn namens de organisatie en ga akkoord met de algemene voorwaarden en het Creation+Alt+Fix 2027 hostingvoorstel.</span>
+                        <span>Ik verklaar bevoegd te zijn namens de Opdrachtgever en ga uitdrukkelijk akkoord met het Creation+Alt+Fix 2027 hostingvoorstel, de <a href="https://creationaltfix.nl/voorwaarden/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Algemene Voorwaarden</a> (incl. 12 mnd B2B stilzwijgende verlenging en art. 6:119a BW rente) en de Verwerkersovereenkomst conform Artikel 28 AVG.</span>
                     </label>
                 </div>
 

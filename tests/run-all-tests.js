@@ -172,6 +172,13 @@ test("normalizeDomain strips protocols, www, subpaths and whitespace", () => {
     assert.equal(normalizeDomain(null), "");
 });
 
+test("BRANDING contains authentic legal identity, KVK 99986191 and phone +31 6 19135453", () => {
+    assert.equal(BRANDING.companyName, "Creation+Alt+Fix");
+    assert.equal(BRANDING.phone, "+31 6 19135453");
+    assert.equal(BRANDING.kvk, "99986191");
+    assert.equal(BRANDING.vat, "NL005423147B16");
+});
+
 // ========================================================
 // 2. DASHBOARD KPI METRICS (crm/admin/js/modules/admin-stats.js)
 // ========================================================
@@ -779,26 +786,36 @@ test("generateSlaContractDetails generates SLA terms based on 2027 plan", () => 
     assert.ok(sla.uptimeTarget.includes("99.9%"));
     assert.ok(sla.uptimeTarget.includes("Inspanningsverplichting"));
     assert.ok(sla.uptimeSidenote.includes("Vimexx"));
+    assert.ok(sla.termAndRenewal.includes("12 maanden"));
+    assert.ok(sla.dpaIncluded.includes("Artikel 28 AVG"));
 });
 
-test("SLA Signing modal contains Allard Veldman and external hosting sidenote", () => {
+test("SLA Signing modal contains Allard Veldman, external hosting sidenote, and DPA terms", () => {
     const sla = generateSlaContractDetails("managed_nl", { id: "test", client: "Test Client" });
     const modalHtml = renderSlaSigningModalHtml(sla);
     assert.ok(modalHtml.includes("Allard Veldman"), "Provider name must be Allard Veldman");
     assert.ok(!modalHtml.includes("Allard van der Meer"), "Typo Allard van der Meer must not exist");
     assert.ok(modalHtml.includes("Sidenote Externe Hosting"), "Modal must display external hosting sidenote");
     assert.ok(modalHtml.includes("Vimexx"), "Modal must reference upstream hosting provider");
+    assert.ok(modalHtml.includes("Verwerkersovereenkomst conform Artikel 28 AVG"), "Modal must include DPA agreement");
+    assert.ok(modalHtml.includes("Looptijd & Verlenging"), "Modal must display B2B renewal terms");
 });
 
-test("Website Algemene Voorwaarden and translations contain external hosting force majeure clause", () => {
+test("Website Algemene Voorwaarden and translations contain external hosting force majeure and 10 ironclad articles", () => {
     const termsHtml = fs.readFileSync(path.join(ROOT_DIR, "website/algemene-voorwaarden.html"), "utf-8");
     assert.ok(termsHtml.includes("Vimexx"), "algemene-voorwaarden.html must mention Vimexx");
-    assert.ok(termsHtml.includes("inspanningsverplichting"), "algemene-voorwaarden.html must mention inspanningsverplichting");
+    assert.ok(termsHtml.includes("inspanningsverbintenissen"), "algemene-voorwaarden.html must state inspanningsverbintenissen");
     assert.ok(termsHtml.includes("overmacht"), "algemene-voorwaarden.html must state overmacht");
+    assert.ok(termsHtml.includes("6:119a BW"), "algemene-voorwaarden.html must state wettelijke handelsrente 6:119a BW");
+    assert.ok(termsHtml.includes("Opschortingsrecht"), "algemene-voorwaarden.html must include opschortingsrecht");
+    assert.ok(termsHtml.includes("6:89 BW"), "algemene-voorwaarden.html must include klachtplicht 6:89 BW");
+    assert.ok(termsHtml.includes("7:408 lid 2 BW"), "algemene-voorwaarden.html must exclude early cancellation 7:408 BW");
+    assert.ok(termsHtml.includes("Artikel 28 AVG"), "algemene-voorwaarden.html must include DPA Art 28 AVG");
 
     const subpageJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/subpage.js"), "utf-8");
     assert.ok(subpageJs.includes("Vimexx"), "subpage.js must mention Vimexx");
     assert.ok(subpageJs.includes("force majeure"), "subpage.js must include English force majeure");
+    assert.ok(subpageJs.includes("Article 28 GDPR"), "subpage.js must include English DPA Art 28 GDPR");
     assert.ok(subpageJs.includes("99.9% Uptime Streefnorm*"), "subpage.js must specify streefnorm for feat2");
 });
 
@@ -874,7 +891,9 @@ test("buildOutreachPitch genereert persoonlijke email, WhatsApp, archetypen, €
     assert.ok(pitchA.bodyHtml.includes("€ 150,-"), "Moet € 150,- hosting all-in bevatten");
     assert.ok(pitchA.bodyHtml.includes("portal.creationaltfix.nl"), "Moet Klantenportaal USP bevatten");
     assert.ok(pitchA.bodyHtml.includes("99986191"), "Moet KVK nummer bevatten");
-    assert.ok(pitchA.bodyPlain.includes("geen interesse"), "Moet AVG opt-out bevatten");
+    assert.ok(pitchA.bodyHtml.includes("06 - 19 13 54 53"), "Moet officieel telefoonnummer Allard bevatten");
+    assert.ok(!pitchA.bodyHtml.includes("06 - 12 34 56 78"), "Mag geen placeholder telefoonnummer bevatten");
+    assert.ok(pitchA.bodyPlain.includes("art. 21 AVG"), "Moet AVG art. 21 opt-out bevatten");
     assert.ok(pitchA.whatsAppText.includes("klusbedrijf-de-vries"));
 
     // 2. Archetype B: Beauty / Reviews
@@ -946,6 +965,9 @@ test("applyCodeProtection injecteert Domain-Locking Killswitch, F12 blokkade en 
     assert.ok(protectedHtml.includes("contextmenu"), "Moet contextmenu blocker bevatten");
     assert.ok(protectedHtml.includes("F12"), "Moet F12 blocker bevatten");
     assert.ok(protectedHtml.includes("AUTEURSWET 1912"), "Moet auteursrecht 1912 header bevatten");
+    assert.ok(protectedHtml.includes("99986191"), "Moet officieel KVK nummer 99986191 bevatten");
+    assert.ok(!protectedHtml.includes("88123456"), "Mag geen dummy KVK nummer 88123456 bevatten");
+    assert.ok(protectedHtml.includes("ARTIKEL 29A AUTEURSWET 1912"), "Moet Art. 29a Auteurswet vermelding bevatten");
 });
 
 test("Syntax validatie van alle nieuwe Lead Factory modules", () => {
