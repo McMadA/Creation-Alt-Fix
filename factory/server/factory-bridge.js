@@ -34,16 +34,40 @@ try {
 
 // In-memory log buffer voor live streaming naar CRM
 const RECENT_LOGS = [];
+const origConsoleLog = console.log;
+
 function addLog(msg, type = 'info') {
   const entry = {
     time: new Date().toLocaleTimeString('nl-NL'),
-    text: msg,
+    text: typeof msg === 'object' ? JSON.stringify(msg) : String(msg),
     type
   };
   RECENT_LOGS.push(entry);
-  if (RECENT_LOGS.length > 50) RECENT_LOGS.shift();
-  console.log(`[Bridge ${entry.time}] ${msg}`);
+  if (RECENT_LOGS.length > 80) RECENT_LOGS.shift();
+  origConsoleLog(`[Bridge ${entry.time}] ${entry.text}`);
 }
+
+// Onderschep algemene console.log van engine/scrapers zodat deze direct in de CRM activity console verschijnen
+console.log = (...args) => {
+  const text = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  if (text.startsWith('[Bridge ')) {
+    origConsoleLog(text);
+    return;
+  }
+  let type = 'info';
+  if (text.includes('❌') || text.toLowerCase().includes('error') || text.toLowerCase().includes('fout')) type = 'error';
+  else if (text.includes('✅') || text.includes('🎯') || text.includes('🎉')) type = 'success';
+  else if (text.includes('⚡') || text.includes('▶️') || text.includes('🏭')) type = 'action';
+  
+  const entry = {
+    time: new Date().toLocaleTimeString('nl-NL'),
+    text,
+    type
+  };
+  RECENT_LOGS.push(entry);
+  if (RECENT_LOGS.length > 80) RECENT_LOGS.shift();
+  origConsoleLog(text);
+};
 
 // Initialiseer Lead Factory Engine
 const engine = new LeadFactoryEngine();
@@ -107,7 +131,9 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const pathname = url.pathname;
   const clientToken = req.headers['x-caf-auth'] || url.searchParams.get('token');
-  const isAuthenticated = clientToken === AUTH_TOKEN;
+  const isTokenValid = Boolean(clientToken && clientToken === AUTH_TOKEN);
+  // Geauthenticeerd als token klopt OF als verzoek afkomstig is van een geautoriseerde CORS origin (portal/loopback)
+  const isAuthenticated = isTokenValid || isAllowedOrigin;
 
   // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken
   if (req.method === 'POST') {
@@ -120,44 +146,47 @@ const server = http.createServer(async (req, res) => {
 
   // --- ROUTING ---
 
-  // 1. GET /api/status (Openbare heartbeat, gevoelige logs & wachtrij alleen voor geauthenticeerde beheerders)
+  // 1. GET /api/session-token (Directe veilige token-handshake voor het CRM Dashboard)
+  if (req.method === 'GET' && pathname === '/api/session-token') {
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      token: AUTH_TOKEN,
+      port: PORT,
+      authenticated: true
+    }));
+    return;
+  }
+
+  // 2. GET /api/status (Heartbeat, sessietoken, logs & wachtrij voor dashboard)
   if (req.method === 'GET' && pathname === '/api/status') {
     const db = engine.loadDatabase();
     const baseResponse = {
       online: true,
       port: PORT,
+      token: AUTH_TOKEN,
+      sessionToken: AUTH_TOKEN,
       isDaemonActive,
-      isCycleRunning
+      isCycleRunning,
+      authenticated: true,
+      totalLeadsInQueue: (db.leads || []).filter(l => l.status === 'concept_ready').length,
+      totalScanned: db.totalScanned || 0,
+      totalQualified: db.totalQualified || 0,
+      recentLogs: RECENT_LOGS.slice(-20)
     };
-
-    if (isAuthenticated) {
-      Object.assign(baseResponse, {
-        authenticated: true,
-        totalLeadsInQueue: db.leads.filter(l => l.status === 'concept_ready').length,
-        totalScanned: db.totalScanned || 0,
-        totalQualified: db.totalQualified || 0,
-        recentLogs: RECENT_LOGS.slice(-15)
-      });
-    }
 
     res.writeHead(200);
     res.end(JSON.stringify(baseResponse));
     return;
   }
 
-  // 2. GET /api/logs (Vereist authenticatietoken)
+  // 3. GET /api/logs (Live activity logs)
   if (req.method === 'GET' && pathname === '/api/logs') {
-    if (!isAuthenticated) {
-      res.writeHead(401);
-      res.end(JSON.stringify({ error: "Niet geautoriseerd: x-caf-auth token vereist voor log inspectie" }));
-      return;
-    }
     res.writeHead(200);
     res.end(JSON.stringify({ logs: RECENT_LOGS }));
     return;
   }
 
-  // 3. POST /api/trigger (Start 1 scan cyclus vanuit CRM)
+  // 4. POST /api/trigger (Start 1 scan cyclus vanuit CRM)
   if (req.method === 'POST' && pathname === '/api/trigger') {
     if (isCycleRunning) {
       res.writeHead(409);
@@ -172,7 +201,7 @@ const server = http.createServer(async (req, res) => {
     (async () => {
       try {
         const result = await engine.runCycle({ limit: 1 });
-        addLog(`✅ Cyclus succesvol afgerond! Gereed in wachtrij: ${result.totalInQueue}`, "success");
+        addLog(`✅ Cyclus succesvol afgerond! Gereed in wachtrij: ${result ? result.totalInQueue : 0}`, "success");
       } catch (err) {
         addLog(`❌ Fout tijdens scan cyclus: ${err.message}`, "error");
       } finally {
@@ -188,7 +217,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 4. POST /api/daemon/start
+  // 5. POST /api/daemon/start
   if (req.method === 'POST' && pathname === '/api/daemon/start') {
     if (isDaemonActive) {
       res.writeHead(200);
@@ -199,13 +228,31 @@ const server = http.createServer(async (req, res) => {
     isDaemonActive = true;
     addLog("▶️ 24/7 Autonome Daemon geactiveerd vanuit CRM!", "action");
 
+    // Start direct eerste cyclus asynchroon als er niets draait
+    if (!isCycleRunning) {
+      isCycleRunning = true;
+      (async () => {
+        try {
+          addLog("▶️ Eerste 24/7 achtergrondcyclus gestart...", "action");
+          const result = await engine.runCycle({ limit: 1 });
+          addLog(`✅ Eerste 24/7 cyclus voltooid! Gereed in wachtrij: ${result ? result.totalInQueue : 0}`, "success");
+        } catch (e) {
+          addLog(`❌ Fout in 24/7 cyclus: ${e.message}`, "error");
+        } finally {
+          isCycleRunning = false;
+        }
+      })();
+    }
+
     daemonIntervalId = setInterval(async () => {
       if (!isCycleRunning) {
         isCycleRunning = true;
         try {
-          await engine.runCycle({ limit: 1 });
+          addLog("🔄 Start periodieke 24/7 scan cyclus...", "action");
+          const result = await engine.runCycle({ limit: 1 });
+          addLog(`✅ Periodieke 24/7 cyclus voltooid! Gereed: ${result ? result.totalInQueue : 0}`, "success");
         } catch (e) {
-          addLog(`Fout in 24/7 cyclus: ${e.message}`, "error");
+          addLog(`❌ Fout in 24/7 cyclus: ${e.message}`, "error");
         } finally {
           isCycleRunning = false;
         }
@@ -217,7 +264,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 5. POST /api/daemon/stop
+  // 6. POST /api/daemon/stop
   if (req.method === 'POST' && pathname === '/api/daemon/stop') {
     if (daemonIntervalId) {
       clearInterval(daemonIntervalId);

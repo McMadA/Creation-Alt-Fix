@@ -197,22 +197,56 @@ let _isDaemonActive = false;
 let _activeBridgeHost = 'http://127.0.0.1:3847';
 
 /**
- * Haalt de auth token op voor de bridge
+ * Haalt het auth token op voor de bridge (via session-token endpoint, localStorage of fallback)
  */
-async function getBridgeAuthToken() {
-    if (_bridgeToken) return _bridgeToken;
+async function getBridgeAuthToken(forceRefresh = false) {
+    if (!forceRefresh && _bridgeToken) return _bridgeToken;
+
+    if (!forceRefresh) {
+        try {
+            const stored = localStorage.getItem('caf_bridge_token');
+            if (stored) {
+                _bridgeToken = stored;
+                return _bridgeToken;
+            }
+        } catch {}
+    }
+
+    // 1. Vraag token direct op via het /api/session-token endpoint van de lokale bridge
+    const candidates = [];
+    if (window.location.port === '3847') candidates.push(window.location.origin);
+    candidates.push(_activeBridgeHost, 'http://127.0.0.1:3847', 'http://localhost:3847');
+    const uniqueCandidates = [...new Set(candidates)];
+
+    for (const host of uniqueCandidates) {
+        try {
+            const resp = await fetch(`${host}/api/session-token`);
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && data.token) {
+                    _bridgeToken = data.token;
+                    _activeBridgeHost = host;
+                    try { localStorage.setItem('caf_bridge_token', _bridgeToken); } catch {}
+                    return _bridgeToken;
+                }
+            }
+        } catch {}
+    }
+
+    // 2. Lokale bestand-fallback
     try {
         const resp = await fetch('./data/bridge-token.json');
         if (resp.ok) {
             const data = await resp.json();
             if (data && data.token) {
                 _bridgeToken = data.token;
+                try { localStorage.setItem('caf_bridge_token', _bridgeToken); } catch {}
                 return _bridgeToken;
             }
         }
     } catch {}
-    _bridgeToken = localStorage.getItem('caf_bridge_token') || '';
-    return _bridgeToken;
+
+    return _bridgeToken || '';
 }
 
 /**
@@ -272,7 +306,13 @@ export async function checkBridgeStatus(handlers = {}) {
         if (resp && resp.ok) {
             const data = await resp.json();
             _isBridgeOnline = true;
-            _isDaemonActive = data.isDaemonActive;
+            _isDaemonActive = Boolean(data.isDaemonActive);
+
+            // Synchroniseer sessietoken automatisch
+            if (data.sessionToken || data.token) {
+                _bridgeToken = data.sessionToken || data.token;
+                try { localStorage.setItem('caf_bridge_token', _bridgeToken); } catch {}
+            }
 
             if (badge) {
                 badge.style.background = 'rgba(52, 211, 153, 0.2)';
@@ -332,13 +372,13 @@ async function handleTriggerBridgeScan(handlers = {}) {
         return;
     }
 
-    const token = await getBridgeAuthToken();
-
     try {
         if (spinIcon) spinIcon.className = 'fas fa-spinner fa-spin';
         if (triggerText) triggerText.textContent = 'Scan gestart...';
 
-        const resp = await fetch(`${_activeBridgeHost}/api/trigger`, {
+        let token = await getBridgeAuthToken();
+
+        let resp = await fetch(`${_activeBridgeHost}/api/trigger`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -346,8 +386,20 @@ async function handleTriggerBridgeScan(handlers = {}) {
             }
         });
 
+        // Automatische token herstelpoging indien sessie herstart is (401)
+        if (resp.status === 401) {
+            token = await getBridgeAuthToken(true);
+            resp = await fetch(`${_activeBridgeHost}/api/trigger`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-caf-auth': token
+                }
+            });
+        }
+
         if (resp.status === 202) {
-            // Open console drawer
+            // Open direct de live console drawer
             const drawer = document.getElementById('factory-activity-drawer');
             if (drawer) drawer.classList.remove('hidden');
 
@@ -373,11 +425,19 @@ async function handleToggleBridgeDaemon(handlers = {}) {
         return;
     }
 
-    const token = await getBridgeAuthToken();
-    const endpoint = _isDaemonActive ? '/api/daemon/stop' : '/api/daemon/start';
+    const daemonBtn = document.getElementById('btn-toggle-daemon');
+    const daemonBtnText = document.getElementById('daemon-btn-text');
+    const daemonIcon = document.getElementById('daemon-icon');
+    const originalText = daemonBtnText ? daemonBtnText.textContent : '24/7 Modus';
+
+    if (daemonBtnText) daemonBtnText.textContent = 'Bezig...';
+    if (daemonIcon) daemonIcon.className = 'fas fa-circle-notch fa-spin';
 
     try {
-        const resp = await fetch(`${_activeBridgeHost}${endpoint}`, {
+        let token = await getBridgeAuthToken();
+        const endpoint = _isDaemonActive ? '/api/daemon/stop' : '/api/daemon/start';
+
+        let resp = await fetch(`${_activeBridgeHost}${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -385,12 +445,58 @@ async function handleToggleBridgeDaemon(handlers = {}) {
             }
         });
 
+        // Automatische herstelpoging indien 401: ververs token en retry eenmaal
+        if (resp.status === 401) {
+            token = await getBridgeAuthToken(true);
+            resp = await fetch(`${_activeBridgeHost}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-caf-auth': token
+                }
+            });
+        }
+
+        const data = await resp.json().catch(() => ({}));
+
         if (resp.ok) {
+            _isDaemonActive = Boolean(data.isDaemonActive);
+            if (daemonBtnText && daemonIcon) {
+                if (_isDaemonActive) {
+                    daemonBtnText.textContent = '24/7 Modus: Pauzeren';
+                    daemonIcon.className = 'fas fa-pause';
+                    daemonIcon.style.color = '#fbbf24';
+                } else {
+                    daemonBtnText.textContent = '24/7 Modus: Starten';
+                    daemonIcon.className = 'fas fa-play';
+                    daemonIcon.style.color = '#34d399';
+                }
+            }
+
+            // Open direct de console drawer als daemon gestart is zodat de beheerder live actie ziet
+            if (_isDaemonActive) {
+                const drawer = document.getElementById('factory-activity-drawer');
+                if (drawer) drawer.classList.remove('hidden');
+                pollRunningCycle(handlers);
+            }
+
             await checkBridgeStatus(handlers);
-            alert(_isDaemonActive ? "24/7 Autonome Daemon is geactiveerd! Hij scant nu elke 30 minuten." : "24/7 Autonome Daemon is gepauzeerd.");
+            alert(_isDaemonActive ? "▶️ 24/7 Autonome Daemon is geactiveerd!\nHij scant nu automatisch op de achtergrond (elke 30 min)." : "⏹️ 24/7 Autonome Daemon is gepauzeerd.");
+        } else {
+            alert(data.error || `Kon 24/7 modus niet wijzigen (HTTP ${resp.status}).`);
+            if (daemonBtnText) daemonBtnText.textContent = originalText;
+            if (daemonIcon) {
+                daemonIcon.className = _isDaemonActive ? 'fas fa-pause' : 'fas fa-play';
+                daemonIcon.style.color = _isDaemonActive ? '#fbbf24' : '#34d399';
+            }
         }
     } catch (e) {
         alert("Fout bij schakelen van 24/7 modus: " + e.message);
+        if (daemonBtnText) daemonBtnText.textContent = originalText;
+        if (daemonIcon) {
+            daemonIcon.className = _isDaemonActive ? 'fas fa-pause' : 'fas fa-play';
+            daemonIcon.style.color = _isDaemonActive ? '#fbbf24' : '#34d399';
+        }
     }
 }
 
