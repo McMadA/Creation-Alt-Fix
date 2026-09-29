@@ -831,21 +831,70 @@ testAsync("enrichBusinessProfile normaliseert telefoons, WhatsApp en berekent po
     assert.ok(enriched.suggestedServices.length >= 3, "Moet voorgestelde diensten bevatten");
 });
 
-test("buildOutreachPitch genereert persoonlijke email, WhatsApp en live concept URL", () => {
-    const mockLead = {
+test("buildOutreachPitch genereert persoonlijke email, WhatsApp, archetypen, €199 tarieven en AVG opt-out", () => {
+    // 1. Archetype A: Trade Direct (Vakman)
+    const mockLeadA = {
         name: "Klusbedrijf De Vries",
         slug: "klusbedrijf-de-vries",
         category: "Timmerman & Klusbedrijf",
-        pitchHook: "We zagen dat je als vakman in regio Hoogezand uitstekend werk levert.",
+        archetype: "A_TRADE_DIRECT",
+        archetypeLabel: "Nuchter & Direct Bellen (Vakman)",
+        pitchHook: "We zagen dat je als vakman in regio Hoogezand actief bent.",
         rating: 5.0,
         recommendedDomain: "klusbedrijf-de-vries.nl"
     };
 
-    const pitch = buildOutreachPitch(mockLead);
-    assert.ok(pitch.subject.includes("Concept website voor Klusbedrijf De Vries"));
-    assert.ok(pitch.conceptUrl.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
-    assert.ok(pitch.bodyHtml.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
-    assert.ok(pitch.whatsAppText.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
+    const pitchA = buildOutreachPitch(mockLeadA);
+    assert.ok(pitchA.subject.includes("Concept website voor Klusbedrijf De Vries"));
+    assert.ok(pitchA.conceptUrl.includes("creationaltfix.nl/concept/klusbedrijf-de-vries"));
+    assert.ok(pitchA.bodyHtml.includes("€ 199,-"), "Moet € 199,- realisatie bevatten");
+    assert.ok(pitchA.bodyHtml.includes("€ 150,-"), "Moet € 150,- hosting all-in bevatten");
+    assert.ok(pitchA.bodyHtml.includes("portal.creationaltfix.nl"), "Moet Klantenportaal USP bevatten");
+    assert.ok(pitchA.bodyHtml.includes("99986191"), "Moet KVK nummer bevatten");
+    assert.ok(pitchA.bodyPlain.includes("geen interesse"), "Moet AVG opt-out bevatten");
+    assert.ok(pitchA.whatsAppText.includes("klusbedrijf-de-vries"));
+
+    // 2. Archetype B: Beauty / Reviews
+    const mockLeadB = {
+        name: "Kapsalon Puur",
+        slug: "kapsalon-puur",
+        category: "Kapper",
+        archetype: "B_PRESENTATION_REVIEWS",
+        archetypeLabel: "Uitstraling & Klantreviews (Zorg/Beauty)",
+        pitchHook: "We zagen dat je met Kapsalon Puur prachtige reviews krijgt.",
+        rating: 4.9,
+        recommendedDomain: "kapsalon-puur.nl"
+    };
+    const pitchB = buildOutreachPitch(mockLeadB);
+    assert.ok(pitchB.subject.includes("Online visitekaartje & reviews voor Kapsalon Puur"));
+    assert.ok(pitchB.bodyPlain.includes("€ 199,-"));
+
+    // 3. Archetype C: Modernisation HTTP
+    const mockLeadC = {
+        name: "Schilder Jansen",
+        slug: "schilder-jansen",
+        category: "Schildersbedrijf",
+        archetype: "C_MODERNISATION",
+        archetypeLabel: "Website Modernisatie & SSL Beveiliging",
+        pitchHook: "We merkten op dat je website nog niet beschikt over een modern SSL-slotje.",
+        hasInsecureHttp: true,
+        recommendedDomain: "schilder-jansen.nl"
+    };
+    const pitchC = buildOutreachPitch(mockLeadC);
+    assert.ok(pitchC.subject.includes("Veilige mobiele website-update voor Schilder Jansen"));
+    assert.ok(pitchC.bodyPlain.includes("SSL"));
+});
+
+test("Website tarieven audit: Alle websitepagina's en vertalingen hanteren 'vanaf € 199,-'", () => {
+    const webLatenMakenHtml = fs.readFileSync(path.join(ROOT_DIR, "website/diensten/website-laten-maken/index.html"), "utf-8");
+    assert.ok(webLatenMakenHtml.includes("vanaf €199"), "website-laten-maken HTML moet vanaf €199 bevatten");
+    assert.ok(webLatenMakenHtml.includes('"price": "199"'), "Schema.org moet price 199 hebben");
+    assert.ok(!webLatenMakenHtml.includes("vanaf €99"), "Mag geen vanaf €99 meer bevatten");
+
+    const scriptJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/script.js"), "utf-8");
+    assert.ok(scriptJs.includes('Aanwezigheid vanaf €199'), "script.js NL moet €199 bevatten");
+    assert.ok(scriptJs.includes('Presence from €199'), "script.js EN moet €199 bevatten");
+    assert.ok(!scriptJs.includes('vanaf €99'), "script.js mag geen vanaf €99 bevatten");
 });
 
 test("LeadFactoryEngine deduplicatie en database persistentie", () => {

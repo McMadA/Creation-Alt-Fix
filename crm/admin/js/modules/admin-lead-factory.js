@@ -406,6 +406,16 @@ function renderSingleLeadCard(lead) {
                     </div>
                 </div>
 
+                <!-- Archetype & Pricing Pills -->
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px;">
+                    <span style="font-size: 0.73rem; padding: 2px 8px; border-radius: 4px; background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3);">
+                        <i class="fas fa-bullseye"></i> ${escapeHtml(lead.archetypeLabel || 'Vakmanschap (Archetype A)')}
+                    </span>
+                    <span style="font-size: 0.73rem; padding: 2px 8px; border-radius: 4px; background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25);">
+                        <i class="fas fa-tag"></i> Realisatie € 199,- • Hosting € 150,-/jr
+                    </span>
+                </div>
+
                 <!-- Contact & Adres details -->
                 <div style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                     ${lead.address ? `<div><i class="fas fa-map-marker-alt" style="color: #ef4444; width: 16px;"></i> ${escapeHtml(lead.address)}</div>` : ''}
@@ -578,28 +588,88 @@ function setupPreviewModalListeners() {
 }
 
 /**
- * Toont een inspectievenster voor de e-mail pitch
+ * Toont een inspectievenster voor de e-mail & WhatsApp pitch met tabbladen
  */
 function openPitchModal(lead, handlers) {
     const pitch = lead.pitch || {};
     const subject = pitch.subject || `Concept website voor ${lead.name}`;
     const plainText = pitch.bodyPlain || '';
+    const htmlBody = pitch.bodyHtml || `<p>${escapeHtml(plainText)}</p>`;
+    const whatsAppText = pitch.whatsAppText || '';
+    const archetypeLabel = pitch.archetypeLabel || lead.archetypeLabel || 'Vakmanschap (Archetype A)';
+
+    const mailtoUrl = `mailto:${encodeURIComponent(lead.email || '')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(plainText)}`;
 
     const modalHtml = `
         <div id="factory-pitch-detail-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;">
-            <div style="background: #0B0F19; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 95%; max-width: 700px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-                <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.9);">
-                    <h3 style="color: #fff; margin: 0; font-size: 1.1rem;"><i class="fas fa-envelope-open-text text-accent"></i> Acquisitie Pitch: ${escapeHtml(lead.name)}</h3>
+            <div style="background: #0B0F19; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 95%; max-width: 780px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+                
+                <!-- Modal Header -->
+                <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.95);">
+                    <div>
+                        <h3 style="color: #fff; margin: 0 0 4px 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-envelope-open-text text-accent"></i> Acquisitie Pitch: ${escapeHtml(lead.name)}
+                        </h3>
+                        <span style="font-size: 0.76rem; color: #a5b4fc; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); padding: 2px 8px; border-radius: 4px;">
+                            <i class="fas fa-bullseye"></i> ${escapeHtml(archetypeLabel)}
+                        </span>
+                    </div>
                     <button id="btn-close-pitch-detail" class="btn btn-secondary btn-sm" style="color: #ef4444;"><i class="fas fa-times"></i></button>
                 </div>
-                <div style="padding: 20px; overflow-y: auto; flex: 1; font-family: monospace; font-size: 0.88rem; color: #cbd5e1; background: #030712; line-height: 1.5; white-space: pre-wrap;">
+
+                <!-- Tab Selectie -->
+                <div style="display: flex; gap: 8px; padding: 12px 20px; background: rgba(15,23,42,0.6); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <button id="tab-pitch-html" class="btn btn-primary btn-sm" style="padding: 6px 14px;"><i class="fas fa-code"></i> HTML E-mail</button>
+                    <button id="tab-pitch-plain" class="btn btn-secondary btn-sm" style="padding: 6px 14px;"><i class="fas fa-align-left"></i> Tekst Mail (Spam-Safe)</button>
+                    <button id="tab-pitch-wa" class="btn btn-secondary btn-sm" style="padding: 6px 14px; color: #10b981; border-color: rgba(16,185,129,0.3);"><i class="fab fa-whatsapp"></i> WhatsApp Bericht</button>
+                </div>
+
+                <!-- Tab Inhoud: HTML Mail -->
+                <div id="content-pitch-html" style="padding: 20px; overflow-y: auto; flex: 1; background: #0f172a;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 0.88rem; color: #cbd5e1;">
+                        <strong style="color: #fff;">Onderwerp:</strong> ${escapeHtml(subject)}
+                    </div>
+                    <div style="background: #ffffff; border-radius: 8px; padding: 20px; color: #1e293b;">
+                        ${htmlBody}
+                    </div>
+                </div>
+
+                <!-- Tab Inhoud: Tekst Mail (Verborgen op start) -->
+                <div id="content-pitch-plain" style="padding: 20px; overflow-y: auto; flex: 1; font-family: monospace; font-size: 0.86rem; color: #cbd5e1; background: #030712; line-height: 1.5; white-space: pre-wrap; display: none;">
 <strong>Onderwerp:</strong> ${escapeHtml(subject)}
 ------------------------------------------------------------
 ${escapeHtml(plainText)}
                 </div>
-                <div style="padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 10px; background: rgba(15,23,42,0.9);">
-                    <button id="btn-copy-pitch-text" class="btn btn-secondary btn-sm"><i class="fas fa-copy"></i> Kopieer Tekst</button>
-                    <button id="btn-pitch-send-now" class="btn btn-primary btn-sm" style="background: #2563eb;"><i class="fas fa-paper-plane"></i> Verstuur via info@creationaltfix.nl</button>
+
+                <!-- Tab Inhoud: WhatsApp (Verborgen op start) -->
+                <div id="content-pitch-wa" style="padding: 24px; overflow-y: auto; flex: 1; background: #0f172a; display: none;">
+                    <div style="max-width: 480px; margin: 0 auto; background: #075e54; border-radius: 12px; padding: 16px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <div style="background: #054d44; color: #99f6e4; font-size: 0.78rem; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; display: inline-block;">
+                            <i class="fab fa-whatsapp"></i> WhatsApp naar: ${escapeHtml(lead.phone || 'Onbekend')}
+                        </div>
+                        <div style="background: #ffffff; color: #1e293b; padding: 14px 16px; border-radius: 8px 8px 0 8px; font-size: 0.9rem; line-height: 1.5; word-break: break-word;">
+                            ${escapeHtml(whatsAppText)}
+                        </div>
+                        ${lead.whatsAppNumber ? `
+                            <div style="margin-top: 16px; text-align: center;">
+                                <a href="https://wa.me/${lead.whatsAppNumber}?text=${encodeURIComponent(whatsAppText)}" target="_blank" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
+                                    <i class="fab fa-whatsapp"></i> Nu Openen in WhatsApp Web
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Modal Footer Knoppen -->
+                <div style="padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 10px; background: rgba(15,23,42,0.95); flex-wrap: wrap;">
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btn-copy-pitch-subject" class="btn btn-secondary btn-sm"><i class="fas fa-copy"></i> Kopieer Onderwerp</button>
+                        <button id="btn-copy-pitch-text" class="btn btn-secondary btn-sm"><i class="fas fa-file-alt"></i> Kopieer Tekst</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="${mailtoUrl}" class="btn btn-secondary btn-sm" style="color: #38bdf8; border-color: rgba(56,189,248,0.3);"><i class="fas fa-external-link-alt"></i> Open in Mail Client</a>
+                        <button id="btn-pitch-send-now" class="btn btn-primary btn-sm" style="background: #2563eb;"><i class="fas fa-paper-plane"></i> Verstuur via info@creationaltfix.nl</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -609,12 +679,40 @@ ${escapeHtml(plainText)}
     div.innerHTML = modalHtml;
     document.body.appendChild(div);
 
-    document.getElementById('btn-close-pitch-detail').onclick = () => div.remove();
-    document.getElementById('btn-copy-pitch-text').onclick = () => {
-        navigator.clipboard.writeText(plainText);
-        alert("Pitch tekst gekopieerd naar klembord!");
+    // Tab Switchers
+    const tabHtml = div.querySelector('#tab-pitch-html');
+    const tabPlain = div.querySelector('#tab-pitch-plain');
+    const tabWa = div.querySelector('#tab-pitch-wa');
+    const contentHtml = div.querySelector('#content-pitch-html');
+    const contentPlain = div.querySelector('#content-pitch-plain');
+    const contentWa = div.querySelector('#content-pitch-wa');
+
+    function setActiveTab(activeTab, activeContent) {
+        [tabHtml, tabPlain, tabWa].forEach(t => {
+            t.classList.remove('btn-primary');
+            t.classList.add('btn-secondary');
+        });
+        [contentHtml, contentPlain, contentWa].forEach(c => c.style.display = 'none');
+
+        activeTab.classList.add('btn-primary');
+        activeTab.classList.remove('btn-secondary');
+        activeContent.style.display = 'block';
+    }
+
+    tabHtml.onclick = () => setActiveTab(tabHtml, contentHtml);
+    tabPlain.onclick = () => setActiveTab(tabPlain, contentPlain);
+    tabWa.onclick = () => setActiveTab(tabWa, contentWa);
+
+    div.querySelector('#btn-close-pitch-detail').onclick = () => div.remove();
+    div.querySelector('#btn-copy-pitch-subject').onclick = () => {
+        navigator.clipboard.writeText(subject);
+        alert("Onderwerpregel gekopieerd naar klembord!");
     };
-    document.getElementById('btn-pitch-send-now').onclick = async () => {
+    div.querySelector('#btn-copy-pitch-text').onclick = () => {
+        navigator.clipboard.writeText(plainText);
+        alert("Volledige pitch tekst gekopieerd naar klembord!");
+    };
+    div.querySelector('#btn-pitch-send-now').onclick = async () => {
         div.remove();
         if (handlers.onSendEmail) await handlers.onSendEmail(lead);
     };

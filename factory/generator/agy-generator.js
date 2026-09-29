@@ -124,77 +124,156 @@ function cleanAgyOutput(raw) {
  */
 export function buildOutreachPitch(b) {
   const conceptUrl = `${FACTORY_CONFIG.conceptBaseUrl}/${b.slug}/`;
-  const cleanPhone = b.phone || '';
+  const domain = b.recommendedDomain || `${b.slug}.nl`;
+  const archetype = b.archetype || 'A_TRADE_DIRECT';
+  const archetypeLabel = b.archetypeLabel || 'Nuchter & Direct Bellen (Vakman)';
 
-  const subject = `Concept website voor ${b.name} in Hoogezand`;
+  // 1. Onderwerpregel afgestemd op archetype
+  let subject = `Concept website voor ${b.name} in Hoogezand`;
+  if (archetype === 'B_PRESENTATION_REVIEWS') {
+    subject = `Online visitekaartje & reviews voor ${b.name}`;
+  } else if (archetype === 'C_MODERNISATION') {
+    subject = `Veilige mobiele website-update voor ${b.name} (concept)`;
+  }
 
+  // 2. Archetype-specifieke voordelen
+  let bulletsHtml = '';
+  let bulletsPlain = '';
+
+  if (archetype === 'C_MODERNISATION') {
+    bulletsHtml = `
+    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>
+    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>
+    <li><strong>Jouw Google reviews:</strong> (${b.rating ? b.rating + ' sterren' : 'uitstekende reputatie'}) direct zichtbaar</li>
+    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>`;
+    bulletsPlain = `
+- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome
+- Supersnel en perfect werkend op smartphones
+- Jouw Google reviews (${b.rating ? b.rating + ' sterren' : 'hoge reputatie'}) netjes uitgelicht
+- Direct bellen & WhatsApp knop voor potentiële klanten`;
+  } else if (archetype === 'B_PRESENTATION_REVIEWS') {
+    bulletsHtml = `
+    <li><strong>Representatieve uitstraling:</strong> Prachtige presentatie van jouw diensten en sfeer</li>
+    <li><strong>Jouw Google reviews (${b.rating ? b.rating + ' sterren' : '5 sterren'}):</strong> Geven nieuwe klanten direct vertrouwen</li>
+    <li><strong>Laagdrempelig contact:</strong> Bezoekers plannen makkelijk een afspraak of sturen direct een WhatsApp</li>
+    <li><strong>Lokale vindbaarheid:</strong> Geoptimaliseerd voor Hoogezand en omstreken</li>`;
+    bulletsPlain = `
+- Representatieve uitstraling: Mooie presentatie van jouw diensten en behandelingen
+- Jouw Google reviews (${b.rating ? b.rating + ' sterren' : '5 sterren'}) prominent in beeld
+- Laagdrempelig contact via bellen en WhatsApp
+- Lokale vindbaarheid in en rondom Hoogezand`;
+  } else {
+    // Archetype A (Vakman / Bouw / Direct)
+    bulletsHtml = `
+    <li><strong>Direct bellen & WhatsApp:</strong> Zodat particulieren bij een klus niet verder zoeken naar een ander</li>
+    <li><strong>Supersnel & mobiel-eerst:</strong> Laadt in minder dan een seconde op smartphones</li>
+    <li><strong>Jouw Google vakwerk reviews:</strong> (${b.rating ? b.rating + ' sterren' : 'hoge beoordeling'}) betrouwbaar in beeld</li>
+    <li><strong>Lokale vindbaarheid (SEO):</strong> Hoger scoren op Google in regio Hoogezand / Groningen</li>`;
+    bulletsPlain = `
+- Direct bellen & WhatsApp knop: Zodat particulieren met een klus je direct bereiken
+- Supersnel ladend op smartphones
+- Jouw Google vakwerk reviews (${b.rating ? b.rating + ' sterren' : 'hoge score'}) betrouwbaar in beeld
+- Lokale vindbaarheid in regio Hoogezand / Groningen`;
+  }
+
+  // 3. HTML E-mail Body
   const bodyHtml = `
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px;">
-  <p>Beste ${b.name},</p>
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;">
+  <p style="font-size: 16px; margin-top: 0;">Beste ${b.name},</p>
   
   <p>${b.pitchHook}</p>
   
-  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers, hebben we alvast een werkend demonstratie-concept voor je gemaakt:</p>
+  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>
   
-  <div style="margin: 25px 0; text-align: center;">
-    <a href="${conceptUrl}" style="background: #2563EB; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+  <div style="margin: 28px 0; text-align: center;">
+    <a href="${conceptUrl}" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);">
       👉 Bekijk hier jouw Concept Website
     </a>
   </div>
   
-  <p><strong>Wat zit hier al in:</strong></p>
-  <ul>
-    <li>Volledig geoptimaliseerd voor mobiel (supersnel ladend)</li>
-    <li>Jouw echte Google beoordelingen (${b.rating ? b.rating + ' sterren' : 'uitstekende reputatie'}) uitgelicht</li>
-    <li>Directe knoppen voor potentiële klanten om te bellen of een WhatsApp te sturen</li>
-    <li>Lokale vindbaarheid (SEO) in regio Hoogezand / Groningen</li>
+  <p><strong>Wat zit hier al in voor ${b.name}:</strong></p>
+  <ul style="padding-left: 20px; line-height: 1.8;">
+    ${bulletsHtml}
   </ul>
   
-  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>${b.recommendedDomain}</em>)? We kunnen deze binnen 24 uur voor je inrichten en personaliseren.</p>
+  <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;">
+    <strong style="color: #0f172a;">Transparant over de kosten (geen verrassingen achteraf):</strong><br>
+    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>
+    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.${domain.split('.').pop() || 'nl'}</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>
+    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.
+  </div>
   
-  <p>Stuur gerust een berichtje terug of bel me even op <a href="tel:+31612345678" style="color: #2563EB;">06 - 12 34 56 78</a> voor een vrijblijvend praatje.</p>
+  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>${domain}</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>
   
-  <p style="margin-top: 30px;">
+  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href="tel:+31612345678" style="color: #2563EB; font-weight: 600;">06 - 12 34 56 78</a> voor een vrijblijvend praatje!</p>
+  
+  <p style="margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
     Met vriendelijke groet,<br><br>
     <strong>Allard Veldman</strong><br>
     Creation+Alt+Fix<br>
-    <a href="https://creationaltfix.nl" style="color: #2563EB;">creationaltfix.nl</a> • <a href="mailto:info@creationaltfix.nl" style="color: #2563EB;">info@creationaltfix.nl</a>
+    <span style="font-size: 13px; color: #64748b;">
+      Hoogezand (Groningen) • KVK: 99986191<br>
+      <a href="https://creationaltfix.nl" style="color: #2563EB; text-decoration: none;">creationaltfix.nl</a> • <a href="mailto:info@creationaltfix.nl" style="color: #2563EB; text-decoration: none;">info@creationaltfix.nl</a>
+    </span>
+  </p>
+  
+  <p style="margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;">
+    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijder ik je gegevens direct uit mijn systeem.</em>
   </p>
 </div>
 `.trim();
 
+  // 4. Plain Text E-mail Body (Maximale Inbox Score / Geen Spamfilter Risico)
   const bodyPlain = `
 Beste ${b.name},
 
 ${b.pitchHook}
 
-Omdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers, hebben we alvast een vrijblijvend concept voor je live gezet:
+Omdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:
 
 👉 Bekijk jouw concept website hier: ${conceptUrl}
 
-Wat zit hierin:
-- Supersnel en perfect werkend op smartphones
-- Jouw Google reviews (${b.rating ? b.rating + ' sterren' : 'hoge score'}) netjes uitgelicht
-- Direct bellen & WhatsApp knop voor potentiële klanten
-- Lokale vindbaarheid in en rondom Hoogezand
+Wat zit hier al in voor ${b.name}:
+${bulletsPlain}
 
-Vind je dit wat? We kunnen deze binnen 24 uur live zetten onder je eigen domeinnaam (${b.recommendedDomain}).
+Transparant over de tarieven:
+- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)
+- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw ${domain} domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.
+- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.
 
-Bel of app me gerust op 06 - 12 34 56 78 of reageer op deze mail!
+Vind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (${domain}).
+
+Kijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 12 34 56 78!
 
 Met vriendelijke groet,
-Allard Veldman - Creation+Alt+Fix
-info@creationaltfix.nl | creationaltfix.nl
+
+Allard Veldman
+Creation+Alt+Fix (Hoogezand, Groningen)
+KVK: 99986191
+info@creationaltfix.nl | https://creationaltfix.nl
+
+---
+Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en ik verwijder je direct uit mijn systeem.
 `.trim();
 
-  const whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix. Ik zag jullie mooie Google vermelding in Hoogezand, maar zag dat je nog geen mobiele website had. Ik heb alvast een vrijblijvend concept voor je klaargezet: ${conceptUrl} - Leuk om te horen wat je ervan vindt!`;
+  // 5. WhatsApp Bericht (Kort, nuchter en persoonlijk)
+  let whatsAppText = '';
+  if (archetype === 'C_MODERNISATION') {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: ${conceptUrl} - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!`;
+  } else if (archetype === 'B_PRESENTATION_REVIEWS') {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie reviews op Google, maar zag dat je nog geen directe website had voor je behandelingen en sfeer. Ik heb alvast een werkend concept voor je gemaakt: ${conceptUrl} - Veel plezier met bekijken!`;
+  } else {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie vermelding op Google Maps, maar zag dat er nog geen mobiele website aan gekoppeld was. Omdat particulieren snel willen bellen, heb ik alvast een vrijblijvend concept voor je klaargezet: ${conceptUrl} - Kijk er gerust naar als je tijd hebt!`;
+  }
 
   return {
     subject,
     bodyHtml,
     bodyPlain,
     whatsAppText,
-    conceptUrl
+    conceptUrl,
+    archetype,
+    archetypeLabel
   };
 }
 

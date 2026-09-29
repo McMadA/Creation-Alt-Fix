@@ -20,6 +20,8 @@ export async function enrichBusinessProfile(business) {
   // 2. Kwalificatiescore & Potentie-analyse
   const potentialAnalysis = analyzeBusinessPotential(profile);
   profile.score = potentialAnalysis.score;
+  profile.archetype = potentialAnalysis.archetype;
+  profile.archetypeLabel = potentialAnalysis.archetypeLabel;
   profile.pitchHook = potentialAnalysis.pitchHook;
   profile.strengths = potentialAnalysis.strengths;
   profile.recommendedDomain = `${profile.slug}.nl`;
@@ -50,20 +52,44 @@ function normalizeDutchPhone(phone) {
 }
 
 /**
- * Berekent de lead-potentie score en de haak voor de acquisitie e-mail
+ * Berekent de lead-potentie score, het archetype en de haak voor de acquisitie e-mail
  */
 function analyzeBusinessPotential(b) {
   let score = 50; // Basis
   const strengths = [];
+  let archetype = 'A_TRADE_DIRECT';
+  let archetypeLabel = 'Nuchter & Direct Bellen (Vakman)';
   let pitchHook = '';
 
-  if (!b.website) {
+  const cat = ((b.category || '') + ' ' + (b.name || '')).toLowerCase();
+  const isBeautyOrCare = cat.includes('kapper') || cat.includes('salon') || cat.includes('beauty') ||
+    cat.includes('massage') || cat.includes('zorg') || cat.includes('pedicure') || cat.includes('nagel') ||
+    cat.includes('coach') || cat.includes('therapie');
+
+  const isInsecureHttp = b.hasInsecureHttp || (b.website && !b.website.startsWith('https:'));
+
+  if (isInsecureHttp) {
+    archetype = 'C_MODERNISATION';
+    archetypeLabel = 'Website Modernisatie & SSL Beveiliging';
+    score += 35;
+    strengths.push("Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje");
+    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.`;
+  } else if (!b.website) {
     score += 40;
     strengths.push("Heeft nog géén actieve website op Google Maps");
-    pitchHook = `We zagen dat je als ${b.category || 'vakman'} in ${b.address ? 'regio Hoogezand' : 'de regio'} uitstekend werk levert, maar dat je op Google Maps nog geen directe website hebt gekoppeld. Hierdoor lopen potentiële klanten nu sneller door naar concurrenten.`;
+
+    if (isBeautyOrCare) {
+      archetype = 'B_PRESENTATION_REVIEWS';
+      archetypeLabel = 'Uitstraling & Klantreviews (Zorg/Beauty)';
+      pitchHook = `We zagen dat je met ${b.name} in ${b.address ? 'regio Hoogezand / Groningen' : 'de regio'} prachtige reviews krijgt, maar dat je op Google Maps nog geen directe website hebt om jouw behandelingen, sfeer en klantbeoordelingen te presenteren.`;
+    } else {
+      archetype = 'A_TRADE_DIRECT';
+      archetypeLabel = 'Nuchter & Direct Bellen (Vakman)';
+      pitchHook = `We zagen dat je als ${b.category || 'vakman'} in ${b.address ? 'regio Hoogezand / Groningen' : 'de regio'} actief bent. Veel particulieren die een betrouwbare specialist zoeken, willen direct op hun mobiel kunnen zien wie je bent en direct bellen of appen. Omdat je op Google Maps nog geen website hebt gekoppeld, lopen potentiële klussen nu sneller door naar concurrenten.`;
+    }
   } else {
     strengths.push("Heeft een bestaande webvermelding die gemoderniseerd kan worden");
-    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of verouderde site.`;
+    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of niet-responsive website.`;
   }
 
   if (b.rating && b.rating >= 4.5) {
@@ -75,7 +101,7 @@ function analyzeBusinessPotential(b) {
     strengths.push(`Direct telefonisch bereikbaar (${b.phone})`);
   }
 
-  return { score, strengths, pitchHook };
+  return { score, strengths, archetype, archetypeLabel, pitchHook };
 }
 
 /**
