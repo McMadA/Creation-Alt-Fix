@@ -12,7 +12,6 @@ scripts/crm-credentials.json
 scripts/*.clixml
 *.clixml
 .env
-.env.*
 *.env
 factory/config/.env
 *.token
