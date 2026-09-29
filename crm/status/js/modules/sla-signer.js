@@ -26,7 +26,8 @@ export function generateSlaContractDetails(planId, projectData = {}) {
         planName: plan.name,
         annualPrice: cleanPrice,
         serviceMinutesIncluded: planId === 'transition_2027_loyalty' || planId.startsWith('managed_') ? 30 : 60,
-        uptimeTarget: "99.9% Uptime Garantie (DoH Gemonitord)",
+        uptimeTarget: "99.9% Streefnorm Uptime (Inspanningsverplichting)",
+        uptimeSidenote: "Hosting en cloudinfrastructuur worden geleverd via externe datacenterproviders (o.a. Vimexx NVMe Cloud). Creation+Alt+Fix bewaakt de werking 24/7 proactief via DoH-healthchecks. De uptime-norm van 99,9% geldt als een inspanningsverplichting; storingen, datacenterincidenten of onderhoud bij de externe hostingpartij vallen buiten de directe invloed en gelden als overmacht.",
         backupSchedule: "Wekelijkse offsite cloudback-up (30 dagen bewaartermijn)",
         sslSecurity: "Gratis Let's Encrypt Wildcard SSL & HSTS / DNSSEC ondersteuning",
         supportChannel: "info@creationaltfix.nl & Realtime In-App Klantenportaal Chat",
@@ -129,10 +130,15 @@ export function renderSlaSigningModalHtml(contractDetails) {
                 <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.5; margin-bottom: 18px;">
                     <div style="margin-bottom: 6px;"><strong>Opdrachtgever:</strong> ${escapeHtml(contractDetails.clientName)}</div>
                     <div style="margin-bottom: 6px;"><strong>Gedekt Domein:</strong> ${escapeHtml(contractDetails.domain)}</div>
-                    <div style="margin-bottom: 6px;"><strong>Dienstverlener:</strong> Creation+Alt+Fix (Allard van der Meer)</div>
+                    <div style="margin-bottom: 6px;"><strong>Dienstverlener:</strong> Creation+Alt+Fix (Allard Veldman)</div>
                     <div style="margin-bottom: 6px;"><strong>Pakket:</strong> ${escapeHtml(contractDetails.planName)} (${formatCurrency(contractDetails.annualPrice)} / jaar excl. BTW)</div>
                     <div style="margin-bottom: 6px;"><strong>Inbegrepen Service:</strong> ${contractDetails.serviceMinutesIncluded} minuten per jaar voor contentwijzigingen</div>
+                    <div style="margin-bottom: 6px;"><strong>Beschikbaarheid (SLA):</strong> ${escapeHtml(contractDetails.uptimeTarget || '99.9% Streefnorm Uptime (Inspanningsverplichting)')}</div>
                     <div style="margin-bottom: 6px;"><strong>Back-up & Monitoring:</strong> ${escapeHtml(contractDetails.backupSchedule)}</div>
+                    ${contractDetails.uptimeSidenote ? `
+                    <div style="margin-top: 8px; padding: 8px 10px; background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 11.5px; line-height: 1.4; color: #94a3b8;">
+                        <strong style="color: #38bdf8;">Sidenote Externe Hosting:</strong> ${escapeHtml(contractDetails.uptimeSidenote)}
+                    </div>` : ''}
                 </div>
 
                 <div style="margin-bottom: 16px;">

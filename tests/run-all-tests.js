@@ -688,7 +688,7 @@ const { ActionDispatcher } = await import("../crm/js/core/action-dispatcher.js")
 const { Schemas } = await import("../crm/js/core/schemas.js");
 const { calculateVisualPulse } = await import("../crm/admin/js/modules/project-timeline.js");
 const { generateBillingWhatsAppUrl } = await import("../crm/admin/js/modules/project-billing.js");
-const { generateSlaContractDetails } = await import("../crm/status/js/modules/sla-signer.js");
+const { generateSlaContractDetails, renderSlaSigningModalHtml } = await import("../crm/status/js/modules/sla-signer.js");
 const { sendDiscordWebhookAlert, sendTelegramAlert } = await import("../crm/js/uptime-monitor.js");
 
 test("ReactiveStore mutates state reactively and notifies subscribers", () => {
@@ -777,6 +777,29 @@ test("generateSlaContractDetails generates SLA terms based on 2027 plan", () => 
     assert.equal(sla.serviceMinutesIncluded, 30);
     assert.ok(sla.contractNumber.includes("STENEKES"));
     assert.ok(sla.uptimeTarget.includes("99.9%"));
+    assert.ok(sla.uptimeTarget.includes("Inspanningsverplichting"));
+    assert.ok(sla.uptimeSidenote.includes("Vimexx"));
+});
+
+test("SLA Signing modal contains Allard Veldman and external hosting sidenote", () => {
+    const sla = generateSlaContractDetails("managed_nl", { id: "test", client: "Test Client" });
+    const modalHtml = renderSlaSigningModalHtml(sla);
+    assert.ok(modalHtml.includes("Allard Veldman"), "Provider name must be Allard Veldman");
+    assert.ok(!modalHtml.includes("Allard van der Meer"), "Typo Allard van der Meer must not exist");
+    assert.ok(modalHtml.includes("Sidenote Externe Hosting"), "Modal must display external hosting sidenote");
+    assert.ok(modalHtml.includes("Vimexx"), "Modal must reference upstream hosting provider");
+});
+
+test("Website Algemene Voorwaarden and translations contain external hosting force majeure clause", () => {
+    const termsHtml = fs.readFileSync(path.join(ROOT_DIR, "website/algemene-voorwaarden.html"), "utf-8");
+    assert.ok(termsHtml.includes("Vimexx"), "algemene-voorwaarden.html must mention Vimexx");
+    assert.ok(termsHtml.includes("inspanningsverplichting"), "algemene-voorwaarden.html must mention inspanningsverplichting");
+    assert.ok(termsHtml.includes("overmacht"), "algemene-voorwaarden.html must state overmacht");
+
+    const subpageJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/subpage.js"), "utf-8");
+    assert.ok(subpageJs.includes("Vimexx"), "subpage.js must mention Vimexx");
+    assert.ok(subpageJs.includes("force majeure"), "subpage.js must include English force majeure");
+    assert.ok(subpageJs.includes("99.9% Uptime Streefnorm*"), "subpage.js must specify streefnorm for feat2");
 });
 
 test("Multi-Channel webhook alerts reject invalid URLs gracefully without crashing", async () => {
