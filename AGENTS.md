@@ -2,6 +2,9 @@
 
 ## Recent Insights
 
+- **[2026-09-29] Hakkeling Fiets Reparaties Lead Generation Concept Page ([factory/leads/hakkeling-fiets-reparaties/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/hakkeling-fiets-reparaties/index.html))**:
+  - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor Hakkeling Fiets Reparaties (Kerkstraat 199, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness & BikeStore JSON-LD schema, Google Reviews integratie, interactief reparatie-offerteformulier en directe WhatsApp/bel CTA's.
+
 - **[2026-09-29] Groen & Bestrating Noord Lead Generation Concept Page ([factory/leads/groen-en-bestrating-noord/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/groen-en-bestrating-noord/index.html))**:
   - Een moderne responsive HTML5 single-page conceptsite gecreëerd voor Groen & Bestrating Noord (Sappemeer) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), LocalBusiness JSON-LD schema, Google Reviews integratie, interactief offerteformulier en WhatsApp CTA's.
 

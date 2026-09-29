@@ -10,29 +10,30 @@ export async function searchGoogleMaps(query, options = {}) {
 
   console.log(`🔍 [Crawler] Start zoekopdracht op Google Maps: "${query}" (Doellimiet: ${limit})...`);
 
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch({
-    headless: headless,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-blink-features=AutomationControlled',
-      '--lang=nl-NL,nl'
-    ]
-  });
-
-  const context = await browser.newContext({
-    userAgent: FACTORY_CONFIG.scraper.userAgents[0],
-    viewport: { width: 1366, height: 768 },
-    locale: 'nl-NL',
-    geolocation: { latitude: 53.1616, longitude: 6.7583 }, // Hoogezand coördinaten
-    permissions: ['geolocation']
-  });
-
-  const page = await context.newPage();
   const results = [];
+  let browser = null;
 
   try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch({
+      headless: headless,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled',
+        '--lang=nl-NL,nl'
+      ]
+    });
+
+    const context = await browser.newContext({
+      userAgent: FACTORY_CONFIG.scraper.userAgents[0],
+      viewport: { width: 1366, height: 768 },
+      locale: 'nl-NL',
+      geolocation: { latitude: 53.1616, longitude: 6.7583 }, // Hoogezand coördinaten
+      permissions: ['geolocation']
+    });
+
+    const page = await context.newPage();
     const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@53.1616,6.7583,13z`;
     await page.goto(mapsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
@@ -101,7 +102,9 @@ export async function searchGoogleMaps(query, options = {}) {
   } catch (error) {
     console.error(`❌ [Crawler] Fout tijdens Google Maps scan: ${error.message}`);
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
   }
 
   console.log(`✨ [Crawler] Scan voltooid. ${results.length} bedrijven geëxtraheerd voor query: "${query}".`);
