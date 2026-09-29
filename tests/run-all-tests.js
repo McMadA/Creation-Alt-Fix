@@ -674,12 +674,16 @@ test("crm/.htaccess and website/.htaccess enforce modern security headers, CSP, 
     assert.ok(crmHtaccess.includes("X-Content-Type-Options \"nosniff\""), "CRM must enforce nosniff");
     assert.ok(crmHtaccess.includes("X-Frame-Options \"SAMEORIGIN\""), "CRM must configure X-Frame-Options");
     assert.ok(crmHtaccess.includes("Cross-Origin-Opener-Policy"), "CRM must configure Cross-Origin-Opener-Policy");
+    assert.ok(crmHtaccess.includes("Content-Security-Policy"), "CRM must configure Content-Security-Policy");
+    assert.ok(crmHtaccess.includes("https://www.gstatic.com"), "CRM CSP must allow Firebase SDK from gstatic.com");
+    assert.ok(crmHtaccess.includes("https://cdnjs.cloudflare.com"), "CRM CSP must allow jsPDF and fonts from cdnjs.cloudflare.com");
     assert.ok(crmHtaccess.includes('FilesMatch "^\\.(?!well-known)"'), "CRM must block dotfiles");
 
     const webHtaccessPath = path.join(ROOT_DIR, "website/.htaccess");
     const webHtaccess = fs.readFileSync(webHtaccessPath, "utf-8");
     assert.ok(webHtaccess.includes("Strict-Transport-Security"), "Website must enforce HSTS");
     assert.ok(webHtaccess.includes("Content-Security-Policy"), "Website must configure HTTP Content-Security-Policy");
+    assert.ok(webHtaccess.includes("https://www.gstatic.com"), "Website CSP must allow Firebase SDK from gstatic.com");
     assert.ok(webHtaccess.includes('FilesMatch "^\\.(?!well-known)"'), "Website must block dotfiles");
 
     const dataHtaccessPath = path.join(ROOT_DIR, "crm/admin/data/.htaccess");

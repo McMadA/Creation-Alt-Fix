@@ -164,6 +164,9 @@ const API = {
 // Luister naar de status van de gebruiker (ingelogd/uitgelogd)
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
+        if (typeof window !== 'undefined' && window.__authTimeout) {
+            clearTimeout(window.__authTimeout);
+        }
         const authOverlay = document.getElementById('auth-overlay');
         const adminApp = document.getElementById('admin-app');
         const authLoading = document.getElementById('auth-loading');

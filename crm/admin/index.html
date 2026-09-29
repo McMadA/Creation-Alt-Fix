@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <!-- Styles -->
     <link rel="stylesheet" href="css/admin.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="/images/logo.webp">
     <!-- jsPDF Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -25,6 +27,24 @@
             <span>Beheerderssessie verifiëren...</span>
         </div>
     </div>
+    <script>
+        // Failsafe timeout: voorkom dat beheerder oneindig blijft hangen als CDN of Firebase vertraagd/geblokkeerd is
+        window.__authTimeout = setTimeout(function() {
+            var loader = document.getElementById('auth-loading');
+            var overlay = document.getElementById('auth-overlay');
+            var errDiv = document.getElementById('login-error');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0';
+                loader.style.transition = 'opacity 0.3s ease';
+                setTimeout(function() { loader.style.display = 'none'; }, 300);
+                if (overlay) overlay.classList.remove('hidden');
+                if (errDiv && (!document.getElementById('admin-app') || document.getElementById('admin-app').classList.contains('hidden'))) {
+                    errDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Verificatie van beheerderssessie duurde onverwacht lang. Controleer je netwerkverbinding of log direct opnieuw in.';
+                    errDiv.classList.remove('hidden');
+                }
+            }
+        }, 6000);
+    </script>
 
     <!-- Auth Overlay (Exclusief Google Sign-In voor Beheerders) -->
     <div id="auth-overlay" class="auth-overlay hidden">
