@@ -1,4 +1,3 @@
-import { chromium } from 'playwright';
 import { FACTORY_CONFIG } from '../config/factory-config.js';
 
 /**
@@ -11,6 +10,7 @@ export async function searchGoogleMaps(query, options = {}) {
 
   console.log(`🔍 [Crawler] Start zoekopdracht op Google Maps: "${query}" (Doellimiet: ${limit})...`);
 
+  const { chromium } = await import('playwright');
   const browser = await chromium.launch({
     headless: headless,
     args: [

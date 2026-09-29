@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-09-29] CI/CD Zero-Dependency Resolutie & Lead Factory Dynamic Imports ([factory/config/factory-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/config/factory-config.js), [factory/deployer/vimexx-ftps.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/deployer/vimexx-ftps.js), [factory/discovery/maps-crawler.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/discovery/maps-crawler.js), [factory/video/build-motion-video.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/video/build-motion-video.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
+  - **Probleem**: GitHub Actions workflow #199 faalde in Suite 13 met `ERR_MODULE_NOT_FOUND: Cannot find package 'dotenv'`. Oorzaak was dat de CI job direct `npm test` draait zonder `node_modules` (om de pipeline binnen enkele seconden te voltooien), terwijl de nieuwe Lead Factory modules statische imports bevatten naar `dotenv`, `playwright`, en `basic-ftp`.
+  - **Oplossing**:
+    1. `factory-config.js`: Vervangen van de `dotenv` package door Node 20's ingebouwde `process.loadEnvFile()` met een zero-dependency parser fallback. `dotenv` uit `package.json` verwijderd.
+    2. Dynamic Imports: In `maps-crawler.js` (`playwright`), `vimexx-ftps.js` (`basic-ftp`) en `build-motion-video.js` (`playwright`, `ffmpeg-static`) de zware packages omgezet naar `await import()` binnen de runtime functies, zodat het statisch importeren van modules tijdens de CI testsuite nooit faalt op ontbrekende packages.
+    3. `tests/run-all-tests.js`: `await testAsync` toegevoegd voor `enrichBusinessProfile` en video modules toegevoegd aan de syntax validatietest. CI/CD testsuite draait 100% zero-dependency: 79/79 tests geslaagd.
+
 - **[2026-09-28] Git Deployment & 68-Suite CI/CD Testverificatie ([tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js))**:
   - Alle refactorings (Reactive Store, Action Dispatcher, Toast, Offline Queue, Schemas, Kanban & Todo modularisatie, en de 5 Agency Features: Mollie iDEAL, Visual Pulse, Staging Pins, Multi-Channel Alerting, SLA Generator) zijn gecommit naar `main` (`de00c70`) en gepusht naar GitHub.
   - Volledige geautomatiseerde CI/CD testsuite gedraaid: 68/68 unittests geslaagd over alle 12 test suites met 0 fouten. Zero regressions en 100% backward compatible.

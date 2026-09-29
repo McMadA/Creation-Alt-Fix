@@ -1,4 +1,3 @@
-import * as ftp from 'basic-ftp';
 import fs from 'fs';
 import path from 'path';
 import { FACTORY_CONFIG } from '../config/factory-config.js';
@@ -33,6 +32,7 @@ export async function deployConceptToVimexx(slug, localHtmlContent) {
   }
 
   // 3. Voer directe FTPS synchronisatie uit
+  const ftp = await import('basic-ftp');
   const client = new ftp.Client();
   client.ftp.verbose = false;
 

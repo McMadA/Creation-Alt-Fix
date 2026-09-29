@@ -1,5 +1,3 @@
-import { chromium } from 'playwright';
-import ffmpegPath from 'ffmpeg-static';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -21,6 +19,10 @@ async function renderVideo({ width, height, outputFilename, label }) {
   console.log(`\n============================================================`);
   console.log(`🎬 Rendering ${label} (${width}x${height})...`);
   console.log(`============================================================`);
+
+  const { chromium } = await import('playwright');
+  const ffmpegModule = await import('ffmpeg-static');
+  const ffmpegPath = ffmpegModule.default || ffmpegModule;
 
   const tempDir = path.join(ROOT_DIR, `temp_rec_${width}x${height}`);
   if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });

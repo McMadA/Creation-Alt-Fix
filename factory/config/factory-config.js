@@ -1,14 +1,40 @@
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '../../');
 
-// Laad .env indien aanwezig
-dotenv.config({ path: path.join(ROOT_DIR, '.env') });
-dotenv.config({ path: path.join(__dirname, '.env') });
+// Laad .env indien aanwezig (Zero-dependency via native Node 20+ process.loadEnvFile + parser fallback)
+function loadEnvSafely(envPath) {
+  try {
+    if (!fs.existsSync(envPath)) return;
+    if (typeof process.loadEnvFile === 'function') {
+      process.loadEnvFile(envPath);
+      return;
+    }
+    const content = fs.readFileSync(envPath, 'utf-8');
+    for (const line of content.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx > 0) {
+        const key = trimmed.slice(0, eqIdx).trim();
+        let val = trimmed.slice(eqIdx + 1).trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        if (!(key in process.env)) {
+          process.env[key] = val;
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+loadEnvSafely(path.join(ROOT_DIR, '.env'));
+loadEnvSafely(path.join(__dirname, '.env'));
 
 export const FACTORY_CONFIG = {
   // Brand & Identiteit

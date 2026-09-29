@@ -874,7 +874,7 @@ test("Geografische & Sector configuraties zijn compleet en valide", () => {
     assert.ok(bouw && bouw.keywords.includes("schilder"), "Schilder moet in bouwsector zitten");
 });
 
-testAsync("enrichBusinessProfile normaliseert telefoons, WhatsApp en berekent potentie", async () => {
+await testAsync("enrichBusinessProfile normaliseert telefoons, WhatsApp en berekent potentie", async () => {
     const rawMock = {
         name: "Schildersbedrijf Groningen Test",
         slug: "schildersbedrijf-groningen-test",
@@ -1003,6 +1003,9 @@ test("Syntax validatie van alle nieuwe Lead Factory modules", () => {
         "factory/server/factory-bridge.js",
         "factory/deployer/vimexx-ftps.js",
         "factory/run-engine.js",
+        "factory/video/audio-synth.js",
+        "factory/video/generate-html.js",
+        "factory/video/build-motion-video.js",
         "crm/admin/js/modules/admin-lead-factory.js"
     ];
 
