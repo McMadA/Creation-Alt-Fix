@@ -8,7 +8,8 @@
     "factory:run": "node factory/run-engine.js --limit=1",
     "factory:daemon": "node factory/run-engine.js --daemon --interval=30",
     "bridge:start": "node factory/server/factory-bridge.js",
-    "video:generate": "node factory/video/build-motion-video.js"
+    "video:generate": "node factory/video/build-motion-video.js",
+    "export:docs": "python scripts/export-to-word.py"
   },
   "keywords": [
     "crm",

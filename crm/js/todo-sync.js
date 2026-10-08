@@ -17,7 +17,7 @@ import { escapeHtml } from "./firebase-config.js";
 export const PROJECT_PROFILES = {
     CRM_PORTAL: {
         id: "7",
-        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827"],
+        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "epic-11", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827", "task-902"],
 
         client: "Creation+Alt+Fix (CRM & Portaal)",
         companyName: "Creation+Alt+Fix (CRM & Portaal)",
@@ -103,10 +103,10 @@ export const PROJECT_PROFILES = {
     },
     STENEKES_RIOOL: {
         id: "14",
-        matchKeys: ["stenekesriool", "stenekesrioolspecialist", "stenekes riool", "klaas stenekes", "stenekes-riool"],
+        matchKeys: ["stenekesriool", "stenekesrioolspecialist", "stenekes riool", "Jozua stenekes", "stenekes-riool"],
         client: "Stenekes Riool & Grondwerk",
         companyName: "Stenekes Riool & Grondwerk",
-        contactName: "Klaas Stenekes",
+        contactName: "Jozua Stenekes",
         email: "info@stenekes-riool.nl",
         domainName: "stenekesrioolspecialist.nl",
         domain: "stenekesrioolspecialist.nl",
@@ -317,7 +317,7 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-802' || fullText.includes('arnold') || fullText.includes('glas-in-lood')) {
         return PROJECT_PROFILES.ARNOLD;
     }
-    if (fullText.includes('riool') || fullText.includes('stenekesriool') || fullText.includes('klaas stenekes')) {
+    if (fullText.includes('riool') || fullText.includes('stenekesriool') || fullText.includes('Jozua stenekes')) {
         return PROJECT_PROFILES.STENEKES_RIOOL;
     }
     if (code === 'TASK-803' || code === 'TASK-817' || fullText.includes('angela') || fullText.includes('angelastenekes') || fullText.includes('knipperij')) {

@@ -50,6 +50,15 @@ export class LeadFactoryEngine {
   saveDatabase(db) {
     db.updatedAt = new Date().toISOString();
     fs.writeFileSync(this.databaseFile, JSON.stringify(db, null, 2), 'utf-8');
+    // Directe synchronisatie met CRM Admin Dashboard
+    const crmAdminDbPath = path.resolve(__dirname, '..', 'crm', 'admin', 'data', 'leads.json');
+    try {
+      if (fs.existsSync(path.dirname(crmAdminDbPath))) {
+        fs.writeFileSync(crmAdminDbPath, JSON.stringify(db, null, 2), 'utf-8');
+      }
+    } catch (e) {
+      console.warn('⚠️ Kon leads.json niet direct naar CRM admin data kopiëren:', e.message);
+    }
   }
 
   isLeadProcessed(db, business) {

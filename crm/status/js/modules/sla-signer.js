@@ -33,7 +33,7 @@ export function generateSlaContractDetails(planId, projectData = {}) {
         backupSchedule: "Wekelijkse offsite cloudback-up (30 dagen bewaartermijn)",
         sslSecurity: "Gratis Let's Encrypt Wildcard SSL & HSTS / DNSSEC ondersteuning",
         supportChannel: "info@creationaltfix.nl & Realtime In-App Klantenportaal Chat",
-        termsUrl: "https://creationaltfix.nl/voorwaarden/",
+        termsUrl: "https://creationaltfix.nl/algemene-voorwaarden.html",
         domain: domain,
         clientName: clientName
     };
@@ -163,7 +163,7 @@ export function renderSlaSigningModalHtml(contractDetails) {
                 <div style="margin-bottom: 20px;">
                     <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; opacity: 0.85; cursor: pointer;">
                         <input type="checkbox" id="sla-terms-agree" style="margin-top: 2px;">
-                        <span>Ik verklaar bevoegd te zijn namens de Opdrachtgever en ga uitdrukkelijk akkoord met het Creation+Alt+Fix 2027 hostingvoorstel, de <a href="https://creationaltfix.nl/voorwaarden/" target="_blank" style="color: #38bdf8; text-decoration: underline;">Algemene Voorwaarden</a> (incl. 12 mnd B2B stilzwijgende verlenging en art. 6:119a BW rente) en de Verwerkersovereenkomst conform Artikel 28 AVG.</span>
+                        <span>Ik verklaar bevoegd te zijn namens de Opdrachtgever en ga uitdrukkelijk akkoord met het Creation+Alt+Fix 2027 hostingvoorstel, de <a href="https://creationaltfix.nl/algemene-voorwaarden.html" target="_blank" style="color: #38bdf8; text-decoration: underline;">Algemene Voorwaarden</a> (incl. 12 mnd B2B stilzwijgende verlenging en art. 6:119a BW rente) en de Verwerkersovereenkomst conform Artikel 28 AVG.</span>
                     </label>
                 </div>
 

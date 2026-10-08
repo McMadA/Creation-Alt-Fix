@@ -875,17 +875,63 @@ export function buildFallbackTemplate(b) {
       color: var(--text-main);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-    }
     .concept-bar {
-      background: linear-gradient(90deg, #1e1b4b, #0f172a);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      background: linear-gradient(90deg, #0b1329, #111e38);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.35);
       padding: 10px 16px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      font-family: -apple-system, sans-serif;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 101;
     }
-    .concept-bar a { color: #38bdf8; font-weight: 600; text-decoration: underline; }
+    .concept-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .concept-bar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .concept-bar-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+    .concept-bar a.concept-wa-btn {
+      background: #25D366;
+      color: #064e3b;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    }
+    .concept-bar a.concept-wa-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+    }
     header {
       display: flex;
       justify-content: space-between;
@@ -1172,7 +1218,19 @@ export function buildFallbackTemplate(b) {
 </head>
 <body>
   <div class="concept-bar">
-    ✨ Demonstratieconcept voor <strong>${b.name}</strong> • Gemaakt door <a href="https://creationaltfix.nl" target="_blank">Creation+Alt+Fix</a>
+    <div class="concept-bar-inner">
+      <div class="concept-bar-badge">
+        <span class="concept-bar-avatar">AV</span>
+        <span>
+          <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>${b.name}</strong>
+        </span>
+      </div>
+      <div>
+        <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20websiteconcept%20voor%20${encodeURIComponent(b.name)}%20bekeken!" class="concept-wa-btn" target="_blank">
+          💬 Vraag stellen aan Allard
+        </a>
+      </div>
+    </div>
   </div>
   <header>
     <div class="logo">${b.name}<span>.</span></div>

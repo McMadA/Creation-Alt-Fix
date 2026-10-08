@@ -53,7 +53,7 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
         }
     },
     "stenekesrioolspecialist.nl": {
-        clientName: "Stenekes Riool & Grondwerk (Klaas Stenekes)",
+        clientName: "Stenekes Riool & Grondwerk (Jozua Stenekes)",
         relatieId: 8,
         kvk: "02075792",
         currentPlanName: "Historisch Budget: € 22,00 / jr (t/m 31-12-2026)",

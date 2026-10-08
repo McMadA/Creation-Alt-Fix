@@ -1,10 +1,449 @@
 {
-  "updatedAt": "2026-09-29T11:43:08.534Z",
-  "totalScanned": 6,
-  "totalQualified": 1,
-  "totalGenerated": 1,
+  "updatedAt": "2026-10-08T23:50:59.804Z",
+  "totalScanned": 52,
+  "totalQualified": 8,
+  "totalGenerated": 8,
   "totalSent": 0,
   "leads": [
+    {
+      "id": "lead_1791503459803_heinkens-daktechniek",
+      "name": "Heinkens Daktechniek",
+      "slug": "heinkens-daktechniek",
+      "category": "Dakdekker",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Burgemeester van Roijenstraat Oost 242, 9602 CP Hoogezand",
+      "phone": "06 15424189",
+      "website": "http://heinkensdaktechniek.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Heinkens+Daktechniek/data=!4m7!3m6!1s0xa4822fc2cb6e5c9b:0xa1c29f6a5e1328b4!8m2!3d53.1574307!4d6.7324187!16s%2Fg%2F11lcwf74wh!19sChIJm1xuy8IvgqQRtCgTXmqfwqE?authuser=0&hl=nl&g_ep=EgoyMDI2MTAwNi4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-10-08T23:49:31.834Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0615424189",
+      "whatsAppNumber": "31615424189",
+      "hasWhatsApp": true,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (4.8 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (06 15424189)"
+      ],
+      "recommendedDomain": "heinkens-daktechniek.nl",
+      "email": "info@heinkensdaktechniek.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/heinkens-daktechniek/",
+      "deployMode": "ftp_deployed",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor Heinkens Daktechniek (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; color: #1e293b; line-height: 1.7; font-size: 15px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;\">\n\n  <!-- Header Banner -->\n  <div style=\"background: linear-gradient(135deg, #0F172A, #1E3A5F); padding: 24px 28px; text-align: center;\">\n    <p style=\"color: #94A3B8; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;\">Creation+Alt+Fix · Hoogezand</p>\n    <h2 style=\"color: #F8FAFC; margin: 0; font-size: 1.4rem; font-weight: 700;\">Vrijblijvend Concept voor Heinkens Daktechniek</h2>\n    <p style=\"color: #38BDF8; font-size: 0.9rem; margin: 8px 0 0;\">✨ Al klaar en direct te bekijken op je telefoon</p>\n  </div>\n\n  <!-- Body -->\n  <div style=\"padding: 28px 32px;\">\n    <p style=\"font-size: 16px; margin-top: 0;\">Beste Heinkens Daktechniek,</p>\n\n    <p>We zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n\n    <p>Mijn naam is <strong>Allard Veldman</strong> en ik run <strong>Creation+Alt+Fix</strong> vanuit Hoogezand. Ik help lokale ZZP'ers en kleine bedrijven in Groningen en Drenthe aan een professionele online aanwezigheid die écht werkt op mobiel — snel, duidelijk, en met directe contactknoppen zodat klanten met één klik kunnen bellen of appen.</p>\n\n    <p>Ik heb alvast <strong>gratis en vrijblijvend</strong> een compleet, werkend concept voor je gebouwd. Geen template-rommel, maar een website specifiek voor <strong>Heinkens Daktechniek</strong> — inclusief jouw Dakdekker, contactgegevens en je Google beoordeling van <strong>★★★★★ 4.8/5</strong> (geverifieerde Google beoordeling).</p>\n\n    <!-- CTA Knop -->\n    <div style=\"margin: 30px 0; text-align: center;\">\n      <a href=\"https://creationaltfix.nl/concept/heinkens-daktechniek/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); font-size: 1rem;\">\n        👉 Bekijk hier jouw Concept Website\n      </a>\n      <p style=\"font-size: 12px; color: #64748b; margin: 10px 0 0;\">Werkt direct op je telefoon of laptop • Geen login nodig</p>\n    </div>\n\n    <!-- Wat zit erin -->\n    <p style=\"margin-bottom: 10px;\"><strong>Wat zit er al in dit concept voor Heinkens Daktechniek:</strong></p>\n    <ul style=\"padding-left: 20px; line-height: 2; margin-bottom: 20px;\">\n      \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (4.8 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n      <li><strong>Professionele uitstraling:</strong> Responsive design dat op elk scherm perfect werkt</li>\n      <li><strong>LocalBusiness SEO:</strong> Google-geoptimaliseerde metadata voor betere lokale vindbaarheid</li>\n    </ul>\n\n    <!-- Prijsblok -->\n    <div style=\"background: #F0F9FF; border: 1px solid #BAE6FD; border-left: 5px solid #2563EB; padding: 18px 20px; border-radius: 8px; margin: 24px 0;\">\n      <p style=\"font-size: 1rem; font-weight: 700; color: #0F172A; margin: 0 0 12px;\">💶 Transparant over de investering</p>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 0.92rem;\">\n        <tr>\n          <td style=\"padding: 6px 0; vertical-align: top; width: 55%;\"><strong>Website realisatie</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">Eenmalig, volledig op maat</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #2563EB; font-size: 1.1rem;\">v.a. € 199,-</td>\n        </tr>\n        <tr style=\"border-top: 1px solid #CBD5E1;\">\n          <td style=\"padding: 6px 0; vertical-align: top;\"><strong>Managed Hosting All-in</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">Domein heinkens-daktechniek.nl, SSL, 5 mailboxen, back-ups, 30 min service/jaar</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #2563EB; font-size: 1.1rem;\">€ 150,- / jaar</td>\n        </tr>\n        <tr style=\"border-top: 1px solid #CBD5E1;\">\n          <td style=\"padding: 6px 0; vertical-align: top;\"><strong>Persoonlijk Klantenportaal</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">portal.creationaltfix.nl voor live feedback & revisies</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #10B981;\">Gratis inbegrepen</td>\n        </tr>\n      </table>\n    </div>\n\n    <!-- Wat gebeurt er als je ja zegt -->\n    <p style=\"font-weight: 600; margin-bottom: 8px;\">🚀 Wat ik doe als je akkoord geeft:</p>\n    <ol style=\"padding-left: 20px; line-height: 1.9; color: #334155; margin-bottom: 20px;\">\n      <li>Ik pas het concept aan met jouw eigen foto's, tekst en bedrijfsinfo</li>\n      <li>Jouw domeinnaam (<em>heinkens-daktechniek.nl</em>) wordt geregistreerd en gekoppeld</li>\n      <li>De website staat binnen <strong>24 uur live</strong> — klaar voor echte klanten</li>\n      <li>Jij krijgt toegang tot jouw eigen klantenportaal voor verdere aanpassingen</li>\n    </ol>\n\n    <p>Heb je vragen? Geen probleem — bel of app me gerust, dan kijken we er samen naar. Geen verplichtingen, gewoon eerlijk overleggen wat het beste past bij Heinkens Daktechniek.</p>\n\n    <!-- Afsluitende CTA -->\n    <div style=\"background: #F8FAFC; border-radius: 8px; padding: 16px 20px; margin: 24px 0; display: flex; align-items: center; gap: 12px;\">\n      <p style=\"margin: 0; font-size: 0.9rem; color: #475569;\">📞 Liever even bellen of appen? <strong><a href=\"tel:+31619135453\" style=\"color: #2563EB; text-decoration: none;\">06 - 19 13 54 53</a></strong> (WhatsApp ook welkom!)</p>\n    </div>\n\n    <p style=\"margin-top: 28px; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #334155;\">\n      Met vriendelijke groet,<br><br>\n      <strong>Allard Veldman</strong><br>\n      <em>Oprichter Creation+Alt+Fix</em><br><br>\n      <span style=\"font-size: 13px; color: #64748b;\">\n        Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n        <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n      </span>\n    </p>\n\n    <p style=\"margin-top: 20px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 14px; line-height: 1.5;\">\n      <em>Dit is een eenmalig vrijblijvend aanbod op basis van jouw Google Maps vermelding. Geen interesse of liever geen berichten meer? Reageer even met 'geen interesse' — dan verwijderen wij jouw gegevens direct en definitief conform <strong>art. 21 AVG</strong> (Recht van bezwaar).</em>\n    </p>\n  </div>\n</div>",
+        "bodyPlain": "Beste Heinkens Daktechniek,\n\nWe zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nMijn naam is Allard Veldman van Creation+Alt+Fix uit Hoogezand. Ik help lokale ZZP'ers en kleine bedrijven in Groningen en Drenthe aan een professionele, goed vindbare website die echt werkt op mobiel.\n\nIk heb gratis en vrijblijvend een compleet concept gebouwd speciaal voor Heinkens Daktechniek. Geen standaard template — een website toegespitst op jouw branche (Dakdekker) met directe contactknoppen en jouw Google-informatie.\n\n👉 Bekijk jouw concept website hier:\nhttps://creationaltfix.nl/concept/heinkens-daktechniek/\n\n(Werkt direct op je telefoon — geen login nodig)\n\n\nWat zit er al in dit concept:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (4.8 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n- Professionele uitstraling die goed werkt op elk scherm\n- LocalBusiness SEO voor betere vindbaarheid op Google\n\n\nTransparant over de investering (geen kleine lettertjes):\n\n  Website realisatie:         v.a. € 199,- (eenmalig excl. BTW)\n  Managed Hosting All-in:     € 150,- per jaar (~€ 12,50/mnd)\n    Inclusief: domeinnaam heinkens-daktechniek.nl, SSL-slotje, 5 zakelijke mailboxen,\n              dagelijkse back-ups en 30 minuten gratis service per jaar.\n  Klantenportaal:             Gratis inbegrepen\n    (portal.creationaltfix.nl voor live feedback en revisies)\n\n\nWat ik doe als je akkoord geeft:\n\n  1. Ik pas het concept aan met jouw foto's, tekst en info\n  2. Ik registreer jouw domeinnaam (heinkens-daktechniek.nl)\n  3. De website staat binnen 24 uur live\n  4. Jij krijgt toegang tot jouw eigen klantenportaal\n\n\nVragen? Gewoon bellen of appen:\n06 - 19 13 54 53 (WhatsApp ook welkom!)\nOf antwoord op deze e-mail.\n\nMet vriendelijke groet,\n\nAllard Veldman\nOprichter Creation+Alt+Fix\nHoogezand (Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse of liever geen berichten meer? Reageer even met 'geen interesse' — dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi Heinkens Daktechniek! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/heinkens-daktechniek/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/heinkens-daktechniek/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-10-08T23:50:59.803Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790706084255_de-vakman-dennis-dijkema",
+      "name": "De Vakman Dennis Dijkema",
+      "slug": "de-vakman-dennis-dijkema",
+      "category": "Klusbedrijf",
+      "rating": 3.7,
+      "reviewsCount": 0,
+      "address": "De Veiling 11, 9603 HM Hoogezand",
+      "phone": "06 27223737",
+      "website": "http://www.devakman.info/dennisdijkema",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/De+Vakman+Dennis+Dijkema/data=!4m7!3m6!1s0x47c82a88e453115f:0x3b128e39fa712a9a!8m2!3d53.1555244!4d6.7782117!16s%2Fg%2F12hlzbpf8!19sChIJXxFT5IgqyEcRmipx-jmOEjs?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4xIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T18:21:12.596Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0627223737",
+      "whatsAppNumber": "31627223737",
+      "hasWhatsApp": true,
+      "score": 85,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor De Vakman Dennis Dijkema op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Direct telefonisch bereikbaar (06 27223737)"
+      ],
+      "recommendedDomain": "de-vakman-dennis-dijkema.nl",
+      "email": null,
+      "suggestedServices": [
+        {
+          "title": "Renovatie & Verbouw",
+          "desc": "Vakkundige aanpak voor grote en kleine klussen in en rond het huis."
+        },
+        {
+          "title": "Maatwerk Houtbewerking",
+          "desc": "Op maat gemaakte inbouwkasten, trappen, deuren en meubels."
+        },
+        {
+          "title": "Onderhoud & Reparatie",
+          "desc": "Snelle en degelijke oplossing voor knellende deuren, lekkages en herstel."
+        },
+        {
+          "title": "Dak & Gevelafwerking",
+          "desc": "Degelijke afdichting en vernieuwing van boeidelen en gevelbekleding."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/de-vakman-dennis-dijkema/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor De Vakman Dennis Dijkema (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste De Vakman Dennis Dijkema,</p>\n  \n  <p>We zagen jouw vermelding voor De Vakman Dennis Dijkema op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/de-vakman-dennis-dijkema/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor De Vakman Dennis Dijkema:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (3.7 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>de-vakman-dennis-dijkema.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste De Vakman Dennis Dijkema,\n\nWe zagen jouw vermelding voor De Vakman Dennis Dijkema op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/de-vakman-dennis-dijkema/\n\nWat zit hier al in voor De Vakman Dennis Dijkema:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (3.7 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw de-vakman-dennis-dijkema.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (de-vakman-dennis-dijkema.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi De Vakman Dennis Dijkema! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/de-vakman-dennis-dijkema/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/de-vakman-dennis-dijkema/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T18:21:24.256Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790700916039_cijntje-personal-fit",
+      "name": "CIJNTJE PERSONAL FIT",
+      "slug": "cijntje-personal-fit",
+      "category": "Sportschool",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Transportweg 40, 9645 KX Veendam",
+      "phone": "06 34575750",
+      "website": "http://cijntjepersonalfit.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/CIJNTJE+PERSONAL+FIT/data=!4m7!3m6!1s0x47b7d3f787ca6e13:0x1d64b0a20cfc32d2!8m2!3d53.1160222!4d6.891301!16s%2Fg%2F11c4m0fjmy!19sChIJE27Kh_fTt0cR0jL8DKKwZB0?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:55:08.565Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0634575750",
+      "whatsAppNumber": "31634575750",
+      "hasWhatsApp": true,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor CIJNTJE PERSONAL FIT op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (5 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (06 34575750)"
+      ],
+      "recommendedDomain": "cijntje-personal-fit.nl",
+      "email": "info@cijntjepersonalfit.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/cijntje-personal-fit/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor CIJNTJE PERSONAL FIT (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste CIJNTJE PERSONAL FIT,</p>\n  \n  <p>We zagen jouw vermelding voor CIJNTJE PERSONAL FIT op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/cijntje-personal-fit/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor CIJNTJE PERSONAL FIT:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (5 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>cijntje-personal-fit.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste CIJNTJE PERSONAL FIT,\n\nWe zagen jouw vermelding voor CIJNTJE PERSONAL FIT op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/cijntje-personal-fit/\n\nWat zit hier al in voor CIJNTJE PERSONAL FIT:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (5 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw cijntje-personal-fit.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (cijntje-personal-fit.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi CIJNTJE PERSONAL FIT! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/cijntje-personal-fit/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/cijntje-personal-fit/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T16:55:16.039Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790699203425_weight-change",
+      "name": "Weight Change",
+      "slug": "weight-change",
+      "category": "Voedingsdeskundige",
+      "rating": 4,
+      "reviewsCount": 4,
+      "address": "Erasmusweg 2A, 9602 AE Hoogezand",
+      "phone": "06 25428379",
+      "website": "http://www.weightchange.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Weight+Change/data=!4m7!3m6!1s0x47c82a9d775ce3a9:0xdbeab568f32c5ebb!8m2!3d53.1590937!4d6.7409804!16s%2Fg%2F11clwmrbns!19sChIJqeNcd50qyEcRu14s82i16ts?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:25:08.445Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0625428379",
+      "whatsAppNumber": "31625428379",
+      "hasWhatsApp": true,
+      "score": 85,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor Weight Change op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Direct telefonisch bereikbaar (06 25428379)"
+      ],
+      "recommendedDomain": "weight-change.nl",
+      "email": "info@weightchange.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/weight-change/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor Weight Change (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste Weight Change,</p>\n  \n  <p>We zagen jouw vermelding voor Weight Change op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/weight-change/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor Weight Change:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (4 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>weight-change.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste Weight Change,\n\nWe zagen jouw vermelding voor Weight Change op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/weight-change/\n\nWat zit hier al in voor Weight Change:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (4 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw weight-change.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (weight-change.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi Weight Change! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/weight-change/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/weight-change/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T16:26:43.425Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790695603374_stuc-noord",
+      "name": "Stuc-noord",
+      "slug": "stuc-noord",
+      "category": "Stukadoorsbedrijf",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Boomgaard 71, 9603 HL Hoogezand",
+      "phone": "06 25505161",
+      "website": "http://www.stuc-noord.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Stuc-noord/data=!4m7!3m6!1s0x47c82b49bff9de29:0xde8b425d1e5ab249!8m2!3d53.1582232!4d6.7728472!16s%2Fg%2F11nn__mr3p!19sChIJKd75v0kryEcRSbJaHl1Ci94?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:25:06.426Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0625505161",
+      "whatsAppNumber": "31625505161",
+      "hasWhatsApp": true,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor Stuc-noord op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (5 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (06 25505161)"
+      ],
+      "recommendedDomain": "stuc-noord.nl",
+      "email": "info@stuc-noord.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/stuc-noord/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor Stuc-noord (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste Stuc-noord,</p>\n  \n  <p>We zagen jouw vermelding voor Stuc-noord op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/stuc-noord/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor Stuc-noord:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (5 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>stuc-noord.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste Stuc-noord,\n\nWe zagen jouw vermelding voor Stuc-noord op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/stuc-noord/\n\nWat zit hier al in voor Stuc-noord:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (5 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw stuc-noord.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (stuc-noord.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi Stuc-noord! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/stuc-noord/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/stuc-noord/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T15:26:43.374Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790693961582_m-a-delivery-service",
+      "name": "M&A delivery service",
+      "slug": "m-a-delivery-service",
+      "category": "Koeriersbedrijf",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Nijverheidsweg 12, 9601 LX Hoogezand",
+      "phone": "0598 854 557",
+      "website": "http://ma-ds.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/M%26A+delivery+service/data=!4m7!3m6!1s0x47c82a8e27a76c05:0xed5fad07e3ff6dbf!8m2!3d53.164819!4d6.7329364!16s%2Fg%2F11b6dhr_3y!19sChIJBWynJ44qyEcRv23_4wetX-0?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T14:57:42.531Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0598854557",
+      "whatsAppNumber": "0598854557",
+      "hasWhatsApp": false,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor M&A delivery service op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (5 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (0598 854 557)"
+      ],
+      "recommendedDomain": "m-a-delivery-service.nl",
+      "email": null,
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/m-a-delivery-service/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor M&A delivery service (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste M&A delivery service,</p>\n  \n  <p>We zagen jouw vermelding voor M&A delivery service op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/m-a-delivery-service/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor M&A delivery service:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (5 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>m-a-delivery-service.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste M&A delivery service,\n\nWe zagen jouw vermelding voor M&A delivery service op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/m-a-delivery-service/\n\nWat zit hier al in voor M&A delivery service:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (5 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw m-a-delivery-service.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (m-a-delivery-service.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi M&A delivery service! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/m-a-delivery-service/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/m-a-delivery-service/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T14:59:21.583Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
+    {
+      "id": "lead_1790693801435_hakkeling-fiets-reparaties",
+      "name": "Hakkeling Fiets Reparaties",
+      "slug": "hakkeling-fiets-reparaties",
+      "category": "Fietsenmaker",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Kerkstraat 199, 9601 AE Hoogezand",
+      "phone": "06 34160060",
+      "website": "http://hakkelingfietsreparaties.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Hakkeling+Fiets+Reparaties/data=!4m7!3m6!1s0x47c82bddf6e50509:0x18e251469e8f0e67!8m2!3d53.1618328!4d6.7562049!16s%2Fg%2F11msdxzml9!19sChIJCQXl9t0ryEcRZw6PnkZR4hg?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T14:55:03.094Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0634160060",
+      "whatsAppNumber": "31634160060",
+      "hasWhatsApp": true,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor Hakkeling Fiets Reparaties op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (5 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (06 34160060)"
+      ],
+      "recommendedDomain": "hakkeling-fiets-reparaties.nl",
+      "email": "info@demonteurvantimmer.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/hakkeling-fiets-reparaties/",
+      "deployMode": "local_staged",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor Hakkeling Fiets Reparaties (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1e293b; line-height: 1.6; font-size: 15px; margin: 0 auto; background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;\">\n  <p style=\"font-size: 16px; margin-top: 0;\">Beste Hakkeling Fiets Reparaties,</p>\n  \n  <p>We zagen jouw vermelding voor Hakkeling Fiets Reparaties op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n  \n  <p>Omdat wij als <strong>Creation+Alt+Fix</strong> gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je gebouwd:</p>\n  \n  <div style=\"margin: 28px 0; text-align: center;\">\n    <a href=\"https://creationaltfix.nl/concept/hakkeling-fiets-reparaties/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);\">\n      👉 Bekijk hier jouw Concept Website\n    </a>\n  </div>\n  \n  <p><strong>Wat zit hier al in voor Hakkeling Fiets Reparaties:</strong></p>\n  <ul style=\"padding-left: 20px; line-height: 1.8;\">\n    \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (5 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n  </ul>\n  \n  <div style=\"background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin: 24px 0;\">\n    <strong style=\"color: #0f172a;\">Transparant over de kosten (geen verrassingen achteraf):</strong><br>\n    • <strong>Website realisatie:</strong> Vanaf <strong>€ 199,-</strong> (eenmalig excl. BTW)<br>\n    • <strong>Managed Cloud Hosting All-in:</strong> Slechts <strong>€ 150,- / jaar</strong> (~€ 12,50/mnd) inclusief jouw <em>.nl</em> domein, SSL-slotje, 5 zakelijke mailboxen, dagelijkse back-ups en 30 minuten gratis service per jaar.<br>\n    • <strong>Persoonlijk Klantenportaal:</strong> Toegang tot <em>portal.creationaltfix.nl</em> om live feedback pins te plaatsen en voortgang te volgen.\n  </div>\n  \n  <p>Vind je dit wat en wil je de website live hebben onder je eigen domeinnaam (bijv. <em>hakkeling-fiets-reparaties.nl</em>)? We kunnen deze binnen 24 uur personaliseren met jouw foto's en teksten.</p>\n  \n  <p>Kijk er vanavond gerust even naar op je telefoon. Stuur gerust een mailtje terug of bel/app me even op <a href=\"tel:+31619135453\" style=\"color: #2563EB; font-weight: 600;\">06 - 19 13 54 53</a> voor een vrijblijvend praatje!</p>\n  \n  <p style=\"margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px;\">\n    Met vriendelijke groet,<br><br>\n    <strong>Allard Veldman</strong><br>\n    Creation+Alt+Fix<br>\n    <span style=\"font-size: 13px; color: #64748b;\">\n      Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n      <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n    </span>\n  </p>\n  \n  <p style=\"margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 12px; line-height: 1.4;\">\n    <em>Geen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse', dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).</em>\n  </p>\n</div>",
+        "bodyPlain": "Beste Hakkeling Fiets Reparaties,\n\nWe zagen jouw vermelding voor Hakkeling Fiets Reparaties op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nOmdat wij als Creation+Alt+Fix gespecialiseerd zijn in het razendsnel online zetten van lokale ZZP'ers in Groningen en Drenthe, heb ik alvast een vrijblijvend, werkend concept voor je klaargezet:\n\n👉 Bekijk jouw concept website hier: https://creationaltfix.nl/concept/hakkeling-fiets-reparaties/\n\nWat zit hier al in voor Hakkeling Fiets Reparaties:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (5 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n\nTransparant over de tarieven:\n- Website realisatie: Vanaf € 199,- (eenmalig excl. BTW)\n- Managed Cloud Hosting All-in: € 150,- per jaar (~€ 12,50/mnd) inclusief jouw hakkeling-fiets-reparaties.nl domeinnaam, SSL-slotje, 5 zakelijke mailboxen, back-ups en 30 min. service per jaar.\n- Inclusief toegang tot jouw persoonlijke Klantenportaal (portal.creationaltfix.nl) voor live feedback en revisies.\n\nVind je dit wat? We kunnen deze binnen 24 uur live zetten onder jouw eigen domeinnaam (hakkeling-fiets-reparaties.nl).\n\nKijk er gerust vanavond even naar op je telefoon. Reageer gewoon op deze mail of bel/app me even op 06 - 19 13 54 53!\n\nMet vriendelijke groet,\n\nAllard Veldman\nCreation+Alt+Fix (Hoogezand, Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse in dit concept of liever geen berichten meer ontvangen? Reageer even met 'geen interesse' en wij verwijderen je direct conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi Hakkeling Fiets Reparaties! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/hakkeling-fiets-reparaties/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/hakkeling-fiets-reparaties/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-09-29T14:56:41.435Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
     {
       "id": "lead_1790682188534_berends",
       "name": "Berends",
@@ -201,6 +640,262 @@
         "archetype": "A_TRADE_DIRECT",
         "archetypeLabel": "Nuchter & Direct Bellen (Vakman)"
       }
+    },
+    {
+      "name": "Kazkaz Stukadoor",
+      "slug": "kazkaz-stukadoor",
+      "category": "Stukadoorsbedrijf",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Hoofdstraat 68B, 9601 EK Hoogezand",
+      "phone": "06 19255879",
+      "website": "https://kazkazstukadoor.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Kazkaz+Stukadoor/data=!4m7!3m6!1s0x47c82d601418ac2f:0xa2637a223bd4a9e8!8m2!3d53.163149!4d6.759109!16s%2Fg%2F11zftvx8fk!19sChIJL6wYFGAtyEcR6KnUOyJ6Y6I?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:25:02.666Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:25:10.240Z"
+    },
+    {
+      "name": "Stukadoor Veendam",
+      "slug": "stukadoor-veendam",
+      "category": "Stukadoor",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Transportweg 2, 9645 KX Veendam",
+      "phone": "0598 796 127",
+      "website": "https://stukadoorveendam.com/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Stukadoor+Veendam/data=!4m7!3m6!1s0x47b7d3eda5698923:0x84fe8e3b517d6419!8m2!3d53.1095223!4d6.890395!16s%2Fg%2F11z7mhcb70!19sChIJI4lppe3Tt0cRGWR9UTuO_oQ?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:25:04.572Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:25:10.240Z"
+    },
+    {
+      "name": "Sierbestrating | Hovenier | CS Grondwerken",
+      "slug": "sierbestrating-hovenier-cs-grondwerken",
+      "category": "Aannemer voor bestrating",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Korte Groningerweg 1, 9607 PS Foxhol",
+      "phone": "06 48933017",
+      "website": "https://www.cs-grondwerken.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Sierbestrating+%7C+Hovenier+%7C+CS+Grondwerken/data=!4m7!3m6!1s0x47b7db0ce955eb03:0xf61540ef54798741!8m2!3d53.1721373!4d6.7164208!16s%2Fg%2F11v42j280d!19sChIJA-tV6Qzbt0cRQYd5VO9AFfY?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:55:04.676Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:55:10.404Z"
+    },
+    {
+      "name": "Zwik Bestrating",
+      "slug": "zwik-bestrating",
+      "category": "Aannemer voor bestrating",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Gomarusstraat 30, 9746 BC Groningen",
+      "phone": "06 37597547",
+      "website": "https://www.zwikbestrating.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Zwik+Bestrating/data=!4m7!3m6!1s0x47c9cd2fe4549c61:0x6285dbd26fc159a9!8m2!3d53.2288531!4d6.5029423!16s%2Fg%2F1ptywwjtj!19sChIJYZxU5C_NyUcRqVnBb9LbhWI?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:55:06.520Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:55:10.404Z"
+    },
+    {
+      "name": "Stratenmaker Groningen",
+      "slug": "stratenmaker-groningen",
+      "category": "Aannemer voor bestrating",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Paterswoldseweg 806, 9728 BM Groningen",
+      "phone": "050 569 0652",
+      "website": "https://stratenmakergroningen.com/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Stratenmaker+Groningen/data=!4m7!3m6!1s0x47c8330eb600bce9:0x9e355437ee6a781d!8m2!3d53.1893569!4d6.5495447!16s%2Fg%2F11xh9ls7qv!19sChIJ6bwAtg4zyEcRHXhq7jdUNZ4?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:55:08.450Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:55:10.404Z"
+    },
+    {
+      "name": "Kamperman Grondwerk",
+      "slug": "kamperman-grondwerk",
+      "category": "Grondverzet",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Winschoterdiep 32, 9636 AH Zuidbroek",
+      "phone": "06 15498894",
+      "website": "https://www.kampermangrondwerk.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Kamperman+Grondwerk/data=!4m7!3m6!1s0x47b7d2db8ded581d:0xc7c2f44d3610865b!8m2!3d53.1620099!4d6.857732!16s%2Fg%2F11cp7k770_!19sChIJHVjtjdvSt0cRW4YQNk30wsc?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T15:55:10.342Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T15:55:10.404Z"
+    },
+    {
+      "name": "Valkema Coaching & Counseling",
+      "slug": "valkema-coaching-counseling",
+      "category": "Psychotherapeut",
+      "rating": 4,
+      "reviewsCount": 4,
+      "address": "Eikenlaan 64, 9615 AS Kolham",
+      "phone": "0598 399 223",
+      "website": "https://www.valkemacoaching.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Valkema+Coaching+%26+Counseling/data=!4m7!3m6!1s0x47c82ada25e11ef1:0x607a523084be6049!8m2!3d53.1871416!4d6.7451171!16s%2Fg%2F1v_0h_l7!19sChIJ8R7hJdoqyEcRSWC-hDBSemA?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:25:02.749Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:25:10.380Z"
+    },
+    {
+      "name": "KuiperCoaching",
+      "slug": "kuipercoaching",
+      "category": "Coachingscentrum",
+      "rating": 4,
+      "reviewsCount": 4,
+      "address": "Peppeling 61, 9603 HK Hoogezand",
+      "phone": "06 10846037",
+      "website": "https://kuiper-coaching.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/KuiperCoaching/data=!4m7!3m6!1s0x47c82b045bf6c57d:0xe7b49bec3ad2ef8b!8m2!3d53.1576588!4d6.7691988!16s%2Fg%2F11ldsyfdv1!19sChIJfcX2WwQryEcRi-_SOuybtOc?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:25:04.674Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:25:10.380Z"
+    },
+    {
+      "name": "Kolham, Molenhoek",
+      "slug": "kolham-molenhoek",
+      "category": "Busstation",
+      "rating": 4,
+      "reviewsCount": 4,
+      "address": "9615 AD Kolham",
+      "phone": "",
+      "website": "https://www.valkemacoaching.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Kolham,+Molenhoek/data=!4m7!3m6!1s0x47c82b209c25542d:0x61e617a3ddb303b2!8m2!3d53.18237!4d6.73608!16s%2Fg%2F1hm4n58pb!19sChIJLVQlnCAryEcRsgOz3aMX5mE?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyMy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:25:06.533Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:25:10.380Z"
+    },
+    {
+      "name": "Private Gym Paulo Boer",
+      "slug": "private-gym-paulo-boer",
+      "category": "Personal trainer",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Boven Oosterdiep 9, 9641 JM Veendam",
+      "phone": "06 28500500",
+      "website": "https://www.pauloboer.nl/personal-trainer-veendam/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Private+Gym+Paulo+Boer/data=!4m7!3m6!1s0x47b7d7916dfb65f7:0xc05845f40d1d3e92!8m2!3d53.095319!4d6.872583!16s%2Fg%2F11gm9v0glz!19sChIJ92X7bZHXt0cRkj4dDfRFWMA?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:55:02.878Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:55:10.526Z"
+    },
+    {
+      "name": "Personal Fitness Nederland - Hoogezand-Sappemeer",
+      "slug": "personal-fitness-nederland-hoogezand-sappemeer",
+      "category": "Personal trainer",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Meint Veningastraat 63A, 9601 KD Hoogezand",
+      "phone": "06 36559217",
+      "website": "https://www.personalfitnessnederland.nl/studios/personal-trainer-hoogezand-sappemeer/?utm_source=listings&utm_medium=organic",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Personal+Fitness+Nederland+-+Hoogezand-Sappemeer/data=!4m7!3m6!1s0x47c82bb6ac46e0e3:0xf85bc91190c1fa51!8m2!3d53.1635996!4d6.7473617!16s%2Fg%2F11mvsks33j!19sChIJ4-BGrLYryEcRUfrBkBHJW_g?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:55:04.789Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:55:10.526Z"
+    },
+    {
+      "name": "24/7 Fitness centrum Quantum Fit | Hoogezand",
+      "slug": "24-7-fitness-centrum-quantum-fit-hoogezand",
+      "category": "Sportschool",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Heveapad 42, 9601 KX Hoogezand",
+      "phone": "0598 392 023",
+      "website": "https://www.247quantumfit.nl/sportschool-hoogezand/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/24%2F7+Fitness+centrum+Quantum+Fit+%7C+Hoogezand/data=!4m7!3m6!1s0x47c82af3f1b1c131:0x330ba1d5c013cf7!8m2!3d53.1621234!4d6.7537229!16s%2Fg%2F11b6gpq04h!19sChIJMcGx8fMqyEcR9zwBXB26MAM?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T16:55:06.710Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T16:55:10.527Z"
+    },
+    {
+      "name": "Massagepraktijk Groningen",
+      "slug": "massagepraktijk-groningen",
+      "category": "Massagetherapeut",
+      "rating": null,
+      "reviewsCount": 0,
+      "address": "Centaurstraat 17, 9742 PM Groningen",
+      "phone": "06 54654770",
+      "website": "https://www.massagepraktijkgroningen.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Massagepraktijk+Groningen/@53.1616,6.7583,13z/data=!4m6!3m5!1s0x47c9cd4746f9ed23:0xbe00c3272e9bd484!8m2!3d53.2239295!4d6.5420184!16s%2Fg%2F1td_9yf8?entry=ttu&g_ep=EgoyMDI2MDkyNy4wIKXMDSoASAFQAw%3D%3D",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T17:24:56.469Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T17:24:56.537Z"
+    },
+    {
+      "name": "StayFit Personal Training",
+      "slug": "stayfit-personal-training",
+      "category": "Personal trainer",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "Werfkade 16B, 9601 LG Hoogezand",
+      "phone": "06 83537507",
+      "website": "https://stayfitpersonaltraining.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/StayFit+Personal+Training/data=!4m7!3m6!1s0x47c82b08ec86503d:0x56a85289e32b6e69!8m2!3d53.165662!4d6.7393412!16s%2Fg%2F11s76_th55!19sChIJPVCG7AgryEcRaW4r44lSqFY?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T17:55:03.006Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T17:55:10.679Z"
+    },
+    {
+      "name": "Uuldriks Personal Training",
+      "slug": "uuldriks-personal-training",
+      "category": "Personal trainer",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "A. Einsteinlaan 55, & 55a, 9615 TE Kolham",
+      "phone": "0598 232 008",
+      "website": "https://www.uuldrikspersonaltraining.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Uuldriks+Personal+Training/data=!4m7!3m6!1s0x47c82af3fa8d057d:0x50278eb55f354915!8m2!3d53.1693229!4d6.7488842!16s%2Fg%2F11dz51_fds!19sChIJfQWN-vMqyEcRFUk1X7WOJ1A?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T17:55:04.918Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T17:55:10.679Z"
+    },
+    {
+      "name": "GO4IT Sport- en Wellnessclub",
+      "slug": "go4it-sport-en-wellnessclub",
+      "category": "Sportschool",
+      "rating": 5,
+      "reviewsCount": 0,
+      "address": "9601, Heveapad, Hoogezand",
+      "phone": "06 29562666",
+      "website": "https://stayfitpersonaltraining.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/GO4IT+Sport-+en+Wellnessclub/data=!4m7!3m6!1s0x47c82af3920fff91:0x13cc85f24972d2dd!8m2!3d53.1622286!4d6.7547588!16s%2Fg%2F11f59146xg!19sChIJkf8PkvMqyEcR3dJySfKFzBM?authuser=0&hl=nl&g_ep=EgoyMDI2MDkyNy4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-09-29T17:55:10.620Z",
+      "status": "skipped_has_website",
+      "processedAt": "2026-09-29T17:55:10.679Z"
     }
   ]
 }

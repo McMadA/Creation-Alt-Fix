@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **51 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **37 Tasks (74%)**                       |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **52 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **37 Tasks (71%)**                       |
 | **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (10%)**                        |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **8 Tasks (16%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **9 Tasks (17%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░] 74% Complete (5 In Progress, 8 in Queue)`
+`[██████████████████░░░░░░] 71% Complete (5 In Progress, 9 in Queue)`
 
 ---
 
@@ -44,12 +44,14 @@
 
 ### 📋 2. Systeem- & Klantproject Deliverables (Queue)
 
+- [ ] `[TASK-902]` `[P1-HIGH]` `[STATUS: BACKLOG]` **CRM Blijft in het Bestaande Systeem & Frictieloze Concept-naar-Klant Opleverflow**
+  - **Scope**: `crm/status/`, `crm/admin/`, `website/concept/`, `factory/generator/agy-generator.js`, WhatsApp/SMS/Mail Oplevering & Portaal
+  - **Tasks**: Nagaan en optimaliseren van de laagdrempelige klantflow: (1) **Geen ingewikkelde externe dashboards**: Traditionele vakmannen (schilders, installateurs, hoveniers) communiceren via hun vertrouwde gewoontes: WhatsApp, SMS en e-mail; (2) **Direct in het bestaande portaal (`https://portal.creationaltfix.nl/status/`)**: De klant hoeft vooraf geen nieuw account aan te maken, opent direct zijn eigen statuspagina, ziet Allard's contactgegevens, volgt de 4 fasen en accordeert de offerte met 1 vinger op zijn smartphonescherm; (3) **Centraal beheer via bestaand dashboard**: Allard beheert alles via `crm/admin/` gekoppeld aan de lokale administratie en Pi-Boekhouding; (4) **Concept Opleverflow**: Zodra een concept klaar is (`/concept/[slug]/`), ontvangt de gebruiker een persoonlijk bericht met daarin een directe link en kunnen ze bellen, mailen of appen op akkoord; (5) **Gefaseerde Accountcreatie**: Pas ná akkoord (of indien nodig voor facturatie/contracten) ontvangt de klant desgewenst alsnog een account.
+
 - [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
   - **Scope**: Klantproject Justin
   - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
   - **Status Note**: Lead wordt verzonden zodra het CRM portaal 100% geverifieerd en beproefd is.
-
-
 
 - [ ] `[TASK-819]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2**
   - **Scope**: `pomppop/functions/index.js`, `pomppop/functions/package.json`, Vimexx SMTP, Cloud Functions v2
@@ -268,7 +270,7 @@
 
 - [x] `[TASK-817]` `[P2-HIGH]` `[STATUS: DONE]` **Angela Stenekes & Stenekes Rioolspecialist 2027 Klantafstemming: Nieuw Abonnement Geaccepteerd (€ 95,- Trouwe Klant Tarief)**
   - **Scope**: Klantprojecten Angela Stenekes (`angelastenekes.nl`) & Stenekes Rioolspecialist (`stenekesrioolspecialist.nl`), `crm/status/`, `crm/admin/`
-  - **Details**: Zowel Angela Stenekes (De Knipperij) als Klaas Stenekes (Stenekes Riool & Grondwerk) hebben op 08-10-2026 officieel akkoord gegeven op het nieuwe 2027 abonnement: het Trouwe Klant Overgangstarief van **€ 95,- excl. BTW per jaar** (ter vervanging van het eerdere kosteloze/margeloze budgettarief van € 22,-/jr; per 2028 standaard € 150,-/jr). Inclusief NVMe Cloud Hosting, SSL-certificaat, tot 5 zakelijke mailboxen, 24/7 uptime-monitoring en 30 min. service per jaar. Beide dossiers zijn definitief geregistreerd als `bevestigd` in het CRM administratie- en migratiedashboard.
+  - **Details**: Zowel Angela Stenekes (De Knipperij) als Jozua Stenekes (Stenekes Riool & Grondwerk) hebben op 08-10-2026 officieel akkoord gegeven op het nieuwe 2027 abonnement: het Trouwe Klant Overgangstarief van **€ 95,- excl. BTW per jaar** (ter vervanging van het eerdere kosteloze/margeloze budgettarief van € 22,-/jr; per 2028 standaard € 150,-/jr). Inclusief NVMe Cloud Hosting, SSL-certificaat, tot 5 zakelijke mailboxen, 24/7 uptime-monitoring en 30 min. service per jaar. Beide dossiers zijn definitief geregistreerd als `bevestigd` in het CRM administratie- en migratiedashboard.
 
 - [x] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: DONE]` **Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering**
   - **Scope**: `scripts/backup-vimexx-server.ps1`, `scripts/backup-hub-gui.ps1`, `scripts/setup-auto-vimexx-backup.ps1`, `scripts/create-desktop-shortcut.ps1`, `scripts/README-BACKUP.md`, `C:\Users\Admin\Desktop\`, `.gitignore`
@@ -322,3 +324,15 @@
   - **Scope**: `crm/js/uptime-monitor.js`, WhatsApp Business API / Webhooks, SMS of Push notificaties
   - **Details**: Automatische instant WhatsApp- of Push-notificatie naar Allard wanneer een gehost domein offline gaat of DNS SERVFAIL vertoont, inclusief incidentdetails (statuscode, responsetijd) en directe beheerderslink. Voor latere sprint gepland.
 
+---
+
+### 🚀 EPIC-11: Lead Factory & Sovereign CRM Human-First Hybride
+
+- [ ] `[TASK-902]` `[P1-HIGH]` `[STATUS: BACKLOG]` **CRM Blijft in het Bestaande Systeem & Frictieloze Concept-naar-Klant Opleverflow**
+  - **Scope**: `crm/status/`, `crm/admin/`, `website/concept/`, `factory/generator/agy-generator.js`, WhatsApp/SMS/Mail Oplevering & Portaal
+  - **Details**: Nagaan en optimaliseren van de laagdrempelige klantflow:
+    - **Geen ingewikkelde externe dashboards**: De traditionele vakman blijft communiceren via zijn eigen gewoontes: WhatsApp, SMS en e-mail.
+    - **Direct in het bestaande portaal (`https://portal.creationaltfix.nl/status/`)**: De klant hoeft geen nieuw account aan te maken, maar opent direct zijn eigen statuspagina, ziet Allard's contactgegevens, volgt de 4 fasen en accordeert de offerte met 1 vinger op zijn smartphonescherm.
+    - **Allard beheert alles centraal**: Via het bestaande dashboard (`crm/admin/`) gekoppeld aan de lokale administratie (Pi-Boekhouding).
+    - **Concept Opleverflow**: Zodra een concept klaar is, ontvangt de gebruiker een bericht met daarin een link (`/concept/[slug]/`) en kunnen ze bellen, mailen of appen op akkoord.
+    - **Gefaseerd account indien nodig**: Pas na akkoord (of indien vereist voor officiële facturen, SLA-ondertekening of bestandsbeheer) krijgen ze alsnog een account.

@@ -1,10 +1,73 @@
 {
-  "updatedAt": "2026-09-29T18:21:24.256Z",
-  "totalScanned": 47,
-  "totalQualified": 7,
-  "totalGenerated": 7,
+  "updatedAt": "2026-10-08T23:50:59.804Z",
+  "totalScanned": 52,
+  "totalQualified": 8,
+  "totalGenerated": 8,
   "totalSent": 0,
   "leads": [
+    {
+      "id": "lead_1791503459803_heinkens-daktechniek",
+      "name": "Heinkens Daktechniek",
+      "slug": "heinkens-daktechniek",
+      "category": "Dakdekker",
+      "rating": 4.8,
+      "reviewsCount": 0,
+      "address": "Burgemeester van Roijenstraat Oost 242, 9602 CP Hoogezand",
+      "phone": "06 15424189",
+      "website": "http://heinkensdaktechniek.nl/",
+      "reviews": [],
+      "googleMapsUrl": "https://www.google.com/maps/place/Heinkens+Daktechniek/data=!4m7!3m6!1s0xa4822fc2cb6e5c9b:0xa1c29f6a5e1328b4!8m2!3d53.1574307!4d6.7324187!16s%2Fg%2F11lcwf74wh!19sChIJm1xuy8IvgqQRtCgTXmqfwqE?authuser=0&hl=nl&g_ep=EgoyMDI2MTAwNi4wIJJjKgBIAVAD&rclk=1",
+      "hasWebsite": true,
+      "scannedAt": "2026-10-08T23:49:31.834Z",
+      "httpNotice": "Verouderde/onveilige HTTP-verbinding (geen SSL-certificaat)",
+      "normalizedPhone": "0615424189",
+      "whatsAppNumber": "31615424189",
+      "hasWhatsApp": true,
+      "score": 95,
+      "archetype": "C_MODERNISATION",
+      "archetypeLabel": "Website Modernisatie & SSL Beveiliging",
+      "pitchHook": "We zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.",
+      "strengths": [
+        "Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje",
+        "Uitstekende Google reputatie (4.8 sterren over 0 reviews)",
+        "Direct telefonisch bereikbaar (06 15424189)"
+      ],
+      "recommendedDomain": "heinkens-daktechniek.nl",
+      "email": "info@heinkensdaktechniek.nl",
+      "suggestedServices": [
+        {
+          "title": "Vakmanschap op Maat",
+          "desc": "Persoonlijke aandacht en professionele uitvoering volgens afspraak."
+        },
+        {
+          "title": "Snelle & Duidelijke Communicatie",
+          "desc": "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen."
+        },
+        {
+          "title": "Regionale Service in Groningen",
+          "desc": "Lokale betrokkenheid en flexibele service in en rondom Hoogezand."
+        },
+        {
+          "title": "Garantie op Kwaliteit",
+          "desc": "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat."
+        }
+      ],
+      "status": "concept_ready",
+      "liveUrl": "https://creationaltfix.nl/concept/heinkens-daktechniek/",
+      "deployMode": "ftp_deployed",
+      "pitch": {
+        "subject": "Veilige mobiele website-update voor Heinkens Daktechniek (concept)",
+        "bodyHtml": "<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; color: #1e293b; line-height: 1.7; font-size: 15px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;\">\n\n  <!-- Header Banner -->\n  <div style=\"background: linear-gradient(135deg, #0F172A, #1E3A5F); padding: 24px 28px; text-align: center;\">\n    <p style=\"color: #94A3B8; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;\">Creation+Alt+Fix · Hoogezand</p>\n    <h2 style=\"color: #F8FAFC; margin: 0; font-size: 1.4rem; font-weight: 700;\">Vrijblijvend Concept voor Heinkens Daktechniek</h2>\n    <p style=\"color: #38BDF8; font-size: 0.9rem; margin: 8px 0 0;\">✨ Al klaar en direct te bekijken op je telefoon</p>\n  </div>\n\n  <!-- Body -->\n  <div style=\"padding: 28px 32px;\">\n    <p style=\"font-size: 16px; margin-top: 0;\">Beste Heinkens Daktechniek,</p>\n\n    <p>We zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.</p>\n\n    <p>Mijn naam is <strong>Allard Veldman</strong> en ik run <strong>Creation+Alt+Fix</strong> vanuit Hoogezand. Ik help lokale ZZP'ers en kleine bedrijven in Groningen en Drenthe aan een professionele online aanwezigheid die écht werkt op mobiel — snel, duidelijk, en met directe contactknoppen zodat klanten met één klik kunnen bellen of appen.</p>\n\n    <p>Ik heb alvast <strong>gratis en vrijblijvend</strong> een compleet, werkend concept voor je gebouwd. Geen template-rommel, maar een website specifiek voor <strong>Heinkens Daktechniek</strong> — inclusief jouw Dakdekker, contactgegevens en je Google beoordeling van <strong>★★★★★ 4.8/5</strong> (geverifieerde Google beoordeling).</p>\n\n    <!-- CTA Knop -->\n    <div style=\"margin: 30px 0; text-align: center;\">\n      <a href=\"https://creationaltfix.nl/concept/heinkens-daktechniek/\" style=\"background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); font-size: 1rem;\">\n        👉 Bekijk hier jouw Concept Website\n      </a>\n      <p style=\"font-size: 12px; color: #64748b; margin: 10px 0 0;\">Werkt direct op je telefoon of laptop • Geen login nodig</p>\n    </div>\n\n    <!-- Wat zit erin -->\n    <p style=\"margin-bottom: 10px;\"><strong>Wat zit er al in dit concept voor Heinkens Daktechniek:</strong></p>\n    <ul style=\"padding-left: 20px; line-height: 2; margin-bottom: 20px;\">\n      \n    <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>\n    <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>\n    <li><strong>Jouw Google reviews:</strong> (4.8 sterren) direct zichtbaar</li>\n    <li><strong>Direct contact:</strong> Klanten kunnen met 1 klik bellen of een WhatsApp sturen</li>\n      <li><strong>Professionele uitstraling:</strong> Responsive design dat op elk scherm perfect werkt</li>\n      <li><strong>LocalBusiness SEO:</strong> Google-geoptimaliseerde metadata voor betere lokale vindbaarheid</li>\n    </ul>\n\n    <!-- Prijsblok -->\n    <div style=\"background: #F0F9FF; border: 1px solid #BAE6FD; border-left: 5px solid #2563EB; padding: 18px 20px; border-radius: 8px; margin: 24px 0;\">\n      <p style=\"font-size: 1rem; font-weight: 700; color: #0F172A; margin: 0 0 12px;\">💶 Transparant over de investering</p>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 0.92rem;\">\n        <tr>\n          <td style=\"padding: 6px 0; vertical-align: top; width: 55%;\"><strong>Website realisatie</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">Eenmalig, volledig op maat</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #2563EB; font-size: 1.1rem;\">v.a. € 199,-</td>\n        </tr>\n        <tr style=\"border-top: 1px solid #CBD5E1;\">\n          <td style=\"padding: 6px 0; vertical-align: top;\"><strong>Managed Hosting All-in</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">Domein heinkens-daktechniek.nl, SSL, 5 mailboxen, back-ups, 30 min service/jaar</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #2563EB; font-size: 1.1rem;\">€ 150,- / jaar</td>\n        </tr>\n        <tr style=\"border-top: 1px solid #CBD5E1;\">\n          <td style=\"padding: 6px 0; vertical-align: top;\"><strong>Persoonlijk Klantenportaal</strong><br><span style=\"color: #64748b; font-size: 0.85rem;\">portal.creationaltfix.nl voor live feedback & revisies</span></td>\n          <td style=\"padding: 6px 0; text-align: right; font-weight: 700; color: #10B981;\">Gratis inbegrepen</td>\n        </tr>\n      </table>\n    </div>\n\n    <!-- Wat gebeurt er als je ja zegt -->\n    <p style=\"font-weight: 600; margin-bottom: 8px;\">🚀 Wat ik doe als je akkoord geeft:</p>\n    <ol style=\"padding-left: 20px; line-height: 1.9; color: #334155; margin-bottom: 20px;\">\n      <li>Ik pas het concept aan met jouw eigen foto's, tekst en bedrijfsinfo</li>\n      <li>Jouw domeinnaam (<em>heinkens-daktechniek.nl</em>) wordt geregistreerd en gekoppeld</li>\n      <li>De website staat binnen <strong>24 uur live</strong> — klaar voor echte klanten</li>\n      <li>Jij krijgt toegang tot jouw eigen klantenportaal voor verdere aanpassingen</li>\n    </ol>\n\n    <p>Heb je vragen? Geen probleem — bel of app me gerust, dan kijken we er samen naar. Geen verplichtingen, gewoon eerlijk overleggen wat het beste past bij Heinkens Daktechniek.</p>\n\n    <!-- Afsluitende CTA -->\n    <div style=\"background: #F8FAFC; border-radius: 8px; padding: 16px 20px; margin: 24px 0; display: flex; align-items: center; gap: 12px;\">\n      <p style=\"margin: 0; font-size: 0.9rem; color: #475569;\">📞 Liever even bellen of appen? <strong><a href=\"tel:+31619135453\" style=\"color: #2563EB; text-decoration: none;\">06 - 19 13 54 53</a></strong> (WhatsApp ook welkom!)</p>\n    </div>\n\n    <p style=\"margin-top: 28px; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #334155;\">\n      Met vriendelijke groet,<br><br>\n      <strong>Allard Veldman</strong><br>\n      <em>Oprichter Creation+Alt+Fix</em><br><br>\n      <span style=\"font-size: 13px; color: #64748b;\">\n        Hoogezand (Groningen) • KVK: 99986191 • Tel: +31 6 19135453<br>\n        <a href=\"https://creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">creationaltfix.nl</a> • <a href=\"mailto:info@creationaltfix.nl\" style=\"color: #2563EB; text-decoration: none;\">info@creationaltfix.nl</a>\n      </span>\n    </p>\n\n    <p style=\"margin-top: 20px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 14px; line-height: 1.5;\">\n      <em>Dit is een eenmalig vrijblijvend aanbod op basis van jouw Google Maps vermelding. Geen interesse of liever geen berichten meer? Reageer even met 'geen interesse' — dan verwijderen wij jouw gegevens direct en definitief conform <strong>art. 21 AVG</strong> (Recht van bezwaar).</em>\n    </p>\n  </div>\n</div>",
+        "bodyPlain": "Beste Heinkens Daktechniek,\n\nWe zagen jouw vermelding voor Heinkens Daktechniek op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.\n\nMijn naam is Allard Veldman van Creation+Alt+Fix uit Hoogezand. Ik help lokale ZZP'ers en kleine bedrijven in Groningen en Drenthe aan een professionele, goed vindbare website die echt werkt op mobiel.\n\nIk heb gratis en vrijblijvend een compleet concept gebouwd speciaal voor Heinkens Daktechniek. Geen standaard template — een website toegespitst op jouw branche (Dakdekker) met directe contactknoppen en jouw Google-informatie.\n\n👉 Bekijk jouw concept website hier:\nhttps://creationaltfix.nl/concept/heinkens-daktechniek/\n\n(Werkt direct op je telefoon — geen login nodig)\n\n\nWat zit er al in dit concept:\n\n- Direct beveiligd met SSL (HTTPS): Geen 'Niet beveiligd' melding meer in Google Chrome\n- Supersnel en perfect werkend op smartphones\n- Jouw Google reviews (4.8 sterren) netjes uitgelicht\n- Direct bellen & WhatsApp knop voor potentiële klanten\n- Professionele uitstraling die goed werkt op elk scherm\n- LocalBusiness SEO voor betere vindbaarheid op Google\n\n\nTransparant over de investering (geen kleine lettertjes):\n\n  Website realisatie:         v.a. € 199,- (eenmalig excl. BTW)\n  Managed Hosting All-in:     € 150,- per jaar (~€ 12,50/mnd)\n    Inclusief: domeinnaam heinkens-daktechniek.nl, SSL-slotje, 5 zakelijke mailboxen,\n              dagelijkse back-ups en 30 minuten gratis service per jaar.\n  Klantenportaal:             Gratis inbegrepen\n    (portal.creationaltfix.nl voor live feedback en revisies)\n\n\nWat ik doe als je akkoord geeft:\n\n  1. Ik pas het concept aan met jouw foto's, tekst en info\n  2. Ik registreer jouw domeinnaam (heinkens-daktechniek.nl)\n  3. De website staat binnen 24 uur live\n  4. Jij krijgt toegang tot jouw eigen klantenportaal\n\n\nVragen? Gewoon bellen of appen:\n06 - 19 13 54 53 (WhatsApp ook welkom!)\nOf antwoord op deze e-mail.\n\nMet vriendelijke groet,\n\nAllard Veldman\nOprichter Creation+Alt+Fix\nHoogezand (Groningen)\nKVK: 99986191 | Tel: +31 6 19135453\ninfo@creationaltfix.nl | https://creationaltfix.nl\n\n---\nGeen interesse of liever geen berichten meer? Reageer even met 'geen interesse' — dan verwijderen wij jouw gegevens direct en definitief conform art. 21 AVG (Recht van bezwaar).",
+        "whatsAppText": "Hoi Heinkens Daktechniek! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: https://creationaltfix.nl/concept/heinkens-daktechniek/ - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!",
+        "conceptUrl": "https://creationaltfix.nl/concept/heinkens-daktechniek/",
+        "archetype": "C_MODERNISATION",
+        "archetypeLabel": "Website Modernisatie & SSL Beveiliging"
+      },
+      "createdAt": "2026-10-08T23:50:59.803Z",
+      "reviewedAt": null,
+      "sentAt": null
+    },
     {
       "id": "lead_1790706084255_de-vakman-dennis-dijkema",
       "name": "De Vakman Dennis Dijkema",

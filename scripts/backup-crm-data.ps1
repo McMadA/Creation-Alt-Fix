@@ -36,7 +36,8 @@ if ((-not $Email -or -not $Password) -and (Test-Path $secureCredsFile)) {
         $secCred = Import-Clixml -Path $secureCredsFile
         $Email = $secCred.UserName
         $Password = $secCred.GetNetworkCredential().Password
-    } catch { }
+    }
+    catch { }
 }
 
 if ((-not $Email -or -not $Password) -and (Test-Path $credentialsFile)) {
@@ -46,7 +47,8 @@ if ((-not $Email -or -not $Password) -and (Test-Path $credentialsFile)) {
             $Email = $jsonCreds.Email
             $Password = $jsonCreds.Password
         }
-    } catch { }
+    }
+    catch { }
 }
 
 $isLive = $false
@@ -57,8 +59,8 @@ if ($Email -and $Password) {
     try {
         $authUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey"
         $authBody = @{
-            email = $Email
-            password = $Password
+            email             = $Email
+            password          = $Password
             returnSecureToken = $true
         } | ConvertTo-Json
 
@@ -119,31 +121,32 @@ if ($Email -and $Password) {
                     $updatedDate = if ($f.updatedAt.stringValue) { $f.updatedAt.stringValue } else { (Get-Date).ToString("dd-MM-yyyy") }
                     
                     $projects += [PSCustomObject]@{
-                        Id = $docId
-                        Klantnaam = $client
-                        Bedrijfsnaam = $company
-                        Contactpersoon = $contact
-                        Email = $emailVal
-                        Telefoon = $phoneVal
-                        Domeinnaam = $domainVal
-                        Dienst = $serviceVal
-                        Categorie = $categoryVal
-                        Fase = $faseTag
-                        Status = $statusVal
-                        OfferteExclBTW = $priceClean
-                        OfferteInclBTW = $numWithVat
-                        DoelenEnScope = $goalsVal
-                        DesignThema = $designVal
-                        VoltooideTaken = $doneTasks
+                        Id               = $docId
+                        Klantnaam        = $client
+                        Bedrijfsnaam     = $company
+                        Contactpersoon   = $contact
+                        Email            = $emailVal
+                        Telefoon         = $phoneVal
+                        Domeinnaam       = $domainVal
+                        Dienst           = $serviceVal
+                        Categorie        = $categoryVal
+                        Fase             = $faseTag
+                        Status           = $statusVal
+                        OfferteExclBTW   = $priceClean
+                        OfferteInclBTW   = $numWithVat
+                        DoelenEnScope    = $goalsVal
+                        DesignThema      = $designVal
+                        VoltooideTaken   = $doneTasks
                         OpenstaandeTaken = $openTasks
-                        TotaleTaken = $totalTasks
-                        DatumAangemaakt = $createdDate
-                        LaatsteUpdate = $updatedDate
+                        TotaleTaken      = $totalTasks
+                        DatumAangemaakt  = $createdDate
+                        LaatsteUpdate    = $updatedDate
                     }
                 }
             }
         }
-    } catch {
+    }
+    catch {
         if (-not $Quiet) {
             Write-Host "  [INFO] Live Firestore query niet beschikbaar ($($_.Exception.Message)). Gebruikt actuele projectdatabase." -ForegroundColor Yellow
         }
@@ -154,378 +157,378 @@ if ($Email -and $Password) {
 if ($projects.Count -eq 0) {
     $projects = @(
         [PSCustomObject]@{
-            Id = "1"
-            Klantnaam = "Besseling Installatietechniek"
-            Bedrijfsnaam = "Besseling Installatietechniek"
-            Contactpersoon = "Maico Besseling"
-            Email = "info@besselinginstallatietechniek.nl"
-            Telefoon = "+31 6 51234567"
-            Domeinnaam = "besselinginstallatietechniek.nl"
-            Dienst = "Installatie & Elektra Website"
-            Categorie = "MKB Website"
-            Fase = "Fase 3: Design & Ontwerp"
-            Status = "Design & Ontwerp"
-            OfferteExclBTW = "850,00"
-            OfferteInclBTW = "1028,50"
-            DoelenEnScope = "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra met foto showcase en Google Analytics."
-            DesignThema = "Modern, fris wit met blauw/oranje accenten."
-            VoltooideTaken = 4
+            Id               = "1"
+            Klantnaam        = "Besseling Installatietechniek"
+            Bedrijfsnaam     = "Besseling Installatietechniek"
+            Contactpersoon   = "Maico Besseling"
+            Email            = "info@besselinginstallatietechniek.nl"
+            Telefoon         = "+31 6 51234567"
+            Domeinnaam       = "besselinginstallatietechniek.nl"
+            Dienst           = "Installatie & Elektra Website"
+            Categorie        = "MKB Website"
+            Fase             = "Fase 3: Design & Ontwerp"
+            Status           = "Design & Ontwerp"
+            OfferteExclBTW   = "850,00"
+            OfferteInclBTW   = "1028,50"
+            DoelenEnScope    = "Professionele website voor loodgieterswerk, cv-ketels, warmtepompen en elektra met foto showcase en Google Analytics."
+            DesignThema      = "Modern, fris wit met blauw/oranje accenten."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 4
-            TotaleTaken = 8
-            DatumAangemaakt = "20-08-2026"
-            LaatsteUpdate = "25-08-2026"
+            TotaleTaken      = 8
+            DatumAangemaakt  = "20-08-2026"
+            LaatsteUpdate    = "25-08-2026"
         },
         [PSCustomObject]@{
-            Id = "2"
-            Klantnaam = "VAN DER PLAATS (Gerard Klusser)"
-            Bedrijfsnaam = "VAN DER PLAATS"
-            Contactpersoon = "Gerard van der Plaats"
-            Email = "vanderplaats2@gmail.com"
-            Telefoon = "+31 6 12104850"
-            Domeinnaam = "vanderplaats.nl"
-            Dienst = "Website & Klusbedrijf Formulier Backend"
-            Categorie = "MKB Website & Formulier"
-            Fase = "Fase 4: In Ontwikkeling"
-            Status = "In Ontwikkeling"
-            OfferteExclBTW = "650,00"
-            OfferteInclBTW = "786,50"
-            DoelenEnScope = "Professionele klusbedrijf website met contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (KvK: 98527339)."
-            DesignThema = "Robuust, betrouwbaar, modern klusbedrijf thema."
-            VoltooideTaken = 0
+            Id               = "2"
+            Klantnaam        = "VAN DER PLAATS (Gerard Klusser)"
+            Bedrijfsnaam     = "VAN DER PLAATS"
+            Contactpersoon   = "Gerard van der Plaats"
+            Email            = "vanderplaats2@gmail.com"
+            Telefoon         = "+31 6 12104850"
+            Domeinnaam       = "vanderplaats.nl"
+            Dienst           = "Website & Klusbedrijf Formulier Backend"
+            Categorie        = "MKB Website & Formulier"
+            Fase             = "Fase 4: In Ontwikkeling"
+            Status           = "In Ontwikkeling"
+            OfferteExclBTW   = "650,00"
+            OfferteInclBTW   = "786,50"
+            DoelenEnScope    = "Professionele klusbedrijf website met contact- en offerteformulier dat veilig e-mails verzendt naar vanderplaats2@gmail.com (KvK: 98527339)."
+            DesignThema      = "Robuust, betrouwbaar, modern klusbedrijf thema."
+            VoltooideTaken   = 0
             OpenstaandeTaken = 1
-            TotaleTaken = 1
-            DatumAangemaakt = "24-08-2026"
-            LaatsteUpdate = "26-08-2026"
+            TotaleTaken      = 1
+            DatumAangemaakt  = "24-08-2026"
+            LaatsteUpdate    = "26-08-2026"
         },
         [PSCustomObject]@{
-            Id = "3"
-            Klantnaam = "F-Truck Store"
-            Bedrijfsnaam = "F-Truck Store (ftruckstore.nl)"
-            Contactpersoon = "F-Truck Store Beheer"
-            Email = "info@ftruckstore.nl"
-            Telefoon = "+31 6 56789012"
-            Domeinnaam = "ftruckstore.nl / ftruckstore.com"
-            Dienst = "Ford Trucks Platform & Webshop Migratie"
-            Categorie = "Managed Hosting & E-Commerce"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "1250,00"
-            OfferteInclBTW = "1512,50"
-            DoelenEnScope = "Bestaande webshop en platform voor Ford F-Series trucks en onderdelen gemigreerd naar managed hostingomgeving met zero-downtime DNS."
-            DesignThema = "Bestaand webshop design behouden."
-            VoltooideTaken = 5
+            Id               = "3"
+            Klantnaam        = "F-Truck Store"
+            Bedrijfsnaam     = "F-Truck Store (ftruckstore.nl)"
+            Contactpersoon   = "F-Truck Store Beheer"
+            Email            = "info@ftruckstore.nl"
+            Telefoon         = "+31 6 56789012"
+            Domeinnaam       = "ftruckstore.nl / ftruckstore.com"
+            Dienst           = "Ford Trucks Platform & Webshop Migratie"
+            Categorie        = "Managed Hosting & E-Commerce"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "1250,00"
+            OfferteInclBTW   = "1512,50"
+            DoelenEnScope    = "Bestaande webshop en platform voor Ford F-Series trucks en onderdelen gemigreerd naar managed hostingomgeving met zero-downtime DNS."
+            DesignThema      = "Bestaand webshop design behouden."
+            VoltooideTaken   = 5
             OpenstaandeTaken = 1
-            TotaleTaken = 6
-            DatumAangemaakt = "22-08-2026"
-            LaatsteUpdate = "25-08-2026"
+            TotaleTaken      = 6
+            DatumAangemaakt  = "22-08-2026"
+            LaatsteUpdate    = "25-08-2026"
         },
         [PSCustomObject]@{
-            Id = "4"
-            Klantnaam = "Justin"
-            Bedrijfsnaam = "Justin Web Projects"
-            Contactpersoon = "Justin"
-            Email = "contact@justin.nl"
-            Telefoon = "+31 6 67890123"
-            Domeinnaam = "justin.nl"
-            Dienst = "Custom Webapplicatie & Prototype"
-            Categorie = "Webapplicatie"
-            Fase = "Fase 1: Intake Voltooid"
-            Status = "Nieuwe Lead"
-            OfferteExclBTW = "750,00"
-            OfferteInclBTW = "907,50"
-            DoelenEnScope = "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen."
-            DesignThema = "Dark AI modern, strak, interactief."
-            VoltooideTaken = 0
+            Id               = "4"
+            Klantnaam        = "Justin"
+            Bedrijfsnaam     = "Justin Web Projects"
+            Contactpersoon   = "Justin"
+            Email            = "contact@justin.nl"
+            Telefoon         = "+31 6 67890123"
+            Domeinnaam       = "justin.nl"
+            Dienst           = "Custom Webapplicatie & Prototype"
+            Categorie        = "Webapplicatie"
+            Fase             = "Fase 1: Intake Voltooid"
+            Status           = "Nieuwe Lead"
+            OfferteExclBTW   = "750,00"
+            OfferteInclBTW   = "907,50"
+            DoelenEnScope    = "Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten en offerte opstellen."
+            DesignThema      = "Dark AI modern, strak, interactief."
+            VoltooideTaken   = 0
             OpenstaandeTaken = 1
-            TotaleTaken = 1
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "27-08-2026"
+            TotaleTaken      = 1
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "27-08-2026"
         },
         [PSCustomObject]@{
-            Id = "5"
-            Klantnaam = "Arnold Doornbos (Arnold Design)"
-            Bedrijfsnaam = "Arnold Design"
-            Contactpersoon = "Arnold Doornbos"
-            Email = "arnolddesign2024@gmail.com"
-            Telefoon = "+31 6 23456789"
-            Domeinnaam = "arnolddesign.nl"
-            Dienst = "Kunstenaarsportfolio & AI Protect"
-            Categorie = "Portfolio & AI Shield"
-            Fase = "Fase 3: Design & Ontwerp"
-            Status = "Design & Ontwerp"
-            OfferteExclBTW = "850,00"
-            OfferteInclBTW = "1028,50"
-            DoelenEnScope = "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood met AI-scrape protectie."
-            DesignThema = "Eigentijds, donker atelier-thema, lichte glasaccenten."
-            VoltooideTaken = 1
+            Id               = "5"
+            Klantnaam        = "Arnold Doornbos (Arnold Design)"
+            Bedrijfsnaam     = "Arnold Design"
+            Contactpersoon   = "Arnold Doornbos"
+            Email            = "arnolddesign2024@gmail.com"
+            Telefoon         = "+31 6 23456789"
+            Domeinnaam       = "arnolddesign.nl"
+            Dienst           = "Kunstenaarsportfolio & AI Protect"
+            Categorie        = "Portfolio & AI Shield"
+            Fase             = "Fase 3: Design & Ontwerp"
+            Status           = "Design & Ontwerp"
+            OfferteExclBTW   = "850,00"
+            OfferteInclBTW   = "1028,50"
+            DoelenEnScope    = "Interactieve artist portfolio showcase voor grafisch ontwerp, typografie, portrettekeningen en monumentaal glas-in-lood met AI-scrape protectie."
+            DesignThema      = "Eigentijds, donker atelier-thema, lichte glasaccenten."
+            VoltooideTaken   = 1
             OpenstaandeTaken = 3
-            TotaleTaken = 4
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "25-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "25-08-2026"
         },
         [PSCustomObject]@{
-            Id = "6"
-            Klantnaam = "Creation+Alt+Fix (Hoofdwebsite)"
-            Bedrijfsnaam = "Creation+Alt+Fix"
-            Contactpersoon = "Allard Veldman"
-            Email = "info@creationaltfix.nl"
-            Telefoon = "+31 6 12345678"
-            Domeinnaam = "creationaltfix.nl"
-            Dienst = "Website & Portfolio Platform (Dark AI)"
-            Categorie = "Platform & Marketing"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "0,00"
-            OfferteInclBTW = "0,00"
-            DoelenEnScope = "Hoofdwebsite voor software support & AI-diensten met NL/EN vertaling, portfolio showcase van 13 projecten en Dark AI design."
-            DesignThema = "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie."
-            VoltooideTaken = 6
+            Id               = "6"
+            Klantnaam        = "Creation+Alt+Fix (Hoofdwebsite)"
+            Bedrijfsnaam     = "Creation+Alt+Fix"
+            Contactpersoon   = "Allard Veldman"
+            Email            = "info@creationaltfix.nl"
+            Telefoon         = "+31 6 12345678"
+            Domeinnaam       = "creationaltfix.nl"
+            Dienst           = "Website & Portfolio Platform (Dark AI)"
+            Categorie        = "Platform & Marketing"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "0,00"
+            OfferteInclBTW   = "0,00"
+            DoelenEnScope    = "Hoofdwebsite voor software support & AI-diensten met NL/EN vertaling, portfolio showcase van 13 projecten en Dark AI design."
+            DesignThema      = "Dark AI thema, glassmorphism borders, Space Grotesk / Inter typografie."
+            VoltooideTaken   = 6
             OpenstaandeTaken = 4
-            TotaleTaken = 10
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "28-08-2026"
+            TotaleTaken      = 10
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "28-08-2026"
         },
         [PSCustomObject]@{
-            Id = "7"
-            Klantnaam = "Creation+Alt+Fix (CRM & Portaal)"
-            Bedrijfsnaam = "Creation+Alt+Fix"
-            Contactpersoon = "Allard Veldman"
-            Email = "info@creationaltfix.nl"
-            Telefoon = "+31 6 12345678"
-            Domeinnaam = "portal.creationaltfix.nl"
-            Dienst = "Custom CRM & Klantenportaal Applicatie"
-            Categorie = "SaaS & Webapplicatie"
-            Fase = "Fase 4: In Ontwikkeling"
-            Status = "In Ontwikkeling"
-            OfferteExclBTW = "0,00"
-            OfferteInclBTW = "0,00"
-            DoelenEnScope = "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker, Kanban bord en digitale offerte flow."
-            DesignThema = "Full-screen dark workspace, responsive stat cards, Kanban kolommen."
-            VoltooideTaken = 18
+            Id               = "7"
+            Klantnaam        = "Creation+Alt+Fix (CRM & Portaal)"
+            Bedrijfsnaam     = "Creation+Alt+Fix"
+            Contactpersoon   = "Allard Veldman"
+            Email            = "info@creationaltfix.nl"
+            Telefoon         = "+31 6 12345678"
+            Domeinnaam       = "portal.creationaltfix.nl"
+            Dienst           = "Custom CRM & Klantenportaal Applicatie"
+            Categorie        = "SaaS & Webapplicatie"
+            Fase             = "Fase 4: In Ontwikkeling"
+            Status           = "In Ontwikkeling"
+            OfferteExclBTW   = "0,00"
+            OfferteInclBTW   = "0,00"
+            DoelenEnScope    = "Proprietary Vanilla JS CRM systeem met Firebase Auth, Firestore real-time database, live 5-fasen voortgangstracker, Kanban bord en digitale offerte flow."
+            DesignThema      = "Full-screen dark workspace, responsive stat cards, Kanban kolommen."
+            VoltooideTaken   = 18
             OpenstaandeTaken = 5
-            TotaleTaken = 23
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "28-08-2026"
+            TotaleTaken      = 23
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "28-08-2026"
         },
         [PSCustomObject]@{
-            Id = "8"
-            Klantnaam = "BakkertjeSieg"
-            Bedrijfsnaam = "BakkertjeSieg"
-            Contactpersoon = "Siegert"
-            Email = "bakkertjesieg@gmail.com"
-            Telefoon = "+31 6 45678901"
-            Domeinnaam = "bakkertjesieg.nl"
-            Dienst = "Bakkerij Webshop & Bestelsysteem"
-            Categorie = "E-Commerce & Bestellingen"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "750,00"
-            OfferteInclBTW = "907,50"
-            DoelenEnScope = "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen, contactformulier en nieuwsbrief MailerLite integratie."
-            DesignThema = "Warm, gastvrij, ambachtelijk."
-            VoltooideTaken = 12
+            Id               = "8"
+            Klantnaam        = "BakkertjeSieg"
+            Bedrijfsnaam     = "BakkertjeSieg"
+            Contactpersoon   = "Siegert"
+            Email            = "bakkertjesieg@gmail.com"
+            Telefoon         = "+31 6 45678901"
+            Domeinnaam       = "bakkertjesieg.nl"
+            Dienst           = "Bakkerij Webshop & Bestelsysteem"
+            Categorie        = "E-Commerce & Bestellingen"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "750,00"
+            OfferteInclBTW   = "907,50"
+            DoelenEnScope    = "Ambachtelijke bakkerij webshop met digitale downloads, iDEAL betalingen, contactformulier en nieuwsbrief MailerLite integratie."
+            DesignThema      = "Warm, gastvrij, ambachtelijk."
+            VoltooideTaken   = 12
             OpenstaandeTaken = 0
-            TotaleTaken = 12
-            DatumAangemaakt = "15-08-2026"
-            LaatsteUpdate = "25-08-2026"
+            TotaleTaken      = 12
+            DatumAangemaakt  = "15-08-2026"
+            LaatsteUpdate    = "25-08-2026"
         },
         [PSCustomObject]@{
-            Id = "9"
-            Klantnaam = "Angela Stenekes"
-            Bedrijfsnaam = "Angela Stenekes"
-            Contactpersoon = "Angela Stenekes"
-            Email = "contact@angelastenekes.nl"
-            Telefoon = "+31 6 34567890"
-            Domeinnaam = "angelastenekes.nl"
-            Dienst = "Website Laten Maken & Vibecoding"
-            Categorie = "Maatwerk Website"
-            Fase = "Fase 1: Intake Voltooid"
-            Status = "Nieuwe Lead"
-            OfferteExclBTW = "500,00"
-            OfferteInclBTW = "605,00"
-            DoelenEnScope = "Persoonlijke website en showcase portfolio. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026). Gratis redesign upgrade via klantenportaal."
-            DesignThema = "Stijlvol, minimalistisch, modern."
-            VoltooideTaken = 2
+            Id               = "9"
+            Klantnaam        = "Angela Stenekes"
+            Bedrijfsnaam     = "Angela Stenekes"
+            Contactpersoon   = "Angela Stenekes"
+            Email            = "contact@angelastenekes.nl"
+            Telefoon         = "+31 6 34567890"
+            Domeinnaam       = "angelastenekes.nl"
+            Dienst           = "Website Laten Maken & Vibecoding"
+            Categorie        = "Maatwerk Website"
+            Fase             = "Fase 1: Intake Voltooid"
+            Status           = "Nieuwe Lead"
+            OfferteExclBTW   = "500,00"
+            OfferteInclBTW   = "605,00"
+            DoelenEnScope    = "Persoonlijke website en showcase portfolio. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026). Gratis redesign upgrade via klantenportaal."
+            DesignThema      = "Stijlvol, minimalistisch, modern."
+            VoltooideTaken   = 2
             OpenstaandeTaken = 0
-            TotaleTaken = 2
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "08-10-2026"
+            TotaleTaken      = 2
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "08-10-2026"
         },
         [PSCustomObject]@{
-            Id = "10"
-            Klantnaam = "Capybara Culture"
-            Bedrijfsnaam = "Capybara Culture"
-            Contactpersoon = "Capybara Culture Team"
-            Email = "info@capybaraculture.com"
-            Telefoon = "+31 6 78901234"
-            Domeinnaam = "capybaraculture.com"
-            Dienst = "Community & Merchandise Platform"
-            Categorie = "E-Commerce & Community"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "450,00"
-            OfferteInclBTW = "544,50"
-            DoelenEnScope = "Webplatform voor internationale capybara community en merchandise webshop."
-            DesignThema = "Vrolijk, speels, modern."
-            VoltooideTaken = 4
+            Id               = "10"
+            Klantnaam        = "Capybara Culture"
+            Bedrijfsnaam     = "Capybara Culture"
+            Contactpersoon   = "Capybara Culture Team"
+            Email            = "info@capybaraculture.com"
+            Telefoon         = "+31 6 78901234"
+            Domeinnaam       = "capybaraculture.com"
+            Dienst           = "Community & Merchandise Platform"
+            Categorie        = "E-Commerce & Community"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "450,00"
+            OfferteInclBTW   = "544,50"
+            DoelenEnScope    = "Webplatform voor internationale capybara community en merchandise webshop."
+            DesignThema      = "Vrolijk, speels, modern."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "10-08-2026"
-            LaatsteUpdate = "20-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "10-08-2026"
+            LaatsteUpdate    = "20-08-2026"
         },
         [PSCustomObject]@{
-            Id = "11"
-            Klantnaam = "Naaiatelier Willa"
-            Bedrijfsnaam = "Naaiatelier Willa"
-            Contactpersoon = "Willa"
-            Email = "info@naaiatelier-willa.nl"
-            Telefoon = "+31 6 89012345"
-            Domeinnaam = "naaiatelier-willa.nl"
-            Dienst = "Kledingreparatie & Atelier Website"
-            Categorie = "MKB Website"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "500,00"
-            OfferteInclBTW = "605,00"
-            DoelenEnScope = "Eigentijdse website voor kledingreparaties, maatkleding en atelier diensten met prijslijst."
-            DesignThema = "Warm, elegant, ambachtelijk."
-            VoltooideTaken = 4
+            Id               = "11"
+            Klantnaam        = "Naaiatelier Willa"
+            Bedrijfsnaam     = "Naaiatelier Willa"
+            Contactpersoon   = "Willa"
+            Email            = "info@naaiatelier-willa.nl"
+            Telefoon         = "+31 6 89012345"
+            Domeinnaam       = "naaiatelier-willa.nl"
+            Dienst           = "Kledingreparatie & Atelier Website"
+            Categorie        = "MKB Website"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "500,00"
+            OfferteInclBTW   = "605,00"
+            DoelenEnScope    = "Eigentijdse website voor kledingreparaties, maatkleding en atelier diensten met prijslijst."
+            DesignThema      = "Warm, elegant, ambachtelijk."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "12-08-2026"
-            LaatsteUpdate = "22-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "12-08-2026"
+            LaatsteUpdate    = "22-08-2026"
         },
         [PSCustomObject]@{
-            Id = "12"
-            Klantnaam = "PompPop Festival"
-            Bedrijfsnaam = "Stichting PompPop"
-            Contactpersoon = "PompPop Organisatie"
-            Email = "info@pomppop.nl"
-            Telefoon = "+31 6 90123456"
-            Domeinnaam = "pomppop.nl"
-            Dienst = "Festival Website & Line-up Programma"
-            Categorie = "Evenementen Website"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "650,00"
-            OfferteInclBTW = "786,50"
-            DoelenEnScope = "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren en ticketlinks."
-            DesignThema = "Energiek, festival sfeer, donker met felle neon accenten."
-            VoltooideTaken = 4
+            Id               = "12"
+            Klantnaam        = "PompPop Festival"
+            Bedrijfsnaam     = "Stichting PompPop"
+            Contactpersoon   = "PompPop Organisatie"
+            Email            = "info@pomppop.nl"
+            Telefoon         = "+31 6 90123456"
+            Domeinnaam       = "pomppop.nl"
+            Dienst           = "Festival Website & Line-up Programma"
+            Categorie        = "Evenementen Website"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "650,00"
+            OfferteInclBTW   = "786,50"
+            DoelenEnScope    = "Muziekfestival website met dynamisch tijdschema, artiesten line-up, sponsoren en ticketlinks."
+            DesignThema      = "Energiek, festival sfeer, donker met felle neon accenten."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "18-08-2026"
-            LaatsteUpdate = "24-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "18-08-2026"
+            LaatsteUpdate    = "24-08-2026"
         },
         [PSCustomObject]@{
-            Id = "13"
-            Klantnaam = "Scholte Elektrotechniek"
-            Bedrijfsnaam = "Scholte Elektrotechniek"
-            Contactpersoon = "Scholte"
-            Email = "info@scholte-elektrotechniek.nl"
-            Telefoon = "+31 6 01234567"
-            Domeinnaam = "scholte-elektrotechniek.nl"
-            Dienst = "Elektrotechniek & Duurzaamheid Website"
-            Categorie = "MKB Website & Hosting"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "550,00"
-            OfferteInclBTW = "665,50"
-            DoelenEnScope = "Professionele website voor elektrotechnische installaties, meterkasten en zonnepanelen."
-            DesignThema = "Strak, betrouwbaar, blauw/grijs."
-            VoltooideTaken = 4
+            Id               = "13"
+            Klantnaam        = "Scholte Elektrotechniek"
+            Bedrijfsnaam     = "Scholte Elektrotechniek"
+            Contactpersoon   = "Scholte"
+            Email            = "info@scholte-elektrotechniek.nl"
+            Telefoon         = "+31 6 01234567"
+            Domeinnaam       = "scholte-elektrotechniek.nl"
+            Dienst           = "Elektrotechniek & Duurzaamheid Website"
+            Categorie        = "MKB Website & Hosting"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "550,00"
+            OfferteInclBTW   = "665,50"
+            DoelenEnScope    = "Professionele website voor elektrotechnische installaties, meterkasten en zonnepanelen."
+            DesignThema      = "Strak, betrouwbaar, blauw/grijs."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "05-08-2026"
-            LaatsteUpdate = "19-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "05-08-2026"
+            LaatsteUpdate    = "19-08-2026"
         },
         [PSCustomObject]@{
-            Id = "14"
-            Klantnaam = "Stenekes Riool & Grondwerk"
-            Bedrijfsnaam = "Stenekes Riool & Grondwerk"
-            Contactpersoon = "Klaas Stenekes"
-            Email = "info@stenekes-riool.nl"
-            Telefoon = "+31 6 12345679"
-            Domeinnaam = "stenekesrioolspecialist.nl / stenekes-riool.nl"
-            Dienst = "Website & Spoedservice Formulier"
-            Categorie = "MKB Website & SEO"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "850,00"
-            OfferteInclBTW = "1028,50"
-            DoelenEnScope = "Lokale vindbaarheid, spoedklus formulieren en Google Bedrijfsprofiel koppeling. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026)."
-            DesignThema = "Donker thema met fel gele accenten."
-            VoltooideTaken = 4
+            Id               = "14"
+            Klantnaam        = "Stenekes Riool & Grondwerk"
+            Bedrijfsnaam     = "Stenekes Riool & Grondwerk"
+            Contactpersoon   = "Jozua Stenekes"
+            Email            = "info@stenekes-riool.nl"
+            Telefoon         = "+31 6 12345679"
+            Domeinnaam       = "stenekesrioolspecialist.nl / stenekes-riool.nl"
+            Dienst           = "Website & Spoedservice Formulier"
+            Categorie        = "MKB Website & SEO"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "850,00"
+            OfferteInclBTW   = "1028,50"
+            DoelenEnScope    = "Lokale vindbaarheid, spoedklus formulieren en Google Bedrijfsprofiel koppeling. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026)."
+            DesignThema      = "Donker thema met fel gele accenten."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "08-08-2026"
-            LaatsteUpdate = "08-10-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "08-08-2026"
+            LaatsteUpdate    = "08-10-2026"
         },
         [PSCustomObject]@{
-            Id = "15"
-            Klantnaam = "Qolipa Webshop & Brand"
-            Bedrijfsnaam = "Qolipa"
-            Contactpersoon = "Qolipa Beheer"
-            Email = "info@qolipa.nl"
-            Telefoon = "+31 6 23456780"
-            Domeinnaam = "qolipa.nl / qolipa.com"
-            Dienst = "Brand Portfolio & Webshop"
-            Categorie = "E-Commerce & Branding"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "950,00"
-            OfferteInclBTW = "1149,50"
-            DoelenEnScope = "Merkpositionering en webshop integratie voor lifestyle producten."
-            DesignThema = "Luxe, minimalistisch, strak."
-            VoltooideTaken = 4
+            Id               = "15"
+            Klantnaam        = "Qolipa Webshop & Brand"
+            Bedrijfsnaam     = "Qolipa"
+            Contactpersoon   = "Qolipa Beheer"
+            Email            = "info@qolipa.nl"
+            Telefoon         = "+31 6 23456780"
+            Domeinnaam       = "qolipa.nl / qolipa.com"
+            Dienst           = "Brand Portfolio & Webshop"
+            Categorie        = "E-Commerce & Branding"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "950,00"
+            OfferteInclBTW   = "1149,50"
+            DoelenEnScope    = "Merkpositionering en webshop integratie voor lifestyle producten."
+            DesignThema      = "Luxe, minimalistisch, strak."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "02-08-2026"
-            LaatsteUpdate = "15-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "02-08-2026"
+            LaatsteUpdate    = "15-08-2026"
         },
         [PSCustomObject]@{
-            Id = "16"
-            Klantnaam = "Livian Design (Lianne Steinfelder)"
-            Bedrijfsnaam = "Livian Design"
-            Contactpersoon = "Lianne Steinfelder"
-            Email = "info@liviandesign.nl"
-            Telefoon = "+31 6 34567891"
-            Domeinnaam = "creationaltfix.nl/liviandesign/"
-            Dienst = "Interieurportfolio & Showcase"
-            Categorie = "Portfolio & Design"
-            Fase = "Fase 5: Opgeleverd (Livegang)"
-            Status = "Opgeleverd (Livegang)"
-            OfferteExclBTW = "50,00"
-            OfferteInclBTW = "60,50"
-            DoelenEnScope = "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794)."
-            DesignThema = "Stijlvol, minimalistisch, warm interieur design."
-            VoltooideTaken = 4
+            Id               = "16"
+            Klantnaam        = "Livian Design (Lianne Steinfelder)"
+            Bedrijfsnaam     = "Livian Design"
+            Contactpersoon   = "Lianne Steinfelder"
+            Email            = "info@liviandesign.nl"
+            Telefoon         = "+31 6 34567891"
+            Domeinnaam       = "creationaltfix.nl/liviandesign/"
+            Dienst           = "Interieurportfolio & Showcase"
+            Categorie        = "Portfolio & Design"
+            Fase             = "Fase 5: Opgeleverd (Livegang)"
+            Status           = "Opgeleverd (Livegang)"
+            OfferteExclBTW   = "50,00"
+            OfferteInclBTW   = "60,50"
+            DoelenEnScope    = "Portfolio-website voor interieurontwerp met projectshowcase, sfeerbeelden en contactformulier (KvK: 98849794)."
+            DesignThema      = "Stijlvol, minimalistisch, warm interieur design."
+            VoltooideTaken   = 4
             OpenstaandeTaken = 0
-            TotaleTaken = 4
-            DatumAangemaakt = "24-03-2026"
-            LaatsteUpdate = "24-03-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "24-03-2026"
+            LaatsteUpdate    = "24-03-2026"
         },
         [PSCustomObject]@{
-            Id = "17"
-            Klantnaam = "Home Buyer Intelligence (HBI)"
-            Bedrijfsnaam = "Home Buyer Intelligence"
-            Contactpersoon = "HBI Platform Beheer"
-            Email = "hbi@creationaltfix.nl"
-            Telefoon = "+31 6 12345678"
-            Domeinnaam = "hbi.creationaltfix.nl"
-            Dienst = "AI Vastgoed & Aankoop Analyse Platform"
-            Categorie = "AI Tooling & Cloud SaaS"
-            Fase = "Fase 4: In Ontwikkeling"
-            Status = "In Ontwikkeling"
-            OfferteExclBTW = "1200,00"
-            OfferteInclBTW = "1452,00"
-            DoelenEnScope = "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen."
-            DesignThema = "Modern data-dashboard thema met interactieve visualisaties."
-            VoltooideTaken = 3
+            Id               = "17"
+            Klantnaam        = "Home Buyer Intelligence (HBI)"
+            Bedrijfsnaam     = "Home Buyer Intelligence"
+            Contactpersoon   = "HBI Platform Beheer"
+            Email            = "hbi@creationaltfix.nl"
+            Telefoon         = "+31 6 12345678"
+            Domeinnaam       = "hbi.creationaltfix.nl"
+            Dienst           = "AI Vastgoed & Aankoop Analyse Platform"
+            Categorie        = "AI Tooling & Cloud SaaS"
+            Fase             = "Fase 4: In Ontwikkeling"
+            Status           = "In Ontwikkeling"
+            OfferteExclBTW   = "1200,00"
+            OfferteInclBTW   = "1452,00"
+            DoelenEnScope    = "Intelligent platform voor het analyseren van vastgoedkoopopties met AI, bouwkundige checklists en berekeningen."
+            DesignThema      = "Modern data-dashboard thema met interactieve visualisaties."
+            VoltooideTaken   = 3
             OpenstaandeTaken = 1
-            TotaleTaken = 4
-            DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "28-08-2026"
+            TotaleTaken      = 4
+            DatumAangemaakt  = "25-08-2026"
+            LaatsteUpdate    = "28-08-2026"
         }
     )
 }
@@ -590,7 +593,7 @@ $utf8BomEncoding = New-Object System.Text.UTF8Encoding $true
 # --- TIERED RETENTION POLICY: 30 Dagen Dagelijks -> 12 Maanden Maandelijks -> 1/Jaar ---
 function Apply-TieredRetentionPolicy {
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$TargetDir,
         [string]$Filter = "*.csv"
     )
@@ -613,7 +616,8 @@ function Apply-TieredRetentionPolicy {
         if ($item.Name -match "(\d{4})[-_](\d{2})[-_](\d{2})") {
             try {
                 $itemDate = [datetime]::new([int]$matches[1], [int]$matches[2], [int]$matches[3])
-            } catch { }
+            }
+            catch { }
         }
 
         $ageDays = ($now - $itemDate).TotalDays
@@ -649,7 +653,7 @@ function Apply-TieredRetentionPolicy {
 
     return @{
         TotalScanned = $items.Count
-        KeptCount = $toKeep.Count
+        KeptCount    = $toKeep.Count
         DeletedCount = $deletedCount
     }
 }
