@@ -509,6 +509,25 @@ function setupNavigation() {
                         initSubscriptionsTab(cachedProjects);
                         await logAuditEvent('2027_plan_proposed', `2027 Abonnementsplan voorgesteld: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
                     },
+                    onConfirmPlan: async (proj, plan) => {
+                        const updatedFields = {
+                            subscriptionPlan2027Id: plan.id,
+                            subscriptionPlan2027Name: plan.name,
+                            subscriptionPlan2027Price: plan.price,
+                            subscriptionPlan2027Status: 'bevestigd',
+                            subscriptionPlan2027ConfirmedAt: new Date().toISOString(),
+                            subscriptionPlanId: plan.id,
+                            subscriptionPlanName: plan.name,
+                            subscriptionPrice: plan.price,
+                            subscriptionCycle: 'jaar'
+                        };
+                        if (db && proj.id && String(proj.id).length > 5) {
+                            await updateDoc(doc(db, "projects", proj.id), updatedFields);
+                        }
+                        Object.assign(proj, updatedFields);
+                        initSubscriptionsTab(cachedProjects);
+                        await logAuditEvent('2027_plan_confirmed', `2027 Abonnementsplan bevestigd: ${plan.name} (€ ${plan.price}/${plan.cycle}) voor ${proj.client || 'klant'}.`);
+                    },
                     onSendPortalTicket: async (proj, plan, messageText) => {
                         const updatedFields = {
                             subscriptionPlan2027Id: plan.id,

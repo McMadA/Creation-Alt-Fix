@@ -343,13 +343,13 @@ if ($projects.Count -eq 0) {
             Status = "Nieuwe Lead"
             OfferteExclBTW = "500,00"
             OfferteInclBTW = "605,00"
-            DoelenEnScope = "Persoonlijke website en showcase portfolio. Voorstel vaste hostingstructuur 2027 en gratis redesign upgrade via het klantenportaal."
+            DoelenEnScope = "Persoonlijke website en showcase portfolio. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026). Gratis redesign upgrade via klantenportaal."
             DesignThema = "Stijlvol, minimalistisch, modern."
-            VoltooideTaken = 0
-            OpenstaandeTaken = 2
+            VoltooideTaken = 2
+            OpenstaandeTaken = 0
             TotaleTaken = 2
             DatumAangemaakt = "25-08-2026"
-            LaatsteUpdate = "28-08-2026"
+            LaatsteUpdate = "08-10-2026"
         },
         [PSCustomObject]@{
             Id = "10"
@@ -453,13 +453,13 @@ if ($projects.Count -eq 0) {
             Status = "Opgeleverd (Livegang)"
             OfferteExclBTW = "850,00"
             OfferteInclBTW = "1028,50"
-            DoelenEnScope = "Lokale vindbaarheid, spoedklus formulieren en Google Bedrijfsprofiel koppeling."
+            DoelenEnScope = "Lokale vindbaarheid, spoedklus formulieren en Google Bedrijfsprofiel koppeling. 2027 Trouwe Klant Abonnement geaccepteerd (€ 95,-/jr excl. BTW, akkoord op 08-10-2026)."
             DesignThema = "Donker thema met fel gele accenten."
             VoltooideTaken = 4
             OpenstaandeTaken = 0
             TotaleTaken = 4
             DatumAangemaakt = "08-08-2026"
-            LaatsteUpdate = "18-08-2026"
+            LaatsteUpdate = "08-10-2026"
         },
         [PSCustomObject]@{
             Id = "15"

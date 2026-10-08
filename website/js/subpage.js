@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "footerDocs": "Systeem Documentatie",
     "footerKvk": "KVK: 99986191",
     "footerBtw": "BTW: NL005423147B16",
-    "footerAddress": "Hoofdstraat 60b, 9601 EJ Hoogezand",
+    "footerAddress": "Hoofdstraat 60B, 9601 EK Hoogezand",
 
     // --- BREADCRUMBS ---
     "breadcrumbHome": "Home",
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "privacyLastUpdated": "Laatst gewijzigd: 25 augustus 2026",
     "privacyH2_1": "1. Wie zijn wij?",
     "privacyP1_1": "Creation+Alt+Fix is een eenmanszaak gevestigd in Hoogezand, ingeschreven bij de Kamer van Koophandel onder nummer <strong>99986191</strong>. Wij bieden IT-consultancy, software-ontwikkeling, AI-automatisering en webdesign aan.",
-    "privacyP1_2": "<strong>Contactgegevens:</strong><br>Creation+Alt+Fix (t.a.v. Allard Veldman)<br>Hoofdstraat 60b, 9601 EJ Hoogezand<br>E-mail: <a href=\"mailto:info@creationaltfix.nl\" style=\"color: var(--color-accent);\">info@creationaltfix.nl</a><br>Telefoon: <a href=\"tel:+31619135453\" style=\"color: var(--color-accent);\">+31 6 19135453</a>",
+    "privacyP1_2": "<strong>Contactgegevens:</strong><br>Creation+Alt+Fix (t.a.v. Allard Veldman)<br>Hoofdstraat 60B, 9601 EK Hoogezand<br>E-mail: <a href=\"mailto:info@creationaltfix.nl\" style=\"color: var(--color-accent);\">info@creationaltfix.nl</a><br>Telefoon: <a href=\"tel:+31619135453\" style=\"color: var(--color-accent);\">+31 6 19135453</a>",
     "privacyH2_2": "2. Welke persoonsgegevens verwerken wij?",
     "privacyP2_1": "Wij verwerken uitsluitend persoonsgegevens die u zelf aan ons verstrekt wanneer u contact opneemt, een offerte aanvraagt of gebruikmaakt van onze diensten:",
     "privacyLi2_1": "Voor- en achternaam",
@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "footerDocs": "System Documentation",
     "footerKvk": "CoC (KVK): 99986191",
     "footerBtw": "VAT (BTW): NL005423147B16",
-    "footerAddress": "Hoofdstraat 60b, 9601 EJ Hoogezand, Netherlands",
+    "footerAddress": "Hoofdstraat 60B, 9601 EK Hoogezand, Netherlands",
 
     // --- BREADCRUMBS ---
     "breadcrumbHome": "Home",
@@ -1459,7 +1459,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     "privacyLastUpdated": "Last updated: August 25, 2026",
     "privacyH2_1": "1. Who are we?",
     "privacyP1_1": "Creation+Alt+Fix is a sole proprietorship established in Hoogezand, registered with the Dutch Chamber of Commerce under number <strong>99986191</strong>. We provide IT consultancy, custom software development, AI automation, and web design.",
-    "privacyP1_2": "<strong>Contact Information:</strong><br>Creation+Alt+Fix (attn. Allard Veldman)<br>Hoofdstraat 60b, 9601 EJ Hoogezand, Netherlands<br>Email: <a href=\"mailto:info@creationaltfix.nl\" style=\"color: var(--color-accent);\">info@creationaltfix.nl</a><br>Phone: <a href=\"tel:+31619135453\" style=\"color: var(--color-accent);\">+31 6 19135453</a>",
+    "privacyP1_2": "<strong>Contact Information:</strong><br>Creation+Alt+Fix (attn. Allard Veldman)<br>Hoofdstraat 60B, 9601 EK Hoogezand, Netherlands<br>Email: <a href=\"mailto:info@creationaltfix.nl\" style=\"color: var(--color-accent);\">info@creationaltfix.nl</a><br>Phone: <a href=\"tel:+31619135453\" style=\"color: var(--color-accent);\">+31 6 19135453</a>",
     "privacyH2_2": "2. Which personal data do we process?",
     "privacyP2_1": "We only process personal data that you provide to us directly when you contact us, request a quotation, or use our services:",
     "privacyLi2_1": "First and last name",

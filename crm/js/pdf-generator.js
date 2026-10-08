@@ -264,7 +264,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
     doc.text("Hoofdstraat 60B", pageWidth - margin, y + 11, { align: "right" });
-    doc.text("9601EJ Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
+    doc.text("9601 EK Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
     doc.text("0619135453  |  info@creationaltfix.nl", pageWidth - margin, y + 20, { align: "right" });
     doc.text("creationaltfix.nl  |  BTW: NL005072704B18", pageWidth - margin, y + 24.5, { align: "right" });
     doc.text("KVK: 94200632", pageWidth - margin, y + 29, { align: "right" });
@@ -645,7 +645,7 @@ export async function generateInvoicePDF(p) {
     doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
     doc.text("Hoofdstraat 60B", pageWidth - margin, y + 11, { align: "right" });
-    doc.text("9601EJ Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
+    doc.text("9601 EK Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
     doc.text("0619135453  |  info@creationaltfix.nl", pageWidth - margin, y + 20, { align: "right" });
     doc.text("creationaltfix.nl  |  BTW: NL005072704B18", pageWidth - margin, y + 24.5, { align: "right" });
     doc.text("KVK: 94200632", pageWidth - margin, y + 29, { align: "right" });

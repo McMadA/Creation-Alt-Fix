@@ -191,7 +191,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         </Border>
                     </Grid>
 
-                    <TextBlock Text="15 Klantdossiers &amp; Offertes (30d Dagelijks | 12m Maandelijks | 1/Jaar)" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
+                    <TextBlock Name="txtCrmSubtitle" Text="Klantdossiers &amp; Offertes (30d Dagelijks | 12m Maandelijks | 1/Jaar)" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,14"/>
 
                     <!-- Details Box -->
                     <Border Background="#0B0F19" CornerRadius="8" Padding="12" Margin="0,0,0,14" BorderBrush="#1E293B" BorderThickness="1">
@@ -291,6 +291,7 @@ $btnOpenCrmDir = $window.FindName("btnOpenCrmDir")
 $txtCrmLastDate = $window.FindName("txtCrmLastDate")
 $txtCrmSize = $window.FindName("txtCrmSize")
 $txtCrmSchedule = $window.FindName("txtCrmSchedule")
+$txtCrmSubtitle = $window.FindName("txtCrmSubtitle")
 
 $btnScheduleSettings = $window.FindName("btnScheduleSettings")
 $btnOpenReport = $window.FindName("btnOpenReport")
@@ -450,23 +451,39 @@ function Refresh-DashboardData {
         if ($crmFiles.Count -gt 0) {
             $latestCrm = $crmFiles[0]
             $kb = [math]::Round($latestCrm.Length / 1KB, 1)
+            $clientCount = 0
+            try {
+                $lines = (Get-Content $latestCrm.FullName | Measure-Object -Line).Lines
+                if ($lines -gt 1) { $clientCount = $lines - 1 }
+            } catch { }
             $txtCrmLastDate.Text = $latestCrm.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
-            $txtCrmSize.Text = "$kb KB (15 dossiers)"
+            $txtCrmSize.Text = "$kb KB ($($clientCount) dossiers)"
+            if ($txtCrmSubtitle) {
+                $txtCrmSubtitle.Text = "$clientCount Klantdossiers & Offertes (30d Dagelijks | 12m Maandelijks | 1/Jaar)"
+            }
         } else {
             $txtCrmLastDate.Text = "Geen exports"
             $txtCrmSize.Text = "0 KB"
+            if ($txtCrmSubtitle) {
+                $txtCrmSubtitle.Text = "0 Klantdossiers & Offertes (30d Dagelijks | 12m Maandelijks | 1/Jaar)"
+            }
         }
 
         # Add CRM Exports to history
         foreach ($csv in $crmFiles | Select-Object -First 15) {
             $kb = [math]::Round($csv.Length / 1KB, 1)
+            $count = 0
+            try {
+                $lines = (Get-Content $csv.FullName | Measure-Object -Line).Lines
+                if ($lines -gt 1) { $count = $lines - 1 }
+            } catch { }
             [void]$historyList.Add([PSCustomObject]@{
                 Type = "CRM Export (CSV)"
                 DateFormatted = $csv.LastWriteTime.ToString("dd-MM-yyyy HH:mm")
                 RawDate = $csv.LastWriteTime
                 Name = $csv.Name
                 SizeFormatted = "$kb KB"
-                Status = "Excel Valid (15 Klanten)"
+                Status = "Excel Valid ($($count) Klanten)"
                 FullPath = $csv.FullName
             })
         }

@@ -722,10 +722,10 @@ function renderSubscriptionSection(data) {
     // Render 2027 Subscription Banner & Confirmation Engine
     const banner2027 = document.getElementById('client-2027-subscription-banner');
     if (banner2027) {
-        const plan2027Id = data.subscriptionPlan2027Id || (info && info.recommendedPlanId) || (planId === 'legacy_22' ? 'transition_2027_loyalty' : planId);
+        const plan2027Id = data.subscriptionPlan2027Id || (info && info.subscriptionPlan2027Id) || (info && info.recommendedPlanId) || (planId === 'legacy_22' ? 'transition_2027_loyalty' : planId);
         const plan2027 = SUBSCRIPTION_PLANS[plan2027Id] || SUBSCRIPTION_PLANS['transition_2027_loyalty'] || SUBSCRIPTION_PLANS['managed_nl'];
-        const is2027Confirmed = data.subscriptionPlan2027Status === 'bevestigd';
-        const has2027Proposal = data.subscriptionPlan2027Status === 'voorgesteld' || planId === 'legacy_22' || (info && info.recommendedPlanId && info.recommendedPlanId !== planId);
+        const is2027Confirmed = data.subscriptionPlan2027Status === 'bevestigd' || info?.subscriptionPlan2027Status === 'bevestigd';
+        const has2027Proposal = !is2027Confirmed && (data.subscriptionPlan2027Status === 'voorgesteld' || planId === 'legacy_22' || (info && info.recommendedPlanId && info.recommendedPlanId !== planId));
 
         if (is2027Confirmed) {
             banner2027.style.display = 'block';

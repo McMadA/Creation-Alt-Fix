@@ -86,7 +86,7 @@ export const PROJECT_PROFILES = {
     },
     ANGELA: {
         id: "9",
-        matchKeys: ["angela", "stenekes", "angelastenekes", "task-803", "task-817"],
+        matchKeys: ["angela", "angelastenekes", "knipperij", "task-803", "task-817"],
         client: "Angela Stenekes",
         companyName: "Angela Stenekes",
         contactName: "Angela Stenekes",
@@ -100,6 +100,23 @@ export const PROJECT_PROFILES = {
         statusClass: "concept",
         date: "25-08-2026",
         proposalPrice: "500,00"
+    },
+    STENEKES_RIOOL: {
+        id: "14",
+        matchKeys: ["stenekesriool", "stenekesrioolspecialist", "stenekes riool", "klaas stenekes", "stenekes-riool"],
+        client: "Stenekes Riool & Grondwerk",
+        companyName: "Stenekes Riool & Grondwerk",
+        contactName: "Klaas Stenekes",
+        email: "info@stenekes-riool.nl",
+        domainName: "stenekesrioolspecialist.nl",
+        domain: "stenekesrioolspecialist.nl",
+        service: "Website & Spoedservice Formulier",
+        goals: "Lokale vindbaarheid, spoedklus formulieren en 24/7 storingsservice.",
+        design: "Donker thema met fel gele accenten.",
+        status: "Opgeleverd (Livegang)",
+        statusClass: "success",
+        date: "25-08-2026",
+        proposalPrice: "850,00"
     },
     HBI: {
         id: "10",
@@ -300,7 +317,10 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-802' || fullText.includes('arnold') || fullText.includes('glas-in-lood')) {
         return PROJECT_PROFILES.ARNOLD;
     }
-    if (code === 'TASK-803' || code === 'TASK-817' || fullText.includes('angela') || fullText.includes('angelastenekes')) {
+    if (fullText.includes('riool') || fullText.includes('stenekesriool') || fullText.includes('klaas stenekes')) {
+        return PROJECT_PROFILES.STENEKES_RIOOL;
+    }
+    if (code === 'TASK-803' || code === 'TASK-817' || fullText.includes('angela') || fullText.includes('angelastenekes') || fullText.includes('knipperij')) {
         return PROJECT_PROFILES.ANGELA;
     }
     if (code === 'TASK-804' || fullText.includes('home buyer') || fullText.includes('hbi') || fullText.includes('proptech')) {

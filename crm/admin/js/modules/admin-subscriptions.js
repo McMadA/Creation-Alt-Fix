@@ -57,9 +57,9 @@ export function calculateSubscriptionKPIs(projects = []) {
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
         const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
         const isOneOff = (planId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
-        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
-        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
-        const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
+        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd' || info?.subscriptionPlan2027Status === 'bevestigd';
+        const isProposed = !isConfirmed && (p.subscriptionPlan2027Status === 'voorgesteld' || info?.subscriptionPlan2027Status === 'voorgesteld');
+        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff && !isConfirmed;
 
         if (isConfirmed) {
             confirmedCount++;
@@ -67,13 +67,13 @@ export function calculateSubscriptionKPIs(projects = []) {
             proposedCount++;
         }
 
-        if (isLegacy && !isConfirmed) {
+        if (isLegacy) {
             legacyCount++;
         }
 
         // Calculate expected 2027 revenue (exclude internal and one-off projects)
         if (!isInternal && !isOneOff) {
-            const targetPlanId = p.subscriptionPlan2027Id || (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || planId));
+            const targetPlanId = p.subscriptionPlan2027Id || info?.subscriptionPlan2027Id || (isLegacy ? 'transition_2027_loyalty' : (info?.recommendedPlanId || planId));
             const planObj = SUBSCRIPTION_PLANS[targetPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
             const priceNum = parseFloat((planObj.price || '0').replace(',', '.'));
             if (!isNaN(priceNum) && planObj.id !== 'none' && planObj.id !== 'internal_project') {
@@ -112,11 +112,11 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
         const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
         const isOneOff = (planId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
-        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
-        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
-        const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
+        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd' || info?.subscriptionPlan2027Status === 'bevestigd';
+        const isProposed = !isConfirmed && (p.subscriptionPlan2027Status === 'voorgesteld' || info?.subscriptionPlan2027Status === 'voorgesteld');
+        const isLegacy = (planId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff && !isConfirmed;
 
-        if (_activeFilter === 'legacy') return isLegacy && !isConfirmed;
+        if (_activeFilter === 'legacy') return isLegacy;
         if (_activeFilter === 'voorgesteld') return isProposed;
         if (_activeFilter === 'bevestigd') return isConfirmed;
         return true;
@@ -139,7 +139,9 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         const currentPlan = SUBSCRIPTION_PLANS[currentPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
         const isInternal = currentPlanId === 'internal_project' || info?.currentPlanId === 'internal_project';
         const isOneOff = (currentPlanId === 'none' || info?.currentPlanId === 'none') && (info?.recommendedPlanId === 'none');
-        const isLegacy = (currentPlanId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff;
+        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd' || info?.subscriptionPlan2027Status === 'bevestigd';
+        const isProposed = !isConfirmed && (p.subscriptionPlan2027Status === 'voorgesteld' || info?.subscriptionPlan2027Status === 'voorgesteld');
+        const isLegacy = (currentPlanId === 'legacy_22' || info?.currentPlanId === 'legacy_22') && !isInternal && !isOneOff && !isConfirmed;
 
         // Current Plan Badge
         let currentPlanBadge = `<span style="font-size: 0.78rem; color: #38bdf8; font-weight: 600;">${escapeHtml(p.subscriptionPlanName || info?.currentPlanName || currentPlan.name)} (€ ${escapeHtml(p.subscriptionPrice || currentPlan.price)}/jr)</span>`;
@@ -147,12 +149,14 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
             currentPlanBadge = `<span class="badge" style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid #64748b; font-size: 0.75rem;"><i class="fas fa-user-shield"></i> Eigen Project</span>`;
         } else if (isOneOff) {
             currentPlanBadge = `<span class="badge" style="background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border: 1px solid #475569; font-size: 0.75rem;">Eenmalig</span>`;
+        } else if (isConfirmed && (info?.currentPlanId === 'legacy_22' || currentPlanId === 'legacy_22')) {
+            currentPlanBadge = `<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Historisch &rarr; 2027 Akkoord</span>`;
         } else if (isLegacy) {
             currentPlanBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; font-size: 0.75rem;">⏳ Historisch (€ 22,-/jr)</span>`;
         }
 
         // 2027 Proposed Plan
-        const recPlanId = p.subscriptionPlan2027Id || (isInternal ? 'internal_project' : (isOneOff ? 'none' : (info?.recommendedPlanId || (isLegacy ? 'transition_2027_loyalty' : 'managed_nl'))));
+        const recPlanId = p.subscriptionPlan2027Id || info?.subscriptionPlan2027Id || (isInternal ? 'internal_project' : (isOneOff ? 'none' : (info?.recommendedPlanId || (isLegacy ? 'transition_2027_loyalty' : 'managed_nl'))));
         const recPlan = SUBSCRIPTION_PLANS[recPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
 
         let planDetailsHtml = '';
@@ -179,8 +183,6 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         }
 
         // 2027 Status
-        const isConfirmed = p.subscriptionPlan2027Status === 'bevestigd';
-        const isProposed = p.subscriptionPlan2027Status === 'voorgesteld';
         let statusHtml = '';
 
         if (isInternal) {
@@ -188,7 +190,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         } else if (isOneOff) {
             statusHtml = `<span class="badge" style="background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid #475569; font-size: 0.75rem;">Rustend</span>`;
         } else if (isConfirmed) {
-            statusHtml = `<span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Bevestigd</span>`;
+            statusHtml = `<span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Bevestigd (€ 95,-)</span>`;
         } else if (isProposed) {
             statusHtml = `<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border: 1px solid #818cf8; font-size: 0.75rem;"><i class="fas fa-paper-plane"></i> Voorstel Verzonden</span>`;
         } else if (isLegacy) {
@@ -231,7 +233,8 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
             open2027SubscriptionModal({
                 project: p,
                 onSavePlan: handlers.onSavePlan,
-                onSendPortalTicket: handlers.onSendPortalTicket
+                onSendPortalTicket: handlers.onSendPortalTicket,
+                onConfirmPlan: handlers.onConfirmPlan
             });
         });
 

@@ -49,12 +49,7 @@
   - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
   - **Status Note**: Lead wordt verzonden zodra het CRM portaal 100% geverifieerd en beproefd is.
 
-- [ ] `[TASK-817]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Angela Stenekes Klantafstemming 2027: Nieuwe Tarieven, Werkwijze via Klantenportaal & Gratis Website Vernieuwing**
-  - **Scope**: Klantproject Angela Stenekes (`angelastenekes.nl`), `crm/status/`, `crm/admin/`
-  - **Tasks**:
-    - Digitaal akkoord voorstel opstellen via het CRM Klantenportaal voor ingang per 1 januari 2027 op basis van de nieuwe vaste tariefstructuur (€ 150,-/jr Cloud Hosting All-in & optionele APK).
-    - Gratis vernieuwde, moderne website (`angelastenekes.nl`) aanbieden als loyaliteitsbonus / redesign upgrade.
-    - Professionele communicatie over de nieuwe werkwijze: fysieke service op locatie bij de knipperij stopt; support, updates en wijzigingsverzoeken verlopen vanaf heden 100% digitaal via het klantenportaal en remote service.
+
 
 - [ ] `[TASK-819]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2**
   - **Scope**: `pomppop/functions/index.js`, `pomppop/functions/package.json`, Vimexx SMTP, Cloud Functions v2
@@ -270,6 +265,10 @@
 - [x] `[TASK-816]` `[P3-MEDIUM]` `[STATUS: DONE]` **Vaste Hosting & Domeintarieven Formaliseren in Offerte Templates & Website**
   - **Scope**: `website/diensten/website-laten-maken/`, `crm/js/ai-engine.js`, `crm/js/pdf-generator.js`, `website/js/subpage.js`, `advies_hosting_tarieven_task816.md`
   - **Details**: Vaste 2-traps tariefstructuur geformaliseerd op basis van Pi-Boekhouding data: 1. Managed Cloud Hosting & Domein All-in (€ 150,-/jr excl. BTW voor NVMe hosting, .nl domein, SSL, 5 zakelijke mailboxen met SPF/DKIM/DMARC en dagelijkse backups), en 2. Jaarlijkse Website & Security APK (€ 350,-/jr incl. 2 uur strippenkaart @ € 65,-/u). Volledig geïmplementeerd in de AI Scope Generator (`items`), multi-line PDF Offerte & Factuur Generator (`resolveProposalItems`), en de openbare marketingpagina met 100% tweetalige vertaling.
+
+- [x] `[TASK-817]` `[P2-HIGH]` `[STATUS: DONE]` **Angela Stenekes & Stenekes Rioolspecialist 2027 Klantafstemming: Nieuw Abonnement Geaccepteerd (€ 95,- Trouwe Klant Tarief)**
+  - **Scope**: Klantprojecten Angela Stenekes (`angelastenekes.nl`) & Stenekes Rioolspecialist (`stenekesrioolspecialist.nl`), `crm/status/`, `crm/admin/`
+  - **Details**: Zowel Angela Stenekes (De Knipperij) als Klaas Stenekes (Stenekes Riool & Grondwerk) hebben op 08-10-2026 officieel akkoord gegeven op het nieuwe 2027 abonnement: het Trouwe Klant Overgangstarief van **€ 95,- excl. BTW per jaar** (ter vervanging van het eerdere kosteloze/margeloze budgettarief van € 22,-/jr; per 2028 standaard € 150,-/jr). Inclusief NVMe Cloud Hosting, SSL-certificaat, tot 5 zakelijke mailboxen, 24/7 uptime-monitoring en 30 min. service per jaar. Beide dossiers zijn definitief geregistreerd als `bevestigd` in het CRM administratie- en migratiedashboard.
 
 - [x] `[TASK-811]` `[P1-CRITICAL]` `[STATUS: DONE]` **Vimexx Server Complete Back-up, Desktop App & Lokale/Cloud Archivering**
   - **Scope**: `scripts/backup-vimexx-server.ps1`, `scripts/backup-hub-gui.ps1`, `scripts/setup-auto-vimexx-backup.ps1`, `scripts/create-desktop-shortcut.ps1`, `scripts/README-BACKUP.md`, `C:\Users\Admin\Desktop\`, `.gitignore`

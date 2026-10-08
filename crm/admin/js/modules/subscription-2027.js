@@ -113,7 +113,7 @@ Laat gerust weten als je nog vragen hebt! 👍`;
 /**
  * Creates and displays the 2027 Subscription Communication Modal.
  */
-export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTicket }) {
+export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTicket, onConfirmPlan }) {
     if (!project) return;
 
     let modal = document.getElementById('modal-2027-subscription');
@@ -126,7 +126,7 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
     }
 
     const info = getPiBoekhoudingInfo(project);
-    const initialPlanId = project.subscriptionPlan2027Id || project.subscriptionPlanId || info?.recommendedPlanId || 'managed_nl';
+    const initialPlanId = project.subscriptionPlan2027Id || info?.subscriptionPlan2027Id || project.subscriptionPlanId || info?.recommendedPlanId || 'managed_nl';
     const clientName = escapeHtml(project.client || project.companyName || 'Klant');
     const domain = escapeHtml(project.domainName || project.domain || 'Nog geen domein');
 
@@ -135,7 +135,7 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
         const messageText = generate2027ProposalText(project, selectedPlanId);
         const currentSubName = escapeHtml(project.subscriptionPlanName || info?.currentPlanName || 'Oud / Standaard Tarief');
         const currentPrice = escapeHtml(project.subscriptionPrice || (info?.currentPlanId === 'legacy_22' ? '22,00' : '—'));
-        const isConfirmed = project.subscriptionPlan2027Status === 'bevestigd';
+        const isConfirmed = project.subscriptionPlan2027Status === 'bevestigd' || info?.subscriptionPlan2027Status === 'bevestigd';
 
         modal.innerHTML = `
             <div style="background: #0f172a; border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 12px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); display: flex; flex-direction: column;">
@@ -223,14 +223,19 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
                             </button>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; gap: 8px; flex-wrap: wrap;">
                             <button type="button" id="btn-2027-copy-text" class="btn btn-sm btn-secondary" style="font-size: 0.78rem; padding: 6px 12px;">
                                 <i class="fas fa-copy"></i> Kopieer Bericht
                             </button>
 
-                            <button type="button" id="btn-2027-save-only" class="btn btn-sm btn-primary" style="font-size: 0.78rem; padding: 6px 14px;">
-                                <i class="fas fa-save"></i> Sla Plan Alleen Op
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" id="btn-2027-save-only" class="btn btn-sm btn-secondary" style="font-size: 0.78rem; padding: 6px 12px;">
+                                    <i class="fas fa-save"></i> Plan Opslaan
+                                </button>
+                                <button type="button" id="btn-2027-confirm-plan" class="btn btn-sm" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; font-weight: 700; font-size: 0.78rem; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-check-circle"></i> ${isConfirmed ? 'Akkoord Reeds Vastgelegd' : 'Akkoord Klant Bevestigen (€ 95,-)'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -324,6 +329,29 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
             } catch (err) {
                 console.error("Fout bij opslaan plan:", err);
                 alert("Kon plan niet opslaan: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        });
+
+        // Event: Confirm Plan (Akkoord Klant)
+        modal.querySelector('#btn-2027-confirm-plan')?.addEventListener('click', async () => {
+            const btn = modal.querySelector('#btn-2027-confirm-plan');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig...';
+
+            try {
+                if (onConfirmPlan) {
+                    await onConfirmPlan(project, plan);
+                }
+                btn.innerHTML = '<i class="fas fa-check"></i> Akkoord Geregistreerd!';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 1200);
+            } catch (err) {
+                console.error("Fout bij bevestigen plan:", err);
+                alert("Kon plan niet bevestigen: " + err.message);
                 btn.disabled = false;
                 btn.innerHTML = orig;
             }
