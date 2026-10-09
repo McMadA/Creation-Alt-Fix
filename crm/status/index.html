@@ -113,6 +113,31 @@
                 </select>
             </div>
             
+            <!-- Prominente Notificatie: Openstaande Factuur & Directe iDEAL Betaalknop -->
+            <div id="unpaid-invoice-banner" class="card hidden" style="border: 1px solid rgba(245, 158, 11, 0.45); background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(217, 119, 6, 0.08)); margin-bottom: 24px; padding: 20px 24px; border-radius: 14px; box-shadow: 0 10px 32px rgba(245, 158, 11, 0.15);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fbbf24; flex-shrink: 0;">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <h3 style="margin: 0; font-size: 1.15rem; color: #fff;"><span data-translate-key="statusUnpaidBannerTitle">Openstaande Factuur</span> <span id="banner-inv-num" style="color: #fbbf24; font-weight: 700;"></span></h3>
+                                <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.35);" data-translate-key="statusUnpaidBannerBadge">Wacht op betaling</span>
+                            </div>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
+                                Er staat een factuur van <strong id="banner-inv-amount" style="color: #34d399;">—</strong> gereed. Voldoe deze eenvoudig en veilig online via iDEAL.
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <a id="banner-mollie-btn" href="#" target="_blank" class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45); font-size: 0.92rem; transition: transform 0.2s ease;">
+                            <i class="fas fa-credit-card"></i> <span data-translate-key="statusUnpaidBannerBtn">Factuur Nu Betalen (iDEAL)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Project Header & Progress -->
             <section class="card">
                 <div class="project-header">
@@ -577,10 +602,10 @@
                     </a>
 
                     <!-- Factuur / Mollie Betaallink (indien beschikbaar) -->
-                    <a id="mollie-link" href="#" target="_blank" class="action-card hidden">
-                        <i class="fas fa-credit-card"></i>
+                    <a id="mollie-link" href="#" target="_blank" class="action-card hidden" style="border: 1px solid rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.08);">
+                        <i class="fas fa-credit-card" style="color: #fbbf24;"></i>
                         <div>
-                            <h4 data-translate-key="statusPayMollieTitle">Factuur Betalen (Mollie)</h4>
+                            <h4 data-translate-key="statusPayMollieTitle" style="color: #fbbf24;">Factuur Betalen (Mollie)</h4>
                             <p data-translate-key="statusPayMollieDesc">Betaal veilig en snel online via iDEAL / Creditcard</p>
                         </div>
                     </a>

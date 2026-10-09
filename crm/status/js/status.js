@@ -517,9 +517,10 @@ function renderDashboard(data) {
     // Render Realtime Website & Systeem Uptime Monitoring (TASK-827)
     renderClientUptimeSection(data);
 
-    // Setup invoice download card, invoice archive & profile modal
+    // Setup invoice download card, invoice archive, unpaid banner & profile modal
     setupInvoiceDownload(data);
     setupClientInvoicesArchive(data);
+    setupUnpaidInvoiceBanner(data);
     setupProfileModal();
     checkPaymentSuccessModal(data);
 }
@@ -1979,7 +1980,8 @@ function setupClientInvoicesArchive(data) {
             invoiceDate: data.invoiceDate || data.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
             amountIncl: data.proposalPrice ? (data.proposalPrice * 1.21) : 0,
             status: data.status?.toLowerCase().includes('voldaan') || data.status?.toLowerCase().includes('paid') ? 'paid' : 'open',
-            pdfUrl: data.invoicePdfUrl || null
+            pdfUrl: data.invoicePdfUrl || null,
+            mollieLink: data.mollieLink || null
         });
     }
 
@@ -2000,12 +2002,13 @@ function setupClientInvoicesArchive(data) {
                         <th style="padding: 8px 10px;">Datum</th>
                         <th style="padding: 8px 10px;">Bedrag (Incl.)</th>
                         <th style="padding: 8px 10px;">Status</th>
-                        <th style="padding: 8px 10px; text-align: right;">Download</th>
+                        <th style="padding: 8px 10px; text-align: right;">Acties</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${invoices.map((inv, idx) => {
                         const isPaid = inv.status === 'paid' || inv.status === 'voldaan';
+                        const mollieUrl = !isPaid ? (inv.mollieLink || data.mollieLink) : null;
                         const badgeStyle = isPaid 
                             ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
                             : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
@@ -2024,7 +2027,12 @@ function setupClientInvoicesArchive(data) {
                                         ${badgeText}
                                     </span>
                                 </td>
-                                <td style="padding: 10px; text-align: right;">
+                                <td style="padding: 10px; text-align: right; white-space: nowrap;">
+                                    ${mollieUrl ? `
+                                        <a href="${escapeHtml(mollieUrl)}" target="_blank" class="btn btn-sm btn-ideal-pay" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: #fff; padding: 4px 11px; border-radius: 6px; font-weight: 600; text-decoration: none; margin-right: 6px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(14,165,233,0.3); transition: transform 0.15s ease;">
+                                            <i class="fas fa-credit-card"></i> <span>Betaal iDEAL</span>
+                                        </a>
+                                    ` : ''}
                                     <button type="button" class="btn btn-secondary btn-sm btn-dl-hist-inv" data-idx="${idx}" style="padding: 3px 10px; font-size: 0.75rem; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent); cursor: pointer;">
                                         <i class="fas fa-file-pdf"></i> PDF
                                     </button>
@@ -2073,6 +2081,35 @@ function setupClientInvoicesArchive(data) {
             }
         });
     });
+}
+
+function setupUnpaidInvoiceBanner(data) {
+    const banner = document.getElementById('unpaid-invoice-banner');
+    if (!banner) return;
+
+    const isPaid = data.status?.toLowerCase().includes('voldaan') || data.status?.toLowerCase().includes('paid');
+    const hasInvoice = !!(data.invoiceNumber || data.factuurnummer);
+    const hasMollie = !!data.mollieLink;
+
+    if (!isPaid && hasInvoice && hasMollie) {
+        const invNum = data.invoiceNumber || data.factuurnummer;
+        const totalIncl = data.proposalPrice ? (data.proposalPrice * 1.21) : 0;
+        const amountStr = totalIncl > 0 ? formatCurrency(totalIncl) : '—';
+
+        const invNumEl = document.getElementById('banner-inv-num');
+        const amountEl = document.getElementById('banner-inv-amount');
+        const mollieBtn = document.getElementById('banner-mollie-btn');
+
+        if (invNumEl) invNumEl.textContent = invNum;
+        if (amountEl) amountEl.textContent = amountStr;
+        if (mollieBtn) {
+            mollieBtn.href = data.mollieLink;
+        }
+
+        banner.classList.remove('hidden');
+    } else {
+        banner.classList.add('hidden');
+    }
 }
 
 function setupProfileModal() {
