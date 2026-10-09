@@ -3,73 +3,294 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CIJNTJE PERSONAL FIT | Vakmanschap in Hoogezand & Regio Groningen</title>
-  <meta name="description" content="Professionele Sportschool door CIJNTJE PERSONAL FIT. Neem direct contact op voor een snelle afspraak of offerte in regio Hoogezand.">
+  <title>CIJNTJE PERSONAL FIT | Personal Training & Coaching in Hoogezand & Regio Groningen</title>
+  <meta name="description" content="Professionele Personal Training & Coaching door CIJNTJE PERSONAL FIT. Neem direct contact op voor een snelle afspraak of vrijblijvende offerte.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "CIJNTJE PERSONAL FIT",
+    "telephone": "06 34 57 57 50",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Transportweg 40, 9645 KX Veendam",
+      "addressCountry": "NL"
+    },
+    "priceRange": "€€",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "6"
+    }
+  }
+  </script>
+
   <style>
     :root {
-      --bg-dark: #0B0F19;
-      --bg-card: rgba(17, 24, 39, 0.8);
-      --accent: #06B6D4;
-      --accent-hover: #0891B2;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --border: rgba(255, 255, 255, 0.1);
+      
+        --bg-dark: #08080A;
+        --bg-header: rgba(8, 8, 10, 0.95);
+        --bg-card: rgba(22, 22, 28, 0.85);
+        --accent: #84CC16;
+        --accent-hover: #65A30D;
+        --accent-subtle: rgba(132, 204, 22, 0.16);
+        --accent-secondary: #38BDF8;
+        --text-main: #FFFFFF;
+        --text-muted: #A1A1AA;
+        --border: rgba(132, 204, 22, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.85);
+      
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
     .concept-bar {
-      background: linear-gradient(90deg, #1e1b4b, #0f172a);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      background: linear-gradient(90deg, #0b1329, #111e38);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.35);
       padding: 10px 16px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #cbd5e1;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 101;
     }
-    .concept-bar a { color: #38bdf8; font-weight: 600; text-decoration: underline; }
+    .concept-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .concept-bar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .concept-bar-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+    .concept-bar a.concept-wa-btn {
+      background: #25D366;
+      color: #064e3b;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    }
+    .concept-bar a.concept-wa-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+    }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 8%;
+      padding: 18px 8%;
       border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      background: rgba(11, 15, 25, 0.9);
+      background: var(--bg-header);
       z-index: 100;
     }
-    .logo { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+    .logo { font-size: 1.35rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
     .logo span { color: var(--accent); }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    
     .hero {
       padding: 70px 8% 50px;
-      text-align: center;
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     .badge {
       display: inline-block;
-      background: rgba(6, 182, 212, 0.15);
+      background: var(--accent-subtle);
       color: var(--accent);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 20px;
-      border: 1px solid rgba(6, 182, 212, 0.3);
+      border: 1px solid var(--border);
     }
-    .hero h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.25; margin-bottom: 20px; }
-    .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 30px; }
-    .cta-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+    .hero-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+    
+    /* Layout 0: Split */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-usps {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+    .hero-usps li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .check-icon {
+      color: var(--accent);
+      background: var(--accent-subtle);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .quick-contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .quick-contact-card h3 { font-size: 1.4rem; margin-bottom: 8px; }
+    .quick-contact-card p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px; }
+    .widget-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .widget-btn {
+      padding: 12px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      text-align: center;
+      display: block;
+      transition: all 0.2s ease;
+    }
+    .widget-btn-call { background: var(--accent); color: #000000; }
+    .widget-btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; border: 1px solid rgba(37, 211, 102, 0.3); }
+    .widget-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    
+    /* Layout 1: Centered */
+    .hero-centered { text-align: center; max-width: 900px; }
+    .hero-centered .hero-desc { margin-left: auto; margin-right: auto; }
+    .hero-centered .cta-group { justify-content: center; }
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    .metric-val { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+    .metric-lbl { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Layout 2: Action */
+    .hero-action { max-width: 960px; }
+    .urgent-banner {
+      background: var(--accent-subtle);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 10px 16px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .urgent-banner a { color: var(--text-main); text-decoration: underline; }
+    .action-highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: var(--shadow);
+    }
+    .highlight-info strong { display: block; font-size: 1.15rem; margin-bottom: 4px; }
+    .highlight-info p { color: var(--text-muted); font-size: 0.92rem; }
+
+    .cta-group { display: flex; gap: 14px; flex-wrap: wrap; }
     .btn {
-      padding: 14px 28px;
+      padding: 13px 24px;
       border-radius: 8px;
       font-weight: 600;
       text-decoration: none;
@@ -77,53 +298,99 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
     }
     .btn-primary { background: var(--accent); color: #000000; }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
-    .btn-secondary { background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid var(--border); }
-    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
-    .section { padding: 60px 8%; max-width: 1200px; margin: 0 auto; }
-    .section-title { text-align: center; margin-bottom: 45px; }
-    .section-title h2 { font-size: 2rem; margin-bottom: 10px; }
-    .section-title p { color: var(--text-muted); }
+    .btn-secondary { background: var(--accent-subtle); color: var(--text-main); border: 1px solid var(--border); }
+    .btn-secondary:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--accent-subtle); }
+    
+    .section { padding: 64px 8%; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 44px; }
+    .section-title h2 { font-size: 2.1rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .section-title p { color: var(--text-muted); font-size: 1.05rem; }
+    
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
     .service-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      padding: 30px;
-      border-radius: 12px;
-      transition: transform 0.2s;
+      padding: 28px;
+      border-radius: 14px;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow);
     }
-    .service-card:hover { transform: translateY(-4px); border-color: rgba(6,182,212,0.4); }
-    .service-icon { color: var(--accent); font-size: 1.8rem; margin-bottom: 14px; }
+    .service-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .service-icon-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .service-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); opacity: 0.8; }
+    .service-icon { color: var(--accent); font-size: 1.4rem; }
     .service-card h3 { font-size: 1.25rem; margin-bottom: 10px; }
-    .service-card p { color: var(--text-muted); font-size: 0.95rem; }
-    .review-card {
-      background: rgba(30, 41, 59, 0.5);
+    .service-card p { color: var(--text-muted); font-size: 0.94rem; line-height: 1.55; }
+    
+    /* Process Section */
+    .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .process-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      padding: 24px;
-      border-radius: 12px;
+      padding: 28px;
+      border-radius: 14px;
+      position: relative;
     }
-    .stars { color: #F59E0B; margin-bottom: 12px; font-size: 1.1rem; }
-    .review-text { font-style: italic; color: #E2E8F0; margin-bottom: 12px; font-size: 0.95rem; }
-    .review-author { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .process-step-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.35;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .process-card h4 { font-size: 1.15rem; margin-bottom: 8px; }
+    .process-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 26px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .stars { color: #F59E0B; margin-bottom: 12px; font-size: 1.15rem; letter-spacing: 2px; }
+    .review-text { font-style: italic; color: var(--text-main); margin-bottom: 14px; font-size: 0.95rem; }
+    .review-author { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    
     .contact-card {
-      background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));
-      border: 1px solid rgba(6, 182, 212, 0.3);
-      padding: 40px;
-      border-radius: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 44px;
+      border-radius: 18px;
       text-align: center;
-      max-width: 700px;
+      max-width: 760px;
       margin: 0 auto;
+      box-shadow: var(--shadow);
     }
-    .contact-card h3 { font-size: 1.7rem; margin-bottom: 15px; }
+    .contact-card h3 { font-size: 1.85rem; margin-bottom: 14px; }
+    .contact-card p { color: var(--text-muted); margin-bottom: 26px; font-size: 1.05rem; }
+    
     footer {
       border-top: 1px solid var(--border);
-      padding: 30px 8%;
+      padding: 34px 8%;
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
+      background: var(--bg-header);
+    }
+
+    @media (max-width: 860px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.1rem; }
+      .header-actions .btn-secondary { display: none; }
     }
   </style>
 
@@ -172,23 +439,6 @@
     }
   }, { capture: true });
 
-  // 4. DEVTOOLS DETECTIE & BLUR TRAP
-  let devToolsOpen = false;
-  const threshold = 160;
-  setInterval(function() {
-    const widthDiff = window.outerWidth - window.innerWidth > threshold;
-    const heightDiff = window.outerHeight - window.innerHeight > threshold;
-    if ((widthDiff || heightDiff) && !devToolsOpen) {
-      devToolsOpen = true;
-      document.body.style.filter = 'blur(10px)';
-      document.body.style.pointerEvents = 'none';
-      showSecurityToast("Ontwikkelaarstools gedetecteerd. Layout vervaagd conform Creation+Alt+Fix licentievoorwaarden.");
-    } else if (!widthDiff && !heightDiff && devToolsOpen) {
-      devToolsOpen = false;
-      document.body.style.filter = '';
-      document.body.style.pointerEvents = '';
-    }
-  }, 1000);
 
   function showSecurityToast(msg) {
     let t = document.getElementById('caf-sec-toast');
@@ -223,55 +473,88 @@
 </head>
 <body>
   <div class="concept-bar">
-    ✨ Demonstratieconcept voor <strong>CIJNTJE PERSONAL FIT</strong> • Gemaakt door <a href="https://creationaltfix.nl" target="_blank">Creation+Alt+Fix</a>
+    <div class="concept-bar-inner">
+      <div class="concept-bar-badge">
+        <span class="concept-bar-avatar">AV</span>
+        <span>
+          <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>CIJNTJE PERSONAL FIT</strong>
+        </span>
+      </div>
+      <div>
+        <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20websiteconcept%20voor%20CIJNTJE%20PERSONAL%20FIT%20bekeken!" class="concept-wa-btn" target="_blank">
+          💬 Vraag stellen aan Allard
+        </a>
+      </div>
+    </div>
   </div>
   <header>
     <div class="logo">CIJNTJE PERSONAL FIT<span>.</span></div>
-    <a href="tel:06 34575750" class="btn btn-secondary">📞 06 34575750</a>
+    <div class="header-actions">
+      <a href="tel:06 34 57 57 50" class="btn btn-secondary">📞 06 34 57 57 50</a>
+      <a href="https://wa.me/31634575750" class="btn btn-primary" target="_blank">💬 WhatsApp</a>
+    </div>
   </header>
   <main>
-    <section class="hero">
-      <span class="badge">📍 Actief in regio Hoogezand</span>
-      <h1>Vakmanschap & Betrouwbaarheid bij CIJNTJE PERSONAL FIT</h1>
-      <p>Voor particulieren en bedrijven die gaan voor topkwaliteit, heldere communicatie en duurzaam resultaat.</p>
-      <div class="cta-group">
-        <a href="tel:06 34575750" class="btn btn-primary">📞 Direct Bellen</a>
-        <a href="https://wa.me/31634575750?text=Hallo%20CIJNTJE%20PERSONAL%20FIT,%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 Stuur WhatsApp</a>
-      </div>
-    </section>
+    
+      <section class="hero hero-action">
+        <div class="urgent-banner">
+          <span>⚡ Direct contact voor advies of afspraak in de regio:</span>
+          <a href="tel:06 34 57 57 50">📞 06 34 57 57 50</a>
+        </div>
+        <span class="badge">⚡ Kracht, Conditie & Persoonlijke Begeleiding</span>
+        <h1>Bereik Jouw Doelen & Maximale Fitheid met CIJNTJE PERSONAL FIT</h1>
+        <p class="hero-desc">Geen excuses meer. Doelgerichte personal training, effectieve workouts en continue motivatie om jouw fysieke toppunt te bereiken in Hoogezand en regio Groningen.</p>
+        <div class="action-highlight-box">
+          <div class="highlight-info">
+            <strong>Vrijblijvende Prijsopgave & Duidelijke Afspraken</strong>
+            <p>Geen verborgen kosten achteraf. Eerlijke tarieven en betrouwbaar vakwerk.</p>
+          </div>
+          <div class="cta-group">
+            <a href="tel:06 34 57 57 50" class="btn btn-primary">📞 Bel 06 34 57 57 50</a>
+            <a href="https://wa.me/31634575750?text=Hallo%20CIJNTJE%20PERSONAL%20FIT,%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 WhatsApp</a>
+          </div>
+        </div>
+      </section>
+    
+    
     <section class="section">
       <div class="section-title">
-        <h2>Onze Diensten</h2>
-        <p>Professionele oplossingen op maat voor al jouw projecten</p>
+        <h2>Onze Werkzaamheden</h2>
+        <p>Vakkundige diensten op maat voor particulieren en bedrijven</p>
       </div>
       <div class="grid">
         
-        <div class="service-card">
-          <div class="service-icon">✦</div>
-          <h3>Vakmanschap op Maat</h3>
-          <p>Persoonlijke aandacht en professionele uitvoering volgens afspraak.</p>
-        </div>
-      
-        <div class="service-card">
-          <div class="service-icon">✦</div>
-          <h3>Snelle & Duidelijke Communicatie</h3>
-          <p>Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen.</p>
-        </div>
-      
-        <div class="service-card">
-          <div class="service-icon">✦</div>
-          <h3>Regionale Service in Groningen</h3>
-          <p>Lokale betrokkenheid en flexibele service in en rondom Hoogezand.</p>
-        </div>
-      
-        <div class="service-card">
-          <div class="service-icon">✦</div>
-          <h3>Garantie op Kwaliteit</h3>
-          <p>Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat.</p>
-        </div>
-      
       </div>
     </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Zo Werken Wij</h2>
+        <p>Transparant, zonder verrassingen en altijd vlot geregeld</p>
+      </div>
+      <div class="process-grid">
+        
+    <div class="process-card">
+      <div class="process-step-num">01</div>
+      <h4>Gratis Intake & Doelen</h4>
+      <p>We bespreken jouw doelen, conditie en belastbaarheid.</p>
+    </div>
+  
+    <div class="process-card">
+      <div class="process-step-num">02</div>
+      <h4>Op Maat Traject</h4>
+      <p>Een effectief trainingsprogramma met duidelijke mijlpalen.</p>
+    </div>
+  
+    <div class="process-card">
+      <div class="process-step-num">03</div>
+      <h4>Blijvend Resultaat</h4>
+      <p>Fit worden, sterker voelen en vol energie in het leven staan.</p>
+    </div>
+  
+      </div>
+    </section>
+
     <section class="section">
       <div class="section-title">
         <h2>Wat Klanten Zeggen</h2>
@@ -282,18 +565,25 @@
         <div class="review-card">
           <div class="stars">★★★★★</div>
           <p class="review-text">"Klantvriendelijk, betrouwbaar en levert altijd vakwerk af. Zeker een aanrader in de regio!"</p>
-          <div class="review-author">— Tevreden Klant</div>
+          <div class="review-author">— Tevreden Klant uit de regio</div>
+        </div>
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"Hele prettige communicatie en snelle service. Afspraak is afspraak, erg blij met het resultaat!"</p>
+          <div class="review-author">— Vaste Klant</div>
         </div>
       
       </div>
     </section>
-    <section class="section">
+
+    <section class="section" id="contact">
       <div class="contact-card">
-        <h3>Vrijblijvend Contact Opnemen?</h3>
-        <p style="color: var(--text-muted); margin-bottom: 25px;">Neem direct contact op voor een kennismaking, advies of een vrijblijvende prijsopgave.</p>
-        <div class="cta-group">
-          <a href="tel:06 34575750" class="btn btn-primary">📞 06 34575750</a>
-          <a href="https://wa.me/31634575750" class="btn btn-secondary" target="_blank">💬 WhatsApp Chatten</a>
+        <span class="badge">Vrijblijvend Contact</span>
+        <h3>Direct Contact Opnemen met CIJNTJE PERSONAL FIT?</h3>
+        <p>Heeft u een vraag, wilt u kennismaken of direct een vrijblijvende prijsopgave ontvangen? Wij staan voor u klaar.</p>
+        <div class="cta-group" style="justify-content: center;">
+          <a href="tel:06 34 57 57 50" class="btn btn-primary">📞 06 34 57 57 50</a>
+          <a href="https://wa.me/31634575750?text=Hallo%20CIJNTJE%20PERSONAL%20FIT,%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 WhatsApp Chat</a>
         </div>
       </div>
     </section>

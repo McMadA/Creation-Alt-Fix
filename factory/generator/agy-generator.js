@@ -64,333 +64,741 @@ export async function generateConceptWebsiteWithAgy(business) {
 export function resolveDesignArchetype(b) {
   const text = `${b.category || ''} ${b.name || ''} ${b.slug || ''}`.toLowerCase();
   const hash = (b.slug || b.name || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-  // Sector matching
-  const isGarden = /hovenier|tuin|boom|groen|bestrating|grondwerk|sierbestrating|straatmaker|tegelzet|terras|buitenwerk|grondverzet/.test(text);
-  const isPainter = /schilder|verf|lak|stuc|stukadoor|afbouw|behang|wandafwerk|glaszet/.test(text);
-  const isMechanic = /fiets|rijwiel|scooter|auto|garage|banden|apk|motor|monteur|carrosserie|reparatie|onderhoud|mechanic/.test(text);
-  const isInstaller = /loodgieter|install|elektra|elektro|warmtepomp|sanitair|cv|ketel|airco|dakdek|leiding|storing/.test(text);
-  const isBeauty = /kapper|kapsalon|salon|beauty|wellness|massage|nagel|pedicure|schoonheid|barber|coach|horeca|catering/.test(text);
-  const isDelivery = /koerier|delivery|transport|logistiek|verhuis|pakket/.test(text);
-
-  let archetypeKey = 'GENERAL_TRADE';
-  if (isGarden) archetypeKey = 'GARDEN_EARTH';
-  else if (isPainter) archetypeKey = 'ARTISAN_PAINTER';
-  else if (isMechanic) archetypeKey = 'SPEED_MECHANIC';
-  else if (isInstaller) archetypeKey = 'TECHNICAL_INSTALLER';
-  else if (isBeauty) archetypeKey = 'ELEGANT_LIFESTYLE';
-  else if (isDelivery) archetypeKey = 'LOGISTICS_EXPRESS';
-  else if (hash % 3 === 0) archetypeKey = 'MODERN_LIGHT'; // 33% van algemene bedrijven krijgt fris wit licht-thema
-
-  // Layout variant: 0 = Split Hero met Snelle Contact Widget, 1 = Monumentale Centered Hero met Stat Counters, 2 = High-Action Direct Bellen Hero
   const layoutVariant = hash % 3;
 
-  switch (archetypeKey) {
-    case 'GARDEN_EARTH':
-      return {
-        key: 'GARDEN_EARTH',
-        name: 'Natuur & Buitenruimte (Organisch Emerald & Amber)',
-        isLightMode: false,
-        fontFamily: "'Outfit', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap',
-        cssVars: `
-          --bg-dark: #051911;
-          --bg-header: rgba(5, 25, 17, 0.92);
-          --bg-card: rgba(14, 38, 27, 0.75);
-          --accent: #10B981;
-          --accent-hover: #059669;
-          --accent-subtle: rgba(16, 185, 129, 0.15);
-          --accent-secondary: #F59E0B;
-          --text-main: #F0FDF4;
-          --text-muted: #86EFAC;
-          --border: rgba(52, 211, 153, 0.22);
-          --shadow: 0 14px 35px rgba(5, 25, 17, 0.6);
-        `,
-        badgeText: '🌿 Specialist in Tuin, Bestrating & Buitenwerk',
-        heroHeading: `Duurzaam Buitenwerk & Karaktervolle Tuinen door ${b.name}`,
-        heroSubtitle: 'Van solide sierbestrating en grondverzet tot complete tuinrenovaties. Eerlijk vakmanschap met oog voor natuur en duurzaamheid.',
-        usps: [
-          'Alles onder één dak: van advies tot oplevering',
-          'Duurzame materialen & vakkundig grondwerk',
-          'Garantie op bestrating & verzakkingsvrij resultaat'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Locatiebezoek & Advies', desc: 'We bekijken uw tuin of terrein en bespreken uw specifieke wensen.' },
-          { nr: '02', title: 'Transparante Offerte', desc: 'U ontvangt een heldere prijsopgave zonder onverwachte meerkosten.' },
-          { nr: '03', title: 'Vakkundige Uitvoering', desc: 'Met professioneel materieel realiseren we uw project tot in de puntjes.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Diep natuurlijk bosgroen/donker leisteen (#051911 of #0A2218) met levendig smaragdgroen (#10B981) en warme aardetinten (#F59E0B)',
-        layoutVibe: 'Organisch, warm en aards met ronde hoeken en natuur-accenten'
-      };
+  // Granulaire sector matching met verfijnde prioriteit
+  const isInstaller = /installatiebedrijf|installateur|elektrotechniek|warmtepomp|cv-ketel/.test(text) || (text.includes('installat') && !text.includes('ontstop'));
+  const isPlumber = !isInstaller && /loodgieter|riool|ontstop|afvoer|waterleiding|sanitair/.test(text);
+  const isRoofCoating = /dakcoating|coating/.test(text);
+  const isRoofer = /dakdek|daktechniek|dakspeci|bitumen|pannendak|zink/.test(text);
+  const isFitness = /fitness|personal fit|sportschool|kracht|training|workout|gym/.test(text);
+  const isNutrition = /voeding|gewicht|weight|leefstijl|dieet|nutrition/.test(text);
+  const isPaving = /bestrating|stratenmaker|grondwerk|straatmaker|klinker|terras/.test(text);
+  const isLandscape = /landschap|architectuur|tuinontwerp/.test(text);
+  const isGarden = /hovenier|tuin|boom|groen|tuinonderhoud/.test(text);
+  const isPainter = /schilder/.test(text);
+  const isPlasterer = !isPainter && /stuc|stukadoor|pleister|wandafwerk/.test(text);
+  const isHandyman = /klus|timmer|verbouw|onderhoud|vakman/.test(text);
+  const isMechanic = /fiets|rijwiel|scooter|auto|garage|banden|apk|motor|monteur|reparatie/.test(text);
+  const isDelivery = /koerier|delivery|transport|logistiek|verhuis|pakket/.test(text);
+  const isWeb = /web|software|design|digitaal|applicatie/.test(text);
 
-    case 'ARTISAN_PAINTER':
-      return {
-        key: 'ARTISAN_PAINTER',
-        name: 'Schilder & Afwerking (Studio Obsidian & Artisan Gold)',
-        isLightMode: false,
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-        cssVars: `
-          --bg-dark: #0A0E17;
-          --bg-header: rgba(10, 14, 23, 0.92);
-          --bg-card: rgba(20, 28, 44, 0.8);
-          --accent: #F59E0B;
-          --accent-hover: #D97706;
-          --accent-subtle: rgba(245, 158, 11, 0.14);
-          --accent-secondary: #38BDF8;
-          --text-main: #F8FAFC;
-          --text-muted: #94A3B8;
-          --border: rgba(245, 158, 11, 0.25);
-          --shadow: 0 14px 35px rgba(10, 14, 23, 0.7);
-        `,
-        badgeText: '🎨 Strak Schilderwerk & Vlekkeloze Afwerking',
-        heroHeading: `Ambachtelijk Schilderwerk & Duurzame Bescherming bij ${b.name}`,
-        heroSubtitle: 'Voor binnen- en buitenschilderwerk van het hoogste niveau. Stofvrij schuren, professioneel kleuradvies en jarenlange bescherming van uw houtwerk.',
-        usps: [
-          'Stofvrij schuren met professionele afzuiging',
-          'Kleur- en stijladvies op maat aan huis',
-          'Tot 5 jaar garantie op hoogwaardig buitenschilderwerk'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Inspectie & Kleuradvies', desc: 'We controleren het houtwerk en adviseren de juiste lakken en kleuren.' },
-          { nr: '02', title: 'Vrijblijvende Prijsopgave', desc: 'Een gedetailleerde offerte inclusief materialen, steigers en planning.' },
-          { nr: '03', title: 'Strakke Oplevering', desc: 'Vlekkeloze laklagen, schone werkplek en een strak eindresultaat.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Diep architectonisch studio leisteen (#0A0E17) met warm ambachtelijk goud/amber (#F59E0B) en scherpe lichte typografie',
-        layoutVibe: 'Strak, elegant studio gevoel met gouden accentlijnen en precisie'
-      };
-
-    case 'SPEED_MECHANIC':
-      return {
-        key: 'SPEED_MECHANIC',
-        name: 'Snelle Reparatie & Techniek (Carbon & Flame Orange)',
-        isLightMode: false,
-        fontFamily: "'Space Grotesk', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap',
-        cssVars: `
-          --bg-dark: #090A0E;
-          --bg-header: rgba(9, 10, 14, 0.94);
-          --bg-card: rgba(20, 23, 33, 0.85);
-          --accent: #FF5722;
-          --accent-hover: #E64A19;
-          --accent-subtle: rgba(255, 87, 34, 0.16);
-          --accent-secondary: #3B82F6;
-          --text-main: #FFFFFF;
-          --text-muted: #A1A1AA;
-          --border: rgba(255, 87, 34, 0.28);
-          --shadow: 0 14px 35px rgba(0, 0, 0, 0.8);
-        `,
-        badgeText: '⚡ Snelle Service & Betrouwbare Reparatie',
-        heroHeading: `Snel & Veilig Weer Onderweg met ${b.name}`,
-        heroSubtitle: 'Geen ellenlange wachttijden. Snelle vakkundige diagnose, heldere prijsopgave vooraf en uw tweewieler of voertuig snel weer gereed.',
-        usps: [
-          'Vaak binnen 24 uur weer rijklaar',
-          'Vooraf altijd een duidelijke prijsopgave zonder verrassingen',
-          'Vakmanschap met hoogwaardige merkonderdelen'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Brengen of Aanmelden', desc: 'Loop binnen of stuur een WhatsApp voor een snelle inspectie.' },
-          { nr: '02', title: 'Diagnose & Prijsakkoord', desc: 'We bellen of appen vooraf de exacte kosten door.' },
-          { nr: '03', title: 'Rijklaar & Getest', desc: 'Vakkundig gerepareerd en na een grondige test weer veilig mee.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Diep carbon zwart (#090A0E) met high-octane flame orange (#FF5722) en koele staaltinten (#A1A1AA)',
-        layoutVibe: 'Snel, dynamisch, technisch en krachtig met opvallende actieknoppen'
-      };
-
-    case 'TECHNICAL_INSTALLER':
-      return {
-        key: 'TECHNICAL_INSTALLER',
-        name: 'Erkend Installateur (Maritime Navy & Electric Cobalt)',
-        isLightMode: false,
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-        cssVars: `
-          --bg-dark: #060E1A;
-          --bg-header: rgba(6, 14, 26, 0.92);
-          --bg-card: rgba(15, 30, 56, 0.8);
-          --accent: #2563EB;
-          --accent-hover: #1D4ED8;
-          --accent-subtle: rgba(37, 99, 235, 0.16);
-          --accent-secondary: #06B6D4;
-          --text-main: #F0F9FF;
-          --text-muted: #94A3B8;
-          --border: rgba(56, 189, 248, 0.25);
-          --shadow: 0 14px 35px rgba(6, 14, 26, 0.7);
-        `,
-        badgeText: '🔧 Erkend Installateur & Snelle Hulp bij Storingen',
-        heroHeading: `Betrouwbare Installatietechniek & Vakkundige Hulp bij ${b.name}`,
-        heroSubtitle: 'Van cv-ketels, warmtepompen en sanitair tot complete elektrotechnische installaties. Veilig en gecertificeerd gemonteerd volgens de strengste normen.',
-        usps: [
-          'Gecertificeerd vakmanschap en veilige montage',
-          'Directe hulp en snelle service bij urgente storingen',
-          'Transparante all-in tarieven zonder vage toeslagen'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Storing of Wens Doorgeven', desc: 'Neem telefonisch contact op of stuur direct een WhatsApp.' },
-          { nr: '02', title: 'Snelle Planning', desc: 'We stemmen snel een afspraak af met een vakkundige monteur.' },
-          { nr: '03', title: 'Veilige Oplevering', desc: 'Montage en afstelling volgens de norm met schriftelijke garantie.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Diep marineblauw (#060E1A) met elektrisch kobalt (#2563EB) en helder cyaan (#06B6D4)',
-        layoutVibe: 'Betrouwbaar, technisch, gecertificeerd met live bereikbaarheidsstatus'
-      };
-
-    case 'LOGISTICS_EXPRESS':
-      return {
-        key: 'LOGISTICS_EXPRESS',
-        name: 'Snelle Logistiek & Transport (Steel Navy & Signal Blue)',
-        isLightMode: false,
-        fontFamily: "'Space Grotesk', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;600&display=swap',
-        cssVars: `
-          --bg-dark: #0A0F1D;
-          --bg-header: rgba(10, 15, 29, 0.94);
-          --bg-card: rgba(18, 26, 46, 0.85);
-          --accent: #3B82F6;
-          --accent-hover: #2563EB;
-          --accent-subtle: rgba(59, 130, 246, 0.15);
-          --accent-secondary: #F59E0B;
-          --text-main: #F8FAFC;
-          --text-muted: #94A3B8;
-          --border: rgba(59, 130, 246, 0.25);
-          --shadow: 0 14px 35px rgba(10, 15, 29, 0.7);
-        `,
-        badgeText: '🚚 Betrouwbaar Transport & Snelle Koeriersdienst',
-        heroHeading: `Stipt & Veilig Bezorgd door ${b.name}`,
-        heroSubtitle: 'Voor spoedzendingen, regionaal transport en betrouwbare pakketbezorging. Altijd op tijd, met zorg behandeld en direct contact met de chauffeur.',
-        usps: [
-          'Vaste afspraken en 100% stipte levering',
-          'Flexibele spoedritten in Groningen en heel Nederland',
-          'Zorgvuldige en schadevrije goederenbehandeling'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Rit Aanmelden', desc: 'Geef ophaal- en afleverlocatie eenvoudig door per telefoon of WhatsApp.' },
-          { nr: '02', title: 'Direct Onderweg', desc: 'We plannen de snelste route en vertrekken op het afgesproken tijdstip.' },
-          { nr: '03', title: 'Veilig Afgeleverd', desc: 'Ontvangstbevestiging met handtekening en directe terugkoppeling.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Modern transport marineblauw (#0A0F1D) met signaal-blauw (#3B82F6) en warm amber (#F59E0B)',
-        layoutVibe: 'Stipt, energiek, betrouwbaar en snel'
-      };
-
-    case 'ELEGANT_LIFESTYLE':
-      return {
-        key: 'ELEGANT_LIFESTYLE',
-        name: 'Boutique Lifestyle & Care (Velvet & Rose Quartz)',
-        isLightMode: false,
-        fontFamily: "'Outfit', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap',
-        cssVars: `
-          --bg-dark: #12091B;
-          --bg-header: rgba(18, 9, 27, 0.92);
-          --bg-card: rgba(32, 17, 49, 0.8);
-          --accent: #FB7185;
-          --accent-hover: #F43F5E;
-          --accent-subtle: rgba(251, 113, 133, 0.16);
-          --accent-secondary: #FBBF24;
-          --text-main: #FFF1F2;
-          --text-muted: #FDA4AF;
-          --border: rgba(251, 113, 133, 0.25);
-          --shadow: 0 14px 35px rgba(18, 9, 27, 0.8);
-        `,
-        badgeText: '✨ Persoonlijke Aandacht, Schoonheid & Verzorging',
-        heroHeading: `Stijl, Persoonlijke Aandacht & Pure Verwennerij bij ${b.name}`,
-        heroSubtitle: 'Neem even de tijd voor uzelf in een ontspannen, gastvrije salon. Persoonlijk advies en behandelingen op maat met uitsluitend kwaliteitsproducten.',
-        usps: [
-          'Persoonlijke aandacht & tijd voor elke klant',
-          'Uitsluitend gecertificeerde topproducten',
-          'Eenvoudig online of via WhatsApp een afspraak maken'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Behandeling Kiezen', desc: 'Kies uw gewenste behandeling en stem de tijd makkelijk af.' },
-          { nr: '02', title: 'Ontspannen Ontvangst', desc: 'Geniet van een warm welkom en deskundig persoonlijk advies.' },
-          { nr: '03', title: 'Stralend Naar Huis', desc: 'Verlaat de salon verzorgd, ontspannen en vol zelfvertrouwen.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Diep fluweelpaars (#12091B) met zacht rozenkwarts (#FB7185) en champagne goud (#FBBF24)',
-        layoutVibe: 'Luxe boutique gevoel met zachte ronde vormen en elegante accenten'
-      };
-
-    case 'MODERN_LIGHT':
-      return {
-        key: 'MODERN_LIGHT',
-        name: 'Fresh Modern Light Mode (Clean Canvas & Royal Ultramarine)',
-        isLightMode: true,
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-        cssVars: `
-          --bg-dark: #F8FAFC;
-          --bg-header: rgba(255, 255, 255, 0.95);
-          --bg-card: #FFFFFF;
-          --accent: #2563EB;
-          --accent-hover: #1D4ED8;
-          --accent-subtle: rgba(37, 99, 235, 0.08);
-          --accent-secondary: #10B981;
-          --text-main: #0F172A;
-          --text-muted: #64748B;
-          --border: #E2E8F0;
-          --shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-        `,
-        badgeText: '✨ Betrouwbaar & Zorgeloos Geregeld',
-        heroHeading: `Zorgeloos Vakmanschap & Persoonlijke Service bij ${b.name}`,
-        heroSubtitle: 'Voor particulieren en bedrijven die kiezen voor heldere afspraken, snelle communicatie en een vakkundige uitvoering zonder verrassingen.',
-        usps: [
-          'Transparante all-in tarieven zonder verborgen kosten',
-          'Binnen 24 uur antwoord op al uw vragen en aanvragen',
-          'Vakmanschap met focus op kwaliteit en tevredenheid'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Vrijblijvende Aanvraag', desc: 'Neem contact op via telefoon, WhatsApp of het formulier.' },
-          { nr: '02', title: 'Duidelijk Plan & Prijs', desc: 'U ontvangt snel een overzichtelijke offerte op maat.' },
-          { nr: '03', title: 'Vakkundige Realisatie', desc: 'Netjes uitgevoerd en betrouwbaar opgeleverd volgens planning.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Fris, hyper-modern licht canvas (#F8FAFC) met zuiver witte kaarten (#FFFFFF), koninklijk blauw (#2563EB) en antraciet typografie (#0F172A)',
-        layoutVibe: 'Licht, fris, helder, professioneel en open met zachte schaduwen'
-      };
-
-    case 'GENERAL_TRADE':
-    default:
-      return {
-        key: 'GENERAL_TRADE',
-        name: 'Moderne Vakman & Dienstverlener (Deep Indigo & Cyan)',
-        isLightMode: false,
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-        cssVars: `
-          --bg-dark: #0B0F19;
-          --bg-header: rgba(11, 15, 25, 0.92);
-          --bg-card: rgba(17, 24, 39, 0.8);
-          --accent: #06B6D4;
-          --accent-hover: #0891B2;
-          --accent-subtle: rgba(6, 182, 212, 0.15);
-          --accent-secondary: #6366F1;
-          --text-main: #F8FAFC;
-          --text-muted: #94A3B8;
-          --border: rgba(255, 255, 255, 0.1);
-          --shadow: 0 14px 35px rgba(0, 0, 0, 0.6);
-        `,
-        badgeText: '⭐ Lokale Betrouwbaarheid & Kwaliteit',
-        heroHeading: `Kwaliteit, Betrouwbaarheid & Vakwerk bij ${b.name}`,
-        heroSubtitle: 'Voor particulieren en bedrijven die gaan voor een vakkundige uitvoering, betrouwbare afspraken en duurzaam resultaat.',
-        usps: [
-          'Lokale specialist met oog voor detail',
-          'Vrijblijvende prijsopgave vooraf zonder kleine lettertjes',
-          'Eerlijke communicatie en vlotte oplevering'
-        ],
-        processSteps: [
-          { nr: '01', title: 'Eerste Contact', desc: 'Neem contact op voor een snelle afstemming van uw klus of vraag.' },
-          { nr: '02', title: 'Helder Voorstel', desc: 'U ontvangt een transparant en eerlijk prijsvoorstel.' },
-          { nr: '03', title: 'Net Opleveren', desc: 'Vakkundig uitgevoerd en schoon opgeleverd volgens afspraak.' }
-        ],
-        layoutVariant,
-        promptPaletteAdvice: 'Donkerblauwe premium achtergrond (#0B0F19) met cyaan (#06B6D4) of indigo (#6366F1) en scherpe witte teksten',
-        layoutVibe: 'Strak, technologisch, modern en conversiegericht'
-      };
+  // 1. INSTALLATIETECHNIEK & ELEKTRA (bv. Installatiebedrijf Mulder Sappemeer)
+  if (isInstaller) {
+    return {
+      key: 'TECHNICAL_INSTALLER',
+      name: 'Erkend Installateur (Midnight Navy & Electric Cobalt)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #050E1B;
+        --bg-header: rgba(5, 14, 27, 0.94);
+        --bg-card: rgba(15, 29, 52, 0.82);
+        --accent: #2563EB;
+        --accent-hover: #1D4ED8;
+        --accent-subtle: rgba(37, 99, 235, 0.16);
+        --accent-secondary: #06B6D4;
+        --text-main: #F0F9FF;
+        --text-muted: #94A3B8;
+        --border: rgba(56, 189, 248, 0.25);
+        --shadow: 0 14px 35px rgba(5, 14, 27, 0.7);
+      `,
+      badgeText: '🔧 Erkend Installateur & Duurzame Installatietechniek',
+      heroHeading: `Betrouwbare Installatietechniek & Vakkundige Service bij ${b.name}`,
+      heroSubtitle: 'Van cv-ketels, warmtepompen en sanitair tot complete leiding- en elektrotechnische installaties. Veilig en gecertificeerd gemonteerd.',
+      usps: [
+        'Gecertificeerd vakmanschap en veilige montage volgens norm',
+        'Directe hulp en service bij storingen en calamiteiten',
+        'Duurzame installaties met hoog energetisch rendement'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Wens of Storing Melden', desc: 'Neem contact op voor advies of directe assistentie.' },
+        { nr: '02', title: 'Afstemming & Planning', desc: 'Vlotte inplanning met een ervaren vakmonteur.' },
+        { nr: '03', title: 'Veilige Oplevering', desc: 'Vakkundig geïnstalleerd en getoetst volgens de richtlijnen.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Marineblauw (#050E1B) met elektrisch kobalt (#2563EB) en helder cyaan (#06B6D4)',
+      layoutVibe: 'Betrouwbaar, technisch, gecertificeerd en professioneel'
+    };
   }
+
+  // 2. PLUMBER & RIOOLSERVICE (bv. 123ontstopper)
+  if (isPlumber) {
+    return {
+      key: 'PLUMBER_DRAIN',
+      name: 'Rioolservice & Loodgieter (Deep Marine & Aqua Cyan)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #06111C;
+        --bg-header: rgba(6, 17, 28, 0.94);
+        --bg-card: rgba(14, 30, 48, 0.82);
+        --accent: #06B6D4;
+        --accent-hover: #0891B2;
+        --accent-subtle: rgba(6, 182, 212, 0.16);
+        --accent-secondary: #3B82F6;
+        --text-main: #F0F9FF;
+        --text-muted: #94A3B8;
+        --border: rgba(6, 182, 212, 0.25);
+        --shadow: 0 14px 35px rgba(6, 17, 28, 0.7);
+      `,
+      badgeText: '🚰 24/7 Rioolservice, Ontstopping & Loodgieter Spoedhulp',
+      heroHeading: `Snel & Vakkundig Verholpen door ${b.name}`,
+      heroSubtitle: 'Last van een hardnekkige verstopping, lekkage of stankoverlast? Met professionele veermachines en camera-inspectie lossen we het snel en vakkundig op.',
+      usps: [
+        'Snelle spoedservice in Hoogezand en regio Groningen',
+        'Vaste en transparante all-in tarieven zonder verrassingen',
+        'Moderne camera-inspectie en geavanceerde ontstopping'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Storing Melden', desc: 'Bel direct of stuur een WhatsApp met de situatie.' },
+        { nr: '02', title: 'Snelle Hulp ter Plaatse', desc: 'Onze monteur arriveert met complete apparatuur.' },
+        { nr: '03', title: 'Opgelost & Getest', desc: 'Riolering grondig doorgespoeld en getest voor vertrek.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Deep marine ocean (#06111C) met vivid aqua cyan (#06B6D4) en helder waterblauw (#3B82F6)',
+      layoutVibe: 'Snel, betrouwbaar, spoed-gericht met actieve bereikbaarheid'
+    };
+  }
+
+  // 2. DAKCOATING & REINIGING (bv. dakcoatingshop)
+  if (isRoofCoating) {
+    return {
+      key: 'ROOF_COATING',
+      name: 'Dakcoating & Reiniging (Graphite Petrol & Vivid Mint)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #09131D;
+        --bg-header: rgba(9, 19, 29, 0.94);
+        --bg-card: rgba(18, 33, 49, 0.82);
+        --accent: #10B981;
+        --accent-hover: #059669;
+        --accent-subtle: rgba(16, 185, 129, 0.16);
+        --accent-secondary: #0284C7;
+        --text-main: #F0FDF4;
+        --text-muted: #94A3B8;
+        --border: rgba(16, 185, 129, 0.25);
+        --shadow: 0 14px 35px rgba(9, 19, 29, 0.7);
+      `,
+      badgeText: '✨ Professionele Dakcoating, Reiniging & Bescherming',
+      heroHeading: `Uw Dak als Nieuw Zonder Dure Vervanging met ${b.name}`,
+      heroSubtitle: 'Verleng de levensduur van uw dakpannen aanzienlijk met professionele reiniging en hoogwaardige hydrofobe dakcoating in uw gewenste tint.',
+      usps: [
+        'Tot 70% voordeliger dan een compleet nieuw pannendak',
+        'Waterafstotend, mos- en algenwerend resultaat met langdurige glans',
+        'Schriftelijke garantie op hechting en kleurbehoud'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Inspectie & Proefvlak', desc: 'We inspecteren de pannen en tonen het verwachte resultaat.' },
+        { nr: '02', title: 'Dieptereiniging & Desinfectie', desc: 'Vuil, mos en algen worden onder gecontroleerde druk verwijderd.' },
+        { nr: '03', title: '2-Laags Coating', desc: 'Professionele beschermlaag aangebracht voor jarenlange bescherming.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Diep grafiet petrol (#09131D) met frisse mint-smaragd (#10B981) en oceaanblauw (#0284C7)',
+      layoutVibe: 'Fris, beschermend, innovatief en waardeverhogend'
+    };
+  }
+
+  // 3. DAKDEKKER & DAKRENOVATIE (bv. a-v-dakspecialist, dakdekker Noordlaren)
+  if (isRoofer) {
+    const isSubVariant1 = (hash + (b.name || '').length) % 2 === 1;
+    return {
+      key: 'ROOFER_SLATE',
+      name: isSubVariant1 ? 'Dakspecialist (Deep Anthracite & Warm Flame Gold)' : 'Dakspecialist (Slate Charcoal & Terracotta Copper)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: isSubVariant1 ? `
+        --bg-dark: #10141C;
+        --bg-header: rgba(16, 20, 28, 0.94);
+        --bg-card: rgba(25, 32, 45, 0.82);
+        --accent: #D97706;
+        --accent-hover: #B45309;
+        --accent-subtle: rgba(217, 119, 6, 0.16);
+        --accent-secondary: #EA580C;
+        --text-main: #FEF3C7;
+        --text-muted: #94A3B8;
+        --border: rgba(217, 119, 6, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.75);
+      ` : `
+        --bg-dark: #0F1318;
+        --bg-header: rgba(15, 19, 24, 0.94);
+        --bg-card: rgba(26, 32, 40, 0.82);
+        --accent: #EA580C;
+        --accent-hover: #C2410C;
+        --accent-subtle: rgba(234, 88, 12, 0.16);
+        --accent-secondary: #F59E0B;
+        --text-main: #FAF5F0;
+        --text-muted: #A8A29E;
+        --border: rgba(234, 88, 12, 0.28);
+        --shadow: 0 14px 35px rgba(15, 19, 24, 0.75);
+      `,
+      badgeText: '🏠 Vakkundig Dakwerk, Bitumen & Zinkrenovatie',
+      heroHeading: `Duurzaam Dakwerk & Betrouwbare Bescherming door ${b.name}`,
+      heroSubtitle: 'Van hoogwaardige bitumen platte daken en nokvorstreparaties tot zinkwerk en dakisolatie. 100% waterdicht opgeleverd met 10 jaar garantie.',
+      usps: [
+        'Tot 10 jaar schriftelijke garantie op dakbedekking',
+        'Vrijblijvende dakinspectie inclusief heldere fotorapportage',
+        'Snelle hulp bij daklekkage, stormschade en noodreparaties'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Grondige Dakinspectie', desc: 'We controleren de staat van uw dakbedekking en randafwerking.' },
+        { nr: '02', title: 'Transparante Offerte', desc: 'Heldere prijsopgave zonder verrassingen achteraf.' },
+        { nr: '03', title: 'Vakkundige Montage', desc: 'Professioneel gemonteerd volgens de strengste NEN-veiligheidsnormen.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Leisteen antraciet (#0F1318) met warme terracotta koper (#EA580C) en amber accenten (#F59E0B)',
+      layoutVibe: 'Solide, ambachtelijk, weerbestendig en betrouwbaar'
+    };
+  }
+
+  // 4. INSTALLATIETECHNIEK & ELEKTRA (bv. Installatiebedrijf Mulder Sappemeer)
+  if (isInstaller) {
+    return {
+      key: 'TECHNICAL_INSTALLER',
+      name: 'Erkend Installateur (Midnight Navy & Electric Cobalt)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #050E1B;
+        --bg-header: rgba(5, 14, 27, 0.94);
+        --bg-card: rgba(15, 29, 52, 0.82);
+        --accent: #2563EB;
+        --accent-hover: #1D4ED8;
+        --accent-subtle: rgba(37, 99, 235, 0.16);
+        --accent-secondary: #06B6D4;
+        --text-main: #F0F9FF;
+        --text-muted: #94A3B8;
+        --border: rgba(56, 189, 248, 0.25);
+        --shadow: 0 14px 35px rgba(5, 14, 27, 0.7);
+      `,
+      badgeText: '🔧 Erkend Installateur & Duurzame Installatietechniek',
+      heroHeading: `Betrouwbare Installatietechniek & Vakkundige Service bij ${b.name}`,
+      heroSubtitle: 'Van cv-ketels, warmtepompen en sanitair tot complete leiding- en elektrotechnische installaties. Veilig en gecertificeerd gemonteerd.',
+      usps: [
+        'Gecertificeerd vakmanschap en veilige montage volgens norm',
+        'Directe hulp en service bij storingen en calamiteiten',
+        'Duurzame installaties met hoog energetisch rendement'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Wens of Storing Melden', desc: 'Neem contact op voor advies of directe assistentie.' },
+        { nr: '02', title: 'Afstemming & Planning', desc: 'Vlotte inplanning met een ervaren vakmonteur.' },
+        { nr: '03', title: 'Veilige Oplevering', desc: 'Vakkundig geïnstalleerd en getoetst volgens de richtlijnen.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Marineblauw (#050E1B) met elektrisch kobalt (#2563EB) en helder cyaan (#06B6D4)',
+      layoutVibe: 'Betrouwbaar, technisch, gecertificeerd en professioneel'
+    };
+  }
+
+  // 5. FITNESS & PERSONAL TRAINING (bv. CIJNTJE PERSONAL FIT)
+  if (isFitness) {
+    return {
+      key: 'FITNESS_PERFORMANCE',
+      name: 'Fitness Performance & Gym (Matte Black & Acid Lime)',
+      isLightMode: false,
+      fontFamily: "'Space Grotesk', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap',
+      cssVars: `
+        --bg-dark: #08080A;
+        --bg-header: rgba(8, 8, 10, 0.95);
+        --bg-card: rgba(22, 22, 28, 0.85);
+        --accent: #84CC16;
+        --accent-hover: #65A30D;
+        --accent-subtle: rgba(132, 204, 22, 0.16);
+        --accent-secondary: #38BDF8;
+        --text-main: #FFFFFF;
+        --text-muted: #A1A1AA;
+        --border: rgba(132, 204, 22, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.85);
+      `,
+      badgeText: '⚡ Kracht, Conditie & Persoonlijke Begeleiding',
+      heroHeading: `Bereik Jouw Doelen & Maximale Fitheid met ${b.name}`,
+      heroSubtitle: 'Geen excuses meer. Doelgerichte personal training, effectieve workouts en continue motivatie om jouw fysieke toppunt te bereiken in Hoogezand en regio Groningen.',
+      usps: [
+        '1-op-1 coaching op maat voor gegarandeerd meetbaar resultaat',
+        'Persoonlijk trainings- en voedingsplan afgestemd op jouw schema',
+        'Trainen in een motiverende, professionele en energieke sfeer'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Gratis Intake & Doelen', desc: 'We bespreken jouw doelen, conditie en belastbaarheid.' },
+        { nr: '02', title: 'Op Maat Traject', desc: 'Een effectief trainingsprogramma met duidelijke mijlpalen.' },
+        { nr: '03', title: 'Blijvend Resultaat', desc: 'Fit worden, sterker voelen en vol energie in het leven staan.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Mat puur zwart (#08080A) met high-energy acid lime (#84CC16) en scherpe Space Grotesk typografie',
+      layoutVibe: 'Krachtig, energiek, sportief en motiverend'
+    };
+  }
+
+  // 6. VOEDING & LEEFSTIJLCOACH (bv. Weight Change)
+  if (isNutrition) {
+    return {
+      key: 'VITAL_WELLNESS',
+      name: 'Vital Lifestyle & Nutrition (Deep Evergreen & Rose Gold)',
+      isLightMode: false,
+      fontFamily: "'Outfit', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap',
+      cssVars: `
+        --bg-dark: #0B1713;
+        --bg-header: rgba(11, 23, 19, 0.94);
+        --bg-card: rgba(21, 38, 32, 0.82);
+        --accent: #FB7185;
+        --accent-hover: #F43F5E;
+        --accent-subtle: rgba(251, 113, 133, 0.16);
+        --accent-secondary: #34D399;
+        --text-main: #FDF4F5;
+        --text-muted: #99F6E4;
+        --border: rgba(251, 113, 133, 0.25);
+        --shadow: 0 14px 35px rgba(11, 23, 19, 0.7);
+      `,
+      badgeText: '🌿 Gezonde Leefstijl, Voeding & Blijvend Gewichtsverlies',
+      heroHeading: `Duurzaam Afvallen & Vol Energie in het Leven met ${b.name}`,
+      heroSubtitle: 'Geen streng crashdieet of jojo-effect, maar een persoonlijk voedings- en leefstijlplan dat écht bij jouw leven past. Rust, vitaliteit en blijvend resultaat.',
+      usps: [
+        'Deskundige begeleiding op maat zonder hongerlijden',
+        'Blijvend resultaat met een wetenschappelijk onderbouwde methodiek',
+        'Persoonlijke coaching en wekelijkse motiverende ondersteuning'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Kennismakingsgesprek', desc: 'We analyseren jouw huidige eetpatroon, leefstijl en doelen.' },
+        { nr: '02', title: 'Persoonlijk Voedingsplan', desc: 'Heerlijk en gezond eten afgestemd op jouw gezin en werk.' },
+        { nr: '03', title: 'Duurzame Vitaliteit', desc: 'Gezonde gewoontes die je moeiteloos vasthoudt voor de lange termijn.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Diep natuurlijk evergreen (#0B1713) met zacht rozengoud/terracotta (#FB7185) en mint accenten (#34D399)',
+      layoutVibe: 'Sereniteit, gezondheid, empathie en duurzaam welzijn'
+    };
+  }
+
+  // 7. BESTRATING & GRONDWERK (bv. N ten seldam)
+  if (isPaving) {
+    return {
+      key: 'PAVING_EARTH',
+      name: 'Bestrating & Grondverzet (Basalt Slate & Amber Sand)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #0D1211;
+        --bg-header: rgba(13, 18, 17, 0.94);
+        --bg-card: rgba(24, 33, 30, 0.82);
+        --accent: #D97706;
+        --accent-hover: #B45309;
+        --accent-subtle: rgba(217, 119, 6, 0.16);
+        --accent-secondary: #10B981;
+        --text-main: #FEF3C7;
+        --text-muted: #D1D5DB;
+        --border: rgba(217, 119, 6, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.75);
+      `,
+      badgeText: '🚜 Strakke Sierbestrating, Terrassen & Grondwerk',
+      heroHeading: `Vakkundig Straatwerk & Duurzaam Buitenwerk door ${b.name}`,
+      heroSubtitle: 'Van moderne opritten en keramische terrassen tot grondverzet en hemelwaterafvoer. Solide gelegd met garantie op een verzakkingsvrij resultaat.',
+      usps: [
+        'Laser-gestuurd grondwerk en perfecte afwatering',
+        'Garantie op verzakkingsvrij en slijtvast straatwerk',
+        'Eerlijke all-in meterprijzen zonder verborgen meerkosten'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Inmeten & Advies', desc: 'We komen ter plaatse kijken en adviseren over klinkers en tegels.' },
+        { nr: '02', title: 'Transparante Offerte', desc: 'Duidelijke prijs per m² inclusief zandbed en afvoer.' },
+        { nr: '03', title: 'Strakke Oplevering', desc: 'Vakkundig afgetrild, ingeveegd en netjes opgeruimd.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Basalt aarde leisteen (#0D1211) met warm amberkleurig zand (#D97706) en groenaccenten (#10B981)',
+      layoutVibe: 'Aards, robuust, vakkundig en strak afgewerkt'
+    };
+  }
+
+  // 8. TUIN- EN LANDSCHAPSARCHITECTUUR (bv. Jonas Lindenhoff)
+  if (isLandscape) {
+    return {
+      key: 'LANDSCAPE_ARCHITECT',
+      name: 'Tuin- en Landschapsarchitectuur (Architectural Slate & Pine Lime)',
+      isLightMode: false,
+      fontFamily: "'Outfit', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap',
+      cssVars: `
+        --bg-dark: #071510;
+        --bg-header: rgba(7, 21, 16, 0.94);
+        --bg-card: rgba(16, 36, 28, 0.82);
+        --accent: #14B8A6;
+        --accent-hover: #0D9488;
+        --accent-subtle: rgba(20, 184, 166, 0.16);
+        --accent-secondary: #A3E635;
+        --text-main: #F0FDFA;
+        --text-muted: #99F6E4;
+        --border: rgba(20, 184, 166, 0.26);
+        --shadow: 0 14px 35px rgba(7, 21, 16, 0.7);
+      `,
+      badgeText: '📐 Doordacht Tuinontwerp & Landschapsarchitectuur',
+      heroHeading: `Exclusief Tuinontwerp & Landschapscreaties door ${b.name}`,
+      heroSubtitle: 'Van karakteristieke villatuinen tot natuurlijke landschapsruimtes. Een harmonieus samenspel van architectuur, seizoensbeplanting en optimaal leefcomfort.',
+      usps: [
+        'Maatwerk 2D & 3D ontwerpen met sfeer- en materiaalvisualisaties',
+        'Doordachte beplantingsplannen met bloeigarantie in elk seizoen',
+        'Professionele projectbegeleiding van ontwerptafel tot oplevering'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Oriëntatie & Wensen', desc: 'Samen bespreken we stijl, zichtlijnen en functie van de buitenruimte.' },
+        { nr: '02', title: 'Ontwerp & Beplantingsplan', desc: 'U ontvangt een doordacht en artistiek schetsontwerp.' },
+        { nr: '03', title: 'Realisatiebegeleiding', desc: 'Coördinatie met hoveniers en stratenmakers voor perfect resultaat.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Architectonisch bosleisteen (#071510) met pine teal (#14B8A6) en fris lime-groen (#A3E635)',
+      layoutVibe: 'Artistiek, doordacht, ruimtelijk en verfijnd'
+    };
+  }
+
+  // 9. TUINONDERHOUD & HOVENIER (bv. Sebens Tuinonderhoud)
+  if (isGarden) {
+    return {
+      key: 'GARDEN_EARTH',
+      name: 'Natuur & Tuinonderhoud (Diep Bosgroen & Smaragd)',
+      isLightMode: false,
+      fontFamily: "'Outfit', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap',
+      cssVars: `
+        --bg-dark: #051911;
+        --bg-header: rgba(5, 25, 17, 0.92);
+        --bg-card: rgba(14, 38, 27, 0.75);
+        --accent: #10B981;
+        --accent-hover: #059669;
+        --accent-subtle: rgba(16, 185, 129, 0.15);
+        --accent-secondary: #F59E0B;
+        --text-main: #F0FDF4;
+        --text-muted: #86EFAC;
+        --border: rgba(52, 211, 153, 0.22);
+        --shadow: 0 14px 35px rgba(5, 25, 17, 0.6);
+      `,
+      badgeText: '🌿 Vakkundig Tuinonderhoud, Snoeiwerk & Aanleg',
+      heroHeading: `Een Verzorgde & Karaktervolle Tuin door ${b.name}`,
+      heroSubtitle: 'Periodiek tuinonderhoud, vakkundige snoeibeurten of complete tuinrenovaties. Wij zorgen dat uw buitenruimte in elk seizoen straalt.',
+      usps: [
+        'Vakkundig seizoensonderhoud en boom- en heestersnoei',
+        'Afvoer van al het groenafval netjes en snel geregeld',
+        'Vaste afspraken, betrouwbare hoveniers en eerlijke prijzen'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Tuininspectie', desc: 'We bekijken samen uw tuin en stemmen de onderhoudsbehoefte af.' },
+        { nr: '02', title: 'Duidelijk Voorstel', desc: 'Vaste prijs per beurt of overzichtelijk onderhoudscontract.' },
+        { nr: '03', title: 'Verzorgd Resultaat', desc: 'Strak gesnoeid, onkruidvrij en bezemschoon achtergelaten.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Diep natuurlijk bosgroen (#051911) met levendig smaragd (#10B981) en warme aardetinten (#F59E0B)',
+      layoutVibe: 'Organisch, fris, natuurlijk en betrouwbaar'
+    };
+  }
+
+  // 10. STUKADOORSBEDRIJF (bv. Stuc-noord)
+  if (isPlasterer) {
+    return {
+      key: 'PLASTER_MODERN',
+      name: 'Stukadoor & Wandafwerking (Clean Architectural Slate & Ice Blue)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #0B1120;
+        --bg-header: rgba(11, 17, 32, 0.94);
+        --bg-card: rgba(19, 31, 56, 0.82);
+        --accent: #38BDF8;
+        --accent-hover: #0284C7;
+        --accent-subtle: rgba(56, 189, 248, 0.16);
+        --accent-secondary: #818CF8;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(56, 189, 248, 0.25);
+        --shadow: 0 14px 35px rgba(11, 17, 32, 0.7);
+      `,
+      badgeText: '🏛️ Sausklaar Stucwerk, Pleisterwerk & Betonlook',
+      heroHeading: `Spiegelgladde Wanden & Strakke Plafonds door ${b.name}`,
+      heroSubtitle: 'Van traditioneel pleisterwerk en sausklare wanden tot exclusieve beton ciré en sierpleister. Vakkundig en strak aangebracht met oog voor detail.',
+      usps: [
+        '100% spiegelglad en sausklaar opgeleverd met kwaliteitsgarantie',
+        'Vlotte planning en altijd een schone en afgeplakte werkplek',
+        'Vaste vierkante meter prijzen vooraf zonder onverwachte kosten'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Inmeten & Ondergrondcheck', desc: 'We controleren de muren en meten het exacte oppervlak.' },
+        { nr: '02', title: 'Vrijblijvende m² Prijs', desc: 'Transparante offerte inclusief voorstrijken en materiaal.' },
+        { nr: '03', title: 'Strak Stucwerk', desc: 'Vakkundig gestukt, glad gepleisterd en schoon opgeleverd.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Strak architectonisch leisteen (#0B1120) met helder ijsblauw (#38BDF8) en zilveren details',
+      layoutVibe: 'Strak, minimalistisch, egaal en hoogwaardig afgewerkt'
+    };
+  }
+
+  // 11. SCHILDER & AFWERKING (bv. Van der Veen schilderwerken, Schildersbedrijf Van der Veen Kerkstraat)
+  if (isPainter) {
+    const isSubVariant1 = (hash + (b.name || '').length) % 2 === 1;
+    return {
+      key: 'ARTISAN_PAINTER',
+      name: isSubVariant1 ? 'Schilder (Modern Charcoal & Royal Amber)' : 'Schilder (Studio Obsidian & Artisan Gold)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: isSubVariant1 ? `
+        --bg-dark: #0E131F;
+        --bg-header: rgba(14, 19, 31, 0.94);
+        --bg-card: rgba(23, 31, 48, 0.82);
+        --accent: #EAB308;
+        --accent-hover: #CA8A04;
+        --accent-subtle: rgba(234, 179, 8, 0.15);
+        --accent-secondary: #06B6D4;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(234, 179, 8, 0.25);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.7);
+      ` : `
+        --bg-dark: #0A0E17;
+        --bg-header: rgba(10, 14, 23, 0.92);
+        --bg-card: rgba(20, 28, 44, 0.8);
+        --accent: #F59E0B;
+        --accent-hover: #D97706;
+        --accent-subtle: rgba(245, 158, 11, 0.14);
+        --accent-secondary: #38BDF8;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(245, 158, 11, 0.25);
+        --shadow: 0 14px 35px rgba(10, 14, 23, 0.7);
+      `,
+      badgeText: '🎨 Ambachtelijk Schilderwerk & Vlekkeloze Afwerking',
+      heroHeading: `Strak Schilderwerk & Duurzame Bescherming bij ${b.name}`,
+      heroSubtitle: 'Voor binnen- en buitenschilderwerk van het hoogste niveau. Stofvrij schuren, professioneel kleuradvies en jarenlange bescherming van uw houtwerk in Groningen en Drenthe.',
+      usps: [
+        'Stofvrij schuren met professionele afzuiging',
+        'Kleur- en stijladvies op maat aan huis',
+        'Tot 5 jaar garantie op hoogwaardig buitenschilderwerk'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Inspectie & Kleuradvies', desc: 'We controleren het houtwerk en adviseren de juiste lakken en kleuren.' },
+        { nr: '02', title: 'Vrijblijvende Prijsopgave', desc: 'Een gedetailleerde offerte inclusief materialen, steigers en planning.' },
+        { nr: '03', title: 'Strakke Oplevering', desc: 'Vlekkeloze laklagen, schone werkplek en een strak eindresultaat.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Diep studio leisteen (#0A0E17) met warm ambachtelijk goud (#F59E0B) en scherpe typografie',
+      layoutVibe: 'Strak, elegant atelier-gevoel met gouden accenten en precisie'
+    };
+  }
+
+  // 12. ALLROUND VAKMAN & KLUSBEDRIJF (bv. De Vakman Dennis Dijkema, Klussenbedrijf Norder)
+  if (isHandyman) {
+    const isSubVariant1 = (hash + (b.name || '').length) % 2 === 1;
+    return {
+      key: 'HANDYMAN_CRAFTSMAN',
+      name: isSubVariant1 ? 'Klusbedrijf (Craftsman Iron & Amber Gold)' : 'Allround Klusbedrijf (Industrial Anthracite & Warm Orange)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: isSubVariant1 ? `
+        --bg-dark: #12161E;
+        --bg-header: rgba(18, 22, 30, 0.94);
+        --bg-card: rgba(28, 36, 48, 0.82);
+        --accent: #D97706;
+        --accent-hover: #B45309;
+        --accent-subtle: rgba(217, 119, 6, 0.16);
+        --accent-secondary: #0D9488;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(217, 119, 6, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.75);
+      ` : `
+        --bg-dark: #11141A;
+        --bg-header: rgba(17, 20, 26, 0.94);
+        --bg-card: rgba(28, 33, 44, 0.82);
+        --accent: #F97316;
+        --accent-hover: #EA580C;
+        --accent-subtle: rgba(249, 115, 22, 0.16);
+        --accent-secondary: #06B6D4;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(249, 115, 22, 0.25);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.75);
+      `,
+      badgeText: '🔨 Allround Klusbedrijf, Timmerwerk & Verbouw',
+      heroHeading: `Vakkundig Verbouwen & Betrouwbaar Kluswerk door ${b.name}`,
+      heroSubtitle: 'Voor particuliere verbouwingen, badkamermontage, timmerwerk en allround onderhoud. Eén vast aanspreekpunt voor uw complete project in Hoogezand en omstreken.',
+      usps: [
+        'Veelzijdig vakmanschap en betrouwbare service onder één dak',
+        'Heldere communicatie en duidelijke prijsafspraken vooraf',
+        'Nette afwerking, kwaliteitsmaterialen en stipte oplevering'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Klus Bespreken', desc: 'Neem contact op om uw wensen of verbouwing door te nemen.' },
+        { nr: '02', title: 'Duidelijk Plan & Offerte', desc: 'U ontvangt een heldere planning en gespecificeerde prijsopgave.' },
+        { nr: '03', title: 'Vakkundige Realisatie', desc: 'Netjes gebouwd, gemonteerd en bezemschoon opgeleverd.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Stoer industrieel antraciet (#11141A) met veiligheidsoranje/amber (#F97316) en strak staalgrijs',
+      layoutVibe: 'Degelijk, veelzijdig, betrouwbaar en hands-on'
+    };
+  }
+
+  // 13. FIETSENMAKER & REPARATIE (bv. Hakkeling Fiets Reparaties)
+  if (isMechanic) {
+    return {
+      key: 'SPEED_MECHANIC',
+      name: 'Snelle Reparatie & Fietsentechniek (Carbon & Flame Orange)',
+      isLightMode: false,
+      fontFamily: "'Space Grotesk', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap',
+      cssVars: `
+        --bg-dark: #090A0E;
+        --bg-header: rgba(9, 10, 14, 0.94);
+        --bg-card: rgba(20, 23, 33, 0.85);
+        --accent: #FF5722;
+        --accent-hover: #E64A19;
+        --accent-subtle: rgba(255, 87, 34, 0.16);
+        --accent-secondary: #06B6D4;
+        --text-main: #FFFFFF;
+        --text-muted: #A1A1AA;
+        --border: rgba(255, 87, 34, 0.28);
+        --shadow: 0 14px 35px rgba(0, 0, 0, 0.8);
+      `,
+      badgeText: '⚡ Snelle Fietsreparatie, Onderhoud & E-Bike Service',
+      heroHeading: `Snel & Veilig Weer Onderweg met ${b.name}`,
+      heroSubtitle: 'Geen ellenlange wachttijden. Vakkundige reparatie en onderhoud van stadsfietsen, e-bikes en sportfietsen. Vooraf altijd een duidelijke prijsopgave.',
+      usps: [
+        'Vaak binnen 24 uur weer rijklaar voor dagelijks gebruik',
+        'Vooraf altijd een duidelijke prijsopgave zonder verrassingen',
+        'Vakmanschap met hoogwaardige originele merkonderdelen'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Brengen of Aanmelden', desc: 'Loop binnen of stuur een WhatsApp voor een snelle inspectie.' },
+        { nr: '02', title: 'Diagnose & Prijsakkoord', desc: 'We bellen of appen vooraf de exacte kosten door.' },
+        { nr: '03', title: 'Rijklaar & Getest', desc: 'Vakkundig gerepareerd en na een grondige test weer veilig mee.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Diep carbon zwart (#090A0E) met high-octane flame orange (#FF5722) en koele staaltinten (#A1A1AA)',
+      layoutVibe: 'Snel, dynamisch, technisch en krachtig met opvallende actieknoppen'
+    };
+  }
+
+  // 14. KOERIER & TRANSPORT (bv. M&A delivery service)
+  if (isDelivery) {
+    return {
+      key: 'LOGISTICS_EXPRESS',
+      name: 'Koerier & Sneltransport (Transport Midnight & Signal Blue)',
+      isLightMode: false,
+      fontFamily: "'Space Grotesk', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;600&display=swap',
+      cssVars: `
+        --bg-dark: #0A0F1D;
+        --bg-header: rgba(10, 15, 29, 0.94);
+        --bg-card: rgba(18, 26, 46, 0.85);
+        --accent: #3B82F6;
+        --accent-hover: #2563EB;
+        --accent-subtle: rgba(59, 130, 246, 0.15);
+        --accent-secondary: #F59E0B;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: rgba(59, 130, 246, 0.25);
+        --shadow: 0 14px 35px rgba(10, 15, 29, 0.7);
+      `,
+      badgeText: '🚚 Betrouwbare Spoedkoerier & Snelle Bezorgdienst',
+      heroHeading: `Stipt & Veilig Bezorgd door ${b.name}`,
+      heroSubtitle: 'Voor spoedzendingen, regionaal transport en betrouwbare zakelijke bezorging. Altijd op tijd, met zorg behandeld en direct contact met de chauffeur.',
+      usps: [
+        'Vaste afspraken en 100% stipte levering op het afgesproken moment',
+        'Flexibele spoedritten in Groningen, Drenthe en heel Nederland',
+        'Zorgvuldige, geconditioneerde en schadevrije goederenbehandeling'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Rit Aanmelden', desc: 'Geef ophaal- en afleverlocatie eenvoudig door per telefoon of WhatsApp.' },
+        { nr: '02', title: 'Direct Onderweg', desc: 'We plannen de snelste route en vertrekken op het afgesproken tijdstip.' },
+        { nr: '03', title: 'Veilig Afgeleverd', desc: 'Ontvangstbevestiging met handtekening en directe terugkoppeling.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Modern transport marineblauw (#0A0F1D) met signaal-blauw (#3B82F6) en warm amber (#F59E0B)',
+      layoutVibe: 'Stipt, energiek, betrouwbaar en snel'
+    };
+  }
+
+  // 15. DIGITALE OPLOSSINGEN & WEBDESIGN (bv. Justin Webontwikkeling)
+  if (isWeb) {
+    return {
+      key: 'DIGITAL_STUDIO',
+      name: 'Webontwikkeling & Design (Cyber Void & Vivid Violet)',
+      isLightMode: false,
+      fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+      fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+      cssVars: `
+        --bg-dark: #070914;
+        --bg-header: rgba(7, 9, 20, 0.94);
+        --bg-card: rgba(17, 21, 44, 0.82);
+        --accent: #8B5CF6;
+        --accent-hover: #7C3AED;
+        --accent-subtle: rgba(139, 92, 246, 0.16);
+        --accent-secondary: #06B6D4;
+        --text-main: #F5F3FF;
+        --text-muted: #A5B4FC;
+        --border: rgba(139, 92, 246, 0.26);
+        --shadow: 0 14px 35px rgba(7, 9, 20, 0.75);
+      `,
+      badgeText: '💻 Hyper-Moderne Webontwikkeling & Digitale Oplossingen',
+      heroHeading: `Snelle Websites & Digitale Groei met ${b.name}`,
+      heroSubtitle: 'Maatwerk webapplicaties, converterende landingspagina’s en geoptimaliseerde gebruikerservaringen voor ambitieuze ondernemers in het noorden.',
+      usps: [
+        'Bliksemsnelle laadtijden en mobile-first responsive design',
+        'Conversiegerichte architectuur die meetbaar leads oplevert',
+        'Persoonlijk contact en continue technische ondersteuning'
+      ],
+      processSteps: [
+        { nr: '01', title: 'Doelen & Strategie', desc: 'We analyseren uw doelgroep, propositie en gewenste conversie.' },
+        { nr: '02', title: 'Ontwerp & Ontwikkeling', desc: 'Moderne, veilige code gebouwd met de nieuwste standaarden.' },
+        { nr: '03', title: 'Lancering & Groei', desc: 'Livegang, hosting en meetbare groei van uw online bereik.' }
+      ],
+      layoutVariant,
+      promptPaletteAdvice: 'Cyber void nachtblauw (#070914) met neon violet (#8B5CF6) en helder cyaan (#06B6D4)',
+      layoutVibe: 'Innovatief, technologisch, strak en modern'
+    };
+  }
+
+  // 16. GENERAL TRADE / MODERNE VAKMAN (Fallback)
+  return {
+    key: 'GENERAL_TRADE',
+    name: 'Moderne Vakman & Dienstverlener (Deep Indigo & Cyan)',
+    isLightMode: false,
+    fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+    fontLink: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+    cssVars: `
+      --bg-dark: #0B0F19;
+      --bg-header: rgba(11, 15, 25, 0.92);
+      --bg-card: rgba(17, 24, 39, 0.8);
+      --accent: #06B6D4;
+      --accent-hover: #0891B2;
+      --accent-subtle: rgba(6, 182, 212, 0.15);
+      --accent-secondary: #6366F1;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 14px 35px rgba(0, 0, 0, 0.6);
+    `,
+    badgeText: '⭐ Lokale Betrouwbaarheid & Kwaliteit',
+    heroHeading: `Kwaliteit, Betrouwbaarheid & Vakwerk bij ${b.name}`,
+    heroSubtitle: 'Voor particulieren en bedrijven die gaan voor een vakkundige uitvoering, betrouwbare afspraken en duurzaam resultaat.',
+    usps: [
+      'Lokale specialist met oog voor detail en vakmanschap',
+      'Vrijblijvende prijsopgave vooraf zonder kleine lettertjes',
+      'Eerlijke communicatie en vlotte oplevering'
+    ],
+    processSteps: [
+      { nr: '01', title: 'Eerste Contact', desc: 'Neem contact op voor een snelle afstemming van uw klus of vraag.' },
+      { nr: '02', title: 'Helder Voorstel', desc: 'U ontvangt een transparant en eerlijk prijsvoorstel.' },
+      { nr: '03', title: 'Net Opleveren', desc: 'Vakkundig uitgevoerd en schoon opgeleverd volgens afspraak.' }
+    ],
+    layoutVariant,
+    promptPaletteAdvice: 'Donkerblauwe premium achtergrond (#0B0F19) met cyaan (#06B6D4) of indigo (#6366F1) en scherpe witte teksten',
+    layoutVibe: 'Strak, technologisch, modern en conversiegericht'
+  };
 }
 
 /**
