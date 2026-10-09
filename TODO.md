@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **58 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **56 Tasks (97%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (1%)**                         |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **1 Tasks (2%)**                         |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **59 Active Epics & Taken (1 Canceled)** |
+| **Completed Work Items**           | ✅ Done        | **56 Tasks (95%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (2%)**                         |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **2 Tasks (3%)**                         |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[████████████████████████░] 97% Complete (1 In Progress, 1 in Queue)`
+`[███████████████████████░░] 95% Complete (1 In Progress, 2 in Queue)`
 
 ---
 
@@ -27,6 +27,19 @@
 - [ ] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: ON_HOLD]` **Google Ads Campaign Activation (€400 Credit)**
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
   - **Status Note**: Gepauzeerd ten gunste van directe organische acquisitie en Lead Factory.
+
+### ⏳ 2. Wachtrij & Backlog (Next Up)
+
+- [ ] `[TASK-202]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Mollie Zakelijk Account Registratie, KvK Verificatie & Live API-Key Configuratie**
+  - **Scope**: Mollie Dashboard (`mollie.com`), DirectAdmin PHP Environment (`MOLLIE_API_KEY`), KvK 99986191 & Zakelijke Bankrekening
+  - **Details**:
+    - Zakelijk account registreren op [mollie.com](https://www.mollie.com) voor Creation+Alt+Fix (KvK: 99986191, BTW: NL005423147B16).
+    - Bedrijfs- en identiteitsverificatie doorlopen (Allard Veldman ID-check & zakelijke bankrekening/IBAN koppeling voor automatische uitbetalingen).
+    - Gewenste betaalmethodes activeren in het Mollie Dashboard (iDEAL, SEPA Overboeking, eventueel Bancontact / Apple Pay).
+    - Live API-sleutel (`live_...`) en Test API-sleutel (`test_...`) kopiëren.
+    - Live `MOLLIE_API_KEY` toevoegen aan de Vimexx DirectAdmin PHP omgevingsvariabelen / `.env` zodat `crm/api/mollie-webhook.php` live iDEAL betalingen automatisch verifieert en de factuur- en offertestatus op 'Betaald' zet.
+    - End-to-end verificatietest uitvoeren met een testbetaling (€ 0,01 of test-ID) om de automatische webhook en logboekregistratie te valideren.
+
 
 ---
 
