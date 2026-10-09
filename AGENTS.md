@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-10-09] 2027 Tarief Weergave (€ 95,-/jr per 1 Jan) & Verwijdering Berichtenknop Werkplek ([crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js))**:
+  - **Probleem**: Op de werkplek van Stenekes (en andere trouwe klanten die akkoord hebben gegeven) stond onder "Huidig Abonnement" nog het oude € 22,- tarief zonder vermelding dat per 1 januari 2027 het overgangstarief van € 95,- ingaat, en stond de dropdown op het oude tarief. Tevens was de knop *"🚀 2027 Abonnementsplan Berichten aan Klant"* overbodig geworden op de werkplek.
+  - **Oplossing**:
+    1. *Dynamische Tariefweergave*: Als een klant 2027 bevestigd heeft (`subscriptionPlan2027Status === 'bevestigd'`), toont de kaart nu direct: `✅ Per 1 januari 2027: € 95,00 / jr` (met toelichting `Huidig tarief: € 22,00 / jr t/m 31-12-2026 • Akkoord bevestigd`).
+    2. *Dropdown Standaardwaarde*: De selectiebox kiest automatisch het bevestigde plan (`transition_2027_loyalty`).
+    3. *Knop Verwijderd*: De knop `#btn-workstation-2027-proposal` is uit de werkplek-template (`project.html`) verwijderd.
+
 - **[2026-10-09] Test Account & End-to-End iDEAL Betaalomgeving ([crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html))**:
   - **Doel**: Een compleet operationeel testaccount inrichten om de volledige flow (inloggen op het klantenportaal, inzien van openstaande factuur 2026-TEST, Mollie iDEAL checkout simulator en succesvolle retour-redirect met viering) interactief te kunnen testen.
   - **Inrichting**:
