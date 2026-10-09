@@ -41,7 +41,7 @@ export const FACTORY_CONFIG = {
   agencyName: "Creation+Alt+Fix",
   agencyOwner: "Allard Veldman",
   agencyEmail: "info@creationaltfix.nl",
-  agencyPhone: "+31 6 12345678",
+  agencyPhone: "+31 6 19135453",
   agencyWebsite: "https://creationaltfix.nl",
 
   // Hosting & Staging

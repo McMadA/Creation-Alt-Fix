@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klussenbedrijf Norder | Klusbedrijf in Hoogezand & Regio Groningen</title>
+  <meta name="description" content="Professionele Klusbedrijf door Klussenbedrijf Norder. Neem direct contact op voor een snelle afspraak of vrijblijvende offerte.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Klussenbedrijf Norder",
+    "telephone": "0598 322 699",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Noorderstraat 175, 9611 AD Sappemeer",
+      "addressCountry": "NL"
+    },
+    "priceRange": "€€",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "1"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      
+          --bg-dark: #0B0F19;
+          --bg-header: rgba(11, 15, 25, 0.92);
+          --bg-card: rgba(17, 24, 39, 0.8);
+          --accent: #06B6D4;
+          --accent-hover: #0891B2;
+          --accent-subtle: rgba(6, 182, 212, 0.15);
+          --accent-secondary: #6366F1;
+          --text-main: #F8FAFC;
+          --text-muted: #94A3B8;
+          --border: rgba(255, 255, 255, 0.1);
+          --shadow: 0 14px 35px rgba(0, 0, 0, 0.6);
+        
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    .concept-bar {
+      background: linear-gradient(90deg, #0b1329, #111e38);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 101;
+    }
+    .concept-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .concept-bar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .concept-bar-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+    .concept-bar a.concept-wa-btn {
+      background: #25D366;
+      color: #064e3b;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    }
+    .concept-bar a.concept-wa-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 8%;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      background: var(--bg-header);
+      z-index: 100;
+    }
+    .logo { font-size: 1.35rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    
+    .hero {
+      padding: 70px 8% 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+    .hero-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+    
+    /* Layout 0: Split */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-usps {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+    .hero-usps li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .check-icon {
+      color: var(--accent);
+      background: var(--accent-subtle);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .quick-contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .quick-contact-card h3 { font-size: 1.4rem; margin-bottom: 8px; }
+    .quick-contact-card p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px; }
+    .widget-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .widget-btn {
+      padding: 12px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      text-align: center;
+      display: block;
+      transition: all 0.2s ease;
+    }
+    .widget-btn-call { background: var(--accent); color: #000000; }
+    .widget-btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; border: 1px solid rgba(37, 211, 102, 0.3); }
+    .widget-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    
+    /* Layout 1: Centered */
+    .hero-centered { text-align: center; max-width: 900px; }
+    .hero-centered .hero-desc { margin-left: auto; margin-right: auto; }
+    .hero-centered .cta-group { justify-content: center; }
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    .metric-val { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+    .metric-lbl { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Layout 2: Action */
+    .hero-action { max-width: 960px; }
+    .urgent-banner {
+      background: var(--accent-subtle);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 10px 16px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .urgent-banner a { color: var(--text-main); text-decoration: underline; }
+    .action-highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: var(--shadow);
+    }
+    .highlight-info strong { display: block; font-size: 1.15rem; margin-bottom: 4px; }
+    .highlight-info p { color: var(--text-muted); font-size: 0.92rem; }
+
+    .cta-group { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn {
+      padding: 13px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+    .btn-primary { background: var(--accent); color: #000000; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-secondary { background: var(--accent-subtle); color: var(--text-main); border: 1px solid var(--border); }
+    .btn-secondary:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--accent-subtle); }
+    
+    .section { padding: 64px 8%; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 44px; }
+    .section-title h2 { font-size: 2.1rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .section-title p { color: var(--text-muted); font-size: 1.05rem; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 28px;
+      border-radius: 14px;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow);
+    }
+    .service-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .service-icon-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .service-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); opacity: 0.8; }
+    .service-icon { color: var(--accent); font-size: 1.4rem; }
+    .service-card h3 { font-size: 1.25rem; margin-bottom: 10px; }
+    .service-card p { color: var(--text-muted); font-size: 0.94rem; line-height: 1.55; }
+    
+    /* Process Section */
+    .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .process-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 28px;
+      border-radius: 14px;
+      position: relative;
+    }
+    .process-step-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.35;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .process-card h4 { font-size: 1.15rem; margin-bottom: 8px; }
+    .process-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 26px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .stars { color: #F59E0B; margin-bottom: 12px; font-size: 1.15rem; letter-spacing: 2px; }
+    .review-text { font-style: italic; color: var(--text-main); margin-bottom: 14px; font-size: 0.95rem; }
+    .review-author { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    
+    .contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 44px;
+      border-radius: 18px;
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+    }
+    .contact-card h3 { font-size: 1.85rem; margin-bottom: 14px; }
+    .contact-card p { color: var(--text-muted); margin-bottom: 26px; font-size: 1.05rem; }
+    
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 34px 8%;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      background: var(--bg-header);
+    }
+
+    @media (max-width: 860px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.1rem; }
+      .header-actions .btn-secondary { display: none; }
+    }
+  </style>
+
+<script id="caf-security-guard">
+/*
+ * INTELLECTUEEL EIGENDOM VAN CREATION+ALT+FIX (KvK 99986191).
+ * DIT WERK IS AUTEURSRECHTELIJK BESCHERMD CONFORM DE NEDERLANDSE AUTEURSWET 1912 EN HET BENELUX VERDRAG VOOR INTELLECTUELE EIGENDOM (BVIE).
+ * DIT DOCUMENT IS BEVEILIGD MET EEN TECHNOLOGISCHE VOORZIENING IN DE ZIN VAN ARTIKEL 29A AUTEURSWET 1912.
+ * ELKE ONGEOORLOOFDE VERMENIGVULDIGING, OMZEILING, EXTERNE HOSTING OF COMMERCIEEL GEBRUIK ZONDER SCHRIFTELIJKE LICENTIE IS BIJ WET VERBODEN EN RECHTSVERVOLGBAAR.
+ */
+(function() {
+  'use strict';
+  
+  // 1. DOMAIN-LOCKING KILLSWITCH
+  const allowed = ["creationaltfix.nl","www.creationaltfix.nl","localhost","127.0.0.1"];
+  const currentHost = window.location.hostname;
+  const isAuthorized = allowed.some(function(d) {
+    return currentHost === d || currentHost.endsWith('.' + d);
+  });
+
+  if (!isAuthorized && currentHost !== '') {
+    // Onbevoegde kopie gedetecteerd! Vernietig de inhoud en toon blokkade
+    window.stop && window.stop();
+    document.documentElement.innerHTML = '<!DOCTYPE html><html><head><title>Toegang Geblokkeerd</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#0B0F19;color:#F8FAFC;font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center}.box{max-width:580px;background:rgba(17,24,39,0.95);border:1px solid rgba(239,68,68,0.4);border-radius:16px;padding:40px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7)}.icon{font-size:3rem;margin-bottom:16px;color:#EF4444}h1{font-size:1.6rem;margin-bottom:12px;color:#FCA5A5}p{color:#94A3B8;line-height:1.6;font-size:0.95rem;margin-bottom:28px}.btn{background:#06B6D4;color:#000;padding:14px 28px;border-radius:8px;font-weight:700;text-decoration:none;display:inline-block}</style></head><body><div class="box"><div class="icon">&#9888;</div><h1>Onbevoegde Kopie Gedetecteerd</h1><p>Deze website is het exclusieve intellectuele eigendom van <strong>Creation+Alt+Fix</strong> (Auteurswet 1912). Het kopi&euml;ren of extern hosten van dit concept zonder actieve licentieovereenkomst is niet toegestaan en kan leiden tot juridische stappen.</p><a href="https://creationaltfix.nl" class="btn">Website Officieel Overnemen via Creation+Alt+Fix &rarr;</a></div></body></html>';
+    throw new Error("CAF_SECURITY_UNAUTHORIZED_HOST");
+  }
+
+  // 2. ANTI-INSPECT DEFENSE: Blokkeer Rechtermuisklik
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    showSecurityToast("Rechtermuisklik en broncode-inspectie zijn uitgeschakeld ter bescherming van intellectueel eigendom.");
+    return false;
+  }, { capture: true });
+
+  // 3. BLOKKEER INSPECTIE SNELTOETSEN (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+  document.addEventListener('keydown', function(e) {
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+      (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S'))
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityToast("Inspectie en broncode-export zijn beveiligd door Creation+Alt+Fix.");
+      return false;
+    }
+  }, { capture: true });
+
+
+  function showSecurityToast(msg) {
+    let t = document.getElementById('caf-sec-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'caf-sec-toast';
+      t.style.position = 'fixed';
+      t.style.bottom = '24px';
+      t.style.left = '50%';
+      t.style.transform = 'translateX(-50%)';
+      t.style.background = 'rgba(15, 23, 42, 0.96)';
+      t.style.color = '#F8FAFC';
+      t.style.padding = '12px 24px';
+      t.style.borderRadius = '8px';
+      t.style.border = '1px solid #EF4444';
+      t.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+      t.style.fontSize = '0.85rem';
+      t.style.zIndex = '9999999';
+      t.style.fontFamily = 'sans-serif';
+      t.style.textAlign = 'center';
+      t.style.transition = 'opacity 0.3s ease';
+      document.body.appendChild(t);
+    }
+    t.innerHTML = '&#128274; <strong>Creation+Alt+Fix Beveiliging:</strong> ' + msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);
+  }
+})();
+</script>
+
+</head>
+<body>
+  <div class="concept-bar">
+    <div class="concept-bar-inner">
+      <div class="concept-bar-badge">
+        <span class="concept-bar-avatar">AV</span>
+        <span>
+          <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>Klussenbedrijf Norder</strong>
+        </span>
+      </div>
+      <div>
+        <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20websiteconcept%20voor%20Klussenbedrijf%20Norder%20bekeken!" class="concept-wa-btn" target="_blank">
+          💬 Vraag stellen aan Allard
+        </a>
+      </div>
+    </div>
+  </div>
+  <header>
+    <div class="logo">Klussenbedrijf Norder<span>.</span></div>
+    <div class="header-actions">
+      <a href="tel:0598 322 699" class="btn btn-secondary">📞 0598 322 699</a>
+      
+    </div>
+  </header>
+  <main>
+    
+      <section class="hero hero-centered">
+        <span class="badge">⭐ Lokale Betrouwbaarheid & Kwaliteit</span>
+        <h1>Kwaliteit, Betrouwbaarheid & Vakwerk bij Klussenbedrijf Norder</h1>
+        <p class="hero-desc">Voor particulieren en bedrijven die gaan voor een vakkundige uitvoering, betrouwbare afspraken en duurzaam resultaat.</p>
+        <div class="cta-group">
+          <a href="tel:0598 322 699" class="btn btn-primary">📞 Direct Bellen</a>
+          
+          <a href="#contact" class="btn btn-outline">✉️ Vrijblijvende Aanvraag</a>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-val">5 ★</div>
+            <div class="metric-lbl">Google Beoordeling (10+ reviews)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">100%</div>
+            <div class="metric-lbl">Tevredenheidsgarantie</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">Lokaal</div>
+            <div class="metric-lbl">Regio Hoogezand</div>
+          </div>
+        </div>
+      </section>
+    
+    
+    <section class="section">
+      <div class="section-title">
+        <h2>Onze Werkzaamheden</h2>
+        <p>Vakkundige diensten op maat voor particulieren en bedrijven</p>
+      </div>
+      <div class="grid">
+        
+        <div class="service-card">
+          <div class="service-icon-box">
+            <span class="service-num">01</span>
+            <span class="service-icon">✦</span>
+          </div>
+          <h3>Renovatie & Verbouw</h3>
+          <p>Vakkundige aanpak voor grote en kleine klussen in en rond het huis.</p>
+        </div>
+      
+        <div class="service-card">
+          <div class="service-icon-box">
+            <span class="service-num">02</span>
+            <span class="service-icon">✦</span>
+          </div>
+          <h3>Maatwerk Houtbewerking</h3>
+          <p>Op maat gemaakte inbouwkasten, trappen, deuren en meubels.</p>
+        </div>
+      
+        <div class="service-card">
+          <div class="service-icon-box">
+            <span class="service-num">03</span>
+            <span class="service-icon">✦</span>
+          </div>
+          <h3>Onderhoud & Reparatie</h3>
+          <p>Snelle en degelijke oplossing voor knellende deuren, lekkages en herstel.</p>
+        </div>
+      
+        <div class="service-card">
+          <div class="service-icon-box">
+            <span class="service-num">04</span>
+            <span class="service-icon">✦</span>
+          </div>
+          <h3>Dak & Gevelafwerking</h3>
+          <p>Degelijke afdichting en vernieuwing van boeidelen en gevelbekleding.</p>
+        </div>
+      
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Zo Werken Wij</h2>
+        <p>Transparant, zonder verrassingen en altijd vlot geregeld</p>
+      </div>
+      <div class="process-grid">
+        
+    <div class="process-card">
+      <div class="process-step-num">01</div>
+      <h4>Eerste Contact</h4>
+      <p>Neem contact op voor een snelle afstemming van uw klus of vraag.</p>
+    </div>
+  
+    <div class="process-card">
+      <div class="process-step-num">02</div>
+      <h4>Helder Voorstel</h4>
+      <p>U ontvangt een transparant en eerlijk prijsvoorstel.</p>
+    </div>
+  
+    <div class="process-card">
+      <div class="process-step-num">03</div>
+      <h4>Net Opleveren</h4>
+      <p>Vakkundig uitgevoerd en schoon opgeleverd volgens afspraak.</p>
+    </div>
+  
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Wat Klanten Zeggen</h2>
+        <p>Beoordeeld met 5 sterren op Google</p>
+      </div>
+      <div class="grid">
+        
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"Klantvriendelijk, betrouwbaar en levert altijd vakwerk af. Zeker een aanrader in de regio!"</p>
+          <div class="review-author">— Tevreden Klant uit de regio</div>
+        </div>
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"Hele prettige communicatie en snelle service. Afspraak is afspraak, erg blij met het resultaat!"</p>
+          <div class="review-author">— Vaste Klant</div>
+        </div>
+      
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="contact-card">
+        <span class="badge">Vrijblijvend Contact</span>
+        <h3>Direct Contact Opnemen met Klussenbedrijf Norder?</h3>
+        <p>Heeft u een vraag, wilt u kennismaken of direct een vrijblijvende prijsopgave ontvangen? Wij staan voor u klaar.</p>
+        <div class="cta-group" style="justify-content: center;">
+          <a href="tel:0598 322 699" class="btn btn-primary">📞 0598 322 699</a>
+          
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2026 Klussenbedrijf Norder. Alle rechten voorbehouden. • Noorderstraat 175, 9611 AD Sappemeer</p>
+  </footer>
+</body>
+</html>

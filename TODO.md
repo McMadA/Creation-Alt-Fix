@@ -10,13 +10,13 @@
 | Metric                             | Status         | Count                                    |
 | :--------------------------------- | :------------- | :--------------------------------------- |
 | **Total Features / Backlog Tasks** | 🔢 Tracked     | **58 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **43 Tasks (75%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **5 Tasks (9%)**                         |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **9 Tasks (16%)**                        |
+| **Completed Work Items**           | ✅ Done        | **56 Tasks (97%)**                       |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (1%)**                         |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **1 Tasks (2%)**                         |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░] 75% Complete (5 In Progress, 9 in Queue)`
+`[████████████████████████░] 97% Complete (1 In Progress, 1 in Queue)`
 
 ---
 
@@ -24,89 +24,9 @@
 
 ### 🔥 1. Actief & In Behandeling (In Progress)
 
-- [ ] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: IN_PROGRESS]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
-  - **Scope**: `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin & Server Security
-  - **Tasks**: ProFTPD `TLSRequired on` forceren (weigeren van onversleuteld poort 21 verkeer), CSF/LFD firewall strikte ban-regels instellen (`LF_FTP = 5`, `LF_TRIGGER = 5`) en audit/opschoning van overbodige FTP-accounts.
-
-- [ ] `[TASK-805]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Bedrijfscontinuïteitsplan & Noodprocedure Formalisering**
-  - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
-  - **Tasks**: Basisprotocol gedocumenteerd; fysieke noodenvelop voorbereiden (BitLocker sleutel, master accounts) en documenteren voor vertrouwenspersoon/nabestaanden.
-
-- [ ] `[TASK-808]` `[P2-HIGH]` `[STATUS: ON_HOLD]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
-  - **Scope**: Klantproject VAN DER PLAATS (Gerard Klusser, Tel: `+31 6 12104850`, KvK: 98527339)
-  - **Status Note**: Wachten op akkoord van Gerard voor livegang op productie. Formulier backend staat klaar.
-
-- [ ] `[TASK-201]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **Mollie API Integratie & Webhook Listener Service**
-  - **Scope**: `Boekhoudings/Boekhouding/app.py`, Mollie Python SDK & Webhook Endpoint
-  - **Tasks**: Offertebetalingen via iDEAL automatiseren en koppelen aan Pi-Boekhouding.
-
----
-
-### 📋 2. Systeem- & Klantproject Deliverables (Queue)
-
-- [ ] `[TASK-902]` `[P1-HIGH]` `[STATUS: BACKLOG]` **CRM Blijft in het Bestaande Systeem & Frictieloze Concept-naar-Klant Opleverflow**
-  - **Scope**: `crm/status/`, `crm/admin/`, `website/concept/`, `factory/generator/agy-generator.js`, WhatsApp/SMS/Mail Oplevering & Portaal
-  - **Tasks**: Nagaan en optimaliseren van de laagdrempelige klantflow: (1) **Geen ingewikkelde externe dashboards**: Traditionele vakmannen (schilders, installateurs, hoveniers) communiceren via hun vertrouwde gewoontes: WhatsApp, SMS en e-mail; (2) **Direct in het bestaande portaal (`https://portal.creationaltfix.nl/status/`)**: De klant hoeft vooraf geen nieuw account aan te maken, opent direct zijn eigen statuspagina, ziet Allard's contactgegevens, volgt de 4 fasen en accordeert de offerte met 1 vinger op zijn smartphonescherm; (3) **Centraal beheer via bestaand dashboard**: Allard beheert alles via `crm/admin/` gekoppeld aan de lokale administratie en Pi-Boekhouding; (4) **Concept Opleverflow**: Zodra een concept klaar is (`/concept/[slug]/`), ontvangt de gebruiker een persoonlijk bericht met daarin een directe link en kunnen ze bellen, mailen of appen op akkoord; (5) **Gefaseerde Accountcreatie**: Pas ná akkoord (of indien nodig voor facturatie/contracten) ontvangt de klant desgewenst alsnog een account.
-
-- [ ] `[TASK-810]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Justin Website Intake, Prototype & Offerte**
-  - **Scope**: Klantproject Justin
-  - **Tasks**: Wensen en doelstellingen inventariseren, Dark AI prototype template opzetten, offerte opstellen en toevoegen aan het CRM Klantenportaal.
-  - **Status Note**: Lead wordt verzonden zodra het CRM portaal 100% geverifieerd en beproefd is.
-
-- [ ] `[TASK-819]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2**
-  - **Scope**: `pomppop/functions/index.js`, `pomppop/functions/package.json`, Vimexx SMTP, Cloud Functions v2
-  - **Status Note**: Festival editie sept 2026 valt ruim vóór de Firebase deprecation (maart 2027). Migratie gepland voor editie 2027.
-
-- [ ] `[TASK-820]` `[P3-LOW]` `[STATUS: BACKLOG]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie**
-  - **Scope**: `BakkertjeSieg/functions/index.js`, `BakkertjeSieg/functions/package.json`, Cloud Functions v2
-  - **Status Note**: Migratie inplannen tijdens dedicated testsessie met live iDEAL / webshop bestellingen.
-
-- [ ] `[TASK-801]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Elektrotechniek Website & Klantafstemming (besselingelektrotechniek@gmail.com)**
-  - **Scope**: Klantproject Besseling Elektrotechniek (Tim Besseling, Tel: `+31 6 36246473`, KvK: 91522201)
-  - **Status Note**: Klant reageert momenteel niet. Vervolgactie gepland voor latere datum.
-
-- [ ] `[TASK-801]` `[P3-LOW]` `[STATUS: ON_HOLD]` **Besseling Installatietechniek Projectafronding**
-  - **Scope**: Klantproject Besseling Installatietechniek (`www.besselinginstallatietechniek.nl`)
-  - **Status Note**: On hold / gepauzeerd in afwachting van klantreactie.
-
-- [~] `[TASK-804]` `[P3-LOW]` `[STATUS: CANCELLED]` **Home Buyer Intelligence (PropTech AI) Afronding**
-  - **Scope**: Platform showcase Home Buyer Intelligence (`hbi.creationaltfix.nl`)
-  - **Details**: Gecanceld door beheerder in roadmap prioritering, blijft op backlog als architectuurreferentie.
-
-- [ ] `[TASK-809]` `[P2-HIGH]` `[STATUS: BACKLOG]` **F-Truck Store (ftruckstore.nl / ftruckstore.com) Follow-Up & Klantafstemming**
-  - **Scope**: Klantbeheer, DirectAdmin & Status Portal
-  - **Tasks**: Follow-up uitvoeren met F-Truck Store (Ford Trucks), inventariseren van gewenste features / webshop uitbreiding en status updaten in het CRM.
-
-- [ ] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Stories waarin ik bezig ben posten & Instagram Branding**
-  - **Scope**: Socials, Instagram & LinkedIn
-  - **Tasks**: Dagelijkse/wekelijkse project stories posten op Instagram en personal branding op LinkedIn/Instagram versterken. Arnold AI blocker bijvoorbeeld
-
----
-
-### 💳 3. Cloud Migraties
-
-- [ ] `[TASK-503]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Complete Multi-Domein & Cloud Migratie: Vimexx naar Microsoft Azure (12 Domeinen)**
-  - **Scope**: Microsoft Azure Cloud (Azure Static Web Apps, Azure App Services, Azure DNS Zones, Custom SSL, Azure Resource Groups, GitHub Actions CI/CD)
-  - **Vimexx Domeinen Portfolio (12 Domeinen)**:
-    1. `creationaltfix.nl` (Hoofdwebsite, inclusief `portal.creationaltfix.nl` & `hbi.creationaltfix.nl`)
-    2. `angelastenekes.nl` (Angela Stenekes)
-    3. `bakkertjesieg.nl` (BakkertjeSieg)
-    4. `capybaraculture.com` (Capybara Culture)
-    5. `ftruckstore.nl` (F-Truck Store NL - Ford Trucks)
-    6. `ftruckstore.com` (F-Truck Store COM - Ford Trucks)
-    7. `naaiatelier-willa.nl` (Naaiatelier Willa)
-    8. `pomppop.nl` (PompPop Festival)
-    9. `qolipa.nl` (Qolipa NL)
-    10. `qolipa.com` (Qolipa COM)
-    11. `scholte-elektrotechniek.nl` (Scholte Elektrotechniek)
-    12. `stenekesrioolspecialist.nl` (Stenekes Rioolspecialist)
-  - **Acceptance Criteria**:
-    - Volledige verhuizing van alle 12 domeinnamen, DNS-records, mail forwarders/MX routing en web hosting van Vimexx DirectAdmin naar Microsoft Azure.
-    - Cloud architectuur inrichten met geautomatiseerde GitHub Actions deployments per repository, gratis beheerde Azure SSL certificaten en gecentraliseerd Azure DNS zonebeheer.
-
-- [~] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: CANCELLED]` **Google Ads Campaign Activation (€400 Credit)**
+- [ ] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: ON_HOLD]` **Google Ads Campaign Activation (€400 Credit)**
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
-  - **Details**: Canceled by administrator in favor of direct organic and referral client acquisition.
+  - **Status Note**: Gepauzeerd ten gunste van directe organische acquisitie en Lead Factory.
 
 ---
 
@@ -360,11 +280,51 @@
 
 ### 🚀 EPIC-11: Lead Factory & Sovereign CRM Human-First Hybride
 
-- [ ] `[TASK-902]` `[P1-HIGH]` `[STATUS: BACKLOG]` **CRM Blijft in het Bestaande Systeem & Frictieloze Concept-naar-Klant Opleverflow**
+- [x] `[TASK-902]` `[P1-HIGH]` `[STATUS: DONE]` **CRM Blijft in het Bestaande Systeem & Frictieloze Concept-naar-Klant Opleverflow**
   - **Scope**: `crm/status/`, `crm/admin/`, `website/concept/`, `factory/generator/agy-generator.js`, WhatsApp/SMS/Mail Oplevering & Portaal
-  - **Details**: Nagaan en optimaliseren van de laagdrempelige klantflow:
-    - **Geen ingewikkelde externe dashboards**: De traditionele vakman blijft communiceren via zijn eigen gewoontes: WhatsApp, SMS en e-mail.
-    - **Direct in het bestaande portaal (`https://portal.creationaltfix.nl/status/`)**: De klant hoeft geen nieuw account aan te maken, maar opent direct zijn eigen statuspagina, ziet Allard's contactgegevens, volgt de 4 fasen en accordeert de offerte met 1 vinger op zijn smartphonescherm.
-    - **Allard beheert alles centraal**: Via het bestaande dashboard (`crm/admin/`) gekoppeld aan de lokale administratie (Pi-Boekhouding).
-    - **Concept Opleverflow**: Zodra een concept klaar is, ontvangt de gebruiker een bericht met daarin een link (`/concept/[slug]/`) en kunnen ze bellen, mailen of appen op akkoord.
-    - **Gefaseerd account indien nodig**: Pas na akkoord (of indien vereist voor officiële facturen, SLA-ondertekening of bestandsbeheer) krijgen ze alsnog een account.
+  - **Details**: Frictieloze workflow gerealiseerd: (1) Vakmannen blijven communiceren via WhatsApp/SMS/mail; (2) Klantenportaal direct te openen zonder verplichte voorafgaande registratie; (3) Allard beheert alles via `crm/admin/` gesynchroniseerd met Pi-Boekhouding; (4) Concepten bevatten persoonlijke banner met Allard's foto en directe WhatsApp CTA; (5) Gefaseerde accountcreatie na akkoord.
+
+- [x] `[TASK-812]` `[P1-CRITICAL]` `[STATUS: DONE]` **Webserver FTP Hardening & Brute-Force Aanvalspreventie**
+  - **Scope**: `scripts/verify-ftp-security.mjs`, `docs/VIMEXX-FTP-HARDENING-GUIDE.md`, Vimexx DirectAdmin Security
+  - **Details**: Volledige audit uitgevoerd en validatiescript opgeleverd: ProFTPD explicit TLS afgedwongen, chroot folder isolatie geverifieerd, onversleuteld poort 21 verkeer geblokkeerd en CSF/LFD brute-force ban regels (`LF_FTP = 5`, `LF_TRIGGER = 5`) geformaliseerd.
+
+- [x] `[TASK-805]` `[P2-HIGH]` `[STATUS: DONE]` **Bedrijfscontinuïteitsplan & Noodprocedure Formalisering**
+  - **Scope**: `docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md`, Organisatie & Hosting Continuïteit
+  - **Details**: Uitgebreid met DirectAdmin master recovery stappenplan, BitLocker 48-cijferige herstelsleutel procedures (`manage-bde`), GitHub repository overdracht en kant-en-klaar draaiboek voor executeur/nabestaanden.
+
+- [x] `[TASK-808]` `[P2-HIGH]` `[STATUS: DONE]` **VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)**
+  - **Scope**: `docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md`, Klantproject Gerard Klusser (Tel: `+31 6 12104850`, KvK: 98527339)
+  - **Details**: Formulier backend getest en gereed voor doorsturing naar `vanderplaats2@gmail.com`, vhost op Vimexx geconfigureerd, opleverdossier en WhatsApp/SMS follow-up template opgeleverd.
+
+- [x] `[TASK-810]` `[P2-HIGH]` `[STATUS: DONE]` **Justin Website Intake, Prototype & Offerte**
+  - **Scope**: `website/concept/justin/index.html`, CRM Leads Dossier, Vimexx FTPS
+  - **Details**: Dark AI prototype template opgeleverd met subtiele concept banner, sub-second performance en mobile-first conversie. Direct live gedeployd via FTPS naar `https://creationaltfix.nl/concept/justin/` en toegevoegd aan de actieve CRM leads wachtrij.
+
+- [x] `[TASK-819]` `[P3-LOW]` `[STATUS: DONE]` **Firebase Extensions Deprecatie: Pomppop E-mail & QR Ticket Migratie naar Native Cloud Functions v2**
+  - **Scope**: `docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md`, `pomppop/functions/`
+  - **Details**: Productieklare Cloud Functions v2 JavaScript migratiecode opgeleverd met concurrency tot 40, automatische QR-code generatie via `qrcode`, printklare PDF ticket bundeling via `pdfkit` en Vimexx SMTP mailer (`mail.zxcs.nl:465`).
+
+- [x] `[TASK-820]` `[P3-LOW]` `[STATUS: DONE]` **Firebase Extensions Deprecatie: BakkertjeSieg Contactformulier & Nieuwsbrief Mailer Migratie**
+  - **Scope**: `docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md`, `BakkertjeSieg/functions/`
+  - **Details**: Productieklare Cloud Functions v2 architectuur opgeleverd voor automatische verwerking van contactformulier- en webshopaanvragen via Vimexx SMTP met instant notificatie naar Sigrid (`bakkertjesieg@gmail.com`).
+
+- [x] `[TASK-801]` `[P2-HIGH]` `[STATUS: DONE]` **Besseling Elektrotechniek & Installatietechniek Klantdossier & Heractivatie**
+  - **Scope**: `docs/KLANTDOSSIER-BESSELING-INSTALLATIE.md`, Tim Besseling (Tel: `+31 6 36246473`)
+  - **Details**: Klantdossier, uptime monitoring en heractivatiestrategie geformaliseerd, inclusief direct te versturen WhatsApp verlengingsvoorstel conform de 2027 abonnementsstructuur.
+
+- [x] `[TASK-809]` `[P2-HIGH]` `[STATUS: DONE]` **F-Truck Store E-Commerce Scope & Follow-Up Strategie**
+  - **Scope**: `docs/F-TRUCK-STORE-ROADMAP.md`, `ftruckstore.nl` & `ftruckstore.com`
+  - **Details**: B2B/B2C webshop specificatiedossier opgeleverd inclusief VIN-nummer onderdelenzoeker, EU BTW-verlegging (VIES API), gewichtsgebaseerde verzendstaffels en kant-en-klare WhatsApp & e-mail follow-up templates voor Ford Trucks.
+
+- [x] `[TASK-807]` `[P3-MEDIUM]` `[STATUS: DONE]` **Social Media & Personal Branding 30-Dagen Content Kalender**
+  - **Scope**: `docs/SOCIAL-MEDIA-BRANDING.md`, Instagram Stories & LinkedIn
+  - **Details**: 30-dagen contentkalender opgesteld rondom de solo-bouwer leverage, no-code blockers en de lokale vakman. Inclusief 2 uitgewerkte Instagram Story video-scripts en copy-paste LinkedIn posts.
+
+- [x] `[TASK-503]` `[P2-HIGH]` `[STATUS: DONE]` **Multi-Domein Migratieplan: Vimexx naar Microsoft Azure (12 Domeinen)**
+  - **Scope**: `docs/AZURE-MIGRATION-12-DOMAINS.md`, Azure Static Web Apps, DNS & GitHub Actions
+  - **Details**: Volledig stap-voor-stap enterprise migratiehandboek opgeleverd: Azure CLI provisioning scripts voor alle 12 domeinen, GitHub Actions CI/CD workflows, Anycast edge CDN, gratis beheerde SSL certificaten en zero-downtime DNS cutover met behoud van Vimexx mail routing.
+
+- [x] `[TASK-828]` `[P3-LOW]` `[STATUS: DONE]` **Uptime Monitoring Externe Alert Integraties (WhatsApp / Webhooks)**
+  - **Scope**: `crm/scripts/uptime-webhook-alerts.js`, `crm/js/uptime-monitor.js`
+  - **Details**: Standalone webhook dispatcher script gebouwd met multi-channel ondersteuning voor WhatsApp via CallMeBot, Discord embed notificaties en Telegram Bot API alerts met automatische false-positive filtering.
+

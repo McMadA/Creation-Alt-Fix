@@ -2,6 +2,9 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Besseling Installatietechniek CSS & Subfolder Herstel ([BesselingInstallatieTechniek/](file:///c:/Users/Admin/Documents/GitHub/Websites/BesselingInstallatieTechniek/), [website/.htaccess](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/website/.htaccess))**:
+  - Analyse en oplossing voor ontbrekende styles op `https://creationaltfix.nl/besselinginstallatietechniek/`. Veroorzaakt door CSP `script-src` blokkade op runtime `cdn.tailwindcss.com` en absolute root-links (`/images/...`, `/contact.html`, etc.) op een subfolder deployment. Opgelost door precompilatie van pure static `tailwind.min.css` (19 KB), migratie naar relatieve paden in alle 9 HTML pagina's, toevoegen van subdirectory `.htaccess` met CSP overrides en opname van `cdn.tailwindcss.com` in `website/.htaccess`.
+
 - **[2026-09-29] Weight Change Lead Generation Concept Page ([factory/leads/weight-change/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/leads/weight-change/index.html))**:
   - Een hyper-moderne responsive HTML5 single-page conceptsite gecreëerd voor Weight Change (Erasmusweg 2A, Hoogezand) met donker thema (#0B0F19/#0F172A), cyaan/indigo accenten (#06B6D4/#6366F1), HealthAndBeautyBusiness JSON-LD schema, 4-sterren Google Review showcase, voedingsdeskundige dienstenoverzicht en direct WhatsApp/bel offerteformulier.
 

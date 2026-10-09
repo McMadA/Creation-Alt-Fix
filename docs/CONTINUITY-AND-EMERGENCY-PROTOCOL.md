@@ -154,3 +154,37 @@ Namens Creation+Alt+Fix
 * [ ] Draag `boekhouding.db` en alle PDF facturen over aan de accountant voor de definitieve fiscale slot-aangifte (BTW en stakingsbalans).
 * [ ] Zeg overbodige serverlicenties op zodra alle externe domeinen succesvol zijn gemigreerd.
 * [ ] Archiveer de data conform de wettelijke fiscale bewaartermijn van 7 jaar.
+
+---
+
+## 8. DirectAdmin Master Recovery Stappenplan & DNS Disaster Recovery
+
+Mocht de server of het DirectAdmin configuratiepaneel onbereikbaar worden of storing vertonen:
+
+### A. DirectAdmin Master Noodtoegang via Vimexx Klantenportaal
+1. Ga naar [https://www.vimexx.nl/clientarea](https://www.vimexx.nl/clientarea).
+2. Log in met het geregistreerde e-mailadres (`allardv03@gmail.com` of `info@creationaltfix.nl`).
+3. Ga naar **Webhosting** -> Kies het hoofdpakket (`web0156.zxcs.nl`).
+4. Klik op **Inloggen op DirectAdmin (Single Sign-On)**. Dit omzeilt eventueel vergeten wachtwoorden of 2FA direct via de Vimexx provider-tunnel.
+5. In DirectAdmin:
+   - **Backups**: Navigeer naar *Create/Restore Backups* om direct een noodkopie te genereren of terug te zetten.
+   - **DNS Administration**: Beheer A-records, MX-records en SPF/DKIM per domein.
+   - **FTP Management**: Maak indien nodig een tijdelijk nood-FTP account aan met een nieuw 32-teken wachtwoord gekoppeld aan `/domains/`.
+
+### B. BitLocker Herstelsleutels & Werkstation Noodopstart
+Het primaire ontwikkelwerkstation (Windows 11 Pro) is versleuteld met BitLocker (AES-256):
+1. **Herstelscherm bij opstarten**: Indien Windows vraagt om de *BitLocker Recovery Key*:
+   - Toets de 48-cijferige herstelsleutel in via het numerieke toetsenbord.
+   - Deze 48-cijferige sleutel bevindt zich in de verzegelde noodenvelop én is gekoppeld aan het primaire Microsoft-account onder [https://account.microsoft.com/devices/recoverykey](https://account.microsoft.com/devices/recoverykey).
+2. **Back-up data uitlezen zonder Windows boot**:
+   - De harde schijf kan in noodgevallen in een andere Windows-pc worden geplaatst en ontgrendeld met het commando:
+     ```powershell
+     manage-bde -unlock D: -RecoveryPassword "XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX"
+     ```
+   - Alle bronbestanden in `C:\Users\Admin\Documents\GitHub\Websites\` zijn direct beschikbaar.
+
+### C. GitHub Repository & Cloud Overdracht
+1. Alle broncode van de 12 websites en het CRM staat gereflecteerd in GitHub (`github.com`).
+2. De noodbeheerder kan de repositories overdragen aan een opvolgende webontwikkelaar door in de GitHub repository settings de opvolger als **Collaborator** toe te voegen met *Admin* rechten.
+3. Klantwebsites zijn framework-loos (Zero-Dependency Vanilla HTML5/CSS/JS) en kunnen door elke willekeurige webmaster direct op een willekeurige Apache, Nginx of Azure server geplaatst worden zonder afhankelijkheid van specifieke serverscripts.
+

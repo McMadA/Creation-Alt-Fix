@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Justin — Professionele Webontwikkeling & Digitale Oplossingen | Concept Creation+Alt+Fix</title>
+  <meta name="description" content="Exclusief website concept voor Justin. Snel, modern, responsief en conversiegericht ontwikkeld door Creation+Alt+Fix.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080C14;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-header: rgba(8, 12, 20, 0.9);
+      --accent: #6366F1;
+      --accent-glow: #818CF8;
+      --accent-secondary: #06B6D4;
+      --accent-tertiary: #A855F7;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: rgba(99, 102, 241, 0.25);
+      --border-hover: rgba(6, 182, 212, 0.5);
+      --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Concept Top Banner */
+    .concept-top-banner {
+      background: linear-gradient(90deg, #1E1B4B 0%, #0F172A 50%, #022C22 100%);
+      color: #E2E8F0;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .concept-top-banner a {
+      color: #38BDF8;
+      text-decoration: underline;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #FFF, #94A3B8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-header-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      color: #FFF;
+      padding: 8px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: opacity 0.2s ease;
+    }
+    .btn-header-cta:hover { opacity: 0.9; }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 5% 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      color: var(--accent-glow);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      line-height: 1.15;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #6366F1, #22D3EE);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 680px;
+      margin: 0 auto 36px;
+      color: var(--text-muted);
+      font-size: 1.15rem;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #4F46E5);
+      color: #FFF;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #F8FAFC;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* USPs Grid */
+    .usps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 5%;
+    }
+    .usp-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .usp-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+    }
+    .usp-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .usp-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      color: #FFF;
+    }
+    .usp-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Proposal Box */
+    .proposal-box {
+      max-width: 1000px;
+      margin: 80px auto;
+      padding: 40px 5%;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 20px;
+      text-align: center;
+    }
+    .proposal-box h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 32px 0;
+      text-align: left;
+    }
+    .pricing-table th, .pricing-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pricing-table th {
+      color: var(--accent-glow);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 40px 5%;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Concept Banner -->
+  <div class="concept-top-banner">
+    ✨ <strong>Concept Prototype</strong> klaargezet door Creation+Alt+Fix voor Justin •
+    <a href="https://portal.creationaltfix.nl/status/" target="_blank">Bekijk in Klantenportaal</a>
+  </div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="logo">Justin <span>Studio</span></div>
+    <div class="nav-actions">
+      <a href="tel:+31619135453" class="btn-secondary">📞 06 - 19 13 54 53</a>
+      <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20concept%20voor%20Justin%20bekeken!" class="btn-header-cta">💬 WhatsApp Akkoord</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">⚡ Dark AI Prototype • High-Performance Web Architecture</div>
+    <h1>Moderne Digitale Aanwezigheid voor <span>Justin</span></h1>
+    <p>Razendsnel, conversiegericht en gebouwd met de modernste webstandaarden. Zonder trage WordPress plugins, met directe mobiele contactflows en naadloze klantervaring.</p>
+    <div class="hero-buttons">
+      <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20geef%20akkoord%20op%20het%20Justin%20concept!" class="btn-primary">👉 Akkoord Geven & Live Zetten</a>
+      <a href="https://portal.creationaltfix.nl/status/" class="btn-secondary">Volg Projectstatus</a>
+    </div>
+  </section>
+
+  <!-- USPs Grid -->
+  <section class="usps-grid">
+    <div class="usp-card">
+      <div class="usp-icon">⚡</div>
+      <h3>Sub-Second Laadtijden</h3>
+      <p>100% Google Lighthouse performance scores. Direct klaar voor mobiele bezoekers zonder laadvertraging.</p>
+    </div>
+    <div class="usp-card">
+      <div class="usp-icon">🔒</div>
+      <h3>Bank-Grade Beveiliging</h3>
+      <p>Inclusief Let's Encrypt SSL, anti-scraping beveiliging en strikte Content Security Policies.</p>
+    </div>
+    <div class="usp-card">
+      <div class="usp-icon">📱</div>
+      <h3>Mobile-First Conversie</h3>
+      <p>Direct bellen en WhatsAppen met 1 klik vanaf elk smartphonescherm, geoptimaliseerd voor lokale klanten.</p>
+    </div>
+  </section>
+
+  <!-- Proposal Box -->
+  <section class="proposal-box">
+    <h2>📋 Transparant Investeringsvoorstel</h2>
+    <p style="color: var(--text-muted);">Eerlijke prijzen zonder verborgen abonnementskosten of vendor lock-in.</p>
+
+    <table class="pricing-table">
+      <thead>
+        <tr>
+          <th>Onderdeel</th>
+          <th>Beschrijving</th>
+          <th>Investering</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Website Realisatie op Maat</strong></td>
+          <td>Volledig Dark AI design, mobiele optimalisatie en LocalBusiness SEO</td>
+          <td><strong style="color: #38BDF8;">v.a. € 199,-</strong> (eenmalig)</td>
+        </tr>
+        <tr>
+          <td><strong>Managed Cloud Hosting All-in</strong></td>
+          <td>NVMe Cloud hosting, .nl domein, SSL-certificaat en dagelijkse backups</td>
+          <td><strong style="color: #38BDF8;">€ 150,- / jaar</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Creation+Alt+Fix Klantenportaal</strong></td>
+          <td>Toegang tot portaal voor projectvoortgang, facturen en revisies</td>
+          <td><strong style="color: #10B981;">Gratis inbegrepen</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 24px;">
+      <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20voorstel%20voor%20Justin%20bekeken%20en%20wil%20graag%20starten!" class="btn-primary" style="display: inline-block;">
+        🚀 Starten met Justin Website
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Concept ontwikkeld door <strong>Creation+Alt+Fix</strong> • Allard Veldman • KvK 99986191 • Hoogezand</p>
+    <p style="margin-top: 8px; font-size: 0.8rem; color: #64748B;">Auteursrechtelijk beschermd conform de Nederlandse Auteurswet 1912.</p>
+  </footer>
+
+</body>
+</html>

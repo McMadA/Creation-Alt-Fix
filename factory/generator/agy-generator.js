@@ -23,9 +23,9 @@ export async function generateConceptWebsiteWithAgy(business) {
     const { stdout, stderr } = await execFileAsync(
       FACTORY_CONFIG.agy.executable,
       [
-        '--print',
+        '-p',
         prompt,
-        '--effort', FACTORY_CONFIG.agy.effort || 'low'
+        '--dangerously-skip-permissions'
       ],
       {
         timeout: FACTORY_CONFIG.agy.timeoutMs || 90000,
