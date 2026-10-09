@@ -654,7 +654,20 @@ function renderSubscriptionAndInvoiceCard(p) {
     const info = getPiBoekhoudingInfo(p);
     if (!info) return;
 
-    const currentPlanId = p.subscriptionPlanId || info.currentPlanId || 'managed_nl';
+    // Check if 2027 subscription plan is confirmed (Stenekes, Angela, or any client with 2027 akkoord)
+    const is2027Confirmed = Boolean(
+        p.subscriptionPlan2027Status === 'bevestigd' ||
+        info.subscriptionPlan2027Status === 'bevestigd' ||
+        p.subscriptionPlanId === 'transition_2027_loyalty' ||
+        info.currentPlanId === 'transition_2027_loyalty'
+    );
+    const plan2027Id = p.subscriptionPlan2027Id || info.subscriptionPlan2027Id || 'transition_2027_loyalty';
+    const plan2027Name = p.subscriptionPlan2027Name || info.subscriptionPlan2027Name || 'Trouwe Klant Overgangstarief 2027';
+    const plan2027Price = p.subscriptionPlan2027Price || info.subscriptionPlan2027Price || '95,00';
+
+    const currentPlanId = is2027Confirmed
+        ? (p.subscriptionPlanId || plan2027Id)
+        : (p.subscriptionPlanId || info.currentPlanId || 'managed_nl');
     const currentPlan = SUBSCRIPTION_PLANS[currentPlanId] || SUBSCRIPTION_PLANS['managed_nl'];
 
     const recPlanId = info.recommendedPlanId || 'managed_nl';
@@ -663,19 +676,34 @@ function renderSubscriptionAndInvoiceCard(p) {
     // 1. Current Plan Display
     const currentBadge = document.getElementById('subscription-status-badge');
     if (currentBadge) {
-        currentBadge.innerText = currentPlan.badge || 'Actief';
-        if (currentPlanId === 'legacy_22') {
-            currentBadge.style.color = '#fbbf24';
-        } else if (currentPlanId === 'none') {
-            currentBadge.style.color = '#94a3b8';
-        } else {
+        if (is2027Confirmed) {
+            currentBadge.innerText = `✅ Per 1 jan: € ${plan2027Price} / jr`;
             currentBadge.style.color = '#34d399';
+        } else {
+            currentBadge.innerText = currentPlan.badge || 'Actief';
+            if (currentPlanId === 'legacy_22') {
+                currentBadge.style.color = '#fbbf24';
+            } else if (currentPlanId === 'none') {
+                currentBadge.style.color = '#94a3b8';
+            } else {
+                currentBadge.style.color = '#34d399';
+            }
         }
     }
 
     const currentDisplay = document.getElementById('subscription-current-display');
     if (currentDisplay) {
-        if (p.subscriptionPlanName) {
+        if (is2027Confirmed) {
+            currentDisplay.innerHTML = `
+                <div style="font-size: 0.92rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                    <i class="fas fa-check-circle" style="color: #34d399;"></i> Per 1 januari 2027: € ${escapeHtml(plan2027Price)} / jr
+                </div>
+                <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                    <span style="color: #38bdf8; font-weight: 600;">${escapeHtml(plan2027Name)}</span><br>
+                    <span style="color: #94a3b8;">Huidig tarief: € 22,00 / jr (t/m 31-12-2026) &bull; Akkoord bevestigd</span>
+                </div>
+            `;
+        } else if (p.subscriptionPlanName) {
             currentDisplay.innerHTML = `<span style="color: #38bdf8;">${escapeHtml(p.subscriptionPlanName)}</span> &mdash; <strong style="color: #34d399;">€ ${escapeHtml(p.subscriptionPrice || currentPlan.price)}</strong> / ${escapeHtml(p.subscriptionCycle || currentPlan.cycle)}`;
         } else if (info.currentPlanName) {
             currentDisplay.innerHTML = `<span style="color: #e2e8f0;">${escapeHtml(info.currentPlanName)}</span>`;
@@ -693,7 +721,7 @@ function renderSubscriptionAndInvoiceCard(p) {
     // 3. Dropdown Selector
     const selectElem = document.getElementById('select-client-subscription');
     if (selectElem) {
-        selectElem.value = currentPlanId;
+        selectElem.value = is2027Confirmed ? plan2027Id : currentPlanId;
     }
 
     // 4. Latest Invoice from Pi-Boekhouding

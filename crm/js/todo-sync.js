@@ -116,7 +116,16 @@ export const PROJECT_PROFILES = {
         status: "Opgeleverd (Livegang)",
         statusClass: "success",
         date: "25-08-2026",
-        proposalPrice: "850,00"
+        proposalPrice: "850,00",
+        subscriptionPlanId: "transition_2027_loyalty",
+        subscriptionPlanName: "Trouwe Klant Overgangstarief 2027",
+        subscriptionPrice: "95,00",
+        subscriptionCycle: "jr",
+        subscriptionPlan2027Id: "transition_2027_loyalty",
+        subscriptionPlan2027Name: "Trouwe Klant Overgangstarief 2027",
+        subscriptionPlan2027Price: "95,00",
+        subscriptionPlan2027Status: "bevestigd",
+        subscriptionPlan2027ConfirmedAt: "2026-10-08T21:37:00Z"
     },
     HBI: {
         id: "10",
