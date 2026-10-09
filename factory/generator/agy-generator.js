@@ -23,9 +23,9 @@ export async function generateConceptWebsiteWithAgy(business) {
     const { stdout, stderr } = await execFileAsync(
       FACTORY_CONFIG.agy.executable,
       [
+        '--dangerously-skip-permissions',
         '-p',
-        prompt,
-        '--dangerously-skip-permissions'
+        prompt
       ],
       {
         timeout: FACTORY_CONFIG.agy.timeoutMs || 90000,
@@ -482,13 +482,39 @@ export function buildOutreachPitch(b) {
     subject = `Online visitekaartje & reviews voor ${b.name}`;
   } else if (archetype === 'C_MODERNISATION') {
     subject = `Veilige mobiele website-update voor ${b.name} (concept)`;
+  } else if (archetype === 'E_SITE_OFFLINE') {
+    subject = `Website herstel & werkend concept voor ${b.name}`;
+  } else if (archetype === 'D_MOBILE_UPGRADE') {
+    subject = `Mobiel concept & WhatsApp update voor ${b.name}`;
   }
 
   // 2. Archetype-specifieke voordelen
   let bulletsHtml = '';
   let bulletsPlain = '';
 
-  if (archetype === 'C_MODERNISATION') {
+  if (archetype === 'D_MOBILE_UPGRADE') {
+    bulletsHtml = `
+    <li><strong>1-Klik WhatsApp & Bellen:</strong> Zodat smartphone-bezoekers direct contact opnemen i.p.v. wegklikken</li>
+    <li><strong>Supersnel op mobiel:</strong> Meer dan 75% van particulieren zoekt een vakman via smartphone</li>
+    <li><strong>Jouw Google reviews:</strong> (${b.rating ? b.rating + ' sterren' : 'hoge reputatie'}) prominent en betrouwbaar in beeld</li>
+    <li><strong>Modern & representatief design:</strong> Strakke uitstraling die de kwaliteit van jouw vakwerk weerspiegelt</li>`;
+    bulletsPlain = `
+- 1-Klik WhatsApp & Bellen: Zodat smartphone-bezoekers direct contact opnemen i.p.v. wegklikken
+- Supersnel op mobiel: Meer dan 75% van particulieren zoekt een vakman via smartphone
+- Jouw Google reviews (${b.rating ? b.rating + ' sterren' : 'hoge reputatie'}) prominent in beeld
+- Modern & representatief: Strakke uitstraling die de kwaliteit van jouw vakwerk weerspiegelt`;
+  } else if (archetype === 'E_SITE_OFFLINE') {
+    bulletsHtml = `
+    <li><strong>Direct weer bereikbaar:</strong> Geen time-out of foutmelding meer voor bezoekers op Google Maps</li>
+    <li><strong>Supersnelle cloud hosting:</strong> 99.9% uptime garantie en dagelijkse automatische back-ups</li>
+    <li><strong>Perfect op smartphones:</strong> Binnen 1 seconde geladen met directe contactknoppen</li>
+    <li><strong>Direct contact via WhatsApp:</strong> Potentiële klanten kunnen meteen een vraag stellen of bellen</li>`;
+    bulletsPlain = `
+- Direct weer bereikbaar: Geen time-out of foutmelding meer op Google Maps
+- Supersnelle cloud hosting: 99.9% uptime garantie en dagelijkse back-ups
+- Perfect op smartphones: Binnen 1 seconde geladen met directe contactknoppen
+- Direct contact via WhatsApp: Klanten kunnen meteen een vraag stellen of bellen`;
+  } else if (archetype === 'C_MODERNISATION') {
     bulletsHtml = `
     <li><strong>Direct beveiligd met SSL (HTTPS):</strong> Geen rode 'Niet beveiligd' browserwaarschuwing meer</li>
     <li><strong>Supersnel op mobiel:</strong> Direct responsive voor bezoekers op smartphones</li>
@@ -511,7 +537,7 @@ export function buildOutreachPitch(b) {
 - Laagdrempelig contact via bellen en WhatsApp
 - Lokale vindbaarheid in en rondom Hoogezand`;
   } else {
-    // Archetype A (Vakman / Bouw / Direct)
+    // Archetype A (Geen Website op Google Maps)
     bulletsHtml = `
     <li><strong>Direct bellen & WhatsApp:</strong> Zodat particulieren bij een klus niet verder zoeken naar een ander</li>
     <li><strong>Supersnel & mobiel-eerst:</strong> Laadt in minder dan een seconde op smartphones</li>
@@ -676,8 +702,12 @@ Geen interesse of liever geen berichten meer? Reageer even met 'geen interesse' 
 
   // 5. WhatsApp Bericht (Kort, nuchter en persoonlijk)
   let whatsAppText = '';
-  if (archetype === 'C_MODERNISATION') {
-    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de website nog op onveilig HTTP staat zonder slotje. Ik heb alvast een vrijblijvend modern concept klaargezet: ${conceptUrl} - Kijk er gerust naar op je telefoon, benieuwd wat je ervan vindt!`;
+  if (archetype === 'D_MOBILE_UPGRADE') {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie vakwerk op Google Maps. Omdat meer dan 75% van klanten tegenwoordig via smartphone zoekt, heb ik alvast een supersnel mobiel concept met 1-klik WhatsApp knop voor je klaargezet: ${conceptUrl} - Benieuwd wat je ervan vindt!`;
+  } else if (archetype === 'E_SITE_OFFLINE') {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik wilde zojuist jullie website bekijken via Google Maps, maar merkte dat de link momenteel een storing geeft of offline staat. Ik heb alvast een werkend, modern concept klaargezet: ${conceptUrl} - Kijk er gerust even naar op je telefoon!`;
+  } else if (archetype === 'C_MODERNISATION') {
+    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie Google vermelding, maar merkte dat de link nog op onbeveiligd HTTP draait zonder werkend slotje. Ik heb alvast een modern en beveiligd concept klaargezet: ${conceptUrl} - Kijk er gerust naar op je telefoon!`;
   } else if (archetype === 'B_PRESENTATION_REVIEWS') {
     whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie reviews op Google, maar zag dat je nog geen directe website had voor je behandelingen en sfeer. Ik heb alvast een werkend concept voor je gemaakt: ${conceptUrl} - Veel plezier met bekijken!`;
   } else {
@@ -875,6 +905,7 @@ export function buildFallbackTemplate(b) {
       color: var(--text-main);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+    }
     .concept-bar {
       background: linear-gradient(90deg, #0b1329, #111e38);
       border-bottom: 1px solid rgba(56, 189, 248, 0.35);

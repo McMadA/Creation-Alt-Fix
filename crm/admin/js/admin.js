@@ -573,20 +573,36 @@ function setupNavigation() {
  */
 async function setupAndRenderLeadFactory() {
     let leads = [];
-    if (db) {
-        try {
-            const querySnapshot = await getDocs(collection(db, "leads_factory"));
-            querySnapshot.forEach(docSnap => {
-                leads.push({ id: docSnap.id, ...docSnap.data() });
-            });
-        } catch (err) {
-            console.warn("[CRM] Kon leads niet ophalen uit Firestore:", err);
-        }
-    }
 
+    // 1. Probeer eerst live data direct via de bridge server (indien actief)
+    try {
+        const bridgeCandidates = [];
+        if (typeof window !== 'undefined' && window.location.port === '3847') {
+            bridgeCandidates.push(window.location.origin);
+        }
+        bridgeCandidates.push('http://127.0.0.1:3847', 'http://localhost:3847');
+
+        for (const host of [...new Set(bridgeCandidates)]) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 1200);
+                const bridgeResp = await fetch(`${host}/api/leads`, { signal: controller.signal });
+                clearTimeout(timeout);
+                if (bridgeResp.ok) {
+                    const bJson = await bridgeResp.json();
+                    if (bJson && Array.isArray(bJson.leads) && bJson.leads.length > 0) {
+                        leads = bJson.leads;
+                        break;
+                    }
+                }
+            } catch (_) {}
+        }
+    } catch (_) {}
+
+    // 2. Fetch leads.json met cache-buster indien bridge niet direct antwoordde
     if (leads.length === 0) {
         try {
-            const resp = await fetch('./data/leads.json');
+            const resp = await fetch(`./data/leads.json?t=${Date.now()}`);
             if (resp.ok) {
                 const json = await resp.json();
                 if (json && Array.isArray(json.leads) && json.leads.length > 0) {
@@ -595,6 +611,18 @@ async function setupAndRenderLeadFactory() {
             }
         } catch (err) {
             // Lokale bestandssysteem fetch fallback
+        }
+    }
+
+    // 3. Firestore fallback
+    if (leads.length === 0 && db) {
+        try {
+            const querySnapshot = await getDocs(collection(db, "leads_factory"));
+            querySnapshot.forEach(docSnap => {
+                leads.push({ id: docSnap.id, ...docSnap.data() });
+            });
+        } catch (err) {
+            console.warn("[CRM] Kon leads niet ophalen uit Firestore:", err);
         }
     }
 

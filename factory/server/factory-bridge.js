@@ -186,6 +186,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // 3b. GET /api/leads (Haalt actuele leads direct van schijf voor real-time CRM weergave)
+  if (req.method === 'GET' && pathname === '/api/leads') {
+    const db = engine.loadDatabase();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(db));
+    return;
+  }
+
   // 4. POST /api/trigger (Start 1 scan cyclus vanuit CRM)
   if (req.method === 'POST' && pathname === '/api/trigger') {
     if (isCycleRunning) {

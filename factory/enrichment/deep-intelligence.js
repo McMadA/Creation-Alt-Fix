@@ -17,8 +17,12 @@ export async function enrichBusinessProfile(business) {
     profile.hasWhatsApp = false;
   }
 
-  // 2. Kwalificatiescore & Potentie-analyse
-  const potentialAnalysis = analyzeBusinessPotential(profile);
+  // 2. Echte live website / SSL verificatie
+  const probe = await probeWebsite(profile.website);
+  profile.websiteProbe = probe;
+
+  // 3. Kwalificatiescore & Potentie-analyse
+  const potentialAnalysis = analyzeBusinessPotential(profile, probe);
   profile.score = potentialAnalysis.score;
   profile.archetype = potentialAnalysis.archetype;
   profile.archetypeLabel = potentialAnalysis.archetypeLabel;
@@ -26,18 +30,72 @@ export async function enrichBusinessProfile(business) {
   profile.strengths = potentialAnalysis.strengths;
   profile.recommendedDomain = `${profile.slug}.nl`;
 
-  // 3. Fallback e-mail mining
+  // 4. Fallback e-mail mining
   // Indien het bedrijf nog geen direct e-mailadres heeft, genereren we geschikte contact-opties
   if (!profile.email) {
-    if (profile.website) {
-      profile.email = await mineEmailFromWebsite(profile.website).catch(() => null);
+    if (profile.website && probe.type !== 'SITE_OFFLINE') {
+      profile.email = await mineEmailFromWebsite(probe.finalUrl || profile.website).catch(() => null);
     }
   }
 
-  // 4. Default services afleiden uit categorie
+  // 5. Default services afleiden uit categorie
   profile.suggestedServices = deriveServicesFromCategory(profile.category, profile.name);
 
   return profile;
+}
+
+/**
+ * Test de werkelijke bereikbaarheid en SSL status van de website
+ */
+export async function probeWebsite(urlStr) {
+  if (!urlStr) return { type: 'NO_WEBSITE', label: 'Geen Mobiele Website op Google Maps', hasSsl: false };
+  let normalized = urlStr.trim();
+  if (!normalized.startsWith('http')) normalized = 'http://' + normalized;
+
+  try {
+    const u = new URL(normalized);
+    const httpsUrl = 'https://' + u.host + (u.pathname || '/');
+    const r = await fetch(httpsUrl, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(3500) });
+    if (r.ok || (r.status >= 200 && r.status < 400)) {
+      return { 
+        type: 'MOBILE_UPGRADE', 
+        label: 'Mobiele Conversie, Snelheid & WhatsApp Update', 
+        finalUrl: r.url,
+        hasSsl: true 
+      };
+    }
+  } catch (errHttps) {
+    // HTTPS mislukt, test of HTTP verbinding nog reageert
+    try {
+      const rHttp = await fetch(normalized, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(3500) });
+      if (rHttp.url.startsWith('https://')) {
+        return { 
+          type: 'MOBILE_UPGRADE', 
+          label: 'Mobiele Conversie, Snelheid & WhatsApp Update', 
+          finalUrl: rHttp.url,
+          hasSsl: true 
+        };
+      }
+      return { 
+        type: 'INSECURE_HTTP', 
+        label: 'Onbeveiligde HTTP (Geen SSL Certificaat)',
+        finalUrl: rHttp.url,
+        hasSsl: false
+      };
+    } catch (errHttp) {
+      return { 
+        type: 'SITE_OFFLINE', 
+        label: 'Website Onbereikbaar / Storing op Google Maps',
+        hasSsl: false
+      };
+    }
+  }
+
+  return { 
+    type: 'MOBILE_UPGRADE', 
+    label: 'Mobiele Conversie, Snelheid & WhatsApp Update',
+    hasSsl: true 
+  };
 }
 
 /**
@@ -54,7 +112,7 @@ function normalizeDutchPhone(phone) {
 /**
  * Berekent de lead-potentie score, het archetype en de haak voor de acquisitie e-mail
  */
-function analyzeBusinessPotential(b) {
+export function analyzeBusinessPotential(b, probe = null) {
   let score = 50; // Basis
   const strengths = [];
   let archetype = 'A_TRADE_DIRECT';
@@ -66,17 +124,18 @@ function analyzeBusinessPotential(b) {
     cat.includes('massage') || cat.includes('zorg') || cat.includes('pedicure') || cat.includes('nagel') ||
     cat.includes('coach') || cat.includes('therapie');
 
-  const isInsecureHttp = b.hasInsecureHttp || (b.website && !b.website.startsWith('https:'));
+  // Bepaal het werkelijke type haakje
+  let probeType = probe ? probe.type : null;
+  if (!probeType) {
+    if (!b.website) probeType = 'NO_WEBSITE';
+    else if (b.hasInsecureHttp) probeType = 'INSECURE_HTTP';
+    else if (b.isOffline) probeType = 'SITE_OFFLINE';
+    else probeType = 'MOBILE_UPGRADE';
+  }
 
-  if (isInsecureHttp) {
-    archetype = 'C_MODERNISATION';
-    archetypeLabel = 'Website Modernisatie & SSL Beveiliging';
-    score += 35;
-    strengths.push("Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje");
-    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. We merkten op dat je website nog niet beschikt over een modern SSL-slotje (HTTPS). Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen en de mobiele aanvragen van potentiële klanten.`;
-  } else if (!b.website) {
+  if (probeType === 'NO_WEBSITE') {
     score += 40;
-    strengths.push("Heeft nog géén actieve website op Google Maps");
+    strengths.push("Heeft nog géén actieve website gekoppeld op Google Maps");
 
     if (isBeautyOrCare) {
       archetype = 'B_PRESENTATION_REVIEWS';
@@ -84,12 +143,28 @@ function analyzeBusinessPotential(b) {
       pitchHook = `We zagen dat je met ${b.name} in ${b.address ? 'regio Hoogezand / Groningen' : 'de regio'} prachtige reviews krijgt, maar dat je op Google Maps nog geen directe website hebt om jouw behandelingen, sfeer en klantbeoordelingen te presenteren.`;
     } else {
       archetype = 'A_TRADE_DIRECT';
-      archetypeLabel = 'Nuchter & Direct Bellen (Vakman)';
-      pitchHook = `We zagen dat je als ${b.category || 'vakman'} in ${b.address ? 'regio Hoogezand / Groningen' : 'de regio'} actief bent. Veel particulieren die een betrouwbare specialist zoeken, willen direct op hun mobiel kunnen zien wie je bent en direct bellen of appen. Omdat je op Google Maps nog geen website hebt gekoppeld, lopen potentiële klussen nu sneller door naar concurrenten.`;
+      archetypeLabel = 'Geen Website op Google Maps (Direct Bellen)';
+      pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps in ${b.address ? 'regio Hoogezand / Groningen' : 'de regio'}. Omdat er nog geen eigen website aan gekoppeld is, lopen particulieren die mobiel een betrouwbare specialist zoeken nu sneller door naar concurrenten. Ik heb alvast een compleet, vrijblijvend concept klaargezet met directe bel- en WhatsApp-knoppen.`;
     }
+  } else if (probeType === 'SITE_OFFLINE') {
+    archetype = 'E_SITE_OFFLINE';
+    archetypeLabel = 'Website Onbereikbaar / Foutmelding op Google Maps';
+    score += 45;
+    strengths.push("Huidige website link op Google Maps is onbereikbaar of geeft een storing");
+    pitchHook = `We wilden jouw website bekijken via jouw Google Maps vermelding voor ${b.name}, maar merkten dat de link naar ${b.website} momenteel niet bereikbaar is of een foutmelding geeft. Zonde voor potentiële klanten die je zoeken. Ik heb alvast een modern, razendsnel en direct werkend concept voor je klaargezet.`;
+  } else if (probeType === 'INSECURE_HTTP') {
+    archetype = 'C_MODERNISATION';
+    archetypeLabel = 'SSL Beveiliging & HTTPS Update';
+    score += 35;
+    strengths.push("Heeft een onbeveiligde HTTP-website zonder modern SSL-slotje");
+    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. We merkten op dat de website nog op onbeveiligd HTTP draait en geen werkende HTTPS-verbinding heeft. Browsers zoals Google Chrome tonen hierdoor een waarschuwing 'Niet beveiligd', wat zonde is voor het vertrouwen van potentiële klanten.`;
   } else {
-    strengths.push("Heeft een bestaande webvermelding die gemoderniseerd kan worden");
-    pitchHook = `We zagen jouw vermelding voor ${b.name} op Google Maps. Veel ZZP'ers in jouw branche verliezen mobiele bezoekers door een trage of niet-responsive website.`;
+    // MOBILE_UPGRADE (Website heeft al SSL / HTTPS!)
+    archetype = 'D_MOBILE_UPGRADE';
+    archetypeLabel = 'Mobiele Conversie, Snelheid & WhatsApp Update';
+    score += 30;
+    strengths.push("Bestaande website heeft SSL, maar mist moderne mobiele conversieknoppen en WhatsApp");
+    pitchHook = `We zagen jouw vakwerk en mooie vermelding voor ${b.name} op Google Maps. Jullie hebben al een website, maar meer dan 75% van de particulieren zoekt tegenwoordig via hun mobiele telefoon naar een specialist. Veel traditionele websites zijn op mobiel traag en missen directe 1-klik contactknoppen zoals WhatsApp of Direct Bellen, waardoor mobiele bezoekers afhaken. Ik heb speciaal voor ${b.name} een modern, supersnel mobiel concept gebouwd.`;
   }
 
   if (b.rating && b.rating >= 4.5) {

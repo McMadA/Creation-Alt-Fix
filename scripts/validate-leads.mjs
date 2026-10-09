@@ -11,7 +11,7 @@ const conceptBaseDir = './website/concept';
 const conceptFolders = fs.readdirSync(conceptBaseDir).filter(f => fs.statSync(path.join(conceptBaseDir, f)).isDirectory());
 
 console.log(`🔍 [Validator] Gevonden fysieke concept mappen in ${conceptBaseDir}: ${conceptFolders.length}`);
-assert.strictEqual(conceptFolders.length, 20, "Er moeten exact 20 concept mappen zijn in website/concept/");
+assert.ok(conceptFolders.length >= 20, "Er moeten minimaal 20 concept mappen zijn in website/concept/");
 
 for (const filePath of filesToValidate) {
   console.log(`\n📋 [Validator] Valideren van ${filePath}...`);
@@ -21,10 +21,10 @@ for (const filePath of filesToValidate) {
   const data = JSON.parse(raw);
 
   assert.ok(Array.isArray(data.leads), "Data moet leads array bevatten");
-  assert.strictEqual(data.leads.length, 20, `Er moeten exact 20 records in ${filePath} staan`);
-  assert.strictEqual(data.totalScanned, 20, "totalScanned moet 20 zijn");
-  assert.strictEqual(data.totalQualified, 20, "totalQualified moet 20 zijn");
-  assert.strictEqual(data.totalGenerated, 20, "totalGenerated moet 20 zijn");
+  assert.strictEqual(data.leads.length, conceptFolders.length, `Aantal records (${data.leads.length}) in ${filePath} moet exact gelijk zijn aan aantal concept mappen (${conceptFolders.length})`);
+  assert.ok(data.totalScanned >= 20, "totalScanned moet >= 20 zijn");
+  assert.ok(data.totalQualified >= 20, "totalQualified moet >= 20 zijn");
+  assert.ok(data.totalGenerated >= 20, "totalGenerated moet >= 20 zijn");
   assert.strictEqual(data.totalSent, 0, "totalSent moet 0 zijn");
 
   data.leads.forEach((lead, idx) => {

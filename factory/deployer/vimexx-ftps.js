@@ -76,3 +76,40 @@ export async function deployConceptToVimexx(slug, localHtmlContent) {
     client.close();
   }
 }
+
+/**
+ * Uploadt de actuele leads.json naar het online CRM Admin Dashboard op Vimexx
+ */
+export async function syncLeadsDatabaseToVimexx() {
+  const localLeadsPath = path.resolve(FACTORY_CONFIG.localConceptDir, '..', '..', 'crm', 'admin', 'data', 'leads.json');
+  if (!fs.existsSync(localLeadsPath)) return false;
+
+  const { host, port, user, password } = FACTORY_CONFIG.ftp;
+  if (!user || !password) return false;
+
+  const ftp = await import('basic-ftp');
+  const client = new ftp.Client();
+  client.ftp.verbose = false;
+
+  try {
+    await client.access({
+      host,
+      port,
+      user,
+      password,
+      secure: true,
+      secureOptions: { rejectUnauthorized: process.env.FTP_REJECT_UNAUTHORIZED !== 'false' }
+    });
+
+    const remotePortalDataDir = "domains/creationaltfix.nl/public_html/portal/admin/data";
+    await client.ensureDir(remotePortalDataDir);
+    await client.uploadFrom(localLeadsPath, 'leads.json');
+    console.log(`🌐 [FTPS Deployer] Live CRM leads.json gesynchroniseerd naar Vimexx portal!`);
+    return true;
+  } catch (err) {
+    console.warn(`⚠️ [FTPS Deployer] Kon leads.json niet naar Vimexx syncen: ${err.message}`);
+    return false;
+  } finally {
+    client.close();
+  }
+}

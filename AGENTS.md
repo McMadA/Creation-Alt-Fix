@@ -2,6 +2,19 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Model Begroeting & Sessie Handshake**:
+  - Geverifieerd dat de assistent operationeel is en instructies direct en beknopt opvolgt conform CKE-richtlijnen.
+
+- **[2026-10-09] Eenvoudige HTML Pagina ([simple.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/simple.html))**:
+  - Een schone, semantische HTML5-basis gecreëerd inclusief viewport meta tag, gecentreerde kaart-layout met lichte responsieve inline CSS en een knopactie.
+
+- **[2026-10-09] Model Test & Connectiviteitsverificatie**:
+  - Geverifieerd dat de modelverbinding actief is en instructies direct en beknopt worden opgevolgd conform CKE-richtlijnen.
+
+- **[2026-10-09] Model Interactie & Sessie Handshake**:
+  - Geverifieerd dat de assistent operationeel is en direct conform de CKE-richtlijnen en beknopte instructies reageert.
+
+
 - **[2026-10-09] Besseling Installatietechniek CSS & Subfolder Herstel ([BesselingInstallatieTechniek/](file:///c:/Users/Admin/Documents/GitHub/Websites/BesselingInstallatieTechniek/), [website/.htaccess](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/website/.htaccess))**:
   - Analyse en oplossing voor ontbrekende styles op `https://creationaltfix.nl/besselinginstallatietechniek/`. Veroorzaakt door CSP `script-src` blokkade op runtime `cdn.tailwindcss.com` en absolute root-links (`/images/...`, `/contact.html`, etc.) op een subfolder deployment. Opgelost door precompilatie van pure static `tailwind.min.css` (19 KB), migratie naar relatieve paden in alle 9 HTML pagina's, toevoegen van subdirectory `.htaccess` met CSP overrides en opname van `cdn.tailwindcss.com` in `website/.htaccess`.
 

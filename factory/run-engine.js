@@ -5,7 +5,7 @@ import { FACTORY_CONFIG } from './config/factory-config.js';
 import { searchGoogleMaps } from './discovery/maps-crawler.js';
 import { enrichBusinessProfile } from './enrichment/deep-intelligence.js';
 import { generateConceptWebsiteWithAgy } from './generator/agy-generator.js';
-import { deployConceptToVimexx } from './deployer/vimexx-ftps.js';
+import { deployConceptToVimexx, syncLeadsDatabaseToVimexx } from './deployer/vimexx-ftps.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -176,6 +176,9 @@ export class LeadFactoryEngine {
     }
 
     this.saveDatabase(db);
+    if (processedInThisCycle > 0) {
+      await syncLeadsDatabaseToVimexx().catch(() => {});
+    }
     console.log(`📊 [Lead Factory] Cyclus voltooid. Totaal gereed voor review: ${db.leads.filter(l => l.status === 'concept_ready').length}`);
     return {
       processed: processedInThisCycle,
