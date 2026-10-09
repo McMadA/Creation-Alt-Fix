@@ -1,0 +1,306 @@
+{
+  "syncedAt": "now",
+  "count": 12,
+  "invoices": [
+    {
+      "id": 1,
+      "invoiceNumber": "2026-001",
+      "date": "2026-03-24",
+      "dueDate": "2026-04-07",
+      "status": "Betaald",
+      "clientName": "Livian Design",
+      "email": "",
+      "kvk": "98849794",
+      "totalExcl": 50.0,
+      "totalVat": 10.5,
+      "totalIncl": 60.5,
+      "items": [
+        {
+          "name": "Software",
+          "desc": "",
+          "qty": 1.0,
+          "price": 50.0
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "invoiceNumber": "2026-002",
+      "date": "2026-04-08",
+      "dueDate": "2026-04-22",
+      "status": "Betaald",
+      "clientName": "BakkertjeSieg",
+      "email": "bakkertjesieg@gmail.com",
+      "kvk": "92124356",
+      "totalExcl": 75.0,
+      "totalVat": 15.75,
+      "totalIncl": 90.75,
+      "items": [
+        {
+          "name": "Website updaten",
+          "desc": "",
+          "qty": 2.5,
+          "price": 30.0
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "invoiceNumber": "2026-003",
+      "date": "2026-05-27",
+      "dueDate": "2026-06-10",
+      "status": "Betaald",
+      "clientName": "Scholte Elektrotechniek",
+      "email": "",
+      "kvk": "89192036",
+      "totalExcl": 22.0,
+      "totalVat": 4.62,
+      "totalIncl": 26.62,
+      "items": [
+        {
+          "name": "Domein verlengen",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": "Hosting verlengen",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 1.0
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "invoiceNumber": "2026-004",
+      "date": "2026-05-27",
+      "dueDate": "2026-06-10",
+      "status": "Betaald",
+      "clientName": "De Knipperij",
+      "email": "",
+      "kvk": "59520353",
+      "totalExcl": 22.0,
+      "totalVat": 4.62,
+      "totalIncl": 26.62,
+      "items": [
+        {
+          "name": "Domein verlengen",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": "Hosting verlengen",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 1.0
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "invoiceNumber": "2026-005",
+      "date": "2026-06-03",
+      "dueDate": "2026-06-17",
+      "status": "Betaald",
+      "clientName": "Rioolspecialist Stenekes",
+      "email": "",
+      "kvk": "02075792",
+      "totalExcl": 22.0,
+      "totalVat": 4.62,
+      "totalIncl": 26.62,
+      "items": [
+        {
+          "name": "Domein verlengen",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": "Hosting verlengen",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 1.0
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "invoiceNumber": "2026-006",
+      "date": "2026-07-13",
+      "dueDate": "2026-07-27",
+      "status": "Betaald",
+      "clientName": "Ftruckstore",
+      "email": "info@ftruckstore.nl",
+      "kvk": "01145302",
+      "totalExcl": 140.0,
+      "totalVat": 29.4,
+      "totalIncl": 169.4,
+      "items": [
+        {
+          "name": "Reparatie website",
+          "desc": "in uren",
+          "qty": 4.0,
+          "price": 35.0
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "invoiceNumber": "2026-007",
+      "date": "2026-07-22",
+      "dueDate": "2026-08-05",
+      "status": "Geannuleerd",
+      "clientName": "Ftruckstore",
+      "email": "info@ftruckstore.nl",
+      "kvk": "01145302",
+      "totalExcl": 60.0,
+      "totalVat": 12.6,
+      "totalIncl": 72.6,
+      "items": [
+        {
+          "name": "hosting",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 5.0
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "invoiceNumber": "2026-008",
+      "date": "2026-07-22",
+      "dueDate": "2026-08-05",
+      "status": "Betaald",
+      "clientName": "Ftruckstore",
+      "email": "info@ftruckstore.nl",
+      "kvk": "01145302",
+      "totalExcl": 305.0,
+      "totalVat": 64.05,
+      "totalIncl": 369.05,
+      "items": [
+        {
+          "name": "Hosting",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 5.0
+        },
+        {
+          "name": ".nl domein",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": ".com domein",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 25.0
+        },
+        {
+          "name": "overzetten website",
+          "desc": "per uur",
+          "qty": 6.0,
+          "price": 35.0
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "invoiceNumber": "2026-009",
+      "date": "2026-07-22",
+      "dueDate": "2026-08-05",
+      "status": "Betaald",
+      "clientName": "BakkertjeSieg",
+      "email": "bakkertjesieg@gmail.com",
+      "kvk": "92124356",
+      "totalExcl": 245.0,
+      "totalVat": 51.45,
+      "totalIncl": 296.45,
+      "items": [
+        {
+          "name": "Nieuwe website",
+          "desc": "in uren",
+          "qty": 7.0,
+          "price": 35.0
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "invoiceNumber": "2026-010",
+      "date": "2026-09-23",
+      "dueDate": "2026-10-07",
+      "status": "Betaald",
+      "clientName": "Willa",
+      "email": "",
+      "kvk": "95130659",
+      "totalExcl": 22.0,
+      "totalVat": 4.62,
+      "totalIncl": 26.62,
+      "items": [
+        {
+          "name": "Domein verlengen",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": "Hosting verlengen",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 1.0
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "invoiceNumber": "2026-011",
+      "date": "2026-09-23",
+      "dueDate": "2026-10-07",
+      "status": "Betaald",
+      "clientName": "Arnold Design",
+      "email": "",
+      "kvk": "94811318",
+      "totalExcl": 22.0,
+      "totalVat": 4.62,
+      "totalIncl": 26.62,
+      "items": [
+        {
+          "name": "Domein verlengen",
+          "desc": "per jaar",
+          "qty": 1.0,
+          "price": 10.0
+        },
+        {
+          "name": "Domein verlengen",
+          "desc": "per maand",
+          "qty": 12.0,
+          "price": 1.0
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "invoiceNumber": "2026-012",
+      "date": "2026-10-08",
+      "dueDate": "2026-10-22",
+      "status": "Betaald",
+      "clientName": "BakkertjeSieg",
+      "email": "bakkertjesieg@gmail.com",
+      "kvk": "92124356",
+      "totalExcl": 315.0,
+      "totalVat": 66.15,
+      "totalIncl": 381.15,
+      "items": [
+        {
+          "name": "Website aanpassingen Q2 2026",
+          "desc": "per uur",
+          "qty": 9.0,
+          "price": 35.0
+        }
+      ]
+    }
+  ]
+}

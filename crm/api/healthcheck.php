@@ -60,25 +60,36 @@ try {
     $now = time();
     $rateData = ['count' => 0, 'window' => $now];
 
-    if (file_exists($rateFile)) {
-        $raw = @file_get_contents($rateFile);
-        if ($raw) {
-            $parsed = @json_decode($raw, true);
-            if (is_array($parsed) && isset($parsed['window']) && ($now - $parsed['window']) < 60) {
-                $rateData = $parsed;
+    $rf = @fopen($rateFile, 'c+');
+    if ($rf) {
+        if (@flock($rf, LOCK_EX)) {
+            $size = @filesize($rateFile);
+            $raw = $size > 0 ? @fread($rf, $size) : '';
+            if ($raw) {
+                $parsed = @json_decode($raw, true);
+                if (is_array($parsed) && isset($parsed['window']) && ($now - $parsed['window']) < 60) {
+                    $rateData = $parsed;
+                }
             }
+            $rateData['count']++;
+            if ($rateData['count'] > 240) {
+                @flock($rf, LOCK_UN);
+                @fclose($rf);
+                http_response_code(429);
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Te veel verzoeken (rate limit bereikt). Probeer het over een minuut opnieuw.'
+                ]);
+                exit;
+            }
+            @ftruncate($rf, 0);
+            @rewind($rf);
+            @fwrite($rf, json_encode($rateData));
+            @fflush($rf);
+            @flock($rf, LOCK_UN);
         }
+        @fclose($rf);
     }
-    $rateData['count']++;
-    if ($rateData['count'] > 240) {
-        http_response_code(429);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Te veel verzoeken (rate limit bereikt). Probeer het over een minuut opnieuw.'
-        ]);
-        exit;
-    }
-    @file_put_contents($rateFile, json_encode($rateData));
 
     $rawDomain = $_GET['domain'] ?? '';
     $cleanDomain = strtolower(trim($rawDomain));
@@ -103,9 +114,27 @@ try {
         if (empty($cleanPath)) $cleanPath = '/';
     }
 
-    // Block private IP ranges / localhost / loopback SSRF
+    // Block private IP ranges / localhost / loopback SSRF / Tailscale (RFC 6598)
     $resolvedIp = gethostbyname($cleanDomain);
+    $isPrivateOrBlocked = false;
+
     if ($resolvedIp === $cleanDomain || filter_var($resolvedIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+        $isPrivateOrBlocked = true;
+    } else {
+        $ipLong = ip2long($resolvedIp);
+        if ($ipLong === false) {
+            $isPrivateOrBlocked = true;
+        } else {
+            // RFC 6598 Carrier-Grade NAT / Tailscale range: 100.64.0.0 to 100.127.255.255
+            $cgnatStart = ip2long('100.64.0.0');
+            $cgnatEnd   = ip2long('100.127.255.255');
+            if ($ipLong >= $cgnatStart && $ipLong <= $cgnatEnd) {
+                $isPrivateOrBlocked = true;
+            }
+        }
+    }
+
+    if ($isPrivateOrBlocked) {
         echo json_encode([
             'success' => false,
             'reachable' => false,
@@ -113,7 +142,7 @@ try {
             'path' => $cleanPath,
             'http_code' => 0,
             'ssl_valid' => false,
-            'message' => 'DNS resolutie mislukt of privé/intern IP-bereik geblokkeerd.',
+            'message' => 'DNS resolutie mislukt of privé/intern/Tailscale IP-bereik geblokkeerd.',
             'latency_ms' => 0
         ]);
         exit;

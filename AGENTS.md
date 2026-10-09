@@ -2,6 +2,44 @@
 
 ## Recent Insights
 
+- **[2026-10-10] Factuur Auto-Increment Vanaf 2026-013 & Pi Boekhouding Synchronisatie ([crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js), [crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
+  - **Probleem**: 
+    1. Het auto-increment mechanisme voor nieuwe facturen begon voorheen bij `2026-001` per project omdat het niet wist dat er in 2026 al 12 facturen (`2026-001` t/m `2026-012`) zijn uitgegeven.
+    2. Bij BakkertjeSieg (en andere klanten zonder expliciete `invoices` array in Firestore) was geen factuurhistorie zichtbaar, terwijl in de Pi Boekhouding database 3 facturen stonden (`2026-002`, `2026-009` en de recente `2026-012`).
+  - **Oplossing**:
+    1. *Auto-Increment Baseline*: In `project.js` is voor jaar 2026 de sequence floor ingesteld op minimaal `13` (`let nextSeq = (currentYear === 2026) ? 13 : 1;`). Het modal stelt voor nieuwe facturen nu standaard direct `2026-013` voor, scannend over zowel project- als bekende Pi-facturen.
+    2. *Pi-Boekhouding Historie Koppeling*: `normalizeProjectInvoices` (werkplek) en `setupClientInvoicesArchive` (klantenportaal) controleren nu automatisch `getPiBoekhoudingInfo(project)`. Alle historische facturen worden deduplicate samengevoegd met live projectfacturen.
+    3. *Data Herstel*: `PI_BOEKHOUDING_CLIENT_DATA` uitgebreid met complete `invoices` arrays voor alle klanten (BakkertjeSieg toont nu alle 3 facturen: `2026-002`, `2026-009` en `2026-012`, F-Truck Store toont `2026-006`, `2026-007`, `2026-008`, en ook Willa `2026-010` en Arnold `2026-011` zijn gekoppeld). Resiliente alias-matching toegevoegd op klantnaam en domein.
+    4. *Geautomatiseerde Sync Pipeline*: In de Pi Boekhouding repo is `sync-invoices-to-crm.ps1` gecreëerd en gekoppeld aan de dagelijkse Windows Scheduled Task `backup-pi.ps1`. Elke dagelijkse backup exporteert automatisch de nieuwste uitgaande facturen naar `pi-invoices.json` zonder handmatig werk.
+    5. *CI/CD Quality Gate*: Geautomatiseerde testsuite uitgebreid naar 81/81 geslaagde tests.
+
+- **[2026-10-10] Red Team Kwetsbaarheden Remediatie & Zero-Trust Hardening ([crm/api/create-payment.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/create-payment.php), [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules), [storage.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/storage.rules), [crm/api/healthcheck.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/healthcheck.php))**:
+  - **Probleem**: Tijdens een diepgaande red team audit werden meerdere blinde vlekken ontdekt: een ongeauthenticeerd Mollie betaal-endpoint (`create-payment.php`), publieke datalek-override voor `leads.json` in `crm/admin/data/.htaccess`, client-side betaalstatus spoofing via URL query params (`paid=true`), fail-open fallback in `mollie-webhook.php`, onbeperkte schema-injectie bij Firestore `create`, SSRF risico naar Tailscale IP-ranges (`100.64.0.0/10`) in `healthcheck.php`, en protocol-relative URL bypasses (`//`) in `sanitizeUrl()`.
+  - **Oplossing**:
+    1. *API Hardening*: `create-payment.php` beveiligd met Firebase ID Bearer token validatie via Google Identity Toolkit, whitelist controle en geforceerde redirect URL. `mollie-webhook.php` fail-closed gemaakt (geen gesimuleerde betalingen), voorzien van `flock` file locking en deduplicatie.
+    2. *Data & Webserver Isolatie*: `crm/admin/data/.htaccess` hermetisch afgesloten (`Require all denied`). `crm/.htaccess` CSP ontdaan van `'unsafe-eval'` en wildcard `frame-src`, en anti-caching (`Cache-Control: no-store`) geactiveerd voor HTML/PHP.
+    3. *Client-side Spoofing Verholpen*: In `status.js` alle afhankelijkheden van URL query params en `localStorage` voor betaalstatus geëlimineerd; `isInvoicePaid` leest uitsluitend gevalideerde databasestatussen.
+    4. *Database & Storage Rules*: `firestore.rules` afgedwongen met `keys().hasOnly(...)` voor publieke intakes en status transitie checks. `storage.rules` gesplitst in `create, update` en `delete` ter voorkoming van runtime null crashes bij bestandsverwijdering.
+    5. *SSRF & Sanitizer*: `healthcheck.php` uitgebreid met RFC 6598 Tailscale (`100.64.0.0/10`) blokkade en `flock` op rate limiting. `sanitizeUrl()` weigert nu protocol-relative URLs (`//`). Testsuite uitgebreid naar 81/81 geslaagde tests.
+
+
+- **[2026-10-10] Codebase Opschoning, Refactoring & Packaging Strategie ([codebase_cleanup_and_packaging_plan.md](file:///C:/Users/Admin/.gemini/antigravity-cli/brain/ddddec8f-2c5b-43e5-a5ce-943aed0ccfeb/codebase_cleanup_and_packaging_plan.md))**:
+  - **Probleem**: De repository bevatte ballast door eerdere AI-iteraties: 27,3 MB ongebruikte ruwe PNG-afbeeldingen, >1.500 regels dubbele vertalingen in website JS, ~700 regels dode modalcode in `admin.js`, verweesde scripts (`mollie_service.py`), hardcoded inloggegevens in `scripts/`, niet-geanonimiseerde klantdossiers in `docs/`, verminkte mojibake-tekens en een 1-regelige README.
+  - **Oplossing**:
+    1. *Implementatieplan opgesteld*: Volledige architectonische sanering uitgewerkt in een formeel plan artifact met expliciete verificatievragen.
+    2. *Pijlers*: Veiligheid & GDPR sanitization, verwijdering van dead code, 75% schijfruimtereductie door PNG-eliminatie, DRY-extractie van vertalingen, UTF-8 mojibake herstel, en commercial packaging met 1-click release script (`scripts/package-release.mjs`) en top-tier documentatie.
+    3. *CI/CD Waarborg*: Alle 80 geautomatiseerde unittests over 13 suites blijven als harde kwaliteitsbarrière fungeren.
+
+- **[2026-10-10] CRM Beveiligingsdossier & Technische Audit Specificatie ([CRM_SECURITY_AUDIT_DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/CRM_SECURITY_AUDIT_DOSSIER.md))**:
+  - **Doel**: Een uitputtende, professionele audit-ready technische specificatie opstellen voor IT security auditors, pentestes en compliance officers (OWASP ASVS v4.0 / ISO 27001 / AVG-GDPR).
+  - **Inhoud & Kernbeveiligingen**:
+    1. *Dual-Zone Architectuur*: Scheiding tussen openbaar front-office CRM (Vimexx/Firebase) en afgeschermde back-office administratie (Raspberry Pi).
+    2. *Identity & Access Management*: Firebase Auth met Dual-Auth client provisioning patroon (`secondaryAuth` met `inMemoryPersistence`), cryptografische wachtwoordresets en admin whitelist controle op zowel client als database-niveau.
+    3. *Database & Storage Rules*: Granulaire veld-whitelist via `affectedKeys()`, status- en prijsmanipulatiebescherming in `firestore.rules`, onweerlegbare WORM audit trail in `/audit_logs/`, en cross-service dynamische eigendomscheck + 10MB quota + MIME whitelist in `storage.rules`.
+    4. *Financiële Transacties*: PCI-DSS scope reductie via Mollie API v2 met single-use checkout URL's en cryptografische server-to-server verificatie in `mollie-webhook.php`.
+    5. *Webserver & SSRF Hardening*: HSTS preload, strict CSP, blokkade van gevoelige extensies via `.htaccess`, en zero-trust probe mitigaties in `healthcheck.php` (DNS pinning, loopback filtering, geen redirect hops, IP rate limiting).
+
+
 - **[2026-10-09] Full-Width Werkplek Layout & Responsieve Tabs Wrapping ([crm/admin/css/admin.css](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/css/admin.css), [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html))**:
   - **Probleem**: Op bredere beeldschermen (zoals 1440p / 4K / breedbeeld) werd de werkplek ingeperkt door een rigide `max-width: 1400px; margin: 0 auto;`. Hierdoor ontstonden enorme zwarte marges aan de zijkanten en werden de tabbladen (`.tab-nav`) aan de rechterkant afgekapt (`overflow-x`), waardoor tabs zoals 'Interne Notities', 'Bestanden' en 'Klantview Live Preview' niet direct zichtbaar waren.
   - **Oplossing**:

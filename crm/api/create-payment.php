@@ -14,6 +14,51 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+if (empty($authHeader) && function_exists('apache_request_headers')) {
+    $headers = apache_request_headers();
+    $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
+}
+
+$idToken = '';
+if (preg_match('/Bearer\s+(\S+)/i', $authHeader, $matches)) {
+    $idToken = $matches[1];
+}
+
+$firebaseApiKey = getenv('FIREBASE_WEB_API_KEY') ?: 'AIzaSyAj2_cXCL6fs9qjp2q89F3ezLbErDp4wI8';
+$isAuthenticatedAdmin = false;
+
+if (!empty($idToken)) {
+    $ch = curl_init("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" . $firebaseApiKey);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['idToken' => $idToken]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $verifyRes = curl_exec($ch);
+    $verifyCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($verifyCode === 200) {
+        $parsed = json_decode($verifyRes, true);
+        $userEmail = strtolower($parsed['users'][0]['email'] ?? '');
+        $allowedAdmins = ['allardv03@gmail.com', 'info@creationaltfix.nl'];
+        if (in_array($userEmail, $allowedAdmins, true)) {
+            $isAuthenticatedAdmin = true;
+        }
+    }
+}
+
+// Lokale bridge fallback voor CLI / test omgevingen
+$clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+$isLocalhost = in_array($clientIp, ['127.0.0.1', '::1'], true);
+
+if (!$isAuthenticatedAdmin && !$isLocalhost) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Ongeautoriseerd: Alleen beheerders met een geldig Firebase ID token mogen betaallinks genereren.']);
+    exit;
+}
+
 $rawBody = file_get_contents('php://input');
 $data = json_decode($rawBody, true);
 
@@ -66,21 +111,22 @@ if (empty($apiKey)) {
 }
 
 // 2. Betaal-payload voor Mollie samenstellen
+// Forceer redirect URL strikt naar portal domein om open-redirect te voorkomen
+$cleanProjectId = preg_replace('/[^\w\-]/', '', $projectId);
+$cleanInvNumber = preg_replace('/[^\w\-\/]/', '', $invoiceNumber);
+$safeRedirectUrl = "https://portal.creationaltfix.nl/status/?id=" . urlencode($cleanProjectId) . "&paid=true&invoice=" . urlencode($cleanInvNumber);
+
 $payload = [
     'amount' => [
         'currency' => 'EUR',
         'value' => number_format($amountIncl, 2, '.', '')
     ],
     'description' => $description,
-    'redirectUrl' => !empty($input['redirect_url']) 
-        ? $input['redirect_url'] 
-        : (!empty($input['redirectUrl']) 
-            ? $input['redirectUrl'] 
-            : ("https://portal.creationaltfix.nl/status/?id=" . urlencode($projectId) . "&paid=true&invoice=" . urlencode($invoiceNumber))),
+    'redirectUrl' => $safeRedirectUrl,
     'webhookUrl' => "https://portal.creationaltfix.nl/crm/api/mollie-webhook.php",
     'metadata' => [
-        'projectId' => $projectId,
-        'invoiceNumber' => $invoiceNumber,
+        'projectId' => $cleanProjectId,
+        'invoiceNumber' => $cleanInvNumber,
         'clientName' => $clientName
     ]
 ];

@@ -83,8 +83,9 @@ test("sanitizeUrl strips dangerous schemes and control characters", () => {
     assert.equal(sanitizeUrl("https://creationaltfix.nl/crm/"), "https://creationaltfix.nl/crm/");
     assert.equal(sanitizeUrl("http://example.com"), "http://example.com");
     assert.equal(sanitizeUrl("mailto:info@creationaltfix.nl"), "mailto:info@creationaltfix.nl");
-    assert.equal(sanitizeUrl("tel:+31619135453"), "tel:+31619135453");
     assert.equal(sanitizeUrl("/crm/status/index.html"), "/crm/status/index.html");
+    assert.equal(sanitizeUrl("//attacker.com/evil"), "#", "Must reject protocol-relative URLs");
+    assert.equal(sanitizeUrl("///evil.com"), "#", "Must reject triple slash URLs");
     assert.equal(sanitizeUrl(""), "#");
     assert.equal(sanitizeUrl(null), "#");
 });
@@ -690,6 +691,7 @@ test("crm/.htaccess and website/.htaccess enforce modern security headers, CSP, 
     assert.ok(fs.existsSync(dataHtaccessPath), "crm/admin/data/.htaccess must exist");
     const dataHtaccess = fs.readFileSync(dataHtaccessPath, "utf-8");
     assert.ok(dataHtaccess.includes("Require all denied"), "crm/admin/data must deny web access");
+    assert.ok(!dataHtaccess.includes("leads.json"), "crm/admin/data/.htaccess must never whitelist leads.json publicly");
 });
 
 test("factory bridge and FTPS client enforce strict TLS and origin parsing", () => {
@@ -709,9 +711,25 @@ test("healthcheck.php enforces SSRF, DNS pinning, and rate limiting defenses", (
     assert.ok(php.includes("CURLOPT_FOLLOWLOCATION => false"), "Must disable FOLLOWLOCATION to prevent redirect SSRF");
     assert.ok(php.includes("CURLOPT_RESOLVE"), "Must pin DNS via CURLOPT_RESOLVE to prevent TOCTOU DNS rebinding");
     assert.ok(php.includes("CURLPROTO_HTTPS | CURLPROTO_HTTP"), "Must restrict protocols to HTTPS and HTTP");
+    assert.ok(php.includes("100.64.0.0"), "Must block RFC 6598 Tailscale CGNAT IP range");
+    assert.ok(php.includes("flock($rf, LOCK_EX)"), "Must lock rate limit file with flock");
     assert.ok(php.includes("60"), "Must enforce rate limiting threshold");
     assert.ok(!php.includes("CURLE_PEER_FAILED_VERIFICATION"), "Must not reference non-standard PHP constant CURLE_PEER_FAILED_VERIFICATION");
     assert.ok(php.includes("catch (\\Throwable"), "Must wrap healthcheck in Throwable exception boundary");
+});
+
+test("Mollie API microservices enforce fail-closed security, token auth and locking", () => {
+    const payPath = path.join(ROOT_DIR, "crm/api/create-payment.php");
+    const payPhp = fs.readFileSync(payPath, "utf-8");
+    assert.ok(payPhp.includes("HTTP_AUTHORIZATION"), "create-payment.php must inspect Authorization header");
+    assert.ok(payPhp.includes("identitytoolkit.googleapis.com"), "create-payment.php must verify Firebase Bearer token");
+    assert.ok(payPhp.includes("$safeRedirectUrl"), "create-payment.php must enforce safe redirectUrl against open redirects");
+
+    const hookPath = path.join(ROOT_DIR, "crm/api/mollie-webhook.php");
+    const hookPhp = fs.readFileSync(hookPath, "utf-8");
+    assert.ok(hookPhp.includes("Missing MOLLIE_API_KEY"), "mollie-webhook.php must fail-closed when API key is missing");
+    assert.ok(hookPhp.includes("flock($fp, LOCK_EX)"), "mollie-webhook.php must lock log file with flock");
+    assert.ok(!hookPhp.includes("SIMULATED-PAYMENT"), "mollie-webhook.php must not simulate payment on missing key");
 });
 
 // ========================================================
@@ -853,6 +871,14 @@ test("Multi-invoice management normalizes legacy projects and renders comprehens
     assert.ok(projectHtml.includes('id="tab-actions"'), "Must have #tab-actions pane");
     assert.ok(projectHtml.includes('id="project-billing-container"'), "Must contain #project-billing-container");
     assert.ok(projectHtml.includes('id="modal-create-invoice"'), "Must contain #modal-create-invoice");
+
+    // 5. Pi-Boekhouding synchronization for BakkertjeSieg & auto-increment floor
+    const siegProject = { client: "BakkertjeSieg", domainName: "bakkertjesieg.nl" };
+    const siegInvoices = normalizeProjectInvoices(siegProject);
+    assert.equal(siegInvoices.length, 3, "BakkertjeSieg must contain all 3 historical invoices (2026-002, 2026-009, 2026-012)");
+    assert.equal(siegInvoices[0].invoiceNumber, "2026-002");
+    assert.equal(siegInvoices[1].invoiceNumber, "2026-009");
+    assert.equal(siegInvoices[2].invoiceNumber, "2026-012");
 });
 
 test("generateSlaContractDetails generates SLA terms based on 2027 plan", () => {

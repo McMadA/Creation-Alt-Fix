@@ -491,17 +491,6 @@ function renderDashboard(data) {
     // Render In-App Berichten & Revisies (TASK-604)
     renderMessagesSection(data);
 
-    // Sync paid status from URL query parameters if present
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('paid') === 'true') {
-        const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer));
-        if (invNum) {
-            try {
-                localStorage.setItem('caf_paid_invoice_' + invNum, 'true');
-            } catch (e) {}
-        }
-    }
-
     const activeInvNum = data.invoiceNumber || data.factuurnummer;
     const isMainInvoicePaid = isInvoicePaid(activeInvNum, data.status);
 
@@ -547,11 +536,6 @@ function checkPaymentSuccessModal(data) {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === 'true') {
         const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '—';
-        if (invNum && invNum !== '—') {
-            try {
-                localStorage.setItem('caf_paid_invoice_' + invNum, 'true');
-            } catch (e) {}
-        }
 
         // Direct verbergen van eventuele openstaande banners en Mollie actieknop
         const banner = document.getElementById('unpaid-invoice-banner');
@@ -2006,6 +1990,50 @@ function setupClientInvoicesArchive(data) {
 
     // Verzamel alle geregistreerde facturen van dit project
     const invoices = Array.isArray(data.invoices) ? [...data.invoices] : [];
+
+    // Pi-Boekhouding historische facturen synchroniseren indien nog niet in Firestore
+    try {
+        const piInfo = typeof getPiBoekhoudingInfo === 'function' ? getPiBoekhoudingInfo(data) : null;
+        if (piInfo) {
+            if (Array.isArray(piInfo.invoices)) {
+                piInfo.invoices.forEach(piInv => {
+                    const num = piInv.invoiceNumber || piInv.number;
+                    if (num && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                        invoices.push({
+                            invoiceNumber: num,
+                            description: piInv.description || (piInv.items?.[0]?.name ? `${piInv.items[0].name}${piInv.items[0].desc ? ' (' + piInv.items[0].desc + ')' : ''}` : 'Factuur Pi Boekhouding'),
+                            invoiceDate: piInv.invoiceDate || piInv.date || '',
+                            dueDate: piInv.dueDate || '',
+                            amountExcl: Number(piInv.amountExcl || piInv.totalExcl || 0),
+                            amountVat: Number(piInv.amountVat || (piInv.totalExcl ? piInv.totalExcl * 0.21 : 0)),
+                            amountIncl: Number(piInv.amountIncl || piInv.totalIncl || ((piInv.totalExcl || 0) * 1.21)),
+                            status: (piInv.status || '').toLowerCase().includes('betaald') || piInv.status === 'paid' ? 'paid' : ((piInv.status || '').toLowerCase().includes('geannuleerd') || piInv.status === 'canceled' ? 'canceled' : 'open'),
+                            molliePaymentId: piInv.molliePaymentId || '',
+                            mollieCheckoutUrl: piInv.mollieCheckoutUrl || piInv.mollieLink || '',
+                            mollieLink: piInv.mollieCheckoutUrl || piInv.mollieLink || '',
+                            pdfUrl: piInv.pdfUrl || ''
+                        });
+                    }
+                });
+            } else if (piInfo.latestInvoice && piInfo.latestInvoice.number) {
+                const num = piInfo.latestInvoice.number;
+                if (!invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                    const totalExcl = Number(piInfo.latestInvoice.totalExcl || 0);
+                    invoices.push({
+                        invoiceNumber: num,
+                        description: piInfo.latestInvoice.items?.[0]?.name || 'Factuur Pi Boekhouding',
+                        invoiceDate: piInfo.latestInvoice.date || '',
+                        amountIncl: totalExcl * 1.21,
+                        status: (piInfo.latestInvoice.status || '').toLowerCase().includes('betaald') ? 'paid' : 'open',
+                        pdfUrl: null,
+                        mollieLink: null
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Pi-Boekhouding sync error in setupClientInvoicesArchive:", e);
+    }
     
     // Voeg standalone invoice toe indien niet aanwezig in array
     if ((data.invoiceNumber || data.factuurnummer) && !invoices.some(i => i.invoiceNumber === (data.invoiceNumber || data.factuurnummer))) {
@@ -2019,6 +2047,13 @@ function setupClientInvoicesArchive(data) {
             mollieLink: data.mollieLink || null
         });
     }
+
+    // Chronologisch sorteren op factuurnummer
+    invoices.sort((a, b) => {
+        const numA = a.invoiceNumber || a.number || '';
+        const numB = b.invoiceNumber || b.number || '';
+        return numA.localeCompare(numB);
+    });
 
     if (invoices.length === 0) {
         archiveCard.classList.add('hidden');
@@ -2126,24 +2161,9 @@ function setupClientInvoicesArchive(data) {
 }
 
 function isInvoicePaid(invNumber, status) {
-    if (status && (status.toLowerCase().includes('voldaan') || status.toLowerCase().includes('paid'))) {
-        return true;
-    }
-    if (invNumber) {
-        try {
-            if (localStorage.getItem('caf_paid_invoice_' + invNumber) === 'true') {
-                return true;
-            }
-        } catch (e) {}
-    }
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('paid') === 'true') {
-        const paidInv = urlParams.get('invoice');
-        if (!paidInv || paidInv === invNumber) {
-            return true;
-        }
-    }
-    return false;
+    if (!status) return false;
+    const s = String(status).toLowerCase().trim();
+    return s === 'voldaan' || s === 'betaald' || s === 'paid' || s.includes('voldaan') || s.includes('betaald') || s.includes('paid');
 }
 
 function setupUnpaidInvoiceBanner(data) {

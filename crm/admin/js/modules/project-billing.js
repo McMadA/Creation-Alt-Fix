@@ -9,6 +9,7 @@
 import { escapeHtml, formatCurrency } from "../../../js/firebase-config.js";
 import { Toast } from "../../../js/core/toast.js";
 import { Schemas } from "../../../js/core/schemas.js";
+import { getPiBoekhoudingInfo } from "./bookkeeping-data.js";
 
 /**
  * Genereert een Mollie payment URL via de API of fallback service
@@ -18,6 +19,7 @@ import { Schemas } from "../../../js/core/schemas.js";
  * @param {string} invoiceParams.invoiceNumber
  * @param {number} invoiceParams.amountIncl
  * @param {string} [invoiceParams.description]
+ * @param {string} [invoiceParams.authToken]
  * @returns {Promise<{ paymentId: string, checkoutUrl: string }>}
  */
 export async function createMolliePaymentLink({
@@ -25,11 +27,25 @@ export async function createMolliePaymentLink({
     clientName,
     invoiceNumber,
     amountIncl,
-    description = ""
+    description = "",
+    authToken = ""
 }) {
     const desc = description || `Factuur ${invoiceNumber} - Creation+Alt+Fix (${clientName})`;
     const redirectUrl = `https://portal.creationaltfix.nl/status/?id=${encodeURIComponent(projectId)}&paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
     const webhookUrl = `https://portal.creationaltfix.nl/crm/api/mollie-webhook.php`;
+
+    // Haal eventueel actueel Firebase ID token op voor server-side authorisatie
+    let idToken = authToken;
+    if (!idToken && typeof window !== 'undefined' && window.cafAuth?.currentUser) {
+        try {
+            idToken = await window.cafAuth.currentUser.getIdToken();
+        } catch (_) {}
+    }
+
+    const reqHeaders = { 'Content-Type': 'application/json' };
+    if (idToken) {
+        reqHeaders['Authorization'] = `Bearer ${idToken}`;
+    }
 
     // 1. Probeer native PHP endpoint op Vimexx DirectAdmin server
     const endpointsToTry = [
@@ -42,7 +58,7 @@ export async function createMolliePaymentLink({
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: reqHeaders,
                 body: JSON.stringify({
                     projectId,
                     factuurnummer: invoiceNumber,
@@ -109,7 +125,54 @@ export function normalizeProjectInvoices(projectData) {
     if (!projectData) return [];
     let invoices = Array.isArray(projectData.invoices) ? [...projectData.invoices] : [];
 
-    // Indien er nog geen facturen in de array staan maar wel een historisch factuurnummer
+    // Fallback 1: Controleer gekoppelde Pi-Boekhouding facturen
+    try {
+        const piInfo = getPiBoekhoudingInfo(projectData);
+        if (piInfo) {
+            if (Array.isArray(piInfo.invoices)) {
+                piInfo.invoices.forEach(piInv => {
+                    const num = piInv.invoiceNumber || piInv.number;
+                    if (num && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                        invoices.push({
+                            invoiceNumber: num,
+                            description: piInv.description || (piInv.items?.[0]?.name ? `${piInv.items[0].name}${piInv.items[0].desc ? ' (' + piInv.items[0].desc + ')' : ''}` : 'Factuur Pi Boekhouding'),
+                            invoiceDate: piInv.invoiceDate || piInv.date || '',
+                            dueDate: piInv.dueDate || '',
+                            amountExcl: Number(piInv.amountExcl || piInv.totalExcl || 0),
+                            amountVat: Number(piInv.amountVat || (piInv.totalExcl ? piInv.totalExcl * 0.21 : 0)),
+                            amountIncl: Number(piInv.amountIncl || piInv.totalIncl || ((piInv.totalExcl || 0) * 1.21)),
+                            status: (piInv.status || '').toLowerCase().includes('betaald') || piInv.status === 'paid' ? 'paid' : ((piInv.status || '').toLowerCase().includes('geannuleerd') || piInv.status === 'canceled' ? 'canceled' : 'open'),
+                            molliePaymentId: piInv.molliePaymentId || '',
+                            mollieCheckoutUrl: piInv.mollieCheckoutUrl || piInv.mollieLink || '',
+                            pdfUrl: piInv.pdfUrl || ''
+                        });
+                    }
+                });
+            } else if (piInfo.latestInvoice && piInfo.latestInvoice.number) {
+                const num = piInfo.latestInvoice.number;
+                if (!invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                    const totalExcl = Number(piInfo.latestInvoice.totalExcl || 0);
+                    invoices.push({
+                        invoiceNumber: num,
+                        description: piInfo.latestInvoice.items?.[0]?.name ? `${piInfo.latestInvoice.items[0].name} (${piInfo.latestInvoice.items[0].desc || 'dienst'})` : 'Factuur Pi Boekhouding',
+                        invoiceDate: piInfo.latestInvoice.date || '',
+                        dueDate: '',
+                        amountExcl: totalExcl,
+                        amountVat: totalExcl * 0.21,
+                        amountIncl: totalExcl * 1.21,
+                        status: (piInfo.latestInvoice.status || '').toLowerCase().includes('betaald') ? 'paid' : 'open',
+                        molliePaymentId: '',
+                        mollieCheckoutUrl: '',
+                        pdfUrl: ''
+                    });
+                }
+            }
+        }
+    } catch (err) {
+        console.warn("Fout bij ophalen Pi-Boekhouding facturen in normalizeProjectInvoices:", err);
+    }
+
+    // Fallback 2: Standalone historisch factuurnummer
     if (invoices.length === 0 && (projectData.invoiceNumber || projectData.factuurnummer)) {
         const legacyNum = projectData.invoiceNumber || projectData.factuurnummer;
         const legacyAmountExcl = Number(projectData.proposalPrice || 0);
@@ -131,6 +194,13 @@ export function normalizeProjectInvoices(projectData) {
             pdfUrl: projectData.invoicePdfUrl || ''
         });
     }
+
+    // Chronologisch sorteren op factuurnummer
+    invoices.sort((a, b) => {
+        const numA = a.invoiceNumber || a.number || '';
+        const numB = b.invoiceNumber || b.number || '';
+        return numA.localeCompare(numB);
+    });
 
     return invoices;
 }

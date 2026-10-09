@@ -39,58 +39,85 @@ if (empty($apiKey)) {
     }
 }
 
-$logFile = __DIR__ . '/mollie-payments-log.json';
-$existingLogs = file_exists($logFile) ? json_decode(file_get_contents($logFile), true) : [];
-if (!is_array($existingLogs)) {
-    $existingLogs = [];
+if (empty($apiKey)) {
+    http_response_code(500);
+    error_log("[Mollie Webhook] Fout: MOLLIE_API_KEY ontbreekt op de server.");
+    exit('Server Configuration Error: Missing MOLLIE_API_KEY');
 }
 
-if (!empty($apiKey)) {
-    // Vraag payment details op via cURL naar api.mollie.com
-    $ch = curl_init("https://api.mollie.com/v2/payments/{$paymentId}");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer {$apiKey}",
-        "Content-Type: application/json"
-    ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+// Vraag payment details op via cURL naar api.mollie.com
+$ch = curl_init("https://api.mollie.com/v2/payments/" . urlencode($paymentId));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Authorization: Bearer {$apiKey}",
+    "Content-Type: application/json"
+]);
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
 
-    if ($httpCode === 200) {
-        $payment = json_decode($response, true);
-        $status = $payment['status'] ?? 'unknown';
-        $invoiceNumber = $payment['metadata']['invoiceNumber'] ?? 'ONBEKEND';
-        $clientName = $payment['metadata']['clientName'] ?? 'Klant';
+if ($httpCode === 200) {
+    $payment = json_decode($response, true);
+    $status = $payment['status'] ?? 'unknown';
+    $invoiceNumber = $payment['metadata']['invoiceNumber'] ?? 'ONBEKEND';
+    $clientName = $payment['metadata']['clientName'] ?? 'Klant';
 
-        $record = [
-            'paymentId' => $paymentId,
-            'invoiceNumber' => $invoiceNumber,
-            'clientName' => $clientName,
-            'status' => $status,
-            'amount' => $payment['amount']['value'] ?? '0.00',
-            'currency' => $payment['amount']['currency'] ?? 'EUR',
-            'method' => $payment['method'] ?? 'ideal',
-            'paidAt' => ($status === 'paid') ? date('c') : null,
-            'updatedAt' => date('c')
-        ];
-
-        array_unshift($existingLogs, $record);
-        file_put_contents($logFile, json_encode($existingLogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    }
-} else {
-    // Fallback log
     $record = [
         'paymentId' => $paymentId,
-        'invoiceNumber' => 'SIMULATED-PAYMENT',
-        'status' => 'paid',
+        'invoiceNumber' => $invoiceNumber,
+        'clientName' => $clientName,
+        'status' => $status,
+        'amount' => $payment['amount']['value'] ?? '0.00',
+        'currency' => $payment['amount']['currency'] ?? 'EUR',
+        'method' => $payment['method'] ?? 'ideal',
+        'paidAt' => ($status === 'paid') ? date('c') : null,
         'updatedAt' => date('c')
     ];
-    array_unshift($existingLogs, $record);
-    file_put_contents($logFile, json_encode($existingLogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    $logFile = __DIR__ . '/mollie-payments-log.json';
+    $fp = fopen($logFile, 'c+');
+    if ($fp) {
+        if (flock($fp, LOCK_EX)) {
+            $filesize = filesize($logFile);
+            $content = $filesize > 0 ? fread($fp, $filesize) : '';
+            $existingLogs = !empty($content) ? json_decode($content, true) : [];
+            if (!is_array($existingLogs)) {
+                $existingLogs = [];
+            }
+
+            // Dedupliceer of update bestaand record
+            $found = false;
+            foreach ($existingLogs as &$existing) {
+                if (isset($existing['paymentId']) && $existing['paymentId'] === $paymentId) {
+                    $existing = $record;
+                    $found = true;
+                    break;
+                }
+            }
+            unset($existing);
+
+            if (!$found) {
+                array_unshift($existingLogs, $record);
+            }
+
+            // Beperk geheugengrootte tot maximaal 100 records
+            if (count($existingLogs) > 100) {
+                $existingLogs = array_slice($existingLogs, 0, 100);
+            }
+
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, json_encode($existingLogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            fflush($fp);
+            flock($fp, LOCK_UN);
+        }
+        fclose($fp);
+    }
+} else {
+    error_log("[Mollie Webhook] Kon payment {$paymentId} niet verifiëren bij Mollie API (HTTP {$httpCode}).");
 }
 
-// Altijd HTTP 200 OK terugsturen naar Mollie
+// Altijd HTTP 200 OK terugsturen naar Mollie om herhaalde retries te voorkomen
 http_response_code(200);
 echo 'OK';

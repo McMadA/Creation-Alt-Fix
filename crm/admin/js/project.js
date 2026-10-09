@@ -1715,10 +1715,12 @@ function setupFormHandlers() {
             if (invVatEl) invVatEl.value = invVatEl.options[0]?.value || '21';
             if (invMollieEl) invMollieEl.checked = true;
 
-            // Auto-increment factuurnummer gebaseerd op bestaande facturen (bijv. 2026-009)
+            // Auto-increment factuurnummer (begint voor 2026 na factuur 2026-012, dus minimaal 2026-013)
             if (invNumEl) {
                 const currentYear = new Date().getFullYear();
-                let nextSeq = 1;
+                let nextSeq = (currentYear === 2026) ? 13 : 1;
+
+                // 1. Controleer facturen van het huidige project
                 invoices.forEach(inv => {
                     const match = (inv.invoiceNumber || inv.number || '').match(/^(\d{4})-(\d+)$/);
                     if (match && parseInt(match[1], 10) === currentYear) {
@@ -1726,6 +1728,23 @@ function setupFormHandlers() {
                         if (seq >= nextSeq) nextSeq = seq + 1;
                     }
                 });
+
+                // 2. Controleer alle bekende facturen uit de Pi-Boekhouding administratie
+                try {
+                    for (const clientRecord of Object.values(PI_BOEKHOUDING_CLIENT_DATA || {})) {
+                        const piInvs = Array.isArray(clientRecord.invoices) ? clientRecord.invoices : (clientRecord.latestInvoice ? [clientRecord.latestInvoice] : []);
+                        piInvs.forEach(inv => {
+                            const match = (inv.invoiceNumber || inv.number || '').match(/^(\d{4})-(\d+)$/);
+                            if (match && parseInt(match[1], 10) === currentYear) {
+                                const seq = parseInt(match[2], 10);
+                                if (seq >= nextSeq) nextSeq = seq + 1;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    // Fallback
+                }
+
                 invNumEl.value = `${currentYear}-${String(nextSeq).padStart(3, '0')}`;
             }
 
@@ -1814,12 +1833,14 @@ function setupFormHandlers() {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Genereren...';
             try {
                 const amountIncl = targetInv.amountIncl || (targetInv.amountExcl ? targetInv.amountExcl * 1.21 : (targetInv.amount || 150));
+                const idToken = auth?.currentUser ? await auth.currentUser.getIdToken() : '';
                 const linkData = await createMolliePaymentLink({
                     projectId: currentProjectId,
                     clientName: p.client || p.companyName || 'Klant',
                     invoiceNumber: invNumber,
                     amountIncl: amountIncl,
-                    description: `${targetInv.description || 'Factuur'} (${invNumber})`
+                    description: `${targetInv.description || 'Factuur'} (${invNumber})`,
+                    authToken: idToken
                 });
                 targetInv.molliePaymentId = linkData.paymentId;
                 targetInv.mollieCheckoutUrl = linkData.checkoutUrl;
@@ -2004,12 +2025,14 @@ function setupFormHandlers() {
             let mollieLinkData = null;
             if (genMollie) {
                 try {
+                    const idToken = auth?.currentUser ? await auth.currentUser.getIdToken() : '';
                     mollieLinkData = await createMolliePaymentLink({
                         projectId: currentProjectId,
                         clientName: currentProjectData?.client || currentProjectData?.companyName || 'Klant',
                         invoiceNumber: invNumber,
                         amountIncl: amountIncl,
-                        description: `${description} (${invNumber})`
+                        description: `${description} (${invNumber})`,
+                        authToken: idToken
                     });
                 } catch (mErr) {
                     console.warn("Mollie betaallink genereren mislukt:", mErr);
@@ -2353,8 +2376,19 @@ function setupFormHandlers() {
                 clientUid = userCred.user.uid;
                 await signOut(secondaryAuth).catch(() => {});
             } catch (authErr) {
-                console.warn("Auth account match/exists:", authErr.message);
                 await signOut(secondaryAuth).catch(() => {});
+                if (authErr.code === 'auth/email-already-in-use') {
+                    console.info("Firebase Auth account bestaat reeds voor:", email);
+                } else {
+                    throw authErr;
+                }
+            }
+
+            if (!clientUid && !currentProjectData?.clientUid) {
+                await sendPasswordResetEmail(auth, email);
+                await logAuditEvent('auth_reset_dispatched', `Wachtwoord-herstellink verstuurd naar bestaand account ${email}.`);
+                alert(`Let op: Er bestaat reeds een Firebase Auth account voor ${email}. Er is een wachtwoord-instel link naar de klant verzonden.`);
+                return;
             }
 
             if (db && currentProjectId) {

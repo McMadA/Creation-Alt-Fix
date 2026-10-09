@@ -186,8 +186,10 @@ export function sanitizeUrl(url) {
     const trimmed = url.trim();
     // Neutralize control characters
     if (/[\x00-\x1F\x7F]/.test(trimmed)) return '#';
-    // Whitelist safe web protocols and relative paths
-    if (/^(https?:\/\/|\/|mailto:|tel:)/i.test(trimmed)) {
+    // Reject protocol-relative URLs (//attacker.com)
+    if (trimmed.startsWith('//')) return '#';
+    // Whitelist safe web protocols and strictly relative paths (e.g. /path, but not //)
+    if (/^(https?:\/\/|\/(?!\/)|mailto:|tel:)/i.test(trimmed)) {
         return trimmed;
     }
     return '#';

@@ -37,10 +37,12 @@ service firebase.storage {
     match /projects/{projectId}/{allPaths=**} {
       allow read: if isAdmin() || isProjectOwner(projectId);
 
-      allow write: if isAdmin()
+      allow create, update: if isAdmin()
                    || (isProjectOwner(projectId)
                        && request.resource.size < 10 * 1024 * 1024
                        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)|application/pdf|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*'));
+
+      allow delete: if isAdmin() || isProjectOwner(projectId);
     }
 
     // ============================================================

@@ -1,16 +1,10 @@
-# Creation+Alt+Fix - Deny direct web access to local CRM data files by default
-# Allow leads.json for authenticated admin dashboard AJAX fetch
+# Creation+Alt+Fix - Deny direct web access to local CRM data files
+# Protects leads, tokens and local cache against unauthenticated downloads
 <IfModule mod_authz_core.c>
     Require all denied
-    <Files "leads.json">
-        Require all granted
-    </Files>
 </IfModule>
 <IfModule !mod_authz_core.c>
     Order deny,allow
     Deny from all
-    <Files "leads.json">
-        Allow from all
-    </Files>
 </IfModule>
 
