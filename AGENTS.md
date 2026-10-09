@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Mollie iDEAL Betaallink & QR Integratie in Boekhoudtool & Factuur PDF ([Boekhouding/app.py](file:///c:/Users/Admin/Documents/GitHub/Boekhoudings/Boekhouding/app.py), [factuur_pdf.html](file:///c:/Users/Admin/Documents/GitHub/Boekhoudings/Boekhouding/templates/factuur_pdf.html))**:
+  - **Doel**: Zorgen dat klanten die het CRM niet gebruiken toch eenvoudig online via Mollie (iDEAL) kunnen betalen vanaf de officiële factuur PDF.
+  - **Oplossing**:
+    1. *Boekhoudtool Schema & API*: `mollie_link TEXT` kolom toegevoegd aan `facturen`. Nieuwe route `/facturen/mollie/genereer` genereert met 1 klik een Mollie checkout link via de API sleutel, of gebruikers kunnen de in het CRM gegenereerde link direct inplakken.
+    2. *PDF & Factuur Weergave*: Factuur PDF (`factuur_pdf.html`) toont nu een interactieve iDEAL betaalknop (rechtstreeks klikbaar in PDF) én een scanbare vector QR-code voor mobiel bankieren apps.
+    3. *Deployment*: Getest, database backup uitgevoerd (`backup-pi.ps1`) en live uitgerold naar Raspberry Pi (`100.65.226.112`).
+
 - **[2026-10-09] Betaalstatus Synchronisatie & UI Cleanup na Mollie Redirect ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
   - **Probleem**: Wanneer een klant na een geslaagde Mollie betaling terugkeerde (`?paid=true&invoice=2026-TEST`) en op de pop-up *"To My Dashboard"* klikte, bleef de gouden banner *"Openstaande Factuur"* en de knop *"Factuur Betalen (Mollie)"* nog steeds zichtbaar op het dashboard, en stond de factuur in de tabel nog op *"⏳ Openstaand"*.
   - **Oplossing**:
