@@ -973,6 +973,8 @@ test("LeadFactoryEngine deduplicatie en database persistentie", () => {
     const db = engine.loadDatabase();
 
     assert.ok(Array.isArray(db.leads), "Database moet leads array bevatten");
+    assert.strictEqual(db.leads.length, 20, "Database moet exact de 20 geverifieerde leads bevatten (vrij van spook-leads)");
+    assert.ok(db.leads.every(l => l.status === 'concept_ready'), "Alle 20 leads moeten 'concept_ready' zijn");
     const testBusiness = { slug: "test-bedrijf-duplicaat", phone: "0699887766" };
 
     const mockDb = {

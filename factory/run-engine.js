@@ -64,11 +64,22 @@ export class LeadFactoryEngine {
   isLeadProcessed(db, business) {
     const slug = business.slug;
     const phone = business.phone ? business.phone.replace(/\D/g, '') : null;
-    return db.leads.some(l => {
+    const inDb = db.leads.some(l => {
       if (l.slug === slug) return true;
       if (phone && l.phone && l.phone.replace(/\D/g, '') === phone) return true;
       return false;
     });
+    if (inDb) return true;
+
+    // Controleer ook de skipped log zodat overgeslagen bedrijven niet onnodig herhaald worden
+    const skippedLogPath = path.join(__dirname, 'data', 'skipped.log');
+    if (fs.existsSync(skippedLogPath)) {
+      try {
+        const log = fs.readFileSync(skippedLogPath, 'utf-8');
+        if (log.includes(`(${slug})`)) return true;
+      } catch (e) {}
+    }
+    return false;
   }
 
   /**
@@ -117,11 +128,13 @@ export class LeadFactoryEngine {
 
       if (!isCandidate && FACTORY_CONFIG.qualification.requireNoWebsiteOrOutdated) {
         console.log(`ℹ️ [Lead Factory] Bedrijf "${rawBusiness.name}" heeft al een moderne HTTPS website (${rawBusiness.website}).`);
-        db.leads.push({
-          ...rawBusiness,
-          status: 'skipped_has_website',
-          processedAt: new Date().toISOString()
-        });
+        const skippedLogPath = path.join(__dirname, 'data', 'skipped.log');
+        const logEntry = `[${new Date().toISOString()}] SKIPPED_HAS_WEBSITE: ${rawBusiness.name} (${rawBusiness.slug}) - ${rawBusiness.website}\n`;
+        try {
+          fs.appendFileSync(skippedLogPath, logEntry, 'utf-8');
+        } catch (e) {
+          console.warn('⚠️ Kon skipped.log niet bijwerken:', e.message);
+        }
         continue;
       }
 

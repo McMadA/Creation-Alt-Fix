@@ -677,18 +677,13 @@ async function setupAndRenderLeadFactory() {
         }
     }
 
+    // Sanering: Verwijder per direct alle spook-leads en skipped records
+    leads = (leads || []).filter(l => l && l.status !== 'skipped_has_website');
+
     if (leads.length === 0) {
         leads = defaultLeads;
-        localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
-    } else {
-        // Zorg dat geverifieerde live concepten (zoals Berends) altijd beschikbaar zijn
-        defaultLeads.forEach(dl => {
-            if (!leads.some(l => l.slug === dl.slug || l.id === dl.id)) {
-                leads.push(dl);
-            }
-        });
-        localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
     }
+    localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
 
     const factoryHandlers = {
         onRefresh: async () => {
@@ -708,7 +703,7 @@ async function setupAndRenderLeadFactory() {
             link.click();
             link.remove();
 
-            lead.status = 'sent';
+            lead.status = 'sent_email';
             lead.sentAt = new Date().toISOString();
             if (db) {
                 try {

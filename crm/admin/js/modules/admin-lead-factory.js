@@ -15,7 +15,7 @@ let _factoryHandlers = {};
  */
 function updateFilterPillsUI() {
     const readyCount = _leads.filter(l => l.status === 'concept_ready').length;
-    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent').length;
+    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
     const skippedCount = _leads.filter(l => l.status === 'skipped' || l.status === 'skipped_has_website').length;
     const totalCount = _leads.length;
 
@@ -51,7 +51,7 @@ export function initLeadFactoryModule(leads = [], handlers = {}) {
     }
 
     const readyCount = _leads.filter(l => l.status === 'concept_ready').length;
-    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent').length;
+    const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
 
     // Als er 0 leads op review wachten, maar er zijn wel verzonden leads, val dan terug op 'all'
     if (readyCount === 0 && sentCount > 0 && _activeFilter === 'concept_ready') {
@@ -552,8 +552,8 @@ function updateConsoleDrawer(logs = [], isRunning = false) {
  */
 export function updateFactoryKPIs(leads = []) {
     const readyCount = leads.filter(l => l.status === 'concept_ready').length;
-    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent').length;
-    const whatsappCount = leads.filter(l => l.status === 'whatsapp_sent').length;
+    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email').length;
+    const whatsappCount = leads.filter(l => l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
     const totalCount = leads.length;
 
     const elReady = document.getElementById('kpi-factory-ready');
@@ -587,13 +587,13 @@ export function renderLeadCards(leads = [], handlers = {}) {
 
     const effectiveHandlers = (handlers && Object.keys(handlers).length > 0) ? handlers : _factoryHandlers;
     const readyCount = leads.filter(l => l.status === 'concept_ready').length;
-    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'whatsapp_sent').length;
+    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
 
     // Filteren op status en zoekterm
     let filtered = leads.filter(lead => {
         if (_activeFilter !== 'all') {
             if (_activeFilter === 'concept_ready' && lead.status !== 'concept_ready') return false;
-            if (_activeFilter === 'sent' && lead.status !== 'sent' && lead.status !== 'email_sent' && lead.status !== 'whatsapp_sent') return false;
+            if (_activeFilter === 'sent' && lead.status !== 'sent' && lead.status !== 'email_sent' && lead.status !== 'sent_email' && lead.status !== 'whatsapp_sent' && lead.status !== 'sent_whatsapp') return false;
             if (_activeFilter === 'skipped' && lead.status !== 'skipped' && lead.status !== 'skipped_has_website') return false;
         }
 
@@ -683,8 +683,8 @@ export function renderLeadCards(leads = [], handlers = {}) {
  */
 function renderSingleLeadCard(lead) {
     const isReady = lead.status === 'concept_ready';
-    const isSent = lead.status === 'sent' || lead.status === 'email_sent';
-    const isWhatsApp = lead.status === 'whatsapp_sent';
+    const isSent = lead.status === 'sent' || lead.status === 'email_sent' || lead.status === 'sent_email';
+    const isWhatsApp = lead.status === 'whatsapp_sent' || lead.status === 'sent_whatsapp';
     const isArchived = lead.status?.includes('skipped');
 
     let statusBadge = `<span class="badge" style="background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4);"><i class="fas fa-sparkles"></i> Klaar voor Review</span>`;
@@ -837,7 +837,7 @@ function attachCardActionListeners(container, leads, handlers) {
                 const waUrl = `https://wa.me/${lead.whatsAppNumber}?text=${text}`;
                 window.open(waUrl, '_blank');
                 if (effectiveHandlers.onUpdateStatus) {
-                    effectiveHandlers.onUpdateStatus(lead, 'whatsapp_sent');
+                    effectiveHandlers.onUpdateStatus(lead, 'sent_whatsapp');
                 }
             }
         });
@@ -1029,7 +1029,7 @@ ${escapeHtml(plainText)}
                         </div>
                         ${lead.whatsAppNumber ? `
                             <div style="margin-top: 16px; text-align: center;">
-                                <a href="https://wa.me/${lead.whatsAppNumber}?text=${encodeURIComponent(whatsAppText)}" target="_blank" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
+                                <a href="https://wa.me/${lead.whatsAppNumber}?text=${encodeURIComponent(whatsAppText)}" id="btn-pitch-modal-wa-link" target="_blank" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
                                     <i class="fab fa-whatsapp"></i> Nu Openen in WhatsApp Web
                                 </a>
                             </div>
@@ -1116,6 +1116,15 @@ ${escapeHtml(plainText)}
         };
     }
 
+    const btnPitchWaLink = div.querySelector('#btn-pitch-modal-wa-link');
+    if (btnPitchWaLink) {
+        btnPitchWaLink.onclick = () => {
+            if (effectiveHandlers.onUpdateStatus) {
+                effectiveHandlers.onUpdateStatus(lead, 'sent_whatsapp');
+            }
+        };
+    }
+
     // Zet terug naar 'Review'
     const btnRevertReview = div.querySelector('#btn-pitch-revert-review');
     if (btnRevertReview) {
@@ -1137,7 +1146,7 @@ ${escapeHtml(plainText)}
             }
             div.remove();
             if (effectiveHandlers.onUpdateStatus) {
-                await effectiveHandlers.onUpdateStatus(lead, 'sent');
+                await effectiveHandlers.onUpdateStatus(lead, 'sent_email');
             }
         };
     }
