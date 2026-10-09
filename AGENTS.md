@@ -2,6 +2,14 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Mollie iDEAL Betaling Melding, Query Param Persistentie & Klantportaal Celebration ([crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html), [crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
+  - **Probleem**: Na afronding van een Mollie iDEAL betaling redirectte de browser naar `portal.creationaltfix.nl/?paid=true&invoice=2026-TEST`. Op het inlogscherm was geen enkele melding zichtbaar, ingelogde beheerders bleven stilhangen zonder feedback en eventuele redirects naar het portaal namen de query-parameters niet mee.
+  - **Oplossing**:
+    1. *Inlogscherm Melding*: Prominente groene glassmorphic iDEAL succesbanner toegevoegd met factuurnummer en dynamische NL/EN vertalingen.
+    2. *Beheerder Sessie Handling*: Als de beheerder zelf test, toont het inlogscherm direct een admin-box met 1-klik knoppen naar het *Admin Werkstation* en de *Klantview Preview*.
+    3. *Klant Redirect Persistentie*: Query-parameters (`paid=true`, `invoice=...`, `id=...`) worden zowel uit de URL als uit eventuele geneste `returnUrl` parameters gehaald en naadloos meegestuurd naar `status/`.
+    4. *Klantportaal Feestelijke Modal*: In `crm/status/index.html` en `status.js` een pop-up modal geactiveerd met bevestiging van de voldane factuur en directe scroll naar het factuurarchief.
+
 - **[2026-10-09] Mollie Test API Validatie, Factuurnummer Koppeling & Klantportaal Factuurarchief ([crm/api/create-payment.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/create-payment.php), [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html))**:
   - **Mollie Test Key Verificatie**: De geconfigureerde `MOLLIE_API_KEY` in `crm/.env` succesvol geverifieerd via de Mollie API v2 (3 actieve betaalmethodes: iDEAL, Creditcard, Pay By Bank) en een echte test transactie (`tr_AU6egVPaYGTFdqtb7ouXJ`) gegenereerd.
   - **Backend & Webhook Endpoint**: `crm/api/create-payment.php` gecreëerd voor PHP/DirectAdmin en `crm/api/mollie-webhook.php` voorzien van automatische `.env` fallback.
