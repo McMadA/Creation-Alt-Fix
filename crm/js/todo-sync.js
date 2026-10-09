@@ -17,7 +17,7 @@ import { escapeHtml } from "./firebase-config.js";
 export const PROJECT_PROFILES = {
     CRM_PORTAL: {
         id: "7",
-        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "epic-11", "task-201", "task-202", "mollie", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827", "task-902"],
+        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "epic-11", "task-201", "task-202", "mollie", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827", "task-902", "task-504", "task-505", "task-903", "task-904", "task-905", "task-906", "task-907", "task-908", "wbso", "lead factory"],
 
         client: "Creation+Alt+Fix (CRM & Portaal)",
         companyName: "Creation+Alt+Fix (CRM & Portaal)",
@@ -35,7 +35,7 @@ export const PROJECT_PROFILES = {
     },
     HOOFDWEBSITE: {
         id: "caf_hoofdwebsite",
-        matchKeys: ["hoofdwebsite", "creation+alt+fix (hoofdwebsite", "marketing site", "epic-05", "epic-07", "task-805", "task-807", "task-811", "task-812"],
+        matchKeys: ["hoofdwebsite", "creation+alt+fix (hoofdwebsite", "marketing site", "epic-05", "epic-07", "task-805", "task-807", "task-811", "task-812", "task-835", "task-836", "task-837", "task-843", "noodprotocol", "social media"],
         client: "Creation+Alt+Fix (Hoofdwebsite)",
         companyName: "Creation+Alt+Fix (Hoofdwebsite)",
         contactName: "Allard Veldman",
@@ -52,7 +52,7 @@ export const PROJECT_PROFILES = {
     },
     BESSELING: {
         id: "8",
-        matchKeys: ["besseling", "maico", "besselinginstallatietechniek", "task-801"],
+        matchKeys: ["besseling", "maico", "besselinginstallatietechniek", "task-801", "task-838"],
         client: "Besseling Installatietechniek",
         companyName: "Besseling Installatietechniek",
         contactName: "Maico Besseling",
@@ -137,7 +137,7 @@ export const PROJECT_PROFILES = {
     },
     BAKKERTJESIEG: {
         id: "11",
-        matchKeys: ["bakkertjesieg", "siegert", "task-820"],
+        matchKeys: ["bakkertjesieg", "siegert", "task-820", "task-842"],
         client: "BakkertjeSieg",
         companyName: "BakkertjeSieg",
         contactName: "Siegert",
@@ -155,7 +155,7 @@ export const PROJECT_PROFILES = {
     },
     POMPPOP: {
         id: "18",
-        matchKeys: ["pomppop", "pomp", "stichting pomppop", "task-819"],
+        matchKeys: ["pomppop", "pomp", "stichting pomppop", "task-819", "task-841"],
         client: "PompPop Festival",
         companyName: "Stichting PompPop",
         contactName: "PompPop Organisatie",
@@ -172,7 +172,7 @@ export const PROJECT_PROFILES = {
     },
     FTRUCK: {
         id: "12",
-        matchKeys: ["ftruck", "f-truck", "ford trucks", "task-809"],
+        matchKeys: ["ftruck", "f-truck", "ford trucks", "task-809", "task-840"],
         client: "F-Truck Store",
         companyName: "F-Truck Store (ftruckstore.nl)",
         contactName: "F-Truck Store Beheer",
@@ -186,6 +186,23 @@ export const PROJECT_PROFILES = {
         statusClass: "success",
         date: "25-08-2026",
         proposalPrice: "0,00"
+    },
+    VANDERPLAATS: {
+        id: "15",
+        matchKeys: ["vanderplaats", "van der plaats", "gerard", "task-808", "task-839"],
+        client: "VAN DER PLAATS (Gerard Klusser)",
+        companyName: "VAN DER PLAATS Bouw & Klusbedrijf",
+        contactName: "Gerard",
+        email: "vanderplaats2@gmail.com",
+        domainName: "vanderplaats.nl",
+        domain: "vanderplaats.nl",
+        service: "Bouw & Klusbedrijf Website",
+        goals: "Klussersbedrijf website met contactformulier gekoppeld aan vanderplaats2@gmail.com en Managed Cloud Hosting.",
+        design: "Dark AI accenten, hyper-lokaal vindbaar, betrouwbaar vakmanschap.",
+        status: "In Ontwikkeling",
+        statusClass: "active",
+        date: "25-08-2026",
+        proposalPrice: "650,00"
     }
 };
 
@@ -311,11 +328,14 @@ export function mapTaskToProject(task) {
     const fullText = `${code} ${title} ${epic} ${scope} ${details}`;
 
     // 1. Check explicit task code mappings
-    if (code === 'TASK-801' || fullText.includes('besseling') || fullText.includes('maico')) {
+    if (code === 'TASK-801' || code === 'TASK-838' || fullText.includes('besseling') || fullText.includes('maico')) {
         return PROJECT_PROFILES.BESSELING;
     }
     if (code === 'TASK-802' || fullText.includes('arnold') || fullText.includes('glas-in-lood')) {
         return PROJECT_PROFILES.ARNOLD;
+    }
+    if (code === 'TASK-808' || code === 'TASK-839' || fullText.includes('vanderplaats') || fullText.includes('gerard')) {
+        return PROJECT_PROFILES.VANDERPLAATS;
     }
     if (fullText.includes('riool') || fullText.includes('stenekesriool') || fullText.includes('Jozua stenekes')) {
         return PROJECT_PROFILES.STENEKES_RIOOL;
@@ -326,13 +346,19 @@ export function mapTaskToProject(task) {
     if (code === 'TASK-804' || fullText.includes('home buyer') || fullText.includes('hbi') || fullText.includes('proptech')) {
         return PROJECT_PROFILES.HBI;
     }
-    if (code === 'TASK-809' || fullText.includes('ftruck') || fullText.includes('f-truck')) {
+    if (code === 'TASK-809' || code === 'TASK-840' || fullText.includes('ftruck') || fullText.includes('f-truck')) {
         return PROJECT_PROFILES.FTRUCK;
     }
-    if (code === 'TASK-805' || code === 'TASK-807' || code === 'TASK-811' || code === 'TASK-812') {
+    if (code === 'TASK-819' || code === 'TASK-841' || fullText.includes('pomppop')) {
+        return PROJECT_PROFILES.POMPPOP;
+    }
+    if (code === 'TASK-820' || code === 'TASK-842' || fullText.includes('bakkertjesieg')) {
+        return PROJECT_PROFILES.BAKKERTJESIEG;
+    }
+    if (code === 'TASK-805' || code === 'TASK-807' || code === 'TASK-811' || code === 'TASK-812' || code === 'TASK-835' || code === 'TASK-836' || code === 'TASK-837' || code === 'TASK-843') {
         return PROJECT_PROFILES.HOOFDWEBSITE;
     }
-    if (code === 'TASK-813' || code === 'TASK-814' || code === 'TASK-815' || code === 'TASK-816' || code === 'TASK-818') {
+    if (code === 'TASK-813' || code === 'TASK-814' || code === 'TASK-815' || code === 'TASK-816' || code === 'TASK-818' || code === 'TASK-504' || code === 'TASK-505' || code === 'TASK-903' || code === 'TASK-904' || code === 'TASK-905' || code === 'TASK-906' || code === 'TASK-907' || code === 'TASK-908') {
         return PROJECT_PROFILES.CRM_PORTAL;
     }
 

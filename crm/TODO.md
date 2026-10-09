@@ -7,16 +7,16 @@
 
 ## 📊 Sprint Status Dashboard
 
-| Metric                             | Status         | Count                                    |
-| :--------------------------------- | :------------- | :--------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **59 Active Epics & Taken (1 Canceled)** |
-| **Completed Work Items**           | ✅ Done        | **56 Tasks (95%)**                       |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (2%)**                         |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **2 Tasks (3%)**                         |
-| **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**      |
+| Metric                             | Status         | Count                                     |
+| :--------------------------------- | :------------- | :---------------------------------------- |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **75 Active Epics & Taken (1 Canceled)**  |
+| **Completed Work Items**           | ✅ Done        | **58 Tasks (77%)**                        |
+| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (1%)**                          |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **16 Tasks (21%)**                        |
+| **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**       |
 
 **Sprint Completion Progress:**
-`[███████████████████████░░] 95% Complete (1 In Progress, 2 in Queue)`
+`[███████████████████░░░░░] 77% Complete (1 In Progress, 16 in Queue)`
 
 ---
 
@@ -30,15 +30,143 @@
 
 ### ⏳ 2. Wachtrij & Backlog (Next Up)
 
+#### 💳 Financiën & Betaalsystemen
 - [ ] `[TASK-202]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Mollie Zakelijk Account Registratie, KvK Verificatie & Live API-Key Configuratie**
   - **Scope**: Mollie Dashboard (`mollie.com`), DirectAdmin PHP Environment (`MOLLIE_API_KEY`), KvK 99986191 & Zakelijke Bankrekening
+  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L84-L88)
   - **Details**:
     - Zakelijk account registreren op [mollie.com](https://www.mollie.com) voor Creation+Alt+Fix (KvK: 99986191, BTW: NL005423147B16).
     - Bedrijfs- en identiteitsverificatie doorlopen (Allard Veldman ID-check & zakelijke bankrekening/IBAN koppeling voor automatische uitbetalingen).
     - Gewenste betaalmethodes activeren in het Mollie Dashboard (iDEAL, SEPA Overboeking, eventueel Bancontact / Apple Pay).
     - Live API-sleutel (`live_...`) en Test API-sleutel (`test_...`) kopiëren.
-    - Live `MOLLIE_API_KEY` toevoegen aan de Vimexx DirectAdmin PHP omgevingsvariabelen / `.env` zodat `crm/api/mollie-webhook.php` live iDEAL betalingen automatisch verifieert en de factuur- en offertestatus op 'Betaald' zet.
+    - Live `MOLLIE_API_KEY` toevoegen aan de Vimexx DirectAdmin PHP omgevingsvariabelen / `.env` zodat `crm/api/mollie-webhook.php` en `/status` live iDEAL betalingen automatisch verifiëren en de factuur- en offertestatus op 'Betaald' zet.
     - End-to-end verificatietest uitvoeren met een testbetaling (€ 0,01 of test-ID) om de automatische webhook en logboekregistratie te valideren.
+
+#### 🔒 Webserver Beveiliging & DirectAdmin Hardening
+- [ ] `[TASK-837]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Webserver Beveiliging: DirectAdmin FTP Hardening & TLS Forceren**
+  - **Scope**: Vimexx DirectAdmin (`web0156.zxcs.nl`), ProFTPD / Pure-FTPd, CSF/LFD Firewall
+  - **Bron & Uitleg**: [docs/VIMEXX-FTP-HARDENING-GUIDE.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/VIMEXX-FTP-HARDENING-GUIDE.md)
+  - **Details**:
+    - In DirectAdmin administrator settings / configuratie controleren of `TLSRequired on` kan worden geactiveerd om alle onversleutelde poort 21 inlogpogingen hard te weigeren (`530 Please login with USER and PASS over TLS`).
+    - DirectAdmin *FTP Management* doorlopen: ongebruikte en tijdelijke sub-FTP accounts definitief verwijderen.
+    - Controleren dat `Anonymous FTP` op `Disabled` staat voor alle 12 domeinen.
+    - Chroot-folder isolatie en sterke wachtwoorden (min. 32 tekens in DPAPI kluis) verifiëren via `scripts/verify-ftp-security.mjs`.
+
+#### 🤝 Klantdossiers, Opleveringen & Verlengingen
+- [ ] `[TASK-838]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek: WhatsApp 2027 Verlengingsvoorstel Versturen**
+  - **Scope**: Tim Besseling (`+31 6 36246473`, `besselingelektrotechniek@gmail.com`), `besselinginstallatietechniek.nl`
+  - **Bron & Uitleg**: [docs/KLANTDOSSIER-BESSELING-INSTALLATIE.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/KLANTDOSSIER-BESSELING-INSTALLATIE.md#L33-L50)
+  - **Details**:
+    - WhatsApp/SMS versturen naar Tim Besseling conform het kant-en-klare sjabloon uit het dossier over de 2027 abonnementsverlenging (€ 95,- overgangstarief of € 150,- standaard) en inventariseren of er gewenste aanpassingen of nieuwe diensten zijn.
+    - Status in CRM actualiseren en verlengingsfactuur gereedmaken in Pi-Boekhouding.
+
+- [ ] `[TASK-839]` `[P2-HIGH]` `[STATUS: BACKLOG]` **VAN DER PLAATS: Livegang Afstemming & DNS Cutover**
+  - **Scope**: Gerard Klusser (`+31 6 12104850`, `vanderplaats2@gmail.com`), `vanderplaats.nl`
+  - **Bron & Uitleg**: [docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md#L23-L53)
+  - **Details**:
+    - Gerard Klusser contacteren (WhatsApp/bellen) om de laatste details van het contactformulier en werkregio door te spreken.
+    - Bij definitief akkoord: DNS A-record van `vanderplaats.nl` laten verwijzen naar de Vimexx DirectAdmin server (`185.104.29.x`).
+    - Let's Encrypt SSL activeren in DirectAdmin en jaarlijks Managed Cloud Hosting abonnement (€ 150,-/jr) verwerken in Pi-Boekhouding.
+
+- [ ] `[TASK-840]` `[P2-HIGH]` `[STATUS: BACKLOG]` **F-Truck Store: B2B E-Commerce Pitch & Follow-Up Versturen**
+  - **Scope**: F-Truck Store (`ftruckstore.nl` & `ftruckstore.com`), Ford Trucks onderdelen
+  - **Bron & Uitleg**: [docs/F-TRUCK-STORE-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/F-TRUCK-STORE-ROADMAP.md#L49-L96)
+  - **Details**:
+    - Follow-up bericht (WhatsApp of formele e-mail uit het roadmap-dossier) versturen naar het F-Truck Store beheer.
+    - Faseringsvoorstel presenteren: Fase 1 B2B onderdelencatalogus met VIN-nummer filter en VIES BTW-verlegging (€ 850,-) + Fase 2 directe webshop checkout (€ 650,-) + Managed Cloud Hosting (€ 350,-/jr).
+
+- [ ] `[TASK-907]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **2027 Tarieven Doorvoeren naar Overige Klanten (Scholte, Willa, Pomppop)**
+  - **Scope**: Scholte Elektrotechniek (`scholte-elektrotechniek.nl`), Naaiatelier Willa (`naaiatelier-willa.nl`), Stichting PompPop (`pomppop.nl`)
+  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L44-L46) & [advies_hosting_tarieven_task816.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/advies_hosting_tarieven_task816.md)
+  - **Details**:
+    - Na de goedgekeurde overgangstarieven voor Angela Stenekes en Jozua Stenekes (€ 95,-), het 2027 abonnementsvoorstel (€ 95,- / € 150,-) voorleggen aan Frank Scholte, Willa en bestuur PompPop.
+    - Akkoorden registreren in het CRM en doorvoeren in de abonnementsadministratie van Pi-Boekhouding.
+
+#### ⚡ Serverless & Cloud Functions v2 Migratie
+- [ ] `[TASK-841]` `[P3-LOW]` `[STATUS: ON_HOLD]` **PompPop Festival: Cloud Functions v2 Migratie & Deployment**
+  - **Scope**: `pomppop/functions/`, Node.js 20, QR-ticket generator (`qrcode` + `pdfkit`), Vimexx SMTP (`mail.zxcs.nl:465`)
+  - **Status Note**: Gepauzeerd (On Hold) op instructie van Allard. Wordt geactiveerd en gedeployd zodra de voorbereidingen voor de volgende editie van PompPop Festival van start gaan.
+  - **Bron & Uitleg**: [docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md#L20-L155)
+  - **Details**:
+    - Productieklare Cloud Functions v2 code implementeren in `pomppop/functions/v2-migration.js` (concurrency tot 40 in `europe-west1`).
+    - NPM afhankelijkheden installeren (`qrcode`, `pdfkit`, `nodemailer`).
+    - SMTP wachtwoord instellen via `firebase functions:secrets:set SMTP_PASSWORD` en deployen via `firebase deploy --only functions`.
+    - E-ticket flow met QR-raster PDF testen op een order in Firestore.
+
+- [ ] `[TASK-842]` `[P3-LOW]` `[STATUS: BACKLOG]` **BakkertjeSieg: Cloud Functions v2 Contact- & Bestelmailer Deployment**
+  - **Scope**: `BakkertjeSieg/functions/`, Node.js 20, Contactmailer naar Sigrid (`bakkertjesieg@gmail.com`)
+  - **Bron & Uitleg**: [docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/FIREBASE-FUNCTIONS-V2-MIGRATION.md#L159-L257)
+  - **Details**:
+    - V2 Firestore trigger `onDocumentCreated("berichten/{msgId}")` implementeren in `BakkertjeSieg/functions/`.
+    - Mailtransporter configureren met Vimexx SMTP (`bestellingen@bakkertjesieg.nl`).
+    - Deployen en contactformulier end-to-end testen op `bakkertjesieg.nl`.
+
+#### ☁️ Multi-Domein & Cloud Migratie Strategie
+- [ ] `[TASK-504]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Cloud- & Mailmigratie: Strategische Besluitvorming (MijnHost vs. Azure + M365)**
+  - **Scope**: 12 Actieve Domeinen, E-mail architectuur, Kosten vs. Big Tech autonomie afweging
+  - **Bron & Uitleg**: [docs/SOVEREIGN-DUTCH-CLOUD-PLAN.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/SOVEREIGN-DUTCH-CLOUD-PLAN.md#L36-L116) & [docs/AZURE-MIGRATION-12-DOMAINS.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/AZURE-MIGRATION-12-DOMAINS.md#L166-L298)
+  - **Details**:
+    - Definitieve richting vaststellen tussen:
+      - **Scenario 1 (MijnHost Amsterdam)**: 100% Nederlands soeverein, LiteSpeed HTTP/3, SpamExperts enterprise cluster, € 237,-/jr all-in voor álle 12 domeinen en onbeperkte zakelijke mailboxen (100% pure marge op e-mail).
+      - **Scenario A (Azure SWA + M365 Exchange Plan 1)**: Anycast CDN, officiële Microsoft `outlook.office365.com` login voor 6 externe klanten doorbelast à € 10,-/mnd (+ € 280,- tot + € 328,- winst/jr).
+
+- [ ] `[TASK-505]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Cloud- & Mailmigratie: Gefaseerde Uitvoering 12 Domeinen Cutover**
+  - **Scope**: EPP verhuiscodes, IMAPsync mailbox migratie, Anycast DNS cutover, SSL certificaten, Vimexx opzegging
+  - **Bron & Uitleg**: [docs/SOVEREIGN-DUTCH-CLOUD-PLAN.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/SOVEREIGN-DUTCH-CLOUD-PLAN.md#L137-L153) & [docs/AZURE-MIGRATION-12-DOMAINS.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/AZURE-MIGRATION-12-DOMAINS.md#L149-L164)
+  - **Details**:
+    - EPP-verhuiscodes genereren in Vimexx DirectAdmin voor alle 12 domeinen.
+    - Klantmailboxen synchroniseren via IMAPsync migratietool.
+    - DNS A/CNAME/MX records gefaseerd omschakelen (starten met testdomein).
+    - Na succesvolle migratie en SSL-uitgifte het Vimexx hostingpakket (€ 143,88/jr) formeel opzeggen.
+
+#### 🏛️ RVO Subsidies & WBSO Innovatie
+- [ ] `[TASK-903]` `[P1-HIGH]` `[STATUS: BACKLOG]` **WBSO Subsidieaanvraag 2027 Indienen bij RVO.nl**
+  - **Scope**: `mijn.rvo.nl`, Zelfstandige S&O-aftrek 2027, Project `AWS-DCA` (520 uren, € 15.545,- belastingaftrek)
+  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md#L109-L118)
+  - **Details**:
+    - Inloggen op `mijn.rvo.nl` met eHerkenning of DigiD.
+    - Aanvraag aanmaken onder regeling *Zelfstandige S&O-aftrek* voor project *"Autonome Web-Synthese & Dynamische Code-Archetypen voor het MKB"* (Projectcode `AWS-DCA`).
+    - Teksten voor Aanleiding, Doelstelling en de 3 Technische Knelpunten (AST synthese, archetype categorieweging, client-side DRM) 1-op-1 overnemen uit Paragraaf 2 en 3 van het dossier.
+    - 520 begrote uren opvoeren en aanvraag formeel versturen vóór de sluitingsdeadline.
+
+- [ ] `[TASK-904]` `[P2-HIGH]` `[STATUS: BACKLOG]` **S&O Urenadministratie & Verantwoording Inrichten in Pi-Boekhouding**
+  - **Scope**: `Pi-Boekhouding`, `boekhouding.db`, Git commit logs, Projectcode `AWS-DCA`
+  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md#L101-L107)
+  - **Details**:
+    - Wekelijks S&O urenregistratiespoor activeren in de Pi-Boekhouding administratie gekoppeld aan projectcode `AWS-DCA`.
+    - Wekelijkse uren verifiëren aan de hand van git commits in `factory/` en `tests/` ter voorbereiding op steekproeven van RVO-inspecteurs.
+
+#### 🚀 Lead Factory Regionale Uitrol & Acquisitie
+- [ ] `[TASK-905]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Lead Factory Batch 1: 30 Regionale Concepten Genereren & Publiceren (Week 4 & 5)**
+  - **Scope**: Regio Hoogezand, Veendam, Winschoten; sectoren: dakdekkers, hoveniers, installateurs, schilders
+  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L65-L77)
+  - **Details**:
+    - Lead Factory crawler draaien voor bedrijven in de regio Hoogezand, Veendam en Winschoten.
+    - 30 hoogwaardige concepten genereren met Auteurswet DRM en direct live uploaden via FTPS naar `creationaltfix.nl/concept/[slug]/`.
+
+- [ ] `[TASK-906]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Regionale WhatsApp & E-mail Outreach Ronde (Week 4 & 5)**
+  - **Scope**: 30 Benaderde vaklieden, persoonlijk contact Allard, conversie naar € 650 - € 850 deals
+  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L68-L77)
+  - **Details**:
+    - De 30 ondernemers contacteren met Allard's beproefde nuchtere WhatsApp bericht inclusief de directe live conceptlink.
+    - Geïnteresseerde ondernemers via het statusportaal (`/status`) digitaal laten accorderen, 50% aanbetaling via iDEAL incasseren en DNS koppelen.
+
+- [ ] `[TASK-908]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Lead Factory Batch 2: Opschalen naar Groningen-Stad, Assen & Emmen (Week 11)**
+  - **Scope**: Provinciale schaal, 20 concepten per week, evaluatie conversie per vakbranche
+  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L100-L106)
+  - **Details**:
+    - Uitbreiden van de geografische actieradius naar Groningen-Stad, Assen en Drachten.
+    - Batch-grootte verhogen naar 20 concepten per week en conversieratio's analyseren per branche.
+
+#### 📱 Personal Branding & Social Media
+- [ ] `[TASK-843]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Social Media & Personal Branding: Eerste LinkedIn Post & Story Video Publiceren**
+  - **Scope**: LinkedIn & Instagram Stories / Reels, organische naamsbekendheid Noord-Nederland
+  - **Bron & Uitleg**: [docs/SOCIAL-MEDIA-BRANDING.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/SOCIAL-MEDIA-BRANDING.md#L23-L103)
+  - **Details**:
+    - Kant-en-klare LinkedIn post publiceren (*"Vaklieden hebben geen tijd voor 6 meetings over een brand identity traject"*).
+    - Eerste Instagram Story video opnemen volgens Script 1 (*"De 3-Seconden Laadsnelheidstest"* met stopwatch en vergelijking trage WordPress vs 0.4s sub-second site).
+
+
 
 ---
 
@@ -255,11 +383,6 @@
 - [x] `[TASK-827]` `[P1-HIGH]` `[STATUS: DONE]` **Centraal Uptime & Website Monitoring Systeem in het Beheerders- & Klantenportaal**
   - **Scope**: `crm/js/uptime-monitor.js`, `crm/api/healthcheck.php`, `crm/admin/index.html`, `crm/admin/js/admin.js`, `crm/admin/css/admin.css`, `crm/status/index.html`, `crm/status/js/status.js`, `crm/status/css/status.css`, `firestore.rules`
   - **Details**: Volledige realtime monitoring suite gerealiseerd: 1. Multi-DNS resolver engine (Google DoH & Cloudflare DoH APIs) voor automatische detectie van DNS-storingen, SERVFAIL (zoals bij de Vimexx DDoS-storing), NXDOMAIN, IPv4 A-records en latency; 2. Directe HTTPS handshake & uptime probe gecombineerd met dedicated server-side cURL fallback (`crm/api/healthcheck.php`); 3. Uitgebreid Admin Dashboard monitoring view (`view-monitoring`) met 4 KPI-kaarten, live glow pulse statusbolletjes (groen, oranje, rood), zoek- en categoriefilters, live scan voortgangsbalk, domein-inspectie modal (`#monitor-detail-modal`), auto-refresh interval (60s), en Web Audio alert chimes; 4. Klantenportaal integratie met live statusbadge in de header en een dedicated "Live Systeem- & Website Status" kaart met 1-klik herverificatie (`#btn-client-verify-uptime`); 5. Dedicated beheerder-only downtime alerts via FormSubmit naar `info@creationaltfix.nl` met false-positive filtering: alerts en audio chimes triggeren uitsluitend na minimaal 3 opeenvolgende bevestigde DOWN-metingen (`REQUIRED_CONSECUTIVE_FAILURES = 3`) inclusief automatische instant re-probe (1.2s delay); 6. Automatische verwijdering & synchronisatie van domeinen: bij het verwijderen van een project (`deleteProject`) wordt het gekoppelde domein direct uit de monitoring, LocalStorage en Firestore `/monitors` verwijderd, inclusief 1-klik prullenbak-acties per domein in de monitoringtabel en een dedicated knop "Projecten Synchroniseren" (`#btn-sync-monitors-with-projects`) om verweesde domeinen van eerder verwijderde projecten met 1 klik op te schonen.
-
-- [ ] `[TASK-828]` `[P3-LOW]` `[STATUS: BACKLOG]` **Uptime Monitoring Externe Alert Integraties: WhatsApp & Push Notificaties (Twilio / Green API / CallMeBot / Webhooks)**
-  - **Scope**: `crm/js/uptime-monitor.js`, WhatsApp Business API / Webhooks, SMS of Push notificaties
-  - **Details**: Automatische instant WhatsApp- of Push-notificatie naar Allard wanneer een gehost domein offline gaat of DNS SERVFAIL vertoont, inclusief incidentdetails (statuscode, responsetijd) en directe beheerderslink. Voor latere sprint gepland.
-
 ---
 
 ### 🛡️ EPIC-10: Q1 2027 Klantenportaal Productie-Hardening & Communicatie
@@ -339,4 +462,14 @@
 - [x] `[TASK-828]` `[P3-LOW]` `[STATUS: DONE]` **Uptime Monitoring Externe Alert Integraties (WhatsApp / Webhooks)**
   - **Scope**: `crm/scripts/uptime-webhook-alerts.js`, `crm/js/uptime-monitor.js`
   - **Details**: Standalone webhook dispatcher script gebouwd met multi-channel ondersteuning voor WhatsApp via CallMeBot, Discord embed notificaties en Telegram Bot API alerts met automatische false-positive filtering.
+
+- [x] `[TASK-835]` `[P2-HIGH]` `[STATUS: DONE]` **Noodprotocol: Fysieke Noodenvelop Gereedmaken & Toegangscodes Borgen**
+  - **Scope**: Fysieke verzegelde noodenvelop, Laurin Veldman, Windows-wachtwoord, Smartphone-pincode, Password Manager kluis & Google herstelcodes
+  - **Bron & Uitleg**: [docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md#L35-L54)
+  - **Details**: Fysieke verzegelde noodenvelop *"Creation+Alt+Fix - Noodtoegang & Systeemherstel"* klaargelegd op de vaste privé-locatie. Bevat Windows 11 Pro gebruikerswachtwoord (`Admin`), toegangscode/PIN van Allard's smartphone (voor directe toegang tot alle wachtwoord-apps en authenticators), hoofdwachtwoord wachtwoordmanager, Vimexx SSO master details en Google account herstelcodes. Afgestemd met en bekend bij vertrouwenspersoon Laurin Veldman.
+
+- [x] `[TASK-836]` `[P3-MEDIUM]` `[STATUS: DONE]` **Noodprotocol: Offline Noodkopie naar Externe USB-Schijf Verankerd in Draaiboek Week 1**
+  - **Scope**: [docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/CONTINUITY-AND-EMERGENCY-PROTOCOL.md#L140-L160) (Draaiboek Week 1), `C:\Users\Admin\Backups\`
+  - **Details**: Formeel vastgelegd conform instructie van Allard dat actuele back-ups tijdens normale operatie veilig op de primaire NVMe/C-schijf (`C:\Users\Admin\Backups\`) blijven staan (geen periodieke handmatige USB-rotatie vereist bij leven). De externe fysieke USB-kopie is definitief verankerd in Week 1 van het Noodprotocol als eerste stabilisatietaak voor de noodbeheerder/IT-opvolger bij overlijden of plotselinge calamiteit.
+
 

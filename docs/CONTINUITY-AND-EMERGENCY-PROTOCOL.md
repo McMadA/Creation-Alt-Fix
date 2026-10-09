@@ -26,7 +26,7 @@ Dit document treedt in werking bij **overlijden, plotselinge ernstige arbeidsong
 ### Kernprincipes:
 1. **Downtime Voorkomen**: De websites van klanten mogen **nooit** zomaar offline gaan. Alle websites zijn ontworpen als zelfstandige, robuuste platformen die maandenlang zonder onderhoud storingsvrij blijven draaien.
 2. **Eigendom & Autonomie**: Klanten zijn te allen tijde 100% eigenaar van hun eigen domeinnaam, intellectueel eigendom en websitecode.
-3. **Eenvoud & Duidelijkheid**: De vertrouwenspersoon of executeur kan aan de hand van dit document zonder diepgaande technische kennis alle administratieve, juridische en technische stappen doorlopen.
+3. **Eenvoud & Duidelijkheid voor IT-Opvolging**: Nabestaanden of de vertrouwenspersoon (bijv. **Laurin Veldman**) hoeven dit niet zelf technisch op te lossen. Zodra het werkstation is ontgrendeld met het Windows-wachtwoord, kan een **IT-vriend of bevriende webontwikkelaar** van Allard direct aan de hand van dit protocol alle technische handelingen, back-ups, EPP-verhuiscodes en overdrachten foutloos en snel uitvoeren.
 
 ---
 
@@ -36,13 +36,15 @@ Dit document treedt in werking bij **overlijden, plotselinge ernstige arbeidsong
 Er bevindt zich een fysieke, verzegelde noodenvelop op de vaste privé-locatie (bekend bij partner/familie) met de titel **"Creation+Alt+Fix - Noodtoegang & Systeemherstel"**.
 
 Deze envelop bevat:
-* **BitLocker Herstelsleutel** (48 cijfers) voor de primaire ontwikkel-laptop.
+* **Windows Wachtwoord** voor het primaire ontwikkel-werkstation (tevens bekend bij **Laurin Veldman**).
+* **Toegangscode Persoonlijke Telefoon** (tevens direct bekend bij **Laurin Veldman**) voor toegang tot de wachtwoord-apps en authenticators.
 * **Hoofdwachtwoord & Noodsleutel** van de wachtwoordmanager.
 * **Vimexx DirectAdmin Hoofdaccount Inloggegevens** (`web0156.zxcs.nl`).
 * **Google Account Master Herstelcodes** (om 2-factor authenticatie op te vangen).
 
 ### B. Hardware & Lokale Kluizen
-* **Primaire Werkstation**: Beveiligd met Windows Hello en BitLocker AES-256.
+* **Primaire Werkstation**: Beveiligd met Windows-wachtwoord (bekend bij **Laurin Veldman** en in de noodenvelop).
+* **Persoonlijke Telefoon (Smartphone)**: Beveiligd met toegangscode (bekend bij **Laurin Veldman**). Biedt directe toegang tot alle **wachtwoord-apps** (Password Managers) en 2-factor authenticators.
 * **Windows DPAPI Inlogkluis (`.crm-credentials.clixml`)**: Bevat veilige cloudtokens voor Firebase Firestore.
 * **Lokale Back-up Schijf**:
   * `C:\Users\Admin\Backups\Vimexx-Server-Backups\` (10.62 GB complete server archieven).
@@ -136,7 +138,8 @@ Namens Creation+Alt+Fix
 ## 7. Draaiboek Noodopvolging: Week 1 t/m Week 4
 
 ### Week 1: Stabilisatie & Toegang
-* [ ] Open de verzegelde noodenvelop en ontgrendel het werkstation via de BitLocker-sleutel.
+* [ ] Ontgrendel de persoonlijke smartphone van Allard via de toegangscode (bekend bij **Laurin Veldman**) voor directe toegang tot de wachtwoord-apps en 2FA.
+* [ ] Ontgrendel het werkstation via het Windows-wachtwoord (bekend bij **Laurin Veldman** of via de noodenvelop).
 * [ ] Verifieer dat de Vimexx webhosting actief is en automatische verlengingen niet geblokkeerd worden.
 * [ ] Maak een extra lokale kopie van de map `C:\Users\Admin\Backups\` naar een externe USB-schijf.
 
@@ -171,19 +174,23 @@ Mocht de server of het DirectAdmin configuratiepaneel onbereikbaar worden of sto
    - **DNS Administration**: Beheer A-records, MX-records en SPF/DKIM per domein.
    - **FTP Management**: Maak indien nodig een tijdelijk nood-FTP account aan met een nieuw 32-teken wachtwoord gekoppeld aan `/domains/`.
 
-### B. BitLocker Herstelsleutels & Werkstation Noodopstart
-Het primaire ontwikkelwerkstation (Windows 11 Pro) is versleuteld met BitLocker (AES-256):
-1. **Herstelscherm bij opstarten**: Indien Windows vraagt om de *BitLocker Recovery Key*:
-   - Toets de 48-cijferige herstelsleutel in via het numerieke toetsenbord.
-   - Deze 48-cijferige sleutel bevindt zich in de verzegelde noodenvelop én is gekoppeld aan het primaire Microsoft-account onder [https://account.microsoft.com/devices/recoverykey](https://account.microsoft.com/devices/recoverykey).
-2. **Back-up data uitlezen zonder Windows boot**:
-   - De harde schijf kan in noodgevallen in een andere Windows-pc worden geplaatst en ontgrendeld met het commando:
-     ```powershell
-     manage-bde -unlock D: -RecoveryPassword "XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX"
-     ```
-   - Alle bronbestanden in `C:\Users\Admin\Documents\GitHub\Websites\` zijn direct beschikbaar.
+### B. Werkstation Toegang & Windows Wachtwoord
+Het primaire ontwikkelwerkstation (Windows 11 Pro) is beveiligd met een lokaal Windows-gebruikersaccount:
+1. **Inloggen op het werkstation**:
+   - Het **Windows wachtwoord / PIN** voor toegang tot de computer is **bekend bij Laurin Veldman** én bevindt zich in de fysieke verzegelde noodenvelop.
+   - Start het werkstation op, selecteer het account `Admin` en voer het wachtwoord in.
+2. **Toegang tot bestanden en projecten**:
+   - Zodra Windows is ontgrendeld, zijn alle broncodebestanden direct toegankelijk in `C:\Users\Admin\Documents\GitHub\Websites\`.
+   - Alle lokale back-ups, exports en administratie zijn direct te raadplegen in `C:\Users\Admin\Backups\`.
 
-### C. GitHub Repository & Cloud Overdracht
+### C. Wachtwoord-Apps & Smartphone Toegang
+1. **Ontgrendelen van de Telefoon**:
+   - De toegangscode / PIN van de persoonlijke telefoon van Allard is **bekend bij Laurin Veldman** én staat genoteerd in de noodenvelop.
+2. **Toegang tot Wachtwoord-apps**:
+   - Op de telefoon staan de geïnstalleerde **Password Manager apps** (en Authenticator apps).
+   - Zodra de telefoon ontgrendeld is, kan de IT-vriend of beheerder hierin alle actuele inloggegevens, wachtwoorden en API-sleutels raadplegen voor alle online diensten (Vimexx, Mollie, domeinen, bankieren, e-mail).
+
+### D. GitHub Repository & Cloud Overdracht
 1. Alle broncode van de 12 websites en het CRM staat gereflecteerd in GitHub (`github.com`).
 2. De noodbeheerder kan de repositories overdragen aan een opvolgende webontwikkelaar door in de GitHub repository settings de opvolger als **Collaborator** toe te voegen met *Admin* rechten.
 3. Klantwebsites zijn framework-loos (Zero-Dependency Vanilla HTML5/CSS/JS) en kunnen door elke willekeurige webmaster direct op een willekeurige Apache, Nginx of Azure server geplaatst worden zonder afhankelijkheid van specifieke serverscripts.
