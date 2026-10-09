@@ -491,16 +491,34 @@ function renderDashboard(data) {
     // Render In-App Berichten & Revisies (TASK-604)
     renderMessagesSection(data);
 
+    // Sync paid status from URL query parameters if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === 'true') {
+        const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer));
+        if (invNum) {
+            try {
+                localStorage.setItem('caf_paid_invoice_' + invNum, 'true');
+            } catch (e) {}
+        }
+    }
+
+    const activeInvNum = data.invoiceNumber || data.factuurnummer;
+    const isMainInvoicePaid = isInvoicePaid(activeInvNum, data.status);
+
     // Render Snelle Links (Demo / Mollie)
     if (data.demoUrl) {
         const demoCard = document.getElementById('demo-link');
         demoCard.href = data.demoUrl;
         demoCard.classList.remove('hidden');
     }
-    if (data.mollieLink) {
-        const mollieCard = document.getElementById('mollie-link');
-        mollieCard.href = data.mollieLink;
-        mollieCard.classList.remove('hidden');
+    const mollieCard = document.getElementById('mollie-link');
+    if (mollieCard) {
+        if (data.mollieLink && !isMainInvoicePaid) {
+            mollieCard.href = data.mollieLink;
+            mollieCard.classList.remove('hidden');
+        } else {
+            mollieCard.classList.add('hidden');
+        }
     }
 
     // Configure Handover Docs Link (TASK-402)
@@ -529,6 +547,18 @@ function checkPaymentSuccessModal(data) {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === 'true') {
         const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '—';
+        if (invNum && invNum !== '—') {
+            try {
+                localStorage.setItem('caf_paid_invoice_' + invNum, 'true');
+            } catch (e) {}
+        }
+
+        // Direct verbergen van eventuele openstaande banners en Mollie actieknop
+        const banner = document.getElementById('unpaid-invoice-banner');
+        if (banner) banner.classList.add('hidden');
+        const mollieCard = document.getElementById('mollie-link');
+        if (mollieCard) mollieCard.classList.add('hidden');
+
         const modal = document.getElementById('payment-success-modal');
         const invSpan = document.getElementById('modal-paid-invoice-num');
         if (modal) {
@@ -541,6 +571,11 @@ function checkPaymentSuccessModal(data) {
                 closeBtn.onclick = () => {
                     modal.style.display = 'none';
                     modal.classList.add('hidden');
+
+                    // Zorg dat de factuurbanner en actieknop definitief verborgen blijven
+                    if (banner) banner.classList.add('hidden');
+                    if (mollieCard) mollieCard.classList.add('hidden');
+
                     const archiveCard = document.getElementById('client-invoices-archive-card');
                     if (archiveCard) {
                         archiveCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2007,7 +2042,7 @@ function setupClientInvoicesArchive(data) {
                 </thead>
                 <tbody>
                     ${invoices.map((inv, idx) => {
-                        const isPaid = inv.status === 'paid' || inv.status === 'voldaan';
+                        const isPaid = isInvoicePaid(inv.invoiceNumber, inv.status);
                         const mollieUrl = !isPaid ? (inv.mollieLink || data.mollieLink) : null;
                         const badgeStyle = isPaid 
                             ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
@@ -2083,16 +2118,37 @@ function setupClientInvoicesArchive(data) {
     });
 }
 
+function isInvoicePaid(invNumber, status) {
+    if (status && (status.toLowerCase().includes('voldaan') || status.toLowerCase().includes('paid'))) {
+        return true;
+    }
+    if (invNumber) {
+        try {
+            if (localStorage.getItem('caf_paid_invoice_' + invNumber) === 'true') {
+                return true;
+            }
+        } catch (e) {}
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === 'true') {
+        const paidInv = urlParams.get('invoice');
+        if (!paidInv || paidInv === invNumber) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function setupUnpaidInvoiceBanner(data) {
     const banner = document.getElementById('unpaid-invoice-banner');
     if (!banner) return;
 
-    const isPaid = data.status?.toLowerCase().includes('voldaan') || data.status?.toLowerCase().includes('paid');
-    const hasInvoice = !!(data.invoiceNumber || data.factuurnummer);
+    const invNum = data.invoiceNumber || data.factuurnummer;
+    const isPaid = isInvoicePaid(invNum, data.status);
+    const hasInvoice = !!invNum;
     const hasMollie = !!data.mollieLink;
 
     if (!isPaid && hasInvoice && hasMollie) {
-        const invNum = data.invoiceNumber || data.factuurnummer;
         const totalIncl = data.proposalPrice ? (data.proposalPrice * 1.21) : 0;
         const amountStr = totalIncl > 0 ? formatCurrency(totalIncl) : '—';
 
