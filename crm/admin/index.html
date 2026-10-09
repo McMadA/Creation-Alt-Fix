@@ -141,8 +141,11 @@
 
             <div class="content-area hidden" id="view-leads">
                 <div class="admin-card">
-                    <div class="card-header">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <h2><i class="fas fa-user-plus" style="color: var(--color-accent); margin-right: 8px;"></i> Leads & Intakes</h2>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openNewLeadModal()" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-plus"></i> Nieuwe Lead Toevoegen
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="leads-table">
@@ -167,8 +170,11 @@
 
             <div class="content-area hidden" id="view-projects">
                 <div class="admin-card">
-                    <div class="card-header">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <h2><i class="fas fa-project-diagram" style="color: var(--color-primary-light); margin-right: 8px;"></i> Lopende Projecten</h2>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openNewLeadModal()" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-plus"></i> Nieuw Project Toevoegen
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="active-projects-table">

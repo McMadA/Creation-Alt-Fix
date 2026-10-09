@@ -324,7 +324,11 @@ export function renderTablesData(projectsToRender, handlers = {}) {
         leadsBody.innerHTML = '';
         const leads = projectsToRender.filter(p => formatProjectStatus(p.status).phase === 1);
         if (leads.length === 0) {
-            leadsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 20px;">Geen nieuwe leads gevonden.</td></tr>`;
+            leadsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 32px 20px; line-height: 1.6;">
+                <i class="fas fa-inbox" style="font-size: 1.8rem; margin-bottom: 8px; display: block; opacity: 0.35;"></i>
+                Geen nieuwe binnenkomende website-intakes in de wachtrij.<br>
+                <span style="font-size: 0.82rem; color: #94a3b8;">Koude AI-prospects en concept-websites vind je onder <strong style="color: #38bdf8;">Autonome Leads</strong> in het linkermenu, of voeg direct handmatig een lead toe via de knop hierboven.</span>
+            </td></tr>`;
         } else {
             leads.forEach(p => leadsBody.appendChild(createRow(p)));
         }
