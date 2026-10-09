@@ -2,6 +2,14 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Prominente Openstaande Factuur Banner & Inline iDEAL Knoppen ([crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/status/js/modules/translations.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/modules/translations.js))**:
+  - **Probleem**: Klanten met openstaande facturen zagen de Mollie betaalknop over het hoofd doordat `#mollie-link` onderaan de pagina stond bij *Snelle Acties & Contact*. In de tabel *Mijn Facturen & Jaaroverzicht* stond alleen een PDF-downloadknop en geen directe betaalknop.
+  - **Oplossing**:
+    1. *Bovenaan Dashboard*: Prominente amber/gouden notificatiebanner (`#unpaid-invoice-banner`) toegevoegd direct bovenaan het portaal met factuurnummer, openstaand bedrag en een grote actieknop: `[ 💳 Factuur Nu Betalen (iDEAL) ]`.
+    2. *Tabel Acties*: In elke tabelrij van *Mijn Facturen & Jaaroverzicht* met status `⏳ Openstaand` een directe knop `[ 💳 Betaal iDEAL ]` toegevoegd naast de PDF-knop.
+    3. *Snelle Acties Highlight*: De tegel `Factuur Betalen (Mollie)` visueel geaccentueerd met een gouden border en opvallend icoon.
+    4. *Meertaligheid*: Volledige NL & EN vertaalsleutels toegevoegd in `translations.js`.
+
 - **[2026-10-09] 2027 Tarief Weergave (€ 95,-/jr per 1 Jan) & Verwijdering Berichtenknop Werkplek ([crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js))**:
   - **Probleem**: Op de werkplek van Stenekes (en andere trouwe klanten die akkoord hebben gegeven) stond onder "Huidig Abonnement" nog het oude € 22,- tarief zonder vermelding dat per 1 januari 2027 het overgangstarief van € 95,- ingaat, en stond de dropdown op het oude tarief. Tevens was de knop *"🚀 2027 Abonnementsplan Berichten aan Klant"* overbodig geworden op de werkplek.
   - **Oplossing**:
