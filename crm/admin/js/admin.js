@@ -468,6 +468,7 @@ function setupNavigation() {
                 kanban: 'Taken <span class="accent">&amp; Kanban Sprintbord</span>',
                 monitoring: 'Uptime <span class="accent">&amp; DNS Monitoring</span>',
                 subscriptions: 'Abonnementen <span class="accent">&amp; 2027 Migratie</span>',
+                'lead-factory': 'Autonome Leads <span class="accent">&amp; Concept Machine</span>',
                 settings: 'Systeem <span class="accent">Instellingen</span>'
             };
             const headerTitle = document.getElementById('admin-main-header-title');
@@ -2594,6 +2595,8 @@ function initAdminPage() {
     setupTodoSyncListeners();
     initSettingsTab();
     initMonitoringTab();
+    // Autonome Leads Werkstation op achtergrond voorladen voor directe badge- en tab-weergave
+    setupAndRenderLeadFactory().catch(err => console.warn('[CRM] Lead Factory voorladen:', err));
     document.getElementById('btn-open-kanban-task-modal')?.addEventListener('click', openGlobalTaskModal);
     document.getElementById('global-add-task-form')?.addEventListener('submit', saveGlobalTask);
 
