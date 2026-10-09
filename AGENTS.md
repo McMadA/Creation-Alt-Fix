@@ -2,6 +2,13 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Test Account & End-to-End iDEAL Betaalomgeving ([crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html))**:
+  - **Doel**: Een compleet operationeel testaccount inrichten om de volledige flow (inloggen op het klantenportaal, inzien van openstaande factuur 2026-TEST, Mollie iDEAL checkout simulator en succesvolle retour-redirect met viering) interactief te kunnen testen.
+  - **Inrichting**:
+    1. *Firebase Auth Client*: Account aangemaakt voor `testklant@creationaltfix.nl` (wachtwoord: `TestKlant2026!`, UID: `Rb4azFWvMNWMe93Q2kxuMI6z03U2`).
+    2. *Firestore Project Record*: Project `test-project-2026` aangemaakt voor *Test Klant BV*, gekoppeld aan de klant-UID en factuur `2026-TEST` (openstaand, € 10,00).
+    3. *Mollie Test Transactie*: Checkout URL gegenereerd (`tr_re8cPf2dt394SxhZhruXJ`) die na afronding terugleidt naar `portal.creationaltfix.nl/status/?id=test-project-2026&paid=true&invoice=2026-TEST`.
+
 - **[2026-10-09] Mollie iDEAL Betaling Melding, Query Param Persistentie & Klantportaal Celebration ([crm/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/index.html), [crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
   - **Probleem**: Na afronding van een Mollie iDEAL betaling redirectte de browser naar `portal.creationaltfix.nl/?paid=true&invoice=2026-TEST`. Op het inlogscherm was geen enkele melding zichtbaar, ingelogde beheerders bleven stilhangen zonder feedback en eventuele redirects naar het portaal namen de query-parameters niet mee.
   - **Oplossing**:
