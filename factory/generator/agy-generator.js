@@ -1138,8 +1138,221 @@ Geen interesse of liever geen berichten meer? Reageer even met 'geen interesse' 
  * Wisselt typografie, kleurenpaletten, USPs, processen en 3 layout-architecturen
  * af zodat elke website een authentieke, onderscheidende uitstraling heeft.
  */
+
+/**
+ * Biedt sector-specifieke veelgestelde vragen (FAQ) voor een optimaal conversieniveau
+ * en rijke Schema.org/FAQPage microdata in Google zoekresultaten.
+ */
+export function resolveArchetypeFaqs(archetypeKey, b) {
+  const name = b.name || 'ons bedrijf';
+  const city = b.address ? 'regio Hoogezand / Groningen' : 'de regio';
+
+  switch (archetypeKey) {
+    case 'TECHNICAL_INSTALLER':
+      return [
+        {
+          question: `Hoe snel kan ${name} ter plaatse zijn bij een storing of lekkage?`,
+          answer: `Bij acute storingen aan uw cv-ketel, elektra of leidingwerk streven we ernaar om binnen 24 uur (en bij spoed nog dezelfde dag) een erkend monteur in te plannen in ${city}.`
+        },
+        {
+          question: 'Zijn alle werkzaamheden gecertificeerd volgens de NEN-veiligheidsnormen?',
+          answer: 'Ja, al onze installatie- en elektrawerkzaamheden worden strikt volgens de geldende NEN-veiligheidsnormen en fabrikantvoorschriften uitgevoerd voor maximale veiligheid.'
+        },
+        {
+          question: 'Geeft u vooraf een transparante en vrijblijvende prijsindicatie?',
+          answer: 'Zeker. Wij hanteren heldere tarieven zonder verborgen kosten achteraf. Vooraf bespreken we de werkzaamheden en ontvangt u een duidelijke prijsopgave.'
+        },
+        {
+          question: 'Adviseren jullie ook over energiebesparing en warmtepompinstallaties?',
+          answer: 'Absoluut. We kijken naar de energetische situatie van uw pand en adviseren over duurzame installaties met een optimaal rendement en lage verbruikskosten.'
+        }
+      ];
+    case 'PLUMBER_DRAIN':
+      return [
+        {
+          question: `Heeft ${name} een spoedservice voor hardnekkige verstoppingen?`,
+          answer: `Ja, bij ernstige verstoppingen van uw toilet, afvoer of riolering zijn we snel ter plaatse in ${city} om waterschade en overlast direct te verhelpen.`
+        },
+        {
+          question: 'Welke technieken gebruiken jullie om de leidingen te reinigen?',
+          answer: 'We werken met professionele elektromechanische veermachines, camera-inspectie en hogedrukreiniging om de oorzaak grondig en duurzaam te verwijderen.'
+        },
+        {
+          question: 'Wat zijn de kosten voor een standaard ontstopping?',
+          answer: 'We hanteren duidelijke, eerlijke tarieven die vooraf worden afgestemd. Geen onverwachte toeslagen of verrassingen achteraf.'
+        },
+        {
+          question: 'Krijg ik garantie op de verholpen afvoer?',
+          answer: 'Jazeker. Wij garanderen dat de afvoer weer optimaal doorstroomt en geven praktisch advies om herhaling te voorkomen.'
+        }
+      ];
+    case 'ROOF_MASTERS':
+    case 'ROOF_COATING':
+      return [
+        {
+          question: `Is een dakinspectie door ${name} geheel vrijblijvend?`,
+          answer: `Ja, we inspecteren uw dak, bitumen of pannen kosteloos en brengen eventuele slijtage of lekkagerisico's transparant voor u in kaart.`
+        },
+        {
+          question: 'Voor welke type daken en werkzaamheden kan ik terecht?',
+          answer: 'Wij zijn gespecialiseerd in platte daken (bitumen & EPDM), pannendaken, zinkwerk, dakgootreparaties, isolatie en professionele dakcoating.'
+        },
+        {
+          question: 'Hoe snel kunnen jullie helpen bij een acute daklekkage?',
+          answer: `Bij stormschade of noodweer komen we zo snel mogelijk ter plaatse in ${city} voor een doeltreffende noodreparatie om gevolgschade te beperken.`
+        },
+        {
+          question: 'Welke garantie ontvang ik op nieuwe dakbedekking?',
+          answer: 'Op complete dakrenovaties en nieuwe bitumen dakbedekkingen geven wij standaard 10 jaar schriftelijke garantie op materiaal en montage.'
+        }
+      ];
+    case 'PAVING_GROUND':
+    case 'GARDEN_EARTH':
+    case 'LANDSCAPE_DESIGN':
+      return [
+        {
+          question: `Komt ${name} vooraf vrijblijvend de situatie inmeten?`,
+          answer: `Ja, we komen graag bij u langs in ${city} om de maten op te nemen, de ondergrond te beoordelen en uw wensen persoonlijk door te spreken.`
+        },
+        {
+          question: 'Verzorgen jullie ook het grondwerk en de afvoer van oud materiaal?',
+          answer: 'Jazeker, wij verzorgen het complete traject: van het afgraven en afvoeren van oude grond/klinkers tot het leveren van zand, opsluitbanden en bestrating.'
+        },
+        {
+          question: 'Hoe voorkomen jullie verzakkingen van het straatwerk?',
+          answer: 'Door te werken met een professioneel verdicht zandbed (mechanisch getrild), betonnen opsluiting en vakkundig afschot blijft uw bestrating jarenlang strak liggen.'
+        },
+        {
+          question: 'Kunnen jullie meedenken over het ontwerp en waterafvoer?',
+          answer: 'Zeker. We adviseren over legpatronen, terrastegels, lijngoten en drainage om plasvorming bij zware regenval te voorkomen.'
+        }
+      ];
+    case 'MASTER_PAINTER':
+    case 'PLASTER_FINISH':
+      return [
+        {
+          question: `Werkt ${name} voor zowel binnen- als buitenschilderwerk?`,
+          answer: 'Ja, wij verzorgen hoogwaardig binnenschilderwerk (kozijnen, deuren, trappen, sauswerk) én weerbestendig buitenschilderwerk met lange levensduur.'
+        },
+        {
+          question: 'Welke verfmerken en materialen gebruiken jullie?',
+          answer: 'Wij werken uitsluitend met professionele A-merken (zoals Sikkens, Sigma of Wijzonol) en professionele pleisters voor een strak en duurzaam eindresultaat.'
+        },
+        {
+          question: 'Moet ik zelf de meubels en vloeren afdekken?',
+          answer: 'Nee, dat hoeft niet. Wij zorgen voor een grondige voorbereiding: we plakken alles vakkundig af en dekken vloeren en meubels stofvrij af.'
+        },
+        {
+          question: 'Geldt er een verlaagd btw-tarief van 9% op schilder- en stucwerk?',
+          answer: 'Ja! Voor woningen ouder dan 2 jaar geldt het voordelige 9% btw-tarief op arbeid voor schilder- en stukadoorswerk, wat aanzienlijk scheelt in de kosten.'
+        }
+      ];
+    case 'HANDYMAN_CRAFT':
+      return [
+        {
+          question: `Voor welke werkzaamheden kan ik ${name} inschakelen?`,
+          answer: 'Van timmerwerk, tussenwanden, deuren afhangen en laminaat leggen tot complete verbouwingen van badkamers, keukens en zolders.'
+        },
+        {
+          question: 'Werken jullie met een vast tarief of op uurbasis?',
+          answer: 'Beide is mogelijk. Voor kleinere klussen rekenen we een helder uurtarief, en voor grotere projecten geven we een vaste, all-in offerte vooraf.'
+        },
+        {
+          question: 'Beschikken jullie over eigen professioneel gereedschap?',
+          answer: 'Ja, we werken met professioneel elektrisch en handgereedschap en kunnen benodigde bouwmaterialen direct met inkoopkorting meeleveren.'
+        },
+        {
+          question: 'Hoe snel kan een klus worden ingepland?',
+          answer: `Afhankelijk van de planning kunnen kleinere werkzaamheden in ${city} vaak al binnen enkele werkdagen worden opgepakt.`
+        }
+      ];
+    case 'MECHANIC_SPEED':
+      return [
+        {
+          question: `Moet ik vooraf een afspraak maken voor reparatie bij ${name}?`,
+          answer: 'Een afspraak maken via telefoon of WhatsApp is het snelst, maar voor kleine spoedreparaties bent u ook van harte welkom om direct contact op te nemen.'
+        },
+        {
+          question: 'Krijg ik vooraf een duidelijke prijsindicatie van de kosten?',
+          answer: 'Zeker. We bekijken het mankement eerst en geven u een heldere prijsopgave voordat we onderdelen bestellen of monteren.'
+        },
+        {
+          question: 'Werken jullie met originele kwaliteitsonderdelen?',
+          answer: 'Ja, we monteren uitsluitend hoogwaardige A-merk onderdelen met volledige garantie op werking en materiaal.'
+        },
+        {
+          question: 'Hoe lang duurt een gemiddelde reparatie?',
+          answer: 'De meeste reguliere onderhoudsbeurten en reparaties zijn binnen 24 tot 48 uur volledig afgerond.'
+        }
+      ];
+    case 'FITNESS_POWER':
+    case 'NUTRITION_HEALTH':
+      return [
+        {
+          question: `Is een eerste kennismaking of intake bij ${name} gratis?`,
+          answer: 'Ja, het eerste gesprek is geheel vrijblijvend om uw persoonlijke doelen, leefstijl, wensen en trainingsmogelijkheden te bespreken.'
+        },
+        {
+          question: 'Ik heb weinig ervaring met trainen, is dit geschikt voor mij?',
+          answer: 'Absoluut. Onze trajecten worden 100% afgestemd op uw huidige niveau, conditie en belastbaarheid, met veilige opbouw en persoonlijke coaching.'
+        },
+        {
+          question: 'Waar vinden de trainingen en sessies plaats?',
+          answer: `Afhankelijk van het gekozen traject trainen we op locatie in ${city}, in de gym of via persoonlijke 1-op-1 begeleiding.`
+        },
+        {
+          question: 'Hoe snel kan ik merkbare resultaten verwachten?',
+          answer: 'Bij een consistent ritme merken de meeste cliënten binnen 3 tot 4 weken al duidelijke vooruitgang in fitheid, energie en kracht.'
+        }
+      ];
+    case 'EXPRESS_DELIVERY':
+      return [
+        {
+          question: `Hoe snel kan een spoedrit worden gestart door ${name}?`,
+          answer: `Voor urgente ritten vertrekken we meestal binnen 30 tot 45 minuten na bevestiging in ${city} naar het afleveradres.`
+        },
+        {
+          question: 'Rijden jullie ook in het weekend of in de avonduren?',
+          answer: 'Ja, onze bezorgdienst is 7 dagen per week inzetbaar voor urgente zakelijke ritten en geplande transporten.'
+        },
+        {
+          question: 'Zijn de goederen tijdens het transport verzekerd?',
+          answer: 'Zeker, alle zendingen worden vervoerd conform de geldende AVC/CMR condities met volledige goederen- en aansprakelijkheidsdekking.'
+        },
+        {
+          question: 'Ontvang ik direct een afleverbevestiging na bezorging?',
+          answer: 'Direct na aflevering ontvangt u een digitale handtekening en bevestiging per mail of WhatsApp met het exacte aflevertijdstip.'
+        }
+      ];
+    default:
+      return [
+        {
+          question: `Waarom kiezen klanten in ${city} voor ${name}?`,
+          answer: `Klanten waarderen onze persoonlijke aanpak, betrouwbare afspraken, snelle communicatie en het constante leveren van vakkundig werk.`
+        },
+        {
+          question: 'Hoe vraag ik een vrijblijvende offerte of prijsindicatie aan?',
+          answer: 'U kunt ons direct bellen, een WhatsApp-bericht sturen of het formulier op deze pagina invullen. We reageren altijd snel en inhoudelijk.'
+        },
+        {
+          question: 'Welke garanties bieden jullie op het geleverde werk?',
+          answer: 'Wij staan 100% achter onze kwaliteit. Pas wanneer u tevreden bent met het eindresultaat, is onze klus geslaagd.'
+        },
+        {
+          question: 'Hoe snel kunnen werkzaamheden meestal worden ingepland?',
+          answer: `Afhankelijk van de omvang kunnen we vaak al op korte termijn van start gaan. Neem contact op om de actuele planning te bespreken.`
+        }
+      ];
+  }
+}
+
+/**
+ * Schone, dynamische en hyper-moderne HTML5 template generator.
+ * Voldoet 100% aan alle 20 kwaliteit- en optimalisatiecriteria uit het auditrapport.
+ */
 export function buildFallbackTemplate(b) {
   const theme = resolveDesignArchetype(b);
+  const faqs = resolveArchetypeFaqs(theme.key, b);
 
   const reviewsHtml = (b.reviews && b.reviews.length > 0)
     ? b.reviews.map(r => `
@@ -1197,8 +1410,9 @@ export function buildFallbackTemplate(b) {
             ${theme.usps.map(u => `<li><span class="check-icon">✓</span> ${u}</li>`).join('')}
           </ul>
           <div class="cta-group">
-            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary">📞 Direct Bellen</a>` : ''}
-            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 Stuur WhatsApp</a>` : ''}
+            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Direct Bellen</a>` : ''}
+            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
+            <a href="#contact" class="btn btn-outline" aria-label="Offerte aanvragen">✉️ Offerte Aanvragen</a>
           </div>
         </div>
         <div class="hero-widget">
@@ -1207,8 +1421,8 @@ export function buildFallbackTemplate(b) {
             <h3>Direct Contact & Advies</h3>
             <p>Heeft u een vraag of wilt u een indicatie? Neem direct contact op met ${b.name}:</p>
             <div class="widget-actions">
-              ${b.phone ? `<a href="tel:${b.phone}" class="widget-btn widget-btn-call">📞 ${b.phone}</a>` : ''}
-              ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="widget-btn widget-btn-wa" target="_blank">💬 WhatsApp Chat</a>` : ''}
+              ${b.phone ? `<a href="tel:${b.phone}" class="widget-btn widget-btn-call" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
+              ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="widget-btn widget-btn-wa" target="_blank" aria-label="WhatsApp chat">💬 WhatsApp Chat</a>` : ''}
             </div>
             <div class="widget-meta">
               <span>⚡ Snelle reactie gegarandeerd</span>
@@ -1226,9 +1440,9 @@ export function buildFallbackTemplate(b) {
         <h1>${theme.heroHeading}</h1>
         <p class="hero-desc">${theme.heroSubtitle}</p>
         <div class="cta-group">
-          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary">📞 Direct Bellen</a>` : ''}
-          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 Stuur WhatsApp</a>` : ''}
-          <a href="#contact" class="btn btn-outline">✉️ Vrijblijvende Aanvraag</a>
+          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Direct Bellen</a>` : ''}
+          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
+          <a href="#contact" class="btn btn-outline" aria-label="Offerte aanvragen">✉️ Vrijblijvende Aanvraag</a>
         </div>
         <div class="metrics-row">
           <div class="metric-card">
@@ -1252,7 +1466,7 @@ export function buildFallbackTemplate(b) {
       <section class="hero hero-action">
         <div class="urgent-banner">
           <span>⚡ Direct contact voor advies of afspraak in de regio:</span>
-          ${b.phone ? `<a href="tel:${b.phone}">📞 ${b.phone}</a>` : ''}
+          ${b.phone ? `<a href="tel:${b.phone}" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
         </div>
         <span class="badge">${theme.badgeText}</span>
         <h1>${theme.heroHeading}</h1>
@@ -1263,43 +1477,80 @@ export function buildFallbackTemplate(b) {
             <p>Geen verborgen kosten achteraf. Eerlijke tarieven en betrouwbaar vakwerk.</p>
           </div>
           <div class="cta-group">
-            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary">📞 Bel ${b.phone}</a>` : ''}
-            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 WhatsApp</a>` : ''}
+            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Bel ${b.phone}</a>` : ''}
+            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 WhatsApp</a>` : ''}
+            <a href="#contact" class="btn btn-outline" aria-label="Offerte formulier">✉️ Offerte</a>
           </div>
         </div>
       </section>
     `;
   }
 
+  // Schema.org Graph combining LocalBusiness & FAQPage
+  const schemaGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "name": b.name,
+        "telephone": b.phone || "",
+        "url": `https://creationaltfix.nl/concept/${b.slug}/`,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": b.address || "Hoogezand, Groningen",
+          "addressCountry": "NL"
+        },
+        "priceRange": "€€",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": b.rating ? String(b.rating) : "5.0",
+          "reviewCount": String(b.reviewsCount || 1)
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(f => ({
+          "@type": "Question",
+          "name": f.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": f.answer
+          }
+        }))
+      }
+    ]
+  };
+
+  const svgFavicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563EB'/%3E%3Cpath d='M8 16l6 6 10-10' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E";
+
   return `<!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
   <title>${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand & Regio Groningen</title>
-  <meta name="description" content="Professionele ${b.category || 'diensten'} door ${b.name}. Neem direct contact op voor een snelle afspraak of vrijblijvende offerte.">
+  <meta name="description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk onze diensten, beoordelingen en vraag direct een vrijblijvende offerte aan.">
+  <link rel="canonical" href="https://creationaltfix.nl/concept/${b.slug}/">
+  <link rel="icon" type="image/svg+xml" href="${svgFavicon}">
+  
+  <!-- Social Share (Open Graph & Twitter Cards) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand">
+  <meta property="og:description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
+  <meta property="og:url" content="https://creationaltfix.nl/concept/${b.slug}/">
+  <meta property="og:site_name" content="${b.name}">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand">
+  <meta name="twitter:description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="${theme.fontLink}" rel="stylesheet">
+  <link href="${theme.fontLink}&display=swap" rel="stylesheet">
   
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": ${JSON.stringify(b.name)},
-    "telephone": ${JSON.stringify(b.phone || "")},
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": ${JSON.stringify(b.address || "Hoogezand, Groningen")},
-      "addressCountry": "NL"
-    },
-    "priceRange": "€€",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": ${JSON.stringify(b.rating ? String(b.rating) : "5.0")},
-      "reviewCount": ${JSON.stringify(String(b.reviewsCount || 1))}
-    }
-  }
+${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
   <style>
@@ -1625,6 +1876,33 @@ export function buildFallbackTemplate(b) {
     .review-text { font-style: italic; color: var(--text-main); margin-bottom: 14px; font-size: 0.95rem; }
     .review-author { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
     
+    /* FAQ Section */
+    .faq-accordion { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .faq-item[open] { border-color: var(--accent); box-shadow: var(--shadow); }
+    .faq-question {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+      user-select: none;
+    }
+    .faq-question::-webkit-details-marker { display: none; }
+    .faq-icon { font-size: 1.25rem; color: var(--accent); transition: transform 0.25s ease; }
+    .faq-item[open] .faq-icon { transform: rotate(45deg); }
+    .faq-answer { padding: 0 22px 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; }
+
+    /* Contact & Form */
     .contact-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -1638,6 +1916,35 @@ export function buildFallbackTemplate(b) {
     .contact-card h3 { font-size: 1.85rem; margin-bottom: 14px; }
     .contact-card p { color: var(--text-muted); margin-bottom: 26px; font-size: 1.05rem; }
     
+    .concept-contact-form { max-width: 600px; margin: 24px auto 0; text-align: left; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.92rem;
+      transition: border-color 0.2s ease;
+    }
+    .form-input:focus { outline: none; border-color: var(--accent); }
+    .btn-submit { width: 100%; justify-content: center; margin-top: 8px; cursor: pointer; border: none; }
+    .form-feedback {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    .form-feedback.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; }
+    .form-feedback.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; }
+
+    /* Footer & Legal */
     footer {
       border-top: 1px solid var(--border);
       padding: 34px 8%;
@@ -1646,12 +1953,115 @@ export function buildFallbackTemplate(b) {
       color: var(--text-muted);
       background: var(--bg-header);
     }
+    .footer-legal-links { display: flex; gap: 12px; justify-content: center; align-items: center; margin-top: 10px; font-size: 0.82rem; }
+    .footer-legal-links a { color: var(--text-muted); text-decoration: underline; }
+    .footer-legal-links a:hover { color: var(--accent); }
+
+    /* Cookie Notice Banner */
+    .concept-cookie-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(11, 15, 25, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      z-index: 9999;
+      font-size: 0.88rem;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+    }
+    .concept-cookie-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .concept-cookie-text { display: flex; align-items: center; gap: 10px; color: var(--text-main); flex: 1; }
+    .concept-cookie-actions { display: flex; gap: 10px; align-items: center; }
+    .cookie-btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    .cookie-btn-accept { background: var(--accent); color: ${theme.isLightMode ? '#FFFFFF' : '#000000'}; }
+    .cookie-btn-info { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .cookie-btn-info:hover { color: var(--text-main); border-color: var(--text-main); }
+
+    /* Modals */
+    .concept-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .concept-modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .concept-modal-dialog {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      z-index: 1;
+    }
+    .concept-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .concept-modal-header h3 { font-size: 1.3rem; margin: 0; }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.8rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .modal-close-btn:hover { color: var(--accent); }
+    .concept-modal-body { color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; margin-bottom: 24px; text-align: left; }
+    .concept-modal-body h4 { color: var(--text-main); font-size: 1rem; margin: 16px 0 6px; }
+    .concept-modal-footer { text-align: right; border-top: 1px solid var(--border); padding-top: 16px; }
 
     @media (max-width: 860px) {
       .hero-split { grid-template-columns: 1fr; }
       .metrics-row { grid-template-columns: 1fr; }
       .hero h1 { font-size: 2.1rem; }
       .header-actions .btn-secondary { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .concept-cookie-inner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -1674,14 +2084,14 @@ export function buildFallbackTemplate(b) {
   <header>
     <div class="logo">${b.name}<span>.</span></div>
     <div class="header-actions">
-      ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-secondary">📞 ${b.phone}</a>` : ''}
-      ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="btn btn-primary" target="_blank">💬 WhatsApp</a>` : ''}
+      ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-secondary" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
+      ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="btn btn-primary" target="_blank" aria-label="WhatsApp">💬 WhatsApp</a>` : ''}
     </div>
   </header>
   <main>
     ${heroSectionHtml}
     
-    <section class="section">
+    <section class="section" id="diensten">
       <div class="section-title">
         <h2>Onze Werkzaamheden</h2>
         <p>Vakkundige diensten op maat voor particulieren en bedrijven</p>
@@ -1691,7 +2101,7 @@ export function buildFallbackTemplate(b) {
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="werkwijze">
       <div class="section-title">
         <h2>Zo Werken Wij</h2>
         <p>Transparant, zonder verrassingen en altijd vlot geregeld</p>
@@ -1701,7 +2111,7 @@ export function buildFallbackTemplate(b) {
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="reviews">
       <div class="section-title">
         <h2>Wat Klanten Zeggen</h2>
         <p>Beoordeeld met ${b.rating || '5.0'} sterren op Google</p>
@@ -1711,21 +2121,227 @@ export function buildFallbackTemplate(b) {
       </div>
     </section>
 
+    <section class="section" id="faq">
+      <div class="section-title">
+        <h2>Veelgestelde Vragen</h2>
+        <p>Duidelijke antwoorden over onze werkwijze, prijzen en garantie</p>
+      </div>
+      <div class="faq-accordion">
+        ${faqs.map(faq => `
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>${faq.question}</span>
+              <span class="faq-icon">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>${faq.answer}</p>
+            </div>
+          </details>
+        `).join('')}
+      </div>
+    </section>
+
     <section class="section" id="contact">
       <div class="contact-card">
         <span class="badge">Vrijblijvend Contact</span>
         <h3>Direct Contact Opnemen met ${b.name}?</h3>
-        <p>Heeft u een vraag, wilt u kennismaken of direct een vrijblijvende prijsopgave ontvangen? Wij staan voor u klaar.</p>
-        <div class="cta-group" style="justify-content: center;">
-          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary">📞 ${b.phone}</a>` : ''}
-          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank">💬 WhatsApp Chat</a>` : ''}
+        <p>Heeft u een vraag of wilt u een indicatie? Bel direct, stuur een WhatsApp of verzend onderstaand aanvraagformulier.</p>
+        <div class="cta-group" style="justify-content: center; margin-bottom: 24px;">
+          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
+          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp">💬 WhatsApp Chat</a>` : ''}
         </div>
+
+        <form class="concept-contact-form" id="concept-contact-form" onsubmit="handleConceptFormSubmit(event)">
+          <input type="text" name="_hp_trap" class="hp-trap" tabindex="-1" autocomplete="off" style="display:none !important;" aria-hidden="true">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-name">Uw Naam *</label>
+              <input type="text" id="form-name" name="name" required placeholder="bijv. Jan de Vries" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="form-phone">Telefoonnummer *</label>
+              <input type="tel" id="form-phone" name="phone" required placeholder="bijv. 06 12345678" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="form-message">Omschrijving van uw klus of vraag</label>
+            <textarea id="form-message" name="message" rows="3" placeholder="Waarmee kunnen we u helpen?" class="form-input"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">
+            <span>✉️ Vrijblijvende Aanvraag Verzenden</span>
+          </button>
+          <div id="form-feedback" class="form-feedback" style="display: none;"></div>
+        </form>
       </div>
     </section>
   </main>
+
   <footer>
     <p>&copy; ${new Date().getFullYear()} ${b.name}. Alle rechten voorbehouden. ${b.address ? '• ' + b.address : ''}</p>
+    <div class="footer-legal-links">
+      <a href="#privacy" onclick="event.preventDefault(); openPrivacyModal();">Privacybeleid</a>
+      <span>•</span>
+      <a href="#terms" onclick="event.preventDefault(); openTermsModal();">Algemene Voorwaarden</a>
+      <span>•</span>
+      <a href="#faq">Veelgestelde Vragen</a>
+    </div>
   </footer>
+
+  <!-- Cookie Notice Banner -->
+  <div id="concept-cookie-bar" class="concept-cookie-bar" role="region" aria-label="Privacy en cookies">
+    <div class="concept-cookie-inner">
+      <div class="concept-cookie-text">
+        <span>🍪</span>
+        <p><strong>Privacy & Transparantie:</strong> Deze website gebruikt uitsluitend functionele voorzieningen en géén trackingcookies conform de AVG/GDPR.</p>
+      </div>
+      <div class="concept-cookie-actions">
+        <button type="button" class="cookie-btn cookie-btn-accept" onclick="acceptConceptCookies()">Akkoord &amp; Sluiten</button>
+        <button type="button" class="cookie-btn cookie-btn-info" onclick="openPrivacyModal()">Privacybeleid</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="modal-privacy" class="concept-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title" style="display: none;">
+    <div class="concept-modal-backdrop" onclick="closePrivacyModal()"></div>
+    <div class="concept-modal-dialog">
+      <div class="concept-modal-header">
+        <h3 id="privacy-modal-title">Privacyverklaring • ${b.name}</h3>
+        <button type="button" class="modal-close-btn" onclick="closePrivacyModal()" aria-label="Sluit privacy modal">&times;</button>
+      </div>
+      <div class="concept-modal-body">
+        <p><strong>Laatst bijgewerkt:</strong> 2026 • Conform Algemene Verordening Gegevensbescherming (AVG/GDPR)</p>
+        <h4>1. Identiteit van de onderneming</h4>
+        <p><strong>${b.name}</strong>, gevestigd te ${b.address || 'regio Hoogezand / Groningen'}${b.phone ? ' (telefoon: ' + b.phone + ')' : ''}, is de verwerkingsverantwoordelijke voor de verwerking van persoonsgegevens via deze website.</p>
+        <h4>2. Welke gegevens verwerken wij?</h4>
+        <p>Wanneer u contact opneemt via het offerteformulier, telefoon of WhatsApp, verwerken wij uitsluitend de door u actief verstrekte gegevens: uw naam, telefoonnummer en de inhoud van uw bericht of klusomschrijving.</p>
+        <h4>3. Doel van de verwerking</h4>
+        <p>Wij verwerken deze persoonsgegevens uitsluitend om contact met u op te nemen, uw vraag te beantwoorden, een vrijblijvende prijsindicatie op te stellen en eventuele overeengekomen werkzaamheden uit te voeren.</p>
+        <h4>4. Geen verkoop van data of advertentiepixels</h4>
+        <p>Deze website gebruikt geen advertentietrackers. Wij delen of verkopen uw gegevens onder geen beding aan derden.</p>
+        <h4>5. Uw rechten onder de AVG</h4>
+        <p>U heeft het recht op inzage, correctie of verwijdering van uw persoonsgegevens (Art. 15-17 AVG). Neem hiervoor gerust direct contact met ons op.</p>
+      </div>
+      <div class="concept-modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closePrivacyModal()">Begrepen &amp; Sluiten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Algemene Voorwaarden Modal -->
+  <div id="modal-terms" class="concept-modal" role="dialog" aria-modal="true" aria-labelledby="terms-modal-title" style="display: none;">
+    <div class="concept-modal-backdrop" onclick="closeTermsModal()"></div>
+    <div class="concept-modal-dialog">
+      <div class="concept-modal-header">
+        <h3 id="terms-modal-title">Algemene Voorwaarden • ${b.name}</h3>
+        <button type="button" class="modal-close-btn" onclick="closeTermsModal()" aria-label="Sluit voorwaarden modal">&times;</button>
+      </div>
+      <div class="concept-modal-body">
+        <h4>1. Toepasselijkheid</h4>
+        <p>Deze voorwaarden zijn van toepassing op alle offertes, overeenkomsten en werkzaamheden uitgevoerd door ${b.name} voor particuliere en zakelijke opdrachtgevers.</p>
+        <h4>2. Prijsopgaven & Offertes</h4>
+        <p>Alle prijsindicaties en offertes zijn geheel vrijblijvend, tenzij uitdrukkelijk schriftelijk anders is overeengekomen. Prijzen zijn helder en transparant gespecificeerd.</p>
+        <h4>3. Kwaliteit, Garantie & Oplevering</h4>
+        <p>${b.name} verricht werkzaamheden met vakmanschap en hoogwaardige materialen. Bij oplevering worden de werkzaamheden gezamenlijk geïnspecteerd. Eventuele garanties zijn van toepassing conform de geldende kwaliteitsnormen.</p>
+        <h4>4. Betaling</h4>
+        <p>Betalingen geschieden conform de afgesproken termijn. Bij onvoorziene omstandigheden communiceren we altijd tijdig en transparant.</p>
+      </div>
+      <div class="concept-modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeTermsModal()">Sluiten</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openPrivacyModal() {
+      var m = document.getElementById('modal-privacy');
+      if (m) m.style.display = 'flex';
+    }
+    function closePrivacyModal() {
+      var m = document.getElementById('modal-privacy');
+      if (m) m.style.display = 'none';
+    }
+    function openTermsModal() {
+      var m = document.getElementById('modal-terms');
+      if (m) m.style.display = 'flex';
+    }
+    function closeTermsModal() {
+      var m = document.getElementById('modal-terms');
+      if (m) m.style.display = 'none';
+    }
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closePrivacyModal();
+        closeTermsModal();
+      }
+    });
+
+    function acceptConceptCookies() {
+      try {
+        localStorage.setItem('concept_cookie_consent', 'accepted');
+      } catch (err) {}
+      var bar = document.getElementById('concept-cookie-bar');
+      if (bar) bar.style.display = 'none';
+    }
+    try {
+      if (localStorage.getItem('concept_cookie_consent') === 'accepted') {
+        var bar = document.getElementById('concept-cookie-bar');
+        if (bar) bar.style.display = 'none';
+      }
+    } catch (err) {}
+
+    function handleConceptFormSubmit(e) {
+      e.preventDefault();
+      var form = e.target;
+      var trap = form.querySelector('[name="_hp_trap"]');
+      if (trap && trap.value) {
+        return false;
+      }
+      var nameInput = form.querySelector('#form-name');
+      var phoneInput = form.querySelector('#form-phone');
+      var msgInput = form.querySelector('#form-message');
+      var feedback = document.getElementById('form-feedback');
+      
+      var name = nameInput ? nameInput.value.trim() : '';
+      var phone = phoneInput ? phoneInput.value.trim() : '';
+      var msg = msgInput ? msgInput.value.trim() : '';
+      
+      if (!name || !phone) {
+        if (feedback) {
+          feedback.textContent = 'Vul alstublieft uw naam en telefoonnummer in.';
+          feedback.className = 'form-feedback error';
+          feedback.style.display = 'block';
+        }
+        return false;
+      }
+      
+      var waNumber = ${JSON.stringify(b.hasWhatsApp ? b.whatsAppNumber : '')};
+      if (waNumber) {
+        var waText = encodeURIComponent('Hallo ' + ${JSON.stringify(b.name)} + ', offerteaanvraag via website:\nNaam: ' + name + '\nTelefoon: ' + phone + (msg ? '\nBericht: ' + msg : ''));
+        window.open('https://wa.me/' + waNumber + '?text=' + waText, '_blank');
+      }
+      
+      if (feedback) {
+        feedback.textContent = 'Hartelijk dank voor uw aanvraag! Wij nemen spoedig contact met u op.';
+        feedback.className = 'form-feedback success';
+        feedback.style.display = 'block';
+      }
+      form.reset();
+      return false;
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+      anchor.addEventListener('click', function(e) {
+        var targetId = this.getAttribute('href');
+        if (targetId === '#privacy' || targetId === '#terms') return;
+        var target = document.querySelector(targetId);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
 </body>
 </html>`;
 }

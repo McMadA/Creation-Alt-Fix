@@ -810,7 +810,7 @@ export async function sendDiscordWebhookAlert(report, webhookUrl) {
     try {
         const payload = {
             username: "Creation+Alt+Fix Sentry",
-            avatar_url: "https://creationaltfix.nl/images/logo.png",
+            avatar_url: "https://creationaltfix.nl/images/logo.webp",
             embeds: [{
                 title: `🚨 DOWNTIME ALERT: ${report.domain} IS DOWN!`,
                 description: `**Klant/Project:** ${report.name || report.domain} ${report.client ? `(${report.client})` : ''}\n**HTTP Status:** ${report.httpCode || 'Geen response'}\n**DNS Status:** ${report.dnsStatus || 'Onbekend'}\n**Incident Tijdstip:** ${new Date().toLocaleString('nl-NL')}`,

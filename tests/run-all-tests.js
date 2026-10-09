@@ -498,7 +498,10 @@ const filesToCheck = [
     "crm/status/js/status.js",
     "crm/status/js/modules/translations.js",
     "crm/status/js/modules/visual-feedback.js",
-    "crm/status/js/modules/sla-signer.js"
+    "crm/status/js/modules/sla-signer.js",
+    "website/js/modules/translations-data.js",
+    "website/js/script.js",
+    "website/js/subpage.js"
 ];
 
 for (const relPath of filesToCheck) {
@@ -916,10 +919,12 @@ test("Website Algemene Voorwaarden and translations contain external hosting for
     assert.ok(termsHtml.includes("Artikel 28 AVG"), "algemene-voorwaarden.html must include DPA Art 28 AVG");
 
     const subpageJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/subpage.js"), "utf-8");
-    assert.ok(subpageJs.includes("Vimexx"), "subpage.js must mention Vimexx");
-    assert.ok(subpageJs.includes("force majeure"), "subpage.js must include English force majeure");
-    assert.ok(subpageJs.includes("Article 28 GDPR"), "subpage.js must include English DPA Art 28 GDPR");
-    assert.ok(subpageJs.includes("99.9% Uptime Streefnorm*"), "subpage.js must specify streefnorm for feat2");
+    const transJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/modules/translations-data.js"), "utf-8");
+    const allText = subpageJs + transJs;
+    assert.ok(allText.includes("Vimexx"), "subpage.js / translations-data.js must mention Vimexx");
+    assert.ok(allText.includes("force majeure"), "translations-data.js must include English force majeure");
+    assert.ok(allText.includes("Article 28 GDPR"), "translations-data.js must include English DPA Art 28 GDPR");
+    assert.ok(allText.includes("99.9% Uptime Streefnorm*"), "translations-data.js must specify streefnorm for feat2");
 });
 
 test("Multi-Channel webhook alerts reject invalid URLs gracefully without crashing", async () => {
@@ -1037,9 +1042,11 @@ test("Website tarieven audit: Alle websitepagina's en vertalingen hanteren 'vana
     assert.ok(!webLatenMakenHtml.includes("vanaf €99"), "Mag geen vanaf €99 meer bevatten");
 
     const scriptJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/script.js"), "utf-8");
-    assert.ok(scriptJs.includes('Aanwezigheid vanaf €199'), "script.js NL moet €199 bevatten");
-    assert.ok(scriptJs.includes('Presence from €199'), "script.js EN moet €199 bevatten");
-    assert.ok(!scriptJs.includes('vanaf €99'), "script.js mag geen vanaf €99 bevatten");
+    const transJs = fs.readFileSync(path.join(ROOT_DIR, "website/js/modules/translations-data.js"), "utf-8");
+    const allScriptText = scriptJs + transJs;
+    assert.ok(allScriptText.includes('Aanwezigheid vanaf €199'), "translations-data.js NL moet €199 bevatten");
+    assert.ok(allScriptText.includes('Presence from €199'), "translations-data.js EN moet €199 bevatten");
+    assert.ok(!allScriptText.includes('vanaf €99'), "translations-data.js mag geen vanaf €99 bevatten");
 });
 
 test("LeadFactoryEngine deduplicatie en database persistentie", () => {
@@ -1097,6 +1104,52 @@ test("Syntax validatie van alle nieuwe Lead Factory modules", () => {
         assert.ok(fs.existsSync(fullPath), `Bestand ${f} moet bestaan`);
         const cmd = `node --check "${fullPath}"`;
         execSync(cmd, { stdio: "pipe" });
+    }
+});
+
+test("Concept Generator en concept websites voldoen intrinsiek aan de 20 audit criteria", async () => {
+    const { buildFallbackTemplate } = await import("../factory/generator/agy-generator.js");
+    
+    // Test direct generator output bij creatie
+    const testHtml = buildFallbackTemplate({
+        name: "Test Installatiebedrijf",
+        slug: "test-installatie",
+        category: "Installatietechniek",
+        address: "Hoogezand",
+        phone: "06 12345678"
+    });
+
+    assert.ok(testHtml.includes('rel="canonical"'), "Generator moet direct Canonical link genereren");
+    assert.ok(testHtml.includes('name="robots"'), "Generator moet direct Meta Robots genereren");
+    assert.ok(testHtml.includes('rel="icon"'), "Generator moet direct SVG Favicon genereren");
+    assert.ok(testHtml.includes('property="og:title"'), "Generator moet direct Open Graph tags genereren");
+    assert.ok(testHtml.includes('name="twitter:card"'), "Generator moet direct Twitter Cards genereren");
+    assert.ok(testHtml.includes('FAQPage'), "Generator moet direct Schema.org FAQPage genereren");
+    assert.ok(testHtml.includes('LocalBusiness'), "Generator moet direct Schema.org LocalBusiness genereren");
+    assert.ok(testHtml.includes('<details class="faq-item"'), "Generator moet direct interactieve FAQ accordion genereren");
+    assert.ok(testHtml.includes('_hp_trap'), "Generator moet direct anti-spam honeypot formulier genereren");
+    assert.ok(testHtml.includes('id="modal-privacy"'), "Generator moet direct Privacy Policy modal genereren");
+    assert.ok(testHtml.includes('id="modal-terms"'), "Generator moet direct Algemene Voorwaarden modal genereren");
+    assert.ok(testHtml.includes('id="concept-cookie-bar"'), "Generator moet direct Cookie & Privacy banner genereren");
+    assert.ok(testHtml.includes('footer-legal-links'), "Generator moet direct Footer juridische links genereren");
+
+    // Valideer alle fysieke concept websites in website/concept/
+    const conceptBaseDir = path.join(ROOT_DIR, "website", "concept");
+    const conceptDirs = fs.readdirSync(conceptBaseDir).filter(f => fs.statSync(path.join(conceptBaseDir, f)).isDirectory());
+    assert.ok(conceptDirs.length >= 20, "Minimaal 20 concept websites vereist");
+
+    for (const dir of conceptDirs) {
+        const file = path.join(conceptBaseDir, dir, "index.html");
+        assert.ok(fs.existsSync(file), `Map ${dir} moet index.html bevatten`);
+        const html = fs.readFileSync(file, "utf8");
+        assert.ok(html.includes('rel="canonical"'), `${dir} moet canonical link hebben`);
+        assert.ok(html.includes('name="robots"'), `${dir} moet meta robots hebben`);
+        assert.ok(html.includes('rel="icon"'), `${dir} moet favicon hebben`);
+        assert.ok(html.includes('FAQPage'), `${dir} moet FAQPage schema hebben`);
+        assert.ok(html.includes('_hp_trap'), `${dir} moet contact form honeypot hebben`);
+        assert.ok(html.includes('modal-privacy'), `${dir} moet privacy modal hebben`);
+        assert.ok(html.includes('modal-terms'), `${dir} moet terms modal hebben`);
+        assert.ok(html.includes('concept-cookie-bar'), `${dir} moet cookie banner hebben`);
     }
 });
 

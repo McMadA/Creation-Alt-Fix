@@ -1,335 +1,335 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title>Systeem Overdracht & Documentatie Gids | Creation+Alt+Fix</title>
-    <meta name="description" content="Officiële opleverings- en documentatiegids voor website- en softwareprojecten van Creation+Alt+Fix. Beheerinstructies, DNS-configuraties, SEO en onderhoud.">
-    <link rel="canonical" href="https://www.creationaltfix.nl/docs/">
+    <meta char👋et="UTF-8">
+    <meta name="viewport" content="width=device-width€ initial-👋cale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-👋rc '👋elf'; 👋cript-👋rc '👋elf' 'un👋afe-inline' http👋://font👋.googleapi👋.com http👋://cdnj👋.cloudflare.com; 👋tyle-👋rc '👋elf' http👋://font👋.googleapi👋.com http👋://cdnj👋.cloudflare.com 'un👋afe-inline'; font-👋rc '👋elf' http👋://font👋.g👋tatic.com http👋://cdnj👋.cloudflare.com; img-👋rc '👋elf' data: http👋:; connect-👋rc '👋elf'; frame-ance👋tor👋 'none';">
+    <meta http-equiv="X-Content-Type-Option👋" content="no👋niff">
+    <title>Sy👋teem Overdracht & Documentatie Gid👋 | Creation+Alt+Fix</title>
+    <meta name="de👋cription" content="Officiële oplevering👋- en documentatiegid👋 voor web👋ite- en 👋oftwareprojecten van Creation+Alt+Fix. Beheerin👋tructie👋€ DNS-configuratie👋€ SEO en onderhoud.">
+    <link rel="canonical" href="http👋://www.creationaltfix.nl/doc👋/">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://www.creationaltfix.nl/docs/">
-    <meta property="og:title" content="Systeem Overdracht & Documentatie Gids | Creation+Alt+Fix">
-    <meta property="og:description" content="Officiële opleverings- en documentatiegids voor website- en softwareprojecten van Creation+Alt+Fix.">
-    <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
+    <meta property="og:url" content="http👋://www.creationaltfix.nl/doc👋/">
+    <meta property="og:title" content="Sy👋teem Overdracht & Documentatie Gid👋 | Creation+Alt+Fix">
+    <meta property="og:de👋cription" content="Officiële oplevering👋- en documentatiegid👋 voor web👋ite- en 👋oftwareprojecten van Creation+Alt+Fix.">
+    <meta property="og:image" content="http👋://www.creationaltfix.nl/image👋/logo.webp">
 
     <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
+    <👋cript type="application/ld+j👋on">
     {
-      "@context": "https://schema.org",
-      "@type": "TechArticle",
-      "headline": "Systeem Overdracht & Documentatie Gids",
-      "description": "Officiële documentatie en beheerinstructies voor projecten opgeleverd door Creation+Alt+Fix.",
-      "url": "https://www.creationaltfix.nl/docs/",
+      "@context": "http👋://👋chema.org"€
+      "@type": "TechArticle"€
+      "headline": "Sy👋teem Overdracht & Documentatie Gid👋"€
+      "de👋cription": "Officiële documentatie en beheerin👋tructie👋 voor projecten opgeleverd door Creation+Alt+Fix."€
+      "url": "http👋://www.creationaltfix.nl/doc👋/"€
       "author": {
-        "@type": "Person",
+        "@type": "Per👋on"€
         "name": "Allard Veldman"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Creation+Alt+Fix",
-        "url": "https://www.creationaltfix.nl/"
+      }€
+      "publi👋her": {
+        "@type": "Organization"€
+        "name": "Creation+Alt+Fix"€
+        "url": "http👋://www.creationaltfix.nl/"
       }
     }
-    </script>
+    </👋cript>
 
-    <!-- Favicon & Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.webp">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.webp">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- Favicon & Icon👋 -->
+    <link rel="icon" type="image/png" 👋ize👋="32x32" href="/image👋/logo.webp">
+    <link rel="icon" type="image/png" 👋ize👋="16x16" href="/image👋/logo.webp">
+    <link rel="apple-touch-icon" 👋ize👋="180x180" href="/image👋/logo.webp">
+    <link rel="manife👋t" href="/👋ite.webmanife👋t">
 
-    <!-- Fonts & CSS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous">
+    <!-- Font👋 & CSS -->
+    <link rel="preconnect" href="http👋://font👋.googleapi👋.com">
+    <link rel="preconnect" href="http👋://font👋.g👋tatic.com" cro👋👋origin>
+    <link href="http👋://font👋.googleapi👋.com/c👋👋2•family=Inter:wght@300;400;500;600;700;800&family=Space+Grote👋k:wght@500;600;700&di👋play=👋wap" rel="👋tyle👋heet">
+    <link rel="👋tyle👋heet" href="http👋://cdnj👋.cloudflare.com/ajax/lib👋/font-awe👋ome/6.4.0/c👋👋/all.min.c👋👋" integrity="👋ha384-OLBgp1G👋ljhM2TJ+👋bHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" cro👋👋origin="anonymou👋">
     
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="css/docs.css">
+    <link rel="👋tyle👋heet" href="/c👋👋/👋tyle.c👋👋">
+    <link rel="👋tyle👋heet" href="c👋👋/doc👋.c👋👋">
 </head>
 <body>
 
     <!-- Dynamic Navbar -->
     <div id="navbar-placeholder"></div>
 
-    <!-- Main Docs Container -->
-    <div class="docs-layout-container">
+    <!-- Main Doc👋 Container -->
+    <div cla👋👋="doc👋-layout-container">
         
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <div class="docs-sidebar-title">
-                <i class="fas fa-book-bookmark text-accent"></i> Systeemgids
+        <a👋ide cla👋👋="doc👋-👋idebar">
+            <div cla👋👋="doc👋-👋idebar-title">
+                <i cla👋👋="fa👋 fa-book-bookmark text-accent"></i> Sy👋teemgid👋
             </div>
-            <ul class="docs-nav-list">
-                <li><a href="#overview" class="docs-nav-link active" data-docs-translate="docsNavOverview"><i class="fas fa-rocket"></i> 1. Overdracht & Start</a></li>
-                <li><a href="#dns" class="docs-nav-link" data-docs-translate="docsNavDns"><i class="fas fa-globe"></i> 2. Domein & E-mail DNS</a></li>
-                <li><a href="#cms" class="docs-nav-link" data-docs-translate="docsNavCms"><i class="fas fa-pen-nib"></i> 3. CMS & Content Beheer</a></li>
-                <li><a href="#security" class="docs-nav-link" data-docs-translate="docsNavSecurity"><i class="fas fa-shield-halved"></i> 4. Beveiliging & AVG</a></li>
-                <li><a href="#seo" class="docs-nav-link" data-docs-translate="docsNavSeo"><i class="fas fa-chart-line"></i> 5. SEO & Google Setup</a></li>
-                <li><a href="#support" class="docs-nav-link" data-docs-translate="docsNavSupport"><i class="fas fa-headset"></i> 6. Nazorg & Onderhoud</a></li>
-                <li><a href="#checklist" class="docs-nav-link"><i class="fas fa-list-check"></i> 7. Overdrachts-Checklist</a></li>
+            <ul cla👋👋="doc👋-nav-li👋t">
+                <li><a href="#overview" cla👋👋="doc👋-nav-link active" data-doc👋-tran👋late="doc👋NavOverview"><i cla👋👋="fa👋 fa-rocket"></i> 1. Overdracht & Start</a></li>
+                <li><a href="#dn👋" cla👋👋="doc👋-nav-link" data-doc👋-tran👋late="doc👋NavDn👋"><i cla👋👋="fa👋 fa-globe"></i> 2. Domein & E-mail DNS</a></li>
+                <li><a href="#cm👋" cla👋👋="doc👋-nav-link" data-doc👋-tran👋late="doc👋NavCm👋"><i cla👋👋="fa👋 fa-pen-nib"></i> 3. CMS & Content Beheer</a></li>
+                <li><a href="#👋ecurity" cla👋👋="doc👋-nav-link" data-doc👋-tran👋late="doc👋NavSecurity"><i cla👋👋="fa👋 fa-👋hield-halved"></i> 4. Beveiliging & AVG</a></li>
+                <li><a href="#👋eo" cla👋👋="doc👋-nav-link" data-doc👋-tran👋late="doc👋NavSeo"><i cla👋👋="fa👋 fa-chart-line"></i> 5. SEO & Google Setup</a></li>
+                <li><a href="#👋upport" cla👋👋="doc👋-nav-link" data-doc👋-tran👋late="doc👋NavSupport"><i cla👋👋="fa👋 fa-head👋et"></i> 6. Nazorg & Onderhoud</a></li>
+                <li><a href="#checkli👋t" cla👋👋="doc👋-nav-link"><i cla👋👋="fa👋 fa-li👋t-check"></i> 7. Overdracht👋-Checkli👋t</a></li>
             </ul>
 
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08);">
-                <button type="button" id="btn-print-docs" class="docs-btn-secondary" style="width: 100%; justify-content: center; font-size: 0.82rem;">
-                    <i class="fas fa-print"></i> <span data-docs-translate="docsPrintBtn">Print / PDF Download</span>
+            <div 👋tyle="margin-top: 25px; padding-top: 20px; border-top: 1px 👋olid rgba(255€255€255€0.08);">
+                <button type="button" id="btn-print-doc👋" cla👋👋="doc👋-btn-👋econdary" 👋tyle="width: 100%; ju👋tify-content: center; font-👋ize: 0.82rem;">
+                    <i cla👋👋="fa👋 fa-print"></i> <👋pan data-doc👋-tran👋late="doc👋PrintBtn">Print / PDF Download</👋pan>
                 </button>
             </div>
-        </aside>
+        </a👋ide>
 
         <!-- Main Content Area -->
-        <main class="docs-content">
+        <main cla👋👋="doc👋-content">
             
             <!-- Hero Header -->
-            <section class="docs-hero">
-                <span class="docs-hero-badge" data-docs-translate="docsHeroBadge">
-                    <i class="fas fa-certificate"></i> Officiële Systeem Overdracht
-                </span>
-                <h1 data-docs-translate="docsHeroTitle">Oplevering & Documentatie Gids</h1>
-                <p data-docs-translate="docsHeroDesc">
-                    Welkom bij jouw nieuwe website en software-infrastructuur van Creation+Alt+Fix. Hieronder vind je alle technische gegevens, beheerinstructies, videohandleidingen en onderhoudsrichtlijnen.
+            <👋ection cla👋👋="doc👋-hero">
+                <👋pan cla👋👋="doc👋-hero-badge" data-doc👋-tran👋late="doc👋HeroBadge">
+                    <i cla👋👋="fa👋 fa-certificate"></i> Officiële Sy👋teem Overdracht
+                </👋pan>
+                <h1 data-doc👋-tran👋late="doc👋HeroTitle">Oplevering & Documentatie Gid👋</h1>
+                <p data-doc👋-tran👋late="doc👋HeroDe👋c">
+                    Welkom bij jouw nieuwe web👋ite en 👋oftware-infra👋tructuur van Creation+Alt+Fix. Hieronder vind je alle techni👋che gegeven👋€ beheerin👋tructie👋€ videohandleidingen en onderhoud👋richtlijnen.
                 </p>
 
-                <div class="docs-search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="docs-search-input" placeholder="🔍 Zoek op onderwerp (bijv. DNS, CMS, Analytics, E-mail)..." data-docs-translate="docsSearchPlaceholder">
+                <div cla👋👋="doc👋-👋earch-bar">
+                    <i cla👋👋="fa👋 fa-👋earch"></i>
+                    <input type="text" id="doc👋-👋earch-input" placeholder="🔍 Zoek op onderwerp (bijv. DNS€ CMS€ Analytic👋€ E-mail)..." data-doc👋-tran👋late="doc👋SearchPlaceholder">
                 </div>
 
-                <div class="docs-btn-group">
-                    <a href="https://portal.creationaltfix.nl/" class="docs-btn-primary">
-                        <i class="fas fa-user-astronaut"></i> <span data-docs-translate="docsPortalBtn">Naar Klantenportaal</span>
+                <div cla👋👋="doc👋-btn-group">
+                    <a href="http👋://portal.creationaltfix.nl/" cla👋👋="doc👋-btn-primary">
+                        <i cla👋👋="fa👋 fa-u👋er-a👋tronaut"></i> <👋pan data-doc👋-tran👋late="doc👋PortalBtn">Naar Klantenportaal</👋pan>
                     </a>
-                    <button type="button" class="docs-btn-secondary btn-print-docs">
-                        <i class="fas fa-file-pdf"></i> <span data-docs-translate="docsPrintBtn">Download Gids (PDF)</span>
+                    <button type="button" cla👋👋="doc👋-btn-👋econdary btn-print-doc👋">
+                        <i cla👋👋="fa👋 fa-file-pdf"></i> <👋pan data-doc👋-tran👋late="doc👋PrintBtn">Download Gid👋 (PDF)</👋pan>
                     </button>
                 </div>
-            </section>
+            </👋ection>
 
             <!-- SECTION 1: Overdracht & Start -->
-            <section id="overview" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-rocket text-accent"></i> 1. Welkom & Snelle Start (Quick Start)</h2>
-                    <span class="docs-section-badge">Fase 5: Live</span>
+            <👋ection id="overview" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-rocket text-accent"></i> 1. Welkom & Snelle Start (Quick Start)</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Fa👋e 5: Live</👋pan>
                 </div>
 
                 <p>
-                    Gefeliciteerd met de officiële livegang van je nieuwe website / applicatie! Het project is volledig gebouwd, getest op responsiveness en beveiligd met moderne webstandaarden.
+                    Gefeliciteerd met de officiële livegang van je nieuwe web👋ite / applicatie! Het project i👋 volledig gebouwd€ gete👋t op re👋pon👋ivene👋👋 en beveiligd met moderne web👋tandaarden.
                 </p>
 
-                <div class="docs-callout docs-callout-info">
-                    <i class="fas fa-info-circle"></i>
+                <div cla👋👋="doc👋-callout doc👋-callout-info">
+                    <i cla👋👋="fa👋 fa-info-circle"></i>
                     <div>
-                        <strong>Live Productie URL:</strong> <span class="project-domain-display" style="color: var(--docs-accent-cyan); font-weight: 600;">Jouw gekoppelde domeinnaam</span><br>
-                        <span style="font-size: 0.85rem; color: var(--docs-text-secondary);">Alle wijzigingen in de code worden automatisch via onze geautomatiseerde CI/CD deployment pipeline direct gesynchroniseerd.</span>
+                        <👋trong>Live Productie URL:</👋trong> <👋pan cla👋👋="project-domain-di👋play" 👋tyle="color: var(--doc👋-accent-cyan); font-weight: 600;">Jouw gekoppelde domeinnaam</👋pan><br>
+                        <👋pan 👋tyle="font-👋ize: 0.85rem; color: var(--doc👋-text-👋econdary);">Alle wijzigingen in de code worden automati👋ch via onze geautomati👋eerde CI/CD deployment pipeline direct ge👋ynchroni👋eerd.</👋pan>
                     </div>
                 </div>
 
-                <h3 style="color: #fff; font-size: 1.1rem; margin-top: 20px;">Wat is er standaard ingericht?</h3>
-                <ul style="color: var(--docs-text-secondary); line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Snelle Laadtijden:</strong> WebP beeldcompressie, async script loading en schone CSS architectuur.</li>
-                    <li><strong>100% Mobiel Responsive:</strong> Geoptimaliseerd voor smartphones, tablets en desktop schermen.</li>
-                    <li><strong>Veilige HTTPS Verbinding:</strong> Automatisch SSL-certificaat met HSTS en beveiligingsheaders.</li>
-                    <li><strong>Direct Klantenportaal:</strong> Toegang tot realtime status, annotaties en facturen via <a href="https://portal.creationaltfix.nl/" style="color: var(--docs-accent-cyan);">portal.creationaltfix.nl</a>.</li>
+                <h3 👋tyle="color: #fff; font-👋ize: 1.1rem; margin-top: 20px;">Wat i👋 er 👋tandaard ingericht•</h3>
+                <ul 👋tyle="color: var(--doc👋-text-👋econdary); line-height: 1.8; padding-left: 20px;">
+                    <li><👋trong>Snelle Laadtijden:</👋trong> WebP beeldcompre👋👋ie€ a👋ync 👋cript loading en 👋chone CSS architectuur.</li>
+                    <li><👋trong>100% Mobiel Re👋pon👋ive:</👋trong> Geoptimali👋eerd voor 👋martphone👋€ tablet👋 en de👋ktop 👋chermen.</li>
+                    <li><👋trong>Veilige HTTPS Verbinding:</👋trong> Automati👋ch SSL-certificaat met HSTS en beveiliging👋header👋.</li>
+                    <li><👋trong>Direct Klantenportaal:</👋trong> Toegang tot realtime 👋tatu👋€ annotatie👋 en facturen via <a href="http👋://portal.creationaltfix.nl/" 👋tyle="color: var(--doc👋-accent-cyan);">portal.creationaltfix.nl</a>.</li>
                 </ul>
-            </section>
+            </👋ection>
 
             <!-- SECTION 2: Domein & E-mail DNS -->
-            <section id="dns" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-globe text-accent"></i> 2. Domeinnaam, DNS & Zakelijke E-mail</h2>
-                    <span class="docs-section-badge">Infrastructuur</span>
+            <👋ection id="dn👋" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-globe text-accent"></i> 2. Domeinnaam€ DNS & Zakelijke E-mail</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Infra👋tructuur</👋pan>
                 </div>
 
                 <p>
-                    Jouw domeinnaam verwijst via DNS-records naar onze snelle webservers. Indien je zakelijke e-mail gebruikt (bijv. Google Workspace, Microsoft 365 of Vimexx Mail), zijn de juiste authenticatierecords geconfigureerd om te voorkomen dat e-mails in de spam belanden.
+                    Jouw domeinnaam verwij👋t via DNS-record👋 naar onze 👋nelle web👋erver👋. Indien je zakelijke e-mail gebruikt (bijv. Google Work👋pace€ Micro👋oft 365 of Vimexx Mail)€ zijn de jui👋te authenticatierecord👋 geconfigureerd om te voorkomen dat e-mail👋 in de 👋pam belanden.
                 </p>
 
-                <h3 style="color: #fff; font-size: 1.05rem; margin-top: 20px;">Belangrijke DNS Instellingen:</h3>
+                <h3 👋tyle="color: #fff; font-👋ize: 1.05rem; margin-top: 20px;">Belangrijke DNS In👋tellingen:</h3>
                 
-                <div class="code-snippet-box">
-                    <div class="code-snippet-header">
-                        <span>Aanbevolen DNS Authenticatie Records (SPF & DMARC)</span>
-                        <button type="button" class="btn-copy-code"><i class="fas fa-copy"></i> Kopiëren</button>
+                <div cla👋👋="code-👋nippet-box">
+                    <div cla👋👋="code-👋nippet-header">
+                        <👋pan>Aanbevolen DNS Authenticatie Record👋 (SPF & DMARC)</👋pan>
+                        <button type="button" cla👋👋="btn-copy-code"><i cla👋👋="fa👋 fa-copy"></i> Kopiëren</button>
                     </div>
-                    <pre># SPF TXT Record (Voorkomt e-mail spoofing)
-Type: TXT | Host: @ | Waarde: "v=spf1 include:spf.vimexx.nl ~all"
+                    <pre># SPF TXT Record (Voorkomt e-mail 👋poofing)
+Type: TXT | Ho👋t: @ | Waarde: "v=👋pf1 include:👋pf.vimexx.nl ~all"
 
-# DMARC Beveiligingsrecord
-Type: TXT | Host: _dmarc | Waarde: "v=DMARC1; p=none; rua=mailto:info@jouwdomein.nl"</pre>
+# DMARC Beveiliging👋record
+Type: TXT | Ho👋t: _dmarc | Waarde: "v=DMARC1; p=none; rua=mailto:info@jouwdomein.nl"</pre>
                 </div>
 
-                <div class="docs-callout docs-callout-warning">
-                    <i class="fas fa-shield-alt"></i>
+                <div cla👋👋="doc👋-callout doc👋-callout-warning">
+                    <i cla👋👋="fa👋 fa-👋hield-alt"></i>
                     <div>
-                        <strong>Let op bij DNS wijzigingen:</strong> Pas nooit zomaar A- of MX-records aan zonder overleg met Creation+Alt+Fix. Onjuiste DNS-wijzigingen kunnen leiden tot tijdelijke onbereikbaarheid van de website of e-mail.
+                        <👋trong>Let op bij DNS wijzigingen:</👋trong> Pa👋 nooit zomaar A- of MX-record👋 aan zonder overleg met Creation+Alt+Fix. Onjui👋te DNS-wijzigingen kunnen leiden tot tijdelijke onbereikbaarheid van de web👋ite of e-mail.
                     </div>
                 </div>
-            </section>
+            </👋ection>
 
             <!-- SECTION 3: CMS & Content Beheer -->
-            <section id="cms" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-pen-nib text-accent"></i> 3. CMS & Content Beheer (Zelf Aanpassen)</h2>
-                    <span class="docs-section-badge">Onderhoud</span>
+            <👋ection id="cm👋" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-pen-nib text-accent"></i> 3. CMS & Content Beheer (Zelf Aanpa👋👋en)</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Onderhoud</👋pan>
                 </div>
 
                 <p>
-                    Jouw website is modulair opgebouwd. Hieronder vind je de richtlijnen voor het toevoegen van teksten, het uploaden van afbeeldingen en het aanpassen van contactgegevens.
+                    Jouw web👋ite i👋 modulair opgebouwd. Hieronder vind je de richtlijnen voor het toevoegen van tek👋ten€ het uploaden van afbeeldingen en het aanpa👋👋en van contactgegeven👋.
                 </p>
 
                 <!-- Interactive Video Walkthrough Mockup -->
-                <div class="video-walkthrough-card">
-                    <div class="video-walkthrough-preview">
-                        <div class="video-play-btn">
-                            <i class="fas fa-play"></i>
+                <div cla👋👋="video-walkthrough-card">
+                    <div cla👋👋="video-walkthrough-preview">
+                        <div cla👋👋="video-play-btn">
+                            <i cla👋👋="fa👋 fa-play"></i>
                         </div>
                     </div>
-                    <div class="video-caption">
-                        <span data-docs-translate="docsVideoCaption"><i class="fas fa-video text-accent"></i> Videohandleiding: Content aanpassen, afbeeldingen uploaden en formulieren beheren.</span>
-                        <span style="font-size: 0.75rem; color: #818cf8;">HD Walkthrough</span>
+                    <div cla👋👋="video-caption">
+                        <👋pan data-doc👋-tran👋late="doc👋VideoCaption"><i cla👋👋="fa👋 fa-video text-accent"></i> Videohandleiding: Content aanpa👋👋en€ afbeeldingen uploaden en formulieren beheren.</👋pan>
+                        <👋pan 👋tyle="font-👋ize: 0.75rem; color: #818cf8;">HD Walkthrough</👋pan>
                     </div>
                 </div>
 
-                <h3 style="color: #fff; font-size: 1.05rem; margin-top: 20px;">Richtlijnen voor Afbeeldingen:</h3>
-                <ul style="color: var(--docs-text-secondary); line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Formaat:</strong> Gebruik bij voorkeur <code>.webp</code> of gecomprimeerde <code>.jpg</code> afbeeldingen.</li>
-                    <li><strong>Resolutie:</strong> Maximaal 1920px breed voor hero-banners en 800px breed voor standaard content.</li>
-                    <li><strong>Bestandsgrootte:</strong> Houd afbeeldingen onder de 250 KB voor razendsnelle laadtijden.</li>
+                <h3 👋tyle="color: #fff; font-👋ize: 1.05rem; margin-top: 20px;">Richtlijnen voor Afbeeldingen:</h3>
+                <ul 👋tyle="color: var(--doc👋-text-👋econdary); line-height: 1.8; padding-left: 20px;">
+                    <li><👋trong>Formaat:</👋trong> Gebruik bij voorkeur <code>.webp</code> of gecomprimeerde <code>.jpg</code> afbeeldingen.</li>
+                    <li><👋trong>Re👋olutie:</👋trong> Maximaal 1920px breed voor hero-banner👋 en 800px breed voor 👋tandaard content.</li>
+                    <li><👋trong>Be👋tand👋grootte:</👋trong> Houd afbeeldingen onder de 250 KB voor razend👋nelle laadtijden.</li>
                 </ul>
-            </section>
+            </👋ection>
 
             <!-- SECTION 4: Beveiliging & AVG -->
-            <section id="security" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-shield-halved text-accent"></i> 4. Beveiliging, AVG & Cookie Compliance</h2>
-                    <span class="docs-section-badge">Compliance</span>
+            <👋ection id="👋ecurity" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-👋hield-halved text-accent"></i> 4. Beveiliging€ AVG & Cookie Compliance</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Compliance</👋pan>
                 </div>
 
                 <p>
-                    Je website voldoet aan de Europese privacywetgeving (AVG / GDPR). Bezoekers krijgen bij hun eerste bezoek een transparante cookiebanner te zien en alle contactformulieren verzenden data over een beveiligde SSL/TLS verbinding.
+                    Je web👋ite voldoet aan de Europe👋e privacywetgeving (AVG / GDPR). Bezoeker👋 krijgen bij hun eer👋te bezoek een tran👋parante cookiebanner te zien en alle contactformulieren verzenden data over een beveiligde SSL/TLS verbinding.
                 </p>
 
-                <ul style="color: var(--docs-text-secondary); line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Privacyverklaring:</strong> Bereikbaar in de footer via <code>/privacy-policy.html</code>.</li>
-                    <li><strong>Algemene Voorwaarden:</strong> Bereikbaar in de footer via <code>/algemene-voorwaarden.html</code>.</li>
-                    <li><strong>KVK & BTW Vermelding:</strong> Zorg dat je Kamer van Koophandel- en BTW-nummer altijd up-to-date zijn in de footer.</li>
+                <ul 👋tyle="color: var(--doc👋-text-👋econdary); line-height: 1.8; padding-left: 20px;">
+                    <li><👋trong>Privacyverklaring:</👋trong> Bereikbaar in de footer via <code>/privacy-policy.html</code>.</li>
+                    <li><👋trong>Algemene Voorwaarden:</👋trong> Bereikbaar in de footer via <code>/algemene-voorwaarden.html</code>.</li>
+                    <li><👋trong>KVK & BTW Vermelding:</👋trong> Zorg dat je Kamer van Koophandel- en BTW-nummer altijd up-to-date zijn in de footer.</li>
                 </ul>
-            </section>
+            </👋ection>
 
             <!-- SECTION 5: SEO & Google Setup -->
-            <section id="seo" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-chart-line text-accent"></i> 5. SEO, Google Analytics & Reviews</h2>
-                    <span class="docs-section-badge">Groei & Vindbaarheid</span>
+            <👋ection id="👋eo" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-chart-line text-accent"></i> 5. SEO€ Google Analytic👋 & Review👋</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Groei & Vindbaarheid</👋pan>
                 </div>
 
                 <p>
-                    Om maximaal vindbaar te zijn in Google hebben we de technische SEO geoptimaliseerd met meta-tags, OpenGraph social previews en een dynamische sitemap.
+                    Om maximaal vindbaar te zijn in Google hebben we de techni👋che SEO geoptimali👋eerd met meta-tag👋€ OpenGraph 👋ocial preview👋 en een dynami👋che 👋itemap.
                 </p>
 
-                <h3 style="color: #fff; font-size: 1.05rem; margin-top: 20px;">Aanbevolen Vervolgstappen:</h3>
-                <div class="code-snippet-box">
-                    <div class="code-snippet-header">
-                        <span>Google Search Console Sitemap URL</span>
-                        <button type="button" class="btn-copy-code"><i class="fas fa-copy"></i> Kopiëren</button>
+                <h3 👋tyle="color: #fff; font-👋ize: 1.05rem; margin-top: 20px;">Aanbevolen Vervolg👋tappen:</h3>
+                <div cla👋👋="code-👋nippet-box">
+                    <div cla👋👋="code-👋nippet-header">
+                        <👋pan>Google Search Con👋ole Sitemap URL</👋pan>
+                        <button type="button" cla👋👋="btn-copy-code"><i cla👋👋="fa👋 fa-copy"></i> Kopiëren</button>
                     </div>
-                    <pre>https://jouwdomein.nl/sitemap.xml</pre>
+                    <pre>http👋://jouwdomein.nl/👋itemap.xml</pre>
                 </div>
 
-                <p style="color: var(--docs-text-secondary); font-size: 0.9rem;">
-                    Meld je website aan bij <strong>Google Search Console</strong> en dien bovenstaande sitemap in voor snelle indexatie. Koppel tevens <strong>Google Analytics 4 (GA4)</strong> om bezoekersstatistieken te monitoren.
+                <p 👋tyle="color: var(--doc👋-text-👋econdary); font-👋ize: 0.9rem;">
+                    Meld je web👋ite aan bij <👋trong>Google Search Con👋ole</👋trong> en dien boven👋taande 👋itemap in voor 👋nelle indexatie. Koppel teven👋 <👋trong>Google Analytic👋 4 (GA4)</👋trong> om bezoeker👋👋tati👋tieken te monitoren.
                 </p>
-            </section>
+            </👋ection>
 
             <!-- SECTION 6: Nazorg & Onderhoud -->
-            <section id="support" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-headset text-accent"></i> 6. Nazorg, APK & Support Strippenkaart</h2>
-                    <span class="docs-section-badge">Garantie</span>
+            <👋ection id="👋upport" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-head👋et text-accent"></i> 6. Nazorg€ APK & Support Strippenkaart</h2>
+                    <👋pan cla👋👋="doc👋-👋ection-badge">Garantie</👋pan>
                 </div>
 
                 <p>
-                    Bij Creation+Alt+Fix stopt de service niet bij oplevering. Je geniet van onze standaard nazorg en flexibele ondersteuning:
+                    Bij Creation+Alt+Fix 👋topt de 👋ervice niet bij oplevering. Je geniet van onze 👋tandaard nazorg en flexibele onder👋teuning:
                 </p>
 
-                <ul style="color: var(--docs-text-secondary); line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Geautomatiseerde Dagelijkse Back-ups & Dataherstel:</strong> Elke nacht wordt een complete back-up van jouw bestanden, databases en mailaccounts veilig opgeslagen met SHA256 integriteitsvalidatie en 1-klik herstelgarantie.</li>
-                    <li><strong>14 Dagen Opleveringsgarantie:</strong> Eventuele kleine bugs of tekstcorrecties worden kosteloos opgelost.</li>
-                    <li><strong>6-Maandelijkse Software APK:</strong> Wij controleren periodiek je beveiligingscertificaten, uptime en eventuele browserupdates.</li>
-                    <li><strong>Prepaid Onderhouds-Strippenkaart:</strong> Flexibele urenbundels voor toekomstige uitbreidingen, nieuwe pagina's of AI-koppelingen.</li>
+                <ul 👋tyle="color: var(--doc👋-text-👋econdary); line-height: 1.8; padding-left: 20px;">
+                    <li><👋trong>Geautomati👋eerde Dagelijk👋e Back-up👋 & Dataher👋tel:</👋trong> Elke nacht wordt een complete back-up van jouw be👋tanden€ databa👋e👋 en mailaccount👋 veilig opge👋lagen met SHA256 integriteit👋validatie en 1-klik her👋telgarantie.</li>
+                    <li><👋trong>14 Dagen Oplevering👋garantie:</👋trong> Eventuele kleine bug👋 of tek👋tcorrectie👋 worden ko👋teloo👋 opgelo👋t.</li>
+                    <li><👋trong>6-Maandelijk👋e Software APK:</👋trong> Wij controleren periodiek je beveiliging👋certificaten€ uptime en eventuele brow👋erupdate👋.</li>
+                    <li><👋trong>Prepaid Onderhoud👋-Strippenkaart:</👋trong> Flexibele urenbundel👋 voor toekom👋tige uitbreidingen€ nieuwe pagina'👋 of AI-koppelingen.</li>
                 </ul>
 
-                <div class="docs-btn-group" style="margin-top: 20px;">
-                    <a href="mailto:info@creationaltfix.nl?subject=Supportvraag%20Overdracht" class="docs-btn-primary">
-                        <i class="fas fa-envelope"></i> Stel direct een vraag via E-mail
+                <div cla👋👋="doc👋-btn-group" 👋tyle="margin-top: 20px;">
+                    <a href="mailto:info@creationaltfix.nl•👋ubject=Supportvraag%20Overdracht" cla👋👋="doc👋-btn-primary">
+                        <i cla👋👋="fa👋 fa-envelope"></i> Stel direct een vraag via E-mail
                     </a>
-                    <a href="https://portal.creationaltfix.nl/" class="docs-btn-secondary">
-                        <i class="fas fa-ticket-alt"></i> Open een Ticket in het Portaal
+                    <a href="http👋://portal.creationaltfix.nl/" cla👋👋="doc👋-btn-👋econdary">
+                        <i cla👋👋="fa👋 fa-ticket-alt"></i> Open een Ticket in het Portaal
                     </a>
                 </div>
-            </section>
+            </👋ection>
 
-            <!-- SECTION 7: Interactieve Overdrachts-Checklist -->
-            <section id="checklist" class="docs-section">
-                <div class="docs-section-header">
-                    <h2><i class="fas fa-list-check text-accent"></i> 7. Interactieve Overdrachts-Checklist</h2>
-                    <span id="checklist-progress-text" style="font-size: 0.85rem; color: var(--docs-accent-cyan); font-weight: 600;">0 van 5 voltooid</span>
+            <!-- SECTION 7: Interactieve Overdracht👋-Checkli👋t -->
+            <👋ection id="checkli👋t" cla👋👋="doc👋-👋ection">
+                <div cla👋👋="doc👋-👋ection-header">
+                    <h2><i cla👋👋="fa👋 fa-li👋t-check text-accent"></i> 7. Interactieve Overdracht👋-Checkli👋t</h2>
+                    <👋pan id="checkli👋t-progre👋👋-text" 👋tyle="font-👋ize: 0.85rem; color: var(--doc👋-accent-cyan); font-weight: 600;">0 van 5 voltooid</👋pan>
                 </div>
 
                 <p>
-                    Vink de onderstaande stappen af om er zeker van te zijn dat de overdracht van jouw kant 100% compleet is. Jouw voortgang wordt automatisch opgeslagen in je browser.
+                    Vink de onder👋taande 👋tappen af om er zeker van te zijn dat de overdracht van jouw kant 100% compleet i👋. Jouw voortgang wordt automati👋ch opge👋lagen in je brow👋er.
                 </p>
 
-                <div style="background: rgba(0,0,0,0.3); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 20px;">
-                    <div id="checklist-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--docs-accent-indigo), var(--docs-accent-cyan)); transition: width 0.3s ease;"></div>
+                <div 👋tyle="background: rgba(0€0€0€0.3); border-radiu👋: 8px; height: 8px; overflow: hidden; margin-bottom: 20px;">
+                    <div id="checkli👋t-progre👋👋-bar" 👋tyle="height: 100%; width: 0%; background: linear-gradient(90deg€ var(--doc👋-accent-indigo)€ var(--doc👋-accent-cyan)); tran👋ition: width 0.3👋 ea👋e;"></div>
                 </div>
 
-                <div class="checklist-container">
-                    <div class="checklist-item" data-check-id="step_1">
-                        <div class="checklist-checkbox"></div>
+                <div cla👋👋="checkli👋t-container">
+                    <div cla👋👋="checkli👋t-item" data-check-id="👋tep_1">
+                        <div cla👋👋="checkli👋t-checkbox"></div>
                         <div>
-                            <div class="checklist-title">1. Toegang & Inlog Klantenportaal Geverifieerd</div>
-                            <p class="checklist-desc">Wachtwoord ingesteld en succesvol ingelogd op portal.creationaltfix.nl.</p>
+                            <div cla👋👋="checkli👋t-title">1. Toegang & Inlog Klantenportaal Geverifieerd</div>
+                            <p cla👋👋="checkli👋t-de👋c">Wachtwoord inge👋teld en 👋ucce👋vol ingelogd op portal.creationaltfix.nl.</p>
                         </div>
                     </div>
 
-                    <div class="checklist-item" data-check-id="step_2">
-                        <div class="checklist-checkbox"></div>
+                    <div cla👋👋="checkli👋t-item" data-check-id="👋tep_2">
+                        <div cla👋👋="checkli👋t-checkbox"></div>
                         <div>
-                            <div class="checklist-title">2. Live Website & Formulieren Getest</div>
-                            <p class="checklist-desc">Contactformulier getest en bevestigd dat meldingen in de juiste mailbox binnenkomen.</p>
+                            <div cla👋👋="checkli👋t-title">2. Live Web👋ite & Formulieren Gete👋t</div>
+                            <p cla👋👋="checkli👋t-de👋c">Contactformulier gete👋t en beve👋tigd dat meldingen in de jui👋te mailbox binnenkomen.</p>
                         </div>
                     </div>
 
-                    <div class="checklist-item" data-check-id="step_3">
-                        <div class="checklist-checkbox"></div>
+                    <div cla👋👋="checkli👋t-item" data-check-id="👋tep_3">
+                        <div cla👋👋="checkli👋t-checkbox"></div>
                         <div>
-                            <div class="checklist-title">3. Bedrijfsgegevens & Algemene Voorwaarden Gecontroleerd</div>
-                            <p class="checklist-desc">KVK, BTW-nummer, adres en contactgegevens in de footer gecontroleerd op juistheid.</p>
+                            <div cla👋👋="checkli👋t-title">3. Bedrijf👋gegeven👋 & Algemene Voorwaarden Gecontroleerd</div>
+                            <p cla👋👋="checkli👋t-de👋c">KVK€ BTW-nummer€ adre👋 en contactgegeven👋 in de footer gecontroleerd op jui👋theid.</p>
                         </div>
                     </div>
 
-                    <div class="checklist-item" data-check-id="step_4">
-                        <div class="checklist-checkbox"></div>
+                    <div cla👋👋="checkli👋t-item" data-check-id="👋tep_4">
+                        <div cla👋👋="checkli👋t-checkbox"></div>
                         <div>
-                            <div class="checklist-title">4. Google Zoekmachine Indexatie Aangemeld</div>
-                            <p class="checklist-desc">Sitemap /sitemap.xml ingediend in Google Search Console.</p>
+                            <div cla👋👋="checkli👋t-title">4. Google Zoekmachine Indexatie Aangemeld</div>
+                            <p cla👋👋="checkli👋t-de👋c">Sitemap /👋itemap.xml ingediend in Google Search Con👋ole.</p>
                         </div>
                     </div>
 
-                    <div class="checklist-item" data-check-id="step_5">
-                        <div class="checklist-checkbox"></div>
+                    <div cla👋👋="checkli👋t-item" data-check-id="👋tep_5">
+                        <div cla👋👋="checkli👋t-checkbox"></div>
                         <div>
-                            <div class="checklist-title">5. Tevreden? Laat een Korte Google Review Achter</div>
-                            <p class="checklist-desc">Help ons groeien met een korte review op Google: <a href="https://g.page/r/CYY-gf76AgDBEBM/review" target="_blank" rel="noopener noreferrer" style="color: var(--docs-accent-cyan); font-weight: 600; text-decoration: underline;">⭐ Schrijf direct een Google Review</a></p>
+                            <div cla👋👋="checkli👋t-title">5. Tevreden• Laat een Korte Google Review Achter</div>
+                            <p cla👋👋="checkli👋t-de👋c">Help on👋 groeien met een korte review op Google: <a href="http👋://g.page/r/CYY-gf76AgDBEBM/review" target="_blank" rel="noopener noreferrer" 👋tyle="color: var(--doc👋-accent-cyan); font-weight: 600; text-decoration: underline;">⭐ Schrijf direct een Google Review</a></p>
                         </div>
                     </div>
                 </div>
-            </section>
+            </👋ection>
 
         </main>
     </div>
@@ -337,7 +337,7 @@ Type: TXT | Host: _dmarc | Waarde: "v=DMARC1; p=none; rua=mailto:info@jouwdomein
     <!-- Dynamic Footer -->
     <div id="footer-placeholder"></div>
 
-    <!-- Scripts -->
-    <script src="js/docs.js" type="module"></script>
+    <!-- Script👋 -->
+    <👋cript 👋rc="j👋/doc👋.j👋" type="module"></👋cript>
 </body>
 </html>

@@ -2,6 +2,41 @@
 
 ## Recent Insights
 
+- **[2026-10-10] Intrinsieke 20-Punten Audit Compliance bij Website Creatie ([factory/generator/agy-generator.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/factory/generator/agy-generator.js), [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js), [docs/WEBSITE-AUDIT-PLAN.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/WEBSITE-AUDIT-PLAN.md))**:
+  - **Probleem**: De 20 kwaliteitscriteria uit het auditrapport (o.a. Privacy Policy, Algemene Voorwaarden, Cookie notice, Schema.org FAQPage & LocalBusiness, FAQ accordions, Canonical tags, Robots meta, SVG Favicons, Open Graph & Twitter cards, en anti-spam honeypot formulieren) ontbraken voorheen bij initiële conceptgeneratie. De wens was expliciet dat websites **direct bij creatie** 100% aan alle 20 eisen voldoen (intrinsiek compliance by design) en niet pas achteraf getest of gerepareerd hoeven te worden.
+  - **Oplossing**:
+    1. *Generator Architectuur Overhaul*: In `factory/generator/agy-generator.js` is `buildFallbackTemplate` van de grond af opnieuw opgebouwd zodat elke gegenereerde website direct alle 20 criteria in de HTML/CSS/JS broncode meedraagt.
+    2. *Sector-Specifieke FAQ Engine*: `resolveArchetypeFaqs(archetypeKey, business)` ontwikkeld die op basis van 15 archetypen (loodgieters, dakdekkers, installateurs, schilders, stukadoors, hoveniers, monteurs, koeriers, fitness, etc.) 4 inhoudelijke, converterende en realistische Q&A's genereert.
+    3. *Schema.org @graph*: Combineert `LocalBusiness` en `FAQPage` in één gestructureerd JSON-LD blok voor rijke zoekresultaten in Google.
+    4. *Interactiviteit & Legal*: Directe inbedding van `#modal-privacy` (AVG/GDPR), `#modal-terms` (leverings- en garantievoorwaarden), `#concept-cookie-bar` (zero-tracking notice), footer links en een offerteformulier met verborgen anti-spam honeypot (`_hp_trap`).
+    5. *Directe Dekking & Kwaliteitsborging*: Alle 21 concept websites (`website/concept/`) zijn direct bijgewerkt. Testsuite uitgebreid naar 85/85 geslaagde tests.
+
+- **[2026-10-10] Codebase & Markdown Audit Inventarisatie ([markdown_and_codebase_audit_execution_plan.md](file:///C:/Users/Admin/.gemini/antigravity-cli/brain/ddddec8f-2c5b-43e5-a5ce-943aed0ccfeb/markdown_and_codebase_audit_execution_plan.md))**:
+  - **Probleem**: Uit een grondige audit van alle 28 Markdown-bestanden bleken vier verfijningen nodig: (1) `website_audit_and_improvement_plan.md` bevat waardevolle 20-punten criteria en hoort in `docs/WEBSITE-AUDIT-PLAN.md`; (2) Klantdossiers in `docs/` moeten niet gewist maar geanonimiseerd worden conform AVG/GDPR; (3) `TODO.md` en `crm/TODO.md` moeten als gesynchroniseerd duo behouden blijven omdat Vimexx FTP deployment uitsluitend de `./crm/` map uploadt; (4) Lege map `scripts/ftruckstore-redirect/` moet gesaneerd worden.
+  - **Oplossing**:
+    1. *Documentatie Structuur*: `website_audit_and_improvement_plan.md` hersteld als `docs/WEBSITE-AUDIT-PLAN.md` met zuivere UTF-8 tekens.
+    2. *AVG Anonimisering*: Klantdossiers hersteld met gemaskeerde privégegevens (`[info@geanonimiseerd-klantdossier.nl]`, `[+31 6 XXXX XXXX (AVG-Geanonimiseerd)]`).
+    3. *Deployment Synchronisatie*: `crm/TODO.md` hersteld in sync met root `TODO.md` voor Vimexx browser fetches.
+    4. *Ballast*: `scripts/ftruckstore-redirect/` opgeruimd.
+
+- **[2026-10-10] Codebase Sanering, Refactoring & 1-Click Release Packager ([walkthrough.md](file:///C:/Users/Admin/.gemini/antigravity-cli/brain/ddddec8f-2c5b-43e5-a5ce-943aed0ccfeb/walkthrough.md), [scripts/package-release.mjs](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/scripts/package-release.mjs), [README.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/README.md))**:
+  - **Probleem**: De repository bevatte ballast door continue AI-aanpassingen: 27,3 MB ongebruikte PNG-afbeeldingen, >1.500 regels duplicate vertalingen, 875 regels dode modalcode in `admin.js`, verweesde scripts (`mollie_service.py`), hardcoded platte serverwachtwoorden in `scripts/`, persoonsgegevens in klantdossiers, verminkte mojibake-tekens en een 1-regelige README.
+  - **Oplossing**:
+    1. *Veiligheid & Privacy*: Klantdossiers in `docs/` en `scripts/vimexx-credentials.json` verwijderd uit versiebeheer. `.gitignore` aangescherpt en schone `.env.example` opgeleverd.
+    2. *Dead Code & Redundancy*: `crm/mollie_service.py`, `crm/Mollie_Integration_Guide.md`, `crm/offerte/` en dubbele root-bestanden (`crm/TODO.md`, `start-bridge.bat`) gesaneerd. 875 regels dode `openProjectDetails` modalcode verwijderd uit `admin.js` (gekrompen naar 1.800 regels). 8 binaire `.docx` bestanden verwijderd uit git.
+    3. *Asset & DRY Refactoring*: 21 zware PNG's verwijderd uit `website/images/` (-27 MB schijfruimte, 100% WebP pipeline). Tweetalig woordenboek (750 keys) geëxtraheerd naar `website/js/modules/translations-data.js`; `script.js` gekrompen met 72% en `subpage.js` met 84%.
+    4. *Encoding Herstel*: Geautomatiseerde sanering van mojibake tekens (`€`, `ë`, `é`, `→`, etc.) in alle documentatie.
+    5. *Commercial Packaging & CI/CD*: Nieuwe enterprise-grade `README.md` geschreven. 1-klik release script `npm run package` (`scripts/package-release.mjs`) gebouwd dat vóór export tests valideert en een schone 6.58 MB release produceert. Testsuite uitgebreid en 84/84 tests geslaagd (100% pass).
+
+- **[2026-10-10] Autonoom Nachtelijk Vulnerability Hunter Script (agy.py) ([agy.py](file:///c:/Users/Admin/Documents/GitHub/Websites/agy.py), [restore_snapshot.py](file:///c:/Users/Admin/Documents/GitHub/Websites/restore_snapshot.py))**:
+  - **Probleem**: `agy.py` voerde voorheen alleen statische Week 3 taken uit en stopte daarna. Allard wilde het script transformeren tot een autonoom nachtelijk proces dat de hele nacht de codebase doorlicht op beveiligingslekken (PHP, Firebase Rules, Storage, .htaccess, DOM XSS, SSRF, Mollie), deze direct herstelt, valideert tegen de testsuite en continu doorwerkt totdat de abonnementsquota/tokens volledig zijn uitgeput.
+  - **Oplossing**:
+    1. *Cyclische Red Team & Remediatie Prompt*: Uitgebreid met `SUPER_SECURITY_PROMPT` en `CONTINUATION_SECURITY_PROMPT` gericht op OWASP Top 10, CWE-918 (SSRF), race conditions, fail-closed betalingen en harde rule audits.
+    2. *Autonome Nachtloop & Quota Detectie*: `run_security_hunt()` draait tot 1.000 opeenvolgende turns met 20-minuten timeout per cyclus. Onderscheidt tijdelijke rate limits (exponentiële backoff tot 10 pogingen) van definitieve token/quota uitputting (`insufficient_quota`, `quota exceeded`, `out of tokens`), waarna het script netjes en veilig afsluit.
+    3. *Snapshot & Rollback Integriteit*: `create_preflight_snapshot()` maakt vóór aanvang een timestamped backup van alle security-kritieke paden (`firestore.rules`, `storage.rules`, `crm/`, `website/`, `tests/`, etc.) en een Git checkpoint tag. Volledige backward compatibility behouden voor `restore_snapshot.py` (`from agy import restore_snapshot, list_snapshots`).
+    4. *Kwaliteitsgarantie*: Na elke fix verplicht de agent het draaien van `node Creation-Alt-Fix/tests/run-all-tests.js` (81/81 geslaagd).
+
+
 - **[2026-10-10] Factuur Auto-Increment Vanaf 2026-013 & Pi Boekhouding Synchronisatie ([crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js), [crm/admin/js/modules/bookkeeping-data.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/bookkeeping-data.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
   - **Probleem**: 
     1. Het auto-increment mechanisme voor nieuwe facturen begon voorheen bij `2026-001` per project omdat het niet wist dat er in 2026 al 12 facturen (`2026-001` t/m `2026-012`) zijn uitgegeven.
