@@ -521,6 +521,42 @@ function renderDashboard(data) {
     setupInvoiceDownload(data);
     setupClientInvoicesArchive(data);
     setupProfileModal();
+    checkPaymentSuccessModal(data);
+}
+
+function checkPaymentSuccessModal(data) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === 'true') {
+        const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '—';
+        const modal = document.getElementById('payment-success-modal');
+        const invSpan = document.getElementById('modal-paid-invoice-num');
+        if (modal) {
+            if (invSpan) invSpan.textContent = invNum;
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+
+            const closeBtn = document.getElementById('btn-close-payment-modal');
+            if (closeBtn) {
+                closeBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    const archiveCard = document.getElementById('client-invoices-archive-card');
+                    if (archiveCard) {
+                        archiveCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                };
+            }
+
+            // Clean up the URL to prevent showing modal again on page refresh
+            try {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('paid');
+                currentUrl.searchParams.delete('invoice');
+                const newQuery = currentUrl.searchParams.toString();
+                window.history.replaceState({}, document.title, currentUrl.pathname + (newQuery ? '?' + newQuery : ''));
+            } catch (e) {}
+        }
+    }
 }
 
 async function renderClientUptimeSection(data) {

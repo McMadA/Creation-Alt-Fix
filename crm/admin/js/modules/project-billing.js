@@ -27,7 +27,7 @@ export async function createMolliePaymentLink({
     description = ""
 }) {
     const desc = description || `Factuur ${invoiceNumber} - Creation+Alt+Fix (${clientName})`;
-    const redirectUrl = `https://portal.creationaltfix.nl/?paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
+    const redirectUrl = `https://portal.creationaltfix.nl/status/?id=${encodeURIComponent(projectId)}&paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
     const webhookUrl = `https://portal.creationaltfix.nl/crm/api/mollie-webhook.php`;
 
     // 1. Probeer native PHP endpoint op Vimexx DirectAdmin server

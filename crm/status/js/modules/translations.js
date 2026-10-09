@@ -173,7 +173,12 @@ export const translations = {
         statusProfileKvkLabel: "KvK-nummer",
         statusProfileVatLabel: "BTW-identificatienummer",
         statusProfileCancelBtn: "Sluiten",
-        statusProfileSaveBtn: "Gegevens Opslaan"
+        statusProfileSaveBtn: "Gegevens Opslaan",
+        statusPaymentModalTitle: "Betaling Succesvol Voldaan!",
+        statusPaymentModalInvoice: "Factuur",
+        statusPaymentModalDesc: "is succesvol voldaan via iDEAL. Hartelijk dank voor je betaling!",
+        statusPaymentModalArchiveNotice: "Je officiële betaalbewijs en factuur staan direct klaar onder Mijn Facturen & Jaaroverzicht.",
+        statusPaymentModalBtn: "Naar Mijn Dashboard"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -345,6 +350,11 @@ export const translations = {
         statusProfileKvkLabel: "Chamber of Commerce (KvK)",
         statusProfileVatLabel: "VAT Identification Number",
         statusProfileCancelBtn: "Close",
-        statusProfileSaveBtn: "Save Details"
+        statusProfileSaveBtn: "Save Details",
+        statusPaymentModalTitle: "Payment Successfully Completed!",
+        statusPaymentModalInvoice: "Invoice",
+        statusPaymentModalDesc: "has been successfully paid via iDEAL. Thank you very much for your payment!",
+        statusPaymentModalArchiveNotice: "Your official payment receipt and invoice are directly available under My Invoices & Annual Records.",
+        statusPaymentModalBtn: "To My Dashboard"
     }
 };

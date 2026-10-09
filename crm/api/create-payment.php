@@ -72,7 +72,11 @@ $payload = [
         'value' => number_format($amountIncl, 2, '.', '')
     ],
     'description' => $description,
-    'redirectUrl' => "https://portal.creationaltfix.nl/?paid=true&invoice=" . urlencode($invoiceNumber),
+    'redirectUrl' => !empty($input['redirect_url']) 
+        ? $input['redirect_url'] 
+        : (!empty($input['redirectUrl']) 
+            ? $input['redirectUrl'] 
+            : ("https://portal.creationaltfix.nl/status/?id=" . urlencode($projectId) . "&paid=true&invoice=" . urlencode($invoiceNumber))),
     'webhookUrl' => "https://portal.creationaltfix.nl/crm/api/mollie-webhook.php",
     'metadata' => [
         'projectId' => $projectId,
