@@ -275,7 +275,7 @@ export function renderTablesData(projectsToRender, handlers = {}) {
         const safeStatusClass = escapeHtml(statusInfo.badgeClass);
 
         row.innerHTML = `
-            <td><strong style="color: #fff;">${safeClient}</strong></td>
+            <td><strong style="color: #fff;"><a href="project.html?id=${safeId}" style="color: inherit; text-decoration: none;" title="Open Dedicated Werkplek">${safeClient}</a></strong></td>
             <td style="white-space: nowrap;">${taskCounterHtml}</td>
             <td style="white-space: nowrap;">${emailHtml}</td>
             <td style="white-space: nowrap;">${domainHtml}</td>
@@ -284,19 +284,11 @@ export function renderTablesData(projectsToRender, handlers = {}) {
             <td style="white-space: nowrap;">
                 <a href="project.html?id=${safeId}" class="btn btn-primary btn-sm" style="text-decoration: none;" title="Open Dedicated Werkplek"><i class="fas fa-desktop"></i> Werkplek</a>
                 <a href="../status/index.html?preview=true&id=${safeId}" target="_blank" class="btn btn-sm" style="text-decoration: none; background: rgba(34, 211, 238, 0.12); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.35);" title="Open Klantview (Preview zoals de klant het ziet)"><i class="fas fa-eye"></i> Klantview</a>
-                <button class="btn btn-secondary btn-sm" data-action="details" data-id="${safeId}"><i class="fas fa-sliders-h"></i> Snelmenu</button>
                 <button class="btn btn-sm" data-action="delete" data-id="${safeId}" style="background: var(--danger-color, #ef4444); color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 5px;" title="Verwijderen"><i class="fas fa-trash"></i></button>
             </td>
         `;
 
-        const detailsBtn = row.querySelector('[data-action="details"]');
         const deleteBtn = row.querySelector('[data-action="delete"]');
-
-        if (detailsBtn && handlers.onOpenDetails) {
-            detailsBtn.addEventListener('click', () => handlers.onOpenDetails(p.id));
-        } else if (detailsBtn && window.openProjectDetails) {
-            detailsBtn.addEventListener('click', () => window.openProjectDetails(p.id));
-        }
 
         if (deleteBtn && handlers.onDelete) {
             deleteBtn.addEventListener('click', () => handlers.onDelete(p.id));

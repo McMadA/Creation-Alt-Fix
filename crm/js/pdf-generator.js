@@ -72,6 +72,19 @@ export function resolveProposalItems(p) {
         });
     }
 
+    if (p.invoiceDescription || p.description) {
+        const rawPrice = parsePrice(p.amountExcl !== undefined ? p.amountExcl : (p.proposalPrice || p.price || '0'));
+        return [
+            {
+                quantity: 1,
+                description: p.invoiceDescription || p.description,
+                subtext: p.subtext || p.service || 'Maatwerk Software & Webapplicatie Oplevering',
+                price: rawPrice,
+                total: rawPrice
+            }
+        ];
+    }
+
     const rawPrice = parsePrice(p.proposalPrice || p.price || '0');
     const service = p.service || 'Website & Software Realisatie';
     const goals = p.proposalScope || p.goals || p.projectGoals || 'Volledige realisatie van maatwerk software & webapplicatie conform specificaties.';
@@ -516,9 +529,8 @@ export async function generateInvoicePDF(p) {
     const subtotal = items.reduce((sum, it) => sum + it.total, 0);
     const vatAmount = subtotal * 0.21;
     const totalPrice = subtotal + vatAmount;
-    const docDate = new Date();
-    const dueDate = new Date();
-    dueDate.setDate(docDate.getDate() + 14);
+    const docDate = p.invoiceDate ? new Date(p.invoiceDate) : new Date();
+    const dueDate = p.dueDate ? new Date(p.dueDate) : new Date(docDate.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const dateFormatted = docDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
     const dueDateFormatted = dueDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -819,9 +831,10 @@ export async function generateInvoicePDF(p) {
     doc.setTextColor(148, 163, 184);
     doc.text(`IBAN: NLXX KNAB XXXXXXXX  |  T.n.v: Creation+Alt+Fix  |  O.v.v: Factuur ${invoiceNumber}`, margin, footerY + 22);
 
-    if (p.mollieLink) {
+    const mollieUrl = p.mollieLink || p.mollieCheckoutUrl || '';
+    if (mollieUrl) {
         doc.setTextColor(34, 211, 238);
-        doc.text(`Direct online betalen via iDEAL / Mollie: ${p.mollieLink}`, margin, footerY + 28);
+        doc.text(`Direct online betalen via iDEAL / Mollie: ${mollieUrl}`, margin, footerY + 28);
     } else {
         doc.text("Creation+Alt+Fix • Algemene Voorwaarden gedeponeerd bij KVK Groningen • creationaltfix.nl", margin, footerY + 28);
     }

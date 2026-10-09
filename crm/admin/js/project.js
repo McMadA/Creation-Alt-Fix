@@ -42,7 +42,7 @@ let currentProjectData = null;
 import { SUBSCRIPTION_PLANS } from "../../js/crm-config.js";
 import { PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo } from "./modules/bookkeeping-data.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
-import { renderBillingCardHtml, createMolliePaymentLink, generateBillingWhatsAppUrl } from "./modules/project-billing.js";
+import { renderBillingCardHtml, createMolliePaymentLink, generateBillingWhatsAppUrl, normalizeProjectInvoices } from "./modules/project-billing.js";
 import { renderVisualPulseBadge } from "./modules/project-timeline.js";
 import { Toast } from "../../js/core/toast.js";
 export { SUBSCRIPTION_PLANS, PI_BOEKHOUDING_CLIENT_DATA, getPiBoekhoudingInfo };
@@ -1685,71 +1685,386 @@ function setupFormHandlers() {
         });
     });
 
-    // Dedicated Facturen & Mollie iDEAL Action Handlers
+    // Dedicated Facturen & Mollie iDEAL Multi-Invoice Action Handlers
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('[data-action]');
         if (!btn) return;
         const action = btn.getAttribute('data-action');
 
-        if (action === 'billing:create-ideal-link') {
-            const p = currentProjectData;
-            if (!p) return;
-            const amount = p.proposalPrice || 150;
-            let invNumber = p.invoiceNumber || p.factuurnummer;
-            if (!invNumber) {
-                invNumber = window.prompt("Voer het officiële factuurnummer in uit Pi Boekhouding (bijv. 2026-009):", "2026-");
-                if (!invNumber || !invNumber.trim()) return;
-                invNumber = invNumber.trim();
-                p.invoiceNumber = invNumber;
-                p.factuurnummer = invNumber;
-                if (db && currentProjectId) {
-                    await updateDoc(doc(db, "projects", currentProjectId), { invoiceNumber: invNumber, factuurnummer: invNumber });
-                }
-                const invInput = document.getElementById('edit-invoice-number');
-                if (invInput) invInput.value = invNumber;
+        // 1. Open Modal: Nieuwe Factuur Aanmaken
+        if (action === 'billing:open-create-modal') {
+            const modal = document.getElementById('modal-create-invoice');
+            if (!modal) return;
+            const p = currentProjectData || {};
+            const invoices = normalizeProjectInvoices(p);
+            const today = new Date().toISOString().split('T')[0];
+            const due = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+
+            const invNumEl = document.getElementById('modal-inv-num') || document.getElementById('modal-inv-number');
+            const invDateEl = document.getElementById('modal-inv-date');
+            const invDueEl = document.getElementById('modal-inv-due-date');
+            const invDescEl = document.getElementById('modal-inv-desc') || document.getElementById('modal-inv-description');
+            const invAmountEl = document.getElementById('modal-inv-amount');
+            const invPresetEl = document.getElementById('modal-inv-preset');
+            const invVatEl = document.getElementById('modal-inv-vat') || document.getElementById('modal-inv-vat-rate');
+            const invMollieEl = document.getElementById('modal-inv-gen-mollie');
+
+            if (invDateEl) invDateEl.value = today;
+            if (invDueEl) invDueEl.value = due;
+            if (invPresetEl) invPresetEl.value = 'deposit_50';
+            if (invVatEl) invVatEl.value = invVatEl.options[0]?.value || '21';
+            if (invMollieEl) invMollieEl.checked = true;
+
+            // Auto-increment factuurnummer gebaseerd op bestaande facturen (bijv. 2026-009)
+            if (invNumEl) {
+                const currentYear = new Date().getFullYear();
+                let nextSeq = 1;
+                invoices.forEach(inv => {
+                    const match = (inv.invoiceNumber || inv.number || '').match(/^(\d{4})-(\d+)$/);
+                    if (match && parseInt(match[1], 10) === currentYear) {
+                        const seq = parseInt(match[2], 10);
+                        if (seq >= nextSeq) nextSeq = seq + 1;
+                    }
+                });
+                invNumEl.value = `${currentYear}-${String(nextSeq).padStart(3, '0')}`;
             }
+
+            const defaultAmount = p.proposalPrice ? parseFloat(p.proposalPrice) : 0;
+            const clientTitle = p.client || p.companyName || 'Project';
+            if (invDescEl) {
+                invDescEl.value = `Aanbetaling 50% werkzaamheden - ${clientTitle}`;
+            }
+            if (invAmountEl) {
+                invAmountEl.value = defaultAmount > 0 ? (Math.round(defaultAmount * 0.5 * 100) / 100).toFixed(2) : '';
+            }
+            updateModalInvoiceCalculations();
+            modal.classList.remove('hidden');
+        }
+
+        // 2. Sluit Modal
+        else if (action === 'billing:close-create-modal') {
+            document.getElementById('modal-create-invoice')?.classList.add('hidden');
+        }
+
+        // 3. Verwijder Factuur
+        else if (action === 'billing:delete-invoice') {
+            const invNumber = btn.getAttribute('data-inv');
+            if (!invNumber) return;
+            if (!confirm(`Weet je zeker dat je factuur ${invNumber} wilt verwijderen uit dit project?`)) return;
+
+            const p = currentProjectData || {};
+            const invoices = normalizeProjectInvoices(p);
+            const updatedInvoices = invoices.filter(inv => (inv.invoiceNumber || inv.number) !== invNumber);
+            p.invoices = updatedInvoices;
+
+            if (db && currentProjectId) {
+                try {
+                    await updateDoc(doc(db, "projects", currentProjectId), { invoices: updatedInvoices });
+                } catch (err) {
+                    console.error("Fout bij verwijderen factuur in Firestore:", err);
+                }
+            }
+            await logAuditEvent('invoice_deleted', `Factuur ${invNumber} verwijderd uit project.`);
+            renderProjectWorkspace(p);
+            Toast.show({ title: "Factuur Verwijderd", message: `Factuur ${invNumber} is succesvol verwijderd.`, type: "info" });
+        }
+
+        // 4. Download Factuur PDF
+        else if (action === 'billing:download-invoice-pdf') {
+            const invNumber = btn.getAttribute('data-inv');
+            const p = currentProjectData || {};
+            const invoices = normalizeProjectInvoices(p);
+            const targetInv = invoices.find(inv => (inv.invoiceNumber || inv.number) === invNumber) || {};
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF...';
             try {
+                const invoiceData = {
+                    ...p,
+                    id: currentProjectId,
+                    invoiceNumber: targetInv.invoiceNumber || invNumber,
+                    invoiceDate: targetInv.invoiceDate || new Date().toISOString().split('T')[0],
+                    dueDate: targetInv.dueDate || '',
+                    invoiceDescription: targetInv.description || 'Werkzaamheden Creation+Alt+Fix',
+                    amountExcl: targetInv.amountExcl || targetInv.amount || p.proposalPrice || 150,
+                    amountVat: targetInv.amountVat || (targetInv.amountExcl ? targetInv.amountExcl * (targetInv.vatRate || 0.21) : 0),
+                    amountIncl: targetInv.amountIncl || targetInv.amount || 150,
+                    mollieLink: targetInv.mollieCheckoutUrl || targetInv.mollieLink || p.mollieLink || ''
+                };
+                const { doc: pdfDoc, filename } = await generateInvoicePDF(invoiceData);
+                pdfDoc.save(filename);
+                Toast.show({ title: "PDF Gedownload", message: `Factuur ${invNumber} PDF succesvol gegenereerd.`, type: "success" });
+            } catch (err) {
+                console.error("Fout bij genereren factuur PDF:", err);
+                Toast.show({ title: "Fout bij PDF", message: err.message, type: "error" });
+            } finally {
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        // 5. Genereer Mollie Link voor bestaande Factuur
+        else if (action === 'billing:generate-link-for-invoice') {
+            const invNumber = btn.getAttribute('data-inv');
+            const p = currentProjectData || {};
+            const invoices = normalizeProjectInvoices(p);
+            const targetInv = invoices.find(inv => (inv.invoiceNumber || inv.number) === invNumber);
+            if (!targetInv) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Genereren...';
+            try {
+                const amountIncl = targetInv.amountIncl || (targetInv.amountExcl ? targetInv.amountExcl * 1.21 : (targetInv.amount || 150));
                 const linkData = await createMolliePaymentLink({
                     projectId: currentProjectId,
                     clientName: p.client || p.companyName || 'Klant',
                     invoiceNumber: invNumber,
-                    amountIncl: amount * 1.21,
-                    description: `Oplevering ${p.client || 'Project'} - Creation+Alt+Fix`
+                    amountIncl: amountIncl,
+                    description: `${targetInv.description || 'Factuur'} (${invNumber})`
                 });
-                const newInvoice = {
-                    invoiceNumber: invNumber,
-                    invoiceDate: new Date().toISOString().split('T')[0],
-                    amountExcl: amount,
-                    amountVat: amount * 0.21,
-                    amountIncl: amount * 1.21,
-                    status: 'open',
-                    molliePaymentId: linkData.paymentId,
-                    mollieCheckoutUrl: linkData.checkoutUrl
-                };
-                const updatedInvoices = [...(p.invoices || []), newInvoice];
-                p.invoices = updatedInvoices;
+                targetInv.molliePaymentId = linkData.paymentId;
+                targetInv.mollieCheckoutUrl = linkData.checkoutUrl;
+                p.invoices = invoices;
+                p.mollieLink = linkData.checkoutUrl;
                 if (db && currentProjectId) {
-                    await updateDoc(doc(db, "projects", currentProjectId), { invoices: updatedInvoices });
+                    await updateDoc(doc(db, "projects", currentProjectId), {
+                        invoices,
+                        mollieLink: linkData.checkoutUrl
+                    });
                 }
+                await logAuditEvent('mollie_link_created', `Mollie betaallink gegenereerd voor factuur ${invNumber}.`);
                 renderProjectWorkspace(p);
-                Toast.show({ title: "iDEAL Betaallink Aangemaakt", message: `Factuur ${invNumber} gegenereerd met Mollie URL.`, type: "success" });
+                Toast.show({ title: "Mollie Link Gegenereerd", message: `iDEAL betaallink actief voor factuur ${invNumber}.`, type: "success" });
             } catch (err) {
-                console.error("Fout bij aanmaken Mollie link:", err);
-                Toast.show({ title: "Fout bij betaallink", message: err.message, type: "error" });
+                console.error("Fout bij genereren Mollie link:", err);
+                Toast.show({ title: "Fout bij Mollie link", message: err.message, type: "error" });
+            } finally {
+                btn.disabled = false;
             }
-        } else if (action === 'billing:copy-link') {
+        }
+
+        // 6. Kopieer Link naar Klembord
+        else if (action === 'billing:copy-link') {
             const url = btn.getAttribute('data-url');
             if (url) {
                 navigator.clipboard.writeText(url);
-                Toast.show({ title: "Betaallink Gekopieerd", type: "info", duration: 2500 });
+                Toast.show({ title: "Betaallink Gekopieerd", message: "URL staat op je klembord.", type: "info", duration: 2500 });
             }
-        } else if (action === 'billing:share-whatsapp') {
+        }
+
+        // 7. Deel via WhatsApp
+        else if (action === 'billing:share-whatsapp') {
             const url = btn.getAttribute('data-url');
             const inv = btn.getAttribute('data-inv');
             const amount = parseFloat(btn.getAttribute('data-amount') || 0);
             const p = currentProjectData;
             const waUrl = generateBillingWhatsAppUrl(p?.phone, p?.client || 'Klant', inv, amount, url);
             window.open(waUrl, '_blank');
+        }
+    });
+
+    // Factuur Status Wijziging (Inline Select Dropdown)
+    document.addEventListener('change', async (e) => {
+        const select = e.target.closest('[data-action="billing:change-status"]');
+        if (!select) return;
+        const invNumber = select.getAttribute('data-inv');
+        const newStatus = select.value;
+        const p = currentProjectData || {};
+        const invoices = normalizeProjectInvoices(p);
+        const targetInv = invoices.find(inv => (inv.invoiceNumber || inv.number) === invNumber);
+        if (targetInv) {
+            targetInv.status = newStatus;
+            p.invoices = invoices;
+            if (db && currentProjectId) {
+                try {
+                    await updateDoc(doc(db, "projects", currentProjectId), { invoices });
+                } catch (err) {
+                    console.error("Fout bij updaten factuur status:", err);
+                }
+            }
+            await logAuditEvent('invoice_status_changed', `Status van factuur ${invNumber} gewijzigd naar '${newStatus}'.`);
+            renderProjectWorkspace(p);
+            Toast.show({ title: "Status Bijgewerkt", message: `Factuur ${invNumber} is nu gemarkeerd als '${newStatus}'.`, type: "success" });
+        }
+    });
+
+    // Factuur Aanmaken Modal Berekeningen & Presets
+    function updateModalInvoiceCalculations() {
+        const amountVal = parseFloat(document.getElementById('modal-inv-amount')?.value || 0) || 0;
+        const vatEl = document.getElementById('modal-inv-vat') || document.getElementById('modal-inv-vat-rate');
+        const vatRaw = vatEl?.value || '21';
+        let vatRateVal = 0.21;
+        if (vatRaw === 'reverse' || vatRaw === '0') {
+            vatRateVal = 0;
+        } else if (parseFloat(vatRaw) > 1) {
+            vatRateVal = parseFloat(vatRaw) / 100;
+        } else {
+            vatRateVal = parseFloat(vatRaw);
+        }
+
+        const vatVal = amountVal * vatRateVal;
+        const totalVal = amountVal + vatVal;
+
+        const subtotalEl = document.getElementById('modal-calc-subtotal') || document.getElementById('modal-inv-calc-excl');
+        const vatDisplayEl = document.getElementById('modal-calc-vat') || document.getElementById('modal-inv-calc-vat');
+        const totalDisplayEl = document.getElementById('modal-calc-total') || document.getElementById('modal-inv-calc-incl');
+
+        if (subtotalEl) subtotalEl.innerText = `€ ${amountVal.toFixed(2).replace('.', ',')}`;
+        if (vatDisplayEl) vatDisplayEl.innerText = `€ ${vatVal.toFixed(2).replace('.', ',')}`;
+        if (totalDisplayEl) totalDisplayEl.innerText = `€ ${totalVal.toFixed(2).replace('.', ',')}`;
+    }
+
+    document.getElementById('modal-inv-amount')?.addEventListener('input', updateModalInvoiceCalculations);
+    document.getElementById('modal-inv-vat')?.addEventListener('change', updateModalInvoiceCalculations);
+    document.getElementById('modal-inv-vat-rate')?.addEventListener('change', updateModalInvoiceCalculations);
+
+    document.getElementById('modal-inv-preset')?.addEventListener('change', (e) => {
+        const preset = e.target.value;
+        const p = currentProjectData || {};
+        const propPrice = parseFloat(p.proposalPrice || 0);
+        const clientTitle = p.client || p.companyName || 'Project';
+        const descEl = document.getElementById('modal-inv-desc') || document.getElementById('modal-inv-description');
+        const amountEl = document.getElementById('modal-inv-amount');
+
+        if (!descEl || !amountEl) return;
+
+        if (preset === 'deposit_50') {
+            descEl.value = `Aanbetaling 50% werkzaamheden - ${clientTitle}`;
+            if (propPrice > 0) amountEl.value = (Math.round(propPrice * 0.5 * 100) / 100).toFixed(2);
+        } else if (preset === 'final_50') {
+            descEl.value = `Eindfactuur 50% bij succesvolle oplevering - ${clientTitle}`;
+            if (propPrice > 0) amountEl.value = (Math.round(propPrice * 0.5 * 100) / 100).toFixed(2);
+        } else if (preset === 'full_100') {
+            descEl.value = `Oplevering & Werkzaamheden (100% Volledig) - ${clientTitle}`;
+            if (propPrice > 0) amountEl.value = propPrice.toFixed(2);
+        } else if (preset === 'hosting_nl' || preset === 'hosting_annual') {
+            descEl.value = `Managed Cloud Hosting & .nl Domein (Jaarfactuur) - ${clientTitle}`;
+            amountEl.value = '150.00';
+        } else if (preset === 'hosting_2027') {
+            descEl.value = `Trouwe Klant Overgangstarief 2027 (Jaarfactuur) - ${clientTitle}`;
+            amountEl.value = '95.00';
+        } else if (preset === 'apk_annual' || preset === 'maintenance_apk') {
+            descEl.value = `Periodieke Website APK & Beveiligingsupdate - ${clientTitle}`;
+            amountEl.value = '350.00';
+        } else if (preset === 'extra_work') {
+            descEl.value = `Meerwerk & Aanvullende Optimalisaties - ${clientTitle}`;
+            if (!amountEl.value || amountEl.value === '0.00') amountEl.value = '75.00';
+        }
+        updateModalInvoiceCalculations();
+    });
+
+    const closeInvoiceModal = () => document.getElementById('modal-create-invoice')?.classList.add('hidden');
+    document.getElementById('btn-cancel-create-inv')?.addEventListener('click', closeInvoiceModal);
+    document.getElementById('btn-cancel-create-invoice')?.addEventListener('click', closeInvoiceModal);
+    document.getElementById('btn-close-create-inv-x')?.addEventListener('click', closeInvoiceModal);
+
+    // Form Submit: Nieuwe Factuur Toevoegen
+    document.getElementById('form-create-invoice')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btn-submit-create-inv') || document.getElementById('btn-submit-create-invoice');
+        const invNumEl = document.getElementById('modal-inv-num') || document.getElementById('modal-inv-number');
+        const invNumber = invNumEl?.value.trim();
+        const invDate = document.getElementById('modal-inv-date')?.value || new Date().toISOString().split('T')[0];
+        const dueDate = document.getElementById('modal-inv-due-date')?.value || '';
+        const descEl = document.getElementById('modal-inv-desc') || document.getElementById('modal-inv-description');
+        const description = descEl?.value.trim() || 'Werkzaamheden Creation+Alt+Fix';
+        const amountExcl = parseFloat(document.getElementById('modal-inv-amount')?.value || 0);
+
+        const vatEl = document.getElementById('modal-inv-vat') || document.getElementById('modal-inv-vat-rate');
+        const vatRaw = vatEl?.value || '21';
+        let vatRate = 0.21;
+        if (vatRaw === 'reverse' || vatRaw === '0') {
+            vatRate = 0;
+        } else if (parseFloat(vatRaw) > 1) {
+            vatRate = parseFloat(vatRaw) / 100;
+        } else {
+            vatRate = parseFloat(vatRaw);
+        }
+
+        const genMollie = document.getElementById('modal-inv-gen-mollie')?.checked;
+        const manualUrl = document.getElementById('modal-inv-manual-url')?.value.trim();
+
+        if (!invNumber) {
+            alert("Voer een geldig factuurnummer in (bijv. 2026-009).");
+            return;
+        }
+        if (amountExcl <= 0) {
+            alert("Voer een bedrag excl. BTW in hoger dan € 0,00.");
+            return;
+        }
+
+        const vatAmount = Math.round(amountExcl * vatRate * 100) / 100;
+        const amountIncl = Math.round((amountExcl + vatAmount) * 100) / 100;
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met opslaan...';
+        }
+
+        try {
+            let mollieLinkData = null;
+            if (genMollie) {
+                try {
+                    mollieLinkData = await createMolliePaymentLink({
+                        projectId: currentProjectId,
+                        clientName: currentProjectData?.client || currentProjectData?.companyName || 'Klant',
+                        invoiceNumber: invNumber,
+                        amountIncl: amountIncl,
+                        description: `${description} (${invNumber})`
+                    });
+                } catch (mErr) {
+                    console.warn("Mollie betaallink genereren mislukt:", mErr);
+                    Toast.show({ title: "Mollie waarschuwing", message: "Factuur opgeslagen, maar Mollie kon niet direct gegenereerd worden: " + mErr.message, type: "warning" });
+                }
+            }
+
+            const checkoutUrl = mollieLinkData?.checkoutUrl || manualUrl || null;
+
+            const newInvoice = {
+                invoiceNumber: invNumber,
+                invoiceDate: invDate,
+                dueDate: dueDate,
+                description: description,
+                amountExcl: amountExcl,
+                vatRate: vatRate,
+                amountVat: vatAmount,
+                amountIncl: amountIncl,
+                status: 'open',
+                molliePaymentId: mollieLinkData?.paymentId || null,
+                mollieCheckoutUrl: checkoutUrl,
+                createdAt: new Date().toISOString()
+            };
+
+            const p = currentProjectData || {};
+            const existingInvoices = normalizeProjectInvoices(p);
+            const updatedInvoices = [...existingInvoices, newInvoice];
+            p.invoices = updatedInvoices;
+            p.invoiceNumber = invNumber;
+            p.factuurnummer = invNumber;
+            if (checkoutUrl) {
+                p.mollieLink = checkoutUrl;
+            }
+
+            if (db && currentProjectId) {
+                await updateDoc(doc(db, "projects", currentProjectId), {
+                    invoices: updatedInvoices,
+                    invoiceNumber: invNumber,
+                    factuurnummer: invNumber,
+                    ...(checkoutUrl ? { mollieLink: checkoutUrl } : {})
+                });
+            }
+
+            await logAuditEvent('invoice_created', `Nieuwe factuur ${invNumber} (€ ${amountIncl.toFixed(2).replace('.', ',')} incl. BTW) toegevoegd.`);
+            renderProjectWorkspace(p);
+            closeInvoiceModal();
+            Toast.show({ title: "Factuur Toegevoegd", message: `Factuur ${invNumber} succesvol aangemaakt!`, type: "success" });
+        } catch (err) {
+            console.error("Fout bij opslaan factuur:", err);
+            alert("Fout bij opslaan factuur: " + err.message);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Factuur Aanmaken';
+            }
         }
     });
 

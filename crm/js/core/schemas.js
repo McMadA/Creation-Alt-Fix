@@ -130,7 +130,21 @@ export const Schemas = {
             proposalGeneratedAt: rawDoc.proposalGeneratedAt || null,
             tasks: Array.isArray(rawDoc.tasks) ? rawDoc.tasks.map(this.sanitizeTask) : [],
             messages: Array.isArray(rawDoc.messages) ? rawDoc.messages.map(this.sanitizeMessage) : [],
-            invoices: Array.isArray(rawDoc.invoices) ? rawDoc.invoices.map(this.sanitizeInvoice) : [],
+            invoices: Array.isArray(rawDoc.invoices) && rawDoc.invoices.length > 0
+                ? rawDoc.invoices.map(it => this.sanitizeInvoice(it))
+                : ((rawDoc.invoiceNumber || rawDoc.factuurnummer)
+                    ? [this.sanitizeInvoice({
+                        invoiceNumber: rawDoc.invoiceNumber || rawDoc.factuurnummer,
+                        description: rawDoc.service || 'Website & Software Realisatie',
+                        invoiceDate: rawDoc.invoiceDate || (rawDoc.createdAt ? rawDoc.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
+                        amountExcl: Number(rawDoc.proposalPrice || 0),
+                        amountVat: Number((rawDoc.proposalPrice || 0) * 0.21),
+                        amountIncl: Number((rawDoc.proposalPrice || 0) * 1.21),
+                        status: rawDoc.invoicePaid || rawDoc.status === 5 ? 'paid' : 'open',
+                        mollieCheckoutUrl: rawDoc.mollieLink || '',
+                        pdfUrl: rawDoc.invoicePdfUrl || ''
+                    })]
+                    : []),
             annotations: Array.isArray(rawDoc.annotations) ? rawDoc.annotations.map(this.sanitizeAnnotation) : [],
             contract: rawDoc.contract ? this.sanitizeContract(rawDoc.contract) : null,
             clientUid: String(rawDoc.clientUid || ''),
@@ -181,15 +195,22 @@ export const Schemas = {
         const vat = Number(rawInvoice.amountVat !== undefined ? rawInvoice.amountVat : (excl * 0.21));
         const incl = Number(rawInvoice.amountIncl !== undefined ? rawInvoice.amountIncl : (excl + vat));
         
+        let status = 'open';
+        if (['paid', 'voldaan'].includes(rawInvoice.status)) status = 'paid';
+        else if (['canceled', 'geannuleerd'].includes(rawInvoice.status)) status = 'canceled';
+        else if (['expired', 'verlopen'].includes(rawInvoice.status)) status = 'expired';
+
         return {
-            invoiceNumber: String(rawInvoice.invoiceNumber || `FAC-${new Date().getFullYear()}-0001`),
-            invoiceDate: String(rawInvoice.invoiceDate || new Date().toISOString().split('T')[0]),
+            invoiceNumber: String(rawInvoice.invoiceNumber || rawInvoice.number || rawInvoice.factuurnummer || `2026-001`),
+            description: String(rawInvoice.description || rawInvoice.omschrijving || rawInvoice.service || 'Website Realisatie & Software Diensten'),
+            invoiceDate: String(rawInvoice.invoiceDate || rawInvoice.date || new Date().toISOString().split('T')[0]),
+            dueDate: String(rawInvoice.dueDate || rawInvoice.vervaldatum || ''),
             amountExcl: excl,
             amountVat: vat,
             amountIncl: incl,
-            status: ['paid', 'open', 'expired', 'canceled'].includes(rawInvoice.status) ? rawInvoice.status : 'open',
+            status: status,
             molliePaymentId: String(rawInvoice.molliePaymentId || ''),
-            mollieCheckoutUrl: String(rawInvoice.mollieCheckoutUrl || ''),
+            mollieCheckoutUrl: String(rawInvoice.mollieCheckoutUrl || rawInvoice.mollieLink || ''),
             paidAt: rawInvoice.paidAt || null,
             pdfUrl: String(rawInvoice.pdfUrl || '')
         };

@@ -139,8 +139,11 @@
                 <button class="tab-btn active" data-tab="tab-intake">
                     <i class="fas fa-clipboard-list"></i> Intake & Gegevens
                 </button>
+                <button class="tab-btn" data-tab="tab-proposals-invoices">
+                    <i class="fas fa-file-invoice-dollar"></i> Offertes &amp; Facturen
+                </button>
                 <button class="tab-btn" data-tab="tab-actions">
-                    <i class="fas fa-bolt"></i> Offerte & Snelacties
+                    <i class="fas fa-bolt"></i> Snelacties
                 </button>
                 <button class="tab-btn" data-tab="tab-tasks">
                     <i class="fas fa-tasks"></i> Taken & Deadlines (<span id="tab-tasks-count">—</span>)
@@ -271,68 +274,24 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: Offerte & Snelacties -->
-                    <div id="tab-actions" class="tab-pane">
-                        <div class="workspace-card">
-                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px;">
+                    <!-- TAB 2: Offertes & Facturen -->
+                    <div id="tab-proposals-invoices" class="tab-pane">
+                        <div class="workspace-card" style="margin-bottom: 20px;">
+                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px; display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <h3><i class="fas fa-bolt text-accent"></i> Werkstroom & Snelacties per Fase</h3>
+                                    <h3><i class="fas fa-file-contract text-accent"></i> Offerte &amp; Projectscope</h3>
                                     <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 4px;">
-                                        Beheer de offerte, AI scope generatie, ontwerpstatus en geautomatiseerde nazorg.
+                                        Beheer de offerte, AI scope generatie, deliverables en digitaal klantakkoord (Fase 2).
                                     </p>
                                 </div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 25px;">
-                                <!-- Fase 1: Intake & E-mail -->
-                                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                                    <div>
-                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">Fase 1: Intake &amp; Eerste Contact</span>
-                                        <div style="font-size: 0.85rem; color: #fff;">AI Welkomstmail of intake-wensen afstemmen</div>
-                                    </div>
-                                    <button class="btn btn-secondary btn-sm" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
-                                </div>
-
-                                <!-- Fase 2: Offerte & Scope -->
-                                <div style="background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                                    <div>
-                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: #818cf8; font-weight: 700;">Fase 2: Offerte &amp; Projectscope</span>
-                                        <div style="font-size: 0.85rem; color: #fff;">AI scope genereren en officiële offerte (PDF) downloaden</div>
-                                    </div>
-                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                        <button class="btn btn-primary btn-sm" id="btn-trigger-ai-scope" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;"><i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Offerte &amp; Scope</button>
-                                        <button class="btn btn-secondary btn-sm" id="btn-action-download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
-                                    </div>
-                                </div>
-
-                                <!-- Fase 3: Design Review -->
-                                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                                    <div>
-                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: #c084fc; font-weight: 700;">Fase 3: Design &amp; Ontwerp</span>
-                                        <div style="font-size: 0.85rem; color: #fff;">Prototype, Figma of live staging review opleveren aan de klant</div>
-                                    </div>
-                                    <button class="btn btn-secondary btn-sm" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
-                                </div>
-
-                                <!-- Fase 5: Livegang, Factuur & Nazorg -->
-                                <div style="background: rgba(34,211,238,0.05); border: 1px solid rgba(34,211,238,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                                    <div>
-                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-accent); font-weight: 700;">Fase 5: Livegang, Facturatie &amp; Nazorg</span>
-                                        <div style="font-size: 0.85rem; color: #fff;">Mollie betaallink koppelen, factuur downloaden en 14-dagen review check-in</div>
-                                    </div>
-                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                        <button class="btn btn-secondary btn-sm" id="btn-action-mollie"><i class="fas fa-euro-sign"></i> Factuur + Mollie Link</button>
-                                        <button class="btn btn-secondary btn-sm" id="btn-action-download-factuur" style="border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);"><i class="fas fa-receipt"></i> Download Factuur (PDF)</button>
-                                        <button class="btn btn-secondary btn-sm" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in Wachtrij</button>
-                                    </div>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <button class="btn btn-primary btn-sm" id="btn-trigger-ai-scope" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: #000; font-weight: 700; border: none;"><i class="fas fa-wand-magic-sparkles"></i> ✨ Genereer AI Offerte &amp; Scope</button>
+                                    <button class="btn btn-secondary btn-sm" id="btn-action-download-offerte" style="border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-light);"><i class="fas fa-file-pdf"></i> Download Offerte (PDF)</button>
                                 </div>
                             </div>
-
-                            <!-- Dedicated Facturen & Mollie iDEAL Betalingen Module Container -->
-                            <div id="project-billing-container"></div>
 
                             <!-- Proposal Status Box -->
-                            <div id="proposal-link-box" class="hidden" style="padding: 16px 20px; background: rgba(99,102,241,0.08); border-radius: 10px; border: 1px solid rgba(99,102,241,0.3); margin-bottom: 20px;">
+                            <div id="proposal-link-box" class="hidden" style="padding: 16px 20px; background: rgba(99,102,241,0.08); border-radius: 10px; border: 1px solid rgba(99,102,241,0.3); margin-top: 15px; margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <h4 style="color: #818cf8; margin: 0; font-size: 0.95rem;"><i class="fas fa-file-contract"></i> Actieve Offerte Status</h4>
@@ -354,14 +313,14 @@
                             </div>
 
                             <!-- AI Offerte Scope & Deliverables Suite (TASK-302) -->
-                            <div id="ai-scope-box" class="hidden" style="padding: 20px; background: rgba(99, 102, 241, 0.07); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.35); margin-bottom: 20px;">
+                            <div id="ai-scope-box" class="hidden" style="padding: 20px; background: rgba(99, 102, 241, 0.07); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.35); margin-top: 15px; margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                                     <div>
                                         <h4 style="color: var(--color-accent); margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-brain"></i> AI Gegenereerde Projectscope & Deliverables
+                                            <i class="fas fa-brain"></i> AI Gegenereerde Projectscope &amp; Deliverables
                                         </h4>
                                         <span style="font-size: 0.78rem; color: var(--color-text-secondary);" id="ai-generator-model-tag">
-                                            Aangedreven door Live Gemini AI & Creation+Alt+Fix Heuristics Engine
+                                            Aangedreven door Live Gemini AI &amp; Creation+Alt+Fix Heuristics Engine
                                         </span>
                                     </div>
                                     <div style="display: flex; gap: 8px;">
@@ -382,13 +341,13 @@
                                 </div>
 
                                 <div style="margin-bottom: 15px;">
-                                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Doel & Samenvatting (Executive Summary)</label>
+                                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Doel &amp; Samenvatting (Executive Summary)</label>
                                     <textarea id="ai-scope-summary" class="admin-input" rows="3" style="margin-top: 4px;"></textarea>
                                 </div>
 
                                 <div style="margin-bottom: 15px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Deliverables & Functionaliteiten</label>
+                                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Deliverables &amp; Functionaliteiten</label>
                                         <button type="button" id="btn-add-deliverable" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.75rem;"><i class="fas fa-plus"></i> Deliverable Toevoegen</button>
                                     </div>
                                     <div id="ai-deliverables-list" style="display: flex; flex-direction: column; gap: 8px;">
@@ -398,11 +357,59 @@
 
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
                                     <span style="font-size: 0.78rem; color: #34d399;">
-                                        <i class="fas fa-check-circle"></i> Wijzigingen worden direct doorgevoerd in het digitale klantenportaal (/status & /offerte).
+                                        <i class="fas fa-check-circle"></i> Wijzigingen worden direct doorgevoerd in het digitale klantenportaal (/status &amp; /offerte).
                                     </span>
                                     <button type="button" id="btn-save-ai-scope" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700;">
-                                        <i class="fas fa-check"></i> Opslaan & Offerte Activeren (Fase 2)
+                                        <i class="fas fa-check"></i> Opslaan &amp; Offerte Activeren (Fase 2)
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dedicated Facturen, Mollie iDEAL Betalingen & Historie Suite -->
+                        <div id="project-billing-container"></div>
+                    </div>
+
+                    <!-- TAB 3: Snelacties & Werkstroom -->
+                    <div id="tab-actions" class="tab-pane">
+                        <div class="workspace-card">
+                            <div class="workspace-card-header" style="flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3><i class="fas fa-bolt text-accent"></i> Werkstroom &amp; Snelacties per Fase</h3>
+                                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 4px;">
+                                        Snelle acties voor intake communicatie, design oplevering en nazorg / APK check-ins.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 25px;">
+                                <!-- Fase 1: Intake & E-mail -->
+                                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">Fase 1: Intake &amp; Eerste Contact</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">AI Welkomstmail of intake-wensen afstemmen</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-action-ai-email"><i class="fas fa-robot"></i> AI Concept E-mail (Fase 1)</button>
+                                </div>
+
+                                <!-- Fase 3: Design Review -->
+                                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: #c084fc; font-weight: 700;">Fase 3: Design &amp; Ontwerp</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">Prototype, Figma of live staging review opleveren aan de klant</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-action-design" style="border-color: rgba(168, 85, 247, 0.4); color: #c084fc;"><i class="fas fa-palette"></i> Verstuur Design naar Klant (Fase 3)</button>
+                                </div>
+
+                                <!-- Fase 5: Nazorg & Check-in -->
+                                <div style="background: rgba(34,211,238,0.05); border: 1px solid rgba(34,211,238,0.25); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-accent); font-weight: 700;">Fase 5: Nazorg &amp; Periodieke Check-in</span>
+                                        <div style="font-size: 0.85rem; color: #fff;">14-dagen review check-in en 6-maanden APK wachtrij beheren</div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <button class="btn btn-secondary btn-sm" id="btn-action-checkin"><i class="fas fa-sync-alt"></i> 14-Dagen Check-in Wachtrij</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -739,21 +746,17 @@
                         </div>
                     </div>
 
-                    <!-- CARD 2: Boekhouding & Facturen (Pi Live) -->
-                    <div class="workspace-card" style="padding: 20px; margin-top: 16px; border: 1px solid rgba(52, 211, 153, 0.25); background: rgba(15, 23, 42, 0.85);">
+                    <!-- CARD 2: Huidig Abonnement & Hosting (Screen 1) -->
+                    <div class="workspace-card" style="padding: 20px; margin-top: 16px; border: 1px solid rgba(56, 189, 248, 0.25); background: rgba(15, 23, 42, 0.85);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
                             <span style="font-size: 0.95rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
-                                <i class="fas fa-file-invoice-dollar" style="color: #34d399;"></i> Facturen &amp; Boekhouding
+                                <i class="fas fa-server" style="color: #38bdf8;"></i> Huidig Abonnement
                             </span>
-                            <span style="font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 700; border: 1px solid rgba(52, 211, 153, 0.3);">Pi Live</span>
+                            <span id="subscription-status-badge" style="font-weight: 700; font-size: 0.72rem; color: #34d399;">Laden...</span>
                         </div>
                         
-                        <!-- 1. Huidig & Aanbevolen Abonnement -->
-                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                            <div style="font-size: 0.72rem; color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-                                <span>Huidig Abonnement</span>
-                                <span id="subscription-status-badge" style="font-weight: 700; font-size: 0.72rem; color: #34d399;">Laden...</span>
-                            </div>
+                        <!-- Huidig & Aanbevolen Abonnement -->
+                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px;">
                             <div id="subscription-current-display" style="font-size: 0.84rem; font-weight: 600; color: #f8fafc; margin-bottom: 8px;">
                                 Bezig met laden...
                             </div>
@@ -789,60 +792,6 @@
                                     <i class="fas fa-save"></i> Abonnement Opslaan
                                 </button>
                             </div>
-                        </div>
-
-                        <!-- 2. Laatste Factuur uit Pi-Boekhouding -->
-                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                            <div style="font-size: 0.72rem; color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                                <span><i class="fas fa-receipt text-accent"></i> Laatste Factuur (Pi)</span>
-                                <span id="pi-invoice-badge" class="badge badge-success" style="font-size: 0.68rem; padding: 2px 6px;">Laden...</span>
-                            </div>
-                            <div id="pi-invoice-summary" style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
-                                Bezig met opzoeken in Pi-Boekhouding...
-                            </div>
-                            <div id="pi-invoice-items" style="margin-top: 6px; font-size: 0.74rem; color: #94a3b8; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
-                                <!-- Items injected by JS -->
-                            </div>
-                        </div>
-
-                        <!-- 3. Gekoppeld Factuurnummer (Pi Boekhouding) -->
-                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                            <div style="font-size: 0.72rem; color: #34d399; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
-                                <span><i class="fas fa-file-invoice"></i> Factuurnummer (Pi)</span>
-                                <span style="font-size: 0.68rem; color: #94a3b8; font-weight: normal;">Bijv. 2026-009</span>
-                            </div>
-                            <div style="display: flex; gap: 6px;">
-                                <input type="text" id="edit-invoice-number" class="admin-input" placeholder="2026-..." style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #fff;">
-                                <button type="button" id="btn-save-invoice-number" class="btn btn-primary btn-sm" style="white-space: nowrap; padding: 6px 12px; font-size: 0.76rem;">
-                                    <i class="fas fa-save"></i> Opslaan
-                                </button>
-                            </div>
-                            <div id="invoice-number-status-feedback" style="font-size: 0.72rem; color: #94a3b8; margin-top: 5px;">
-                                Wordt gebruikt voor iDEAL links, PDF's &amp; portaal.
-                            </div>
-                        </div>
-
-                        <!-- 4. Directe Links & Tools -->
-                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem;">
-                            <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-sm" style="background: linear-gradient(135deg, #065f46, #047857); border: 1px solid #10b981; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; padding: 8px 12px;">
-                                <i class="fas fa-external-link-alt"></i> Open Pi-Boekhouding Web
-                            </a>
-                            
-                            <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 8px 10px;">
-                                <div style="font-size: 0.7rem; color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center;">
-                                    <span><i class="fas fa-folder text-accent"></i> Lokale Facturen &amp; DB Map</span>
-                                    <button type="button" id="btn-copy-facturen-path" class="btn btn-sm" style="padding: 2px 6px; font-size: 0.7rem; background: rgba(255,255,255,0.08); color: #94a3b8; border: none; cursor: pointer;" title="Kopieer pad naar klembord">
-                                        <i class="fas fa-copy"></i> Kopiëren
-                                    </button>
-                                </div>
-                                <div style="font-family: monospace; font-size: 0.72rem; color: #38bdf8; word-break: break-all;" id="txt-facturen-path">
-                                    C:\Users\Admin\Backups\Pi-Boekhouding
-                                </div>
-                            </div>
-                            
-                            <a href="caf-backup://open" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; font-size: 0.75rem; background: #1e293b; border-color: #334155; color: #cbd5e1; padding: 6px 10px;">
-                                <i class="fas fa-shield-alt" style="color: #818cf8;"></i> Open Backup Manager App
-                            </a>
                         </div>
                     </div>
                 </aside>
@@ -983,6 +932,121 @@
                 <button type="button" id="btn-cancel-mollie-modal" class="btn btn-secondary">Annuleren</button>
                 <button type="button" id="btn-save-mollie-link" class="btn btn-primary"><i class="fas fa-save"></i> Opslaan & Activeren</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nieuwe Factuur Aanmaken (Multi-Invoice Suite) -->
+    <div id="modal-create-invoice" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+        <div class="workspace-card" style="max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; background: #0c1020; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.85); padding: 24px;">
+            <div class="workspace-card-header" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-invoice-dollar" style="color: #38bdf8;"></i> Nieuwe Factuur Aanmaken
+                    </h3>
+                    <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
+                        Voeg een factuur toe aan dit project met automatische iDEAL Mollie betaallink.
+                    </p>
+                </div>
+                <button type="button" id="btn-close-create-inv-x" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <form id="form-create-invoice" style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-size: 0.75rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">
+                            Factuurnummer *
+                        </label>
+                        <input type="text" id="modal-inv-num" class="admin-input" placeholder="Bijv. 2026-009" required style="margin-top: 4px; font-weight: 700; font-family: monospace;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                            Snelkeuze / Type
+                        </label>
+                        <select id="modal-inv-preset" class="admin-input" style="margin-top: 4px; cursor: pointer;">
+                            <option value="custom">✏️ Aangepast / Handmatig</option>
+                            <option value="deposit_50" selected>⚡ Aanbetaling 50% Website Realisatie</option>
+                            <option value="final_50">🏁 Eindfactuur 50% Website Oplevering</option>
+                            <option value="full_100">🚀 Volledige Realisatie Website (100%)</option>
+                            <option value="hosting_nl">🌐 Managed Cloud Hosting &amp; .nl (€ 150,-)</option>
+                            <option value="hosting_2027">⭐ Trouwe Klant Tarief 2027 (€ 95,-)</option>
+                            <option value="apk_annual">🛡️ Jaarlijkse Website APK (€ 350,-)</option>
+                            <option value="extra_work">🛠️ Meerwerk &amp; Extra Ontwikkeling</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                        Factuuromschrijving (Zichtbaar op Factuur &amp; PDF) *
+                    </label>
+                    <input type="text" id="modal-inv-desc" class="admin-input" placeholder="Bijv. Aanbetaling 50% Website &amp; Software Realisatie" required style="margin-top: 4px;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                            Factuurdatum *
+                        </label>
+                        <input type="date" id="modal-inv-date" class="admin-input" required style="margin-top: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                            Vervaldatum *
+                        </label>
+                        <input type="date" id="modal-inv-due-date" class="admin-input" required style="margin-top: 4px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                            Bedrag excl. BTW (€) *
+                        </label>
+                        <input type="number" step="0.01" min="0" id="modal-inv-amount" class="admin-input" placeholder="0.00" required style="margin-top: 4px; font-weight: 700;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
+                            BTW Tarief
+                        </label>
+                        <select id="modal-inv-vat" class="admin-input" style="margin-top: 4px; cursor: pointer;">
+                            <option value="21" selected>21% (Standaard)</option>
+                            <option value="9">9% (Laag)</option>
+                            <option value="0">0% (Vrijgesteld / 0-tarief)</option>
+                            <option value="reverse">BTW Verlegd (0%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Live Calculated Totals Card -->
+                <div id="modal-inv-calc-box" style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div style="font-size: 0.8rem; color: #94a3b8;">
+                        Subtotaal: <strong id="modal-calc-subtotal" style="color: #fff;">€ 0,00</strong> &bull; BTW: <strong id="modal-calc-vat" style="color: #fff;">€ 0,00</strong>
+                    </div>
+                    <div style="font-size: 0.95rem; font-weight: 700; color: #34d399;">
+                        Totaal incl. BTW: <span id="modal-calc-total">€ 0,00</span>
+                    </div>
+                </div>
+
+                <!-- Mollie Option -->
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 6px;">
+                        <input type="checkbox" id="modal-inv-gen-mollie" checked style="accent-color: #0284c7; width: 16px; height: 16px;">
+                        <span>⚡ Direct officiële Mollie iDEAL betaallink genereren via API</span>
+                    </label>
+                    <div id="modal-inv-manual-url-wrap" class="hidden" style="margin-top: 8px;">
+                        <label style="font-size: 0.72rem; color: var(--color-text-secondary); text-transform: uppercase;">Handmatige Betaallink (Optioneel)</label>
+                        <input type="url" id="modal-inv-manual-url" class="admin-input" placeholder="https://useplink.com/... of https://www.mollie.com/..." style="margin-top: 4px;">
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
+                    <button type="button" id="btn-cancel-create-inv" class="btn btn-secondary">Annuleren</button>
+                    <button type="submit" id="btn-submit-create-inv" class="btn btn-primary" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700;">
+                        <i class="fas fa-plus-circle"></i> Factuur Aanmaken &amp; Opslaan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

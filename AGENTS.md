@@ -2,6 +2,29 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Multi-Facturatie Architectuur, Tab-Splitsing & Sidebar Sanering ([crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js), [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
+  - **Doel & Probleem**: Het CRM ging er voorheen vanuit dat een project slechts 1 factuur en 1 betaallink kon hebben. Daarnaast was de sidebar-kaart vervuild met factuurvelden en stonden offertes en snelacties op één onoverzichtelijk tabblad.
+  - **Oplossing**:
+    1. *Screen 1 Sidebar Schoonmaak*: Rechterkolom-kaart `CARD 2` toont nu **uitsluitend** het "Huidig Abonnement & Hosting", het systeemadvies en de abonnement-selector met opslaanknop. Het losse invoerveld `#edit-invoice-number` en de sectie "Laatste Factuur (Pi)" zijn volledig gesaneerd.
+    2. *Screen 2 Tab Splitsing*: Het oude gecombineerde tabblad is opgesplitst in twee intuïtieve tabbladen:
+       - **Offertes & Facturen** (`tab-proposals-invoices`): Bevat het AI scopevoorstel, acceptatie-/ondertekeningstatus, PDF-export én de complete Facturen & Betaallinks Suite.
+       - **Snelacties** (`tab-actions`): Bevat de gestroomlijnde fase-acties (Intake AI mail, Design oplevering, 14-dagen review en 6-maanden APK wachtrij).
+    3. *Multi-Facturatie Architectuur*: Volledige ondersteuning voor meerdere facturen per project (bijv. 50% aanbetaling, 50% oplevering, jaarlijkse hosting, meerwerk):
+       - *Nieuwe Factuur Aanmaken*: Interactieve modal `#modal-create-invoice` met slimme auto-increment factuurnummers (`2026-xxx`), snelle templates (50% aanbetaling, hosting, APK, etc.), live BTW-berekening en directe Mollie iDEAL link generatie via API.
+       - *Overzicht & KPI's*: 4 realtime statistiektegels (Totaal Gefactureerd, Totaal Voldaan, Openstaand, Aantal Facturen).
+       - *Beheer & Historie*: Tabel met inline statuswijziging (`Openstaand`, `Voldaan`, `Geannuleerd`), actieknoppen voor betaallink kopiëren, WhatsApp delen, factuur-specifieke PDF download en veilige factuurverwijdering.
+    4. *Klantportaal Synchronisatie*: In `crm/status/js/status.js` toont het factuurarchief nu alle individuele projectfacturen met hun eigen omschrijving, bedrag, Mollie iDEAL betaalknop en PDF downloads.
+    5. *CI/CD Quality Gate*: Geautomatiseerde testsuite uitgebreid naar 80/80 geslaagde unittests over alle 13 suites.
+
+
+- **[2026-10-09] Snelmenu Verwijdering van Dashboard Overzicht & Werkplek Integriteit ([crm/admin/js/modules/admin-tables.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/admin-tables.js), [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js))**:
+  - **Doel**: Het verouderde 'Snelmenu' knopje op het Dashboard Overzicht volledig saneren omdat beheerders direct op de Dedicated Werkplek (`project.html`) werken.
+  - **Oplossing**:
+    1. *Verwijdering*: In `crm/admin/js/modules/admin-tables.js` is `<button data-action="details">Snelmenu</button>` en de bijbehorende click listeners uit de tabelrijen (`createRow`) verwijderd.
+    2. *Klantlink*: De klantnaam (`safeClient`) in de tabel is nu tevens een directe klikbare hyperlink naar de Werkplek.
+    3. *Werkplek Verificatie*: Geverifieerd dat alle tabbladen (Intake, Offertes, Taken, Berichten, Staging, Notities, Bestanden en Klantview) en acties op de Werkplek autonoom en 100% vlekkeloos functioneren.
+    4. *Kwaliteitsgarantie*: Alle 79 geautomatiseerde unittests in `tests/run-all-tests.js` slagen (100% pass).
+
 - **[2026-10-09] Mollie iDEAL Betaallink & QR Integratie in Boekhoudtool & Factuur PDF ([Boekhouding/app.py](file:///c:/Users/Admin/Documents/GitHub/Boekhoudings/Boekhouding/app.py), [factuur_pdf.html](file:///c:/Users/Admin/Documents/GitHub/Boekhoudings/Boekhouding/templates/factuur_pdf.html))**:
   - **Doel**: Zorgen dat klanten die het CRM niet gebruiken toch eenvoudig online via Mollie (iDEAL) kunnen betalen vanaf de officiële factuur PDF.
   - **Oplossing**:

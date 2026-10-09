@@ -2043,7 +2043,7 @@ function setupClientInvoicesArchive(data) {
                 <tbody>
                     ${invoices.map((inv, idx) => {
                         const isPaid = isInvoicePaid(inv.invoiceNumber, inv.status);
-                        const mollieUrl = !isPaid ? (inv.mollieLink || data.mollieLink) : null;
+                        const mollieUrl = !isPaid ? (inv.mollieCheckoutUrl || inv.mollieLink || data.mollieLink) : null;
                         const badgeStyle = isPaid 
                             ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
                             : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
@@ -2103,6 +2103,13 @@ function setupClientInvoicesArchive(data) {
                     ...data,
                     id: currentProjectDocId,
                     invoiceNumber: inv.invoiceNumber,
+                    invoiceDate: inv.invoiceDate,
+                    dueDate: inv.dueDate,
+                    invoiceDescription: inv.description,
+                    amountExcl: inv.amountExcl || (inv.amountIncl ? (inv.amountIncl / 1.21) : data.proposalPrice),
+                    amountVat: inv.amountVat,
+                    amountIncl: inv.amountIncl,
+                    mollieLink: inv.mollieCheckoutUrl || inv.mollieLink || data.mollieLink,
                     proposalPrice: inv.amountExcl || (inv.amountIncl ? (inv.amountIncl / 1.21) : data.proposalPrice)
                 };
                 const { doc: invDoc, filename } = await generateInvoicePDF(invoiceProj);

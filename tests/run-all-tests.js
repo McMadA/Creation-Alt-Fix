@@ -723,7 +723,7 @@ const { ReactiveStore } = await import("../crm/js/core/store.js");
 const { ActionDispatcher } = await import("../crm/js/core/action-dispatcher.js");
 const { Schemas } = await import("../crm/js/core/schemas.js");
 const { calculateVisualPulse } = await import("../crm/admin/js/modules/project-timeline.js");
-const { generateBillingWhatsAppUrl } = await import("../crm/admin/js/modules/project-billing.js");
+const { generateBillingWhatsAppUrl, normalizeProjectInvoices, renderBillingCardHtml } = await import("../crm/admin/js/modules/project-billing.js");
 const { generateSlaContractDetails, renderSlaSigningModalHtml } = await import("../crm/status/js/modules/sla-signer.js");
 const { sendDiscordWebhookAlert, sendTelegramAlert } = await import("../crm/js/uptime-monitor.js");
 
@@ -805,6 +805,54 @@ test("generateBillingWhatsAppUrl formats phone numbers and encodes message safel
     assert.ok(waUrl.includes("Bakkerij%20Sieg"));
     assert.ok(waUrl.includes("2027-001"));
     assert.ok(waUrl.includes("https%3A%2F%2Fmollie.com%2Fpay%2F123"));
+});
+
+test("Multi-invoice management normalizes legacy projects and renders comprehensive billing suite", () => {
+    // 1. Legacy project auto-migration
+    const legacyProject = {
+        id: "proj_legacy",
+        client: "Legacy BV",
+        invoiceNumber: "2026-004",
+        mollieLink: "https://mollie.com/pay/test123",
+        proposalPrice: 500,
+        status: "Fase 5: Wacht op Betaling (Mollie)"
+    };
+    const normalized = normalizeProjectInvoices(legacyProject);
+    assert.equal(normalized.length, 1);
+    assert.equal(normalized[0].invoiceNumber, "2026-004");
+    assert.equal(normalized[0].mollieCheckoutUrl, "https://mollie.com/pay/test123");
+    assert.equal(normalized[0].amountExcl, 500);
+
+    // 2. Multi-invoice rendering
+    const multiProject = {
+        id: "proj_multi",
+        client: "Multi Test",
+        invoices: [
+            { invoiceNumber: "2026-010", amountExcl: 250, amountIncl: 302.50, status: "paid" },
+            { invoiceNumber: "2026-011", amountExcl: 250, amountIncl: 302.50, status: "open", mollieCheckoutUrl: "https://mollie.com/pay/test" }
+        ]
+    };
+    const billingHtml = renderBillingCardHtml(multiProject);
+    assert.ok(billingHtml.includes("2026-010"));
+    assert.ok(billingHtml.includes("2026-011"));
+    assert.ok(billingHtml.includes("Nieuwe Factuur Aanmaken"));
+    assert.ok(billingHtml.includes("Totaal Gefactureerd"));
+    assert.ok(billingHtml.includes("Totaal Voldaan"));
+    assert.ok(billingHtml.includes("Openstaand"));
+
+    // 3. UI checks: Screen 1 sidebar strictly shows subscription, no invoice fields
+    const projectHtml = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/project.html"), "utf-8");
+    assert.ok(!projectHtml.includes('id="edit-invoice-number"'), "Sidebar card must not contain #edit-invoice-number");
+    assert.ok(!projectHtml.includes('LAATSTE FACTUUR (PI)'), "Sidebar card must not contain LAATSTE FACTUUR (PI)");
+    assert.ok(projectHtml.includes('Huidig Abonnement'), "Sidebar card must contain Huidig Abonnement");
+
+    // 4. UI checks: Screen 2 tab splitting
+    assert.ok(projectHtml.includes('data-tab="tab-proposals-invoices"'), "Must have separate Offertes & Facturen tab");
+    assert.ok(projectHtml.includes('data-tab="tab-actions"'), "Must have separate Snelacties tab");
+    assert.ok(projectHtml.includes('id="tab-proposals-invoices"'), "Must have #tab-proposals-invoices pane");
+    assert.ok(projectHtml.includes('id="tab-actions"'), "Must have #tab-actions pane");
+    assert.ok(projectHtml.includes('id="project-billing-container"'), "Must contain #project-billing-container");
+    assert.ok(projectHtml.includes('id="modal-create-invoice"'), "Must contain #modal-create-invoice");
 });
 
 test("generateSlaContractDetails generates SLA terms based on 2027 plan", () => {
