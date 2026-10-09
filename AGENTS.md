@@ -2,6 +2,14 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Full-Width Werkplek Layout & Responsieve Tabs Wrapping ([crm/admin/css/admin.css](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/css/admin.css), [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html))**:
+  - **Probleem**: Op bredere beeldschermen (zoals 1440p / 4K / breedbeeld) werd de werkplek ingeperkt door een rigide `max-width: 1400px; margin: 0 auto;`. Hierdoor ontstonden enorme zwarte marges aan de zijkanten en werden de tabbladen (`.tab-nav`) aan de rechterkant afgekapt (`overflow-x`), waardoor tabs zoals 'Interne Notities', 'Bestanden' en 'Klantview Live Preview' niet direct zichtbaar waren.
+  - **Oplossing**:
+    1. *Volledige Breedte*: `.project-page-layout` uitgebreid naar `width: 100%; max-width: 100%; margin: 0; padding: 24px clamp(20px, 3vw, 48px);`. De werkplek benut nu de volledige viewport breedte.
+    2. *Grid Balans*: `.project-workspace-grid` omgezet naar `minmax(0, 1fr) 360px`, waardoor de hoofdcontentkolom optimaal meeschaalt en de sidebar strak gepositioneerd blijft.
+    3. *Responsieve Tabs Wrapping*: In `.tab-nav` `flex-wrap: wrap;` en `gap: 6px 10px;` geïmplementeerd. De tabs passen op brede schermen op één rij en lopen op smallere viewports naadloos over naar een volgende rij zonder ooit afgekapt te worden.
+
+
 - **[2026-10-09] Multi-Facturatie Architectuur, Tab-Splitsing & Sidebar Sanering ([crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js), [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js))**:
   - **Doel & Probleem**: Het CRM ging er voorheen vanuit dat een project slechts 1 factuur en 1 betaallink kon hebben. Daarnaast was de sidebar-kaart vervuild met factuurvelden en stonden offertes en snelacties op één onoverzichtelijk tabblad.
   - **Oplossing**:
