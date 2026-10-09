@@ -27,35 +27,48 @@ export async function createMolliePaymentLink({
     description = ""
 }) {
     const desc = description || `Factuur ${invoiceNumber} - Creation+Alt+Fix (${clientName})`;
-    const redirectUrl = `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(projectId)}&paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
-    const webhookUrl = `https://creationaltfix.nl/api/mollie/webhook`;
+    const redirectUrl = `https://portal.creationaltfix.nl/?paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
+    const webhookUrl = `https://portal.creationaltfix.nl/crm/api/mollie-webhook.php`;
 
-    try {
-        const response = await fetch('/api/mollie/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                projectId,
-                factuurnummer: invoiceNumber,
-                bedrag_incl: Number(amountIncl),
-                beschrijving: desc,
-                redirect_url: redirectUrl,
-                webhook_url: webhookUrl,
-                klant_naam: clientName
-            })
-        });
+    // 1. Probeer native PHP endpoint op Vimexx DirectAdmin server
+    const endpointsToTry = [
+        '../api/create-payment.php',
+        '/crm/api/create-payment.php',
+        '/api/mollie/create'
+    ];
 
-        if (response.ok) {
-            const data = await response.json();
-            if (data.checkout_url) {
-                return {
-                    paymentId: data.payment_id || `tr_${Date.now()}`,
-                    checkoutUrl: data.checkout_url
-                };
+    for (const endpoint of endpointsToTry) {
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    projectId,
+                    factuurnummer: invoiceNumber,
+                    invoiceNumber,
+                    bedrag_incl: Number(amountIncl),
+                    amountIncl: Number(amountIncl),
+                    beschrijving: desc,
+                    description: desc,
+                    redirect_url: redirectUrl,
+                    webhook_url: webhookUrl,
+                    klant_naam: clientName,
+                    clientName
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.checkout_url) {
+                    return {
+                        paymentId: data.payment_id || `tr_${Date.now()}`,
+                        checkoutUrl: data.checkout_url
+                    };
+                }
             }
+        } catch (err) {
+            // Probeer eventueel volgend endpoint
         }
-    } catch (err) {
-        console.warn("[MollieBilling] Backend endpoint /api/mollie/create niet direct bereikbaar; genereer veilige simulatie/betaal-URL:", err);
     }
 
     // Veilige Fallback: Genereer geformaliseerde directe betaal-URL (of iDEAL simulator)
@@ -81,7 +94,7 @@ export function generateBillingWhatsAppUrl(phone, clientName, invoiceNumber, amo
     const cleanPhone = String(phone || '').replace(/[^0-9]/g, '');
     const intlPhone = cleanPhone.startsWith('0') ? '31' + cleanPhone.slice(1) : cleanPhone;
     
-    const message = `Beste ${clientName},\n\nHierbij de iDEAL betaallink voor factuur ${invoiceNumber} t.w.v. ${formatCurrency(amountIncl)}:\n${checkoutUrl}\n\nNa betaling is de officiële voldane PDF direct downloadbaar in uw klantenportaal.\n\nMet vriendelijke groet,\nAllard van Creation+Alt+Fix`;
+    const message = `Beste ${clientName},\n\nHierbij de iDEAL betaallink voor factuur ${invoiceNumber} t.w.v. ${formatCurrency(amountIncl)}:\n${checkoutUrl}\n\nNa betaling kun je de officiële factuur altijd inzien en downloaden door in te loggen op je klantenportaal:\nhttps://portal.creationaltfix.nl/\n\nMet vriendelijke groet,\nAllard van Creation+Alt+Fix`;
     
     return `https://wa.me/${intlPhone}?text=${encodeURIComponent(message)}`;
 }

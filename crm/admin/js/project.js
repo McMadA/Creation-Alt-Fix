@@ -479,6 +479,7 @@ function renderProjectWorkspace(p) {
     setVal('edit-kvk', p.kvkNumber || p.kvk || '');
     setVal('edit-vat', p.vatNumber || p.btwNummer || '');
     setVal('edit-targetDeliveryDate', p.targetDeliveryDate || '');
+    setVal('edit-invoice-number', p.invoiceNumber || p.factuurnummer || '');
 
     // Populate Auth Info Box
     document.getElementById('auth-email-display').innerText = email || 'Geen e-mailadres ingesteld';
@@ -1666,7 +1667,19 @@ function setupFormHandlers() {
             const p = currentProjectData;
             if (!p) return;
             const amount = p.proposalPrice || 150;
-            const invNumber = `FAC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            let invNumber = p.invoiceNumber || p.factuurnummer;
+            if (!invNumber) {
+                invNumber = window.prompt("Voer het officiële factuurnummer in uit Pi Boekhouding (bijv. 2026-009):", "2026-");
+                if (!invNumber || !invNumber.trim()) return;
+                invNumber = invNumber.trim();
+                p.invoiceNumber = invNumber;
+                p.factuurnummer = invNumber;
+                if (db && currentProjectId) {
+                    await updateDoc(doc(db, "projects", currentProjectId), { invoiceNumber: invNumber, factuurnummer: invNumber });
+                }
+                const invInput = document.getElementById('edit-invoice-number');
+                if (invInput) invInput.value = invNumber;
+            }
             try {
                 const linkData = await createMolliePaymentLink({
                     projectId: currentProjectId,
@@ -2381,6 +2394,45 @@ function setupFormHandlers() {
         }
     });
 
+    // Action: Save Official Invoice Number (Pi Boekhouding)
+    document.getElementById('btn-save-invoice-number')?.addEventListener('click', async () => {
+        if (!currentProjectId) return;
+        const input = document.getElementById('edit-invoice-number');
+        const feedback = document.getElementById('invoice-number-status-feedback');
+        const saveBtn = document.getElementById('btn-save-invoice-number');
+        const num = input?.value?.trim() || '';
+
+        try {
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+            if (db) {
+                await updateDoc(doc(db, "projects", currentProjectId), {
+                    invoiceNumber: num,
+                    factuurnummer: num
+                });
+            }
+            currentProjectData = { ...(currentProjectData || {}), invoiceNumber: num, factuurnummer: num };
+            if (feedback) {
+                feedback.innerHTML = `<span style="color: #34d399;"><i class="fas fa-check"></i> Factuurnummer opgeslagen (${escapeHtml(num || 'geen')})!</span>`;
+                setTimeout(() => {
+                    feedback.innerText = "Wordt gebruikt voor iDEAL links, PDF's & portaal.";
+                }, 3000);
+            }
+            Toast.show({ title: "Factuurnummer Opgeslagen", message: `Factuurnummer ingesteld op ${num || 'leeg'}`, type: "success" });
+            await logAuditEvent('invoice_number_updated', `Officieel factuurnummer bijgewerkt naar: ${num}`);
+        } catch (err) {
+            console.error("Fout bij opslaan factuurnummer:", err);
+            alert("Kon factuurnummer niet opslaan: " + err.message);
+        } finally {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Opslaan';
+            }
+        }
+    });
+
     // Action: Save Client Subscription Plan
     document.getElementById('btn-save-subscription')?.addEventListener('click', async () => {
         const select = document.getElementById('select-client-subscription');
@@ -2611,6 +2663,8 @@ function setupFormHandlers() {
         const modal = document.getElementById('mollie-config-modal');
         if (!modal) return;
         const p = currentProjectData || {};
+        const invInput = document.getElementById('modal-mollie-inv-input');
+        if (invInput) invInput.value = p.invoiceNumber || p.factuurnummer || '';
         document.getElementById('modal-mollie-url-input').value = p.mollieLink || '';
         document.getElementById('modal-mollie-amount-input').value = p.proposalPrice ? `€ ${p.proposalPrice}` : '';
         modal.classList.remove('hidden');
@@ -2626,6 +2680,7 @@ function setupFormHandlers() {
     document.getElementById('btn-save-mollie-link')?.addEventListener('click', async () => {
         if (!db || !currentProjectId) return;
         const mollieUrl = document.getElementById('modal-mollie-url-input')?.value.trim();
+        const mollieInv = document.getElementById('modal-mollie-inv-input')?.value.trim();
         if (!mollieUrl) {
             alert("Voer een geldige Mollie Plink / betaal-URL in.");
             return;
@@ -2637,12 +2692,19 @@ function setupFormHandlers() {
                 statusClass: "payment",
                 mollieLink: mollieUrl
             };
+            if (mollieInv) {
+                updated.invoiceNumber = mollieInv;
+                updated.factuurnummer = mollieInv;
+            }
             await updateDoc(doc(db, "projects", currentProjectId), updated);
             currentProjectData = { ...currentProjectData, ...updated };
 
-            await logAuditEvent('mollie_generated', `Mollie betaallink gekoppeld (${mollieUrl}) en status gewijzigd naar Fase 5: Wacht op Betaling (Mollie).`);
+            const invInput = document.getElementById('edit-invoice-number');
+            if (invInput && mollieInv) invInput.value = mollieInv;
+
+            await logAuditEvent('mollie_generated', `Mollie betaallink gekoppeld (${mollieUrl}, Factuur: ${mollieInv || 'onbekend'}) en status gewijzigd naar Fase 5: Wacht op Betaling (Mollie).`);
             document.getElementById('mollie-config-modal')?.classList.add('hidden');
-            alert(`✓ Mollie factuurverzoek is succesvol klaargezet in het klantenportaal!\n\nStatus: Fase 5: Wacht op Betaling (Mollie)\nBetaallink:\n${mollieUrl}`);
+            alert(`✓ Mollie factuurverzoek is succesvol klaargezet in het klantenportaal!\n\nFactuur: ${mollieInv || '—'}\nStatus: Fase 5: Wacht op Betaling (Mollie)\nBetaallink:\n${mollieUrl}`);
             renderProjectWorkspace(currentProjectData);
         } catch (err) {
             alert("Fout bij opslaan Mollie link: " + err.message);

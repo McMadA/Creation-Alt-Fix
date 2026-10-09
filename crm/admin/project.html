@@ -808,7 +808,24 @@
                             </div>
                         </div>
 
-                        <!-- 3. Directe Links & Tools -->
+                        <!-- 3. Gekoppeld Factuurnummer (Pi Boekhouding) -->
+                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <div style="font-size: 0.72rem; color: #34d399; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+                                <span><i class="fas fa-file-invoice"></i> Factuurnummer (Pi)</span>
+                                <span style="font-size: 0.68rem; color: #94a3b8; font-weight: normal;">Bijv. 2026-009</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="edit-invoice-number" class="admin-input" placeholder="2026-..." style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #fff;">
+                                <button type="button" id="btn-save-invoice-number" class="btn btn-primary btn-sm" style="white-space: nowrap; padding: 6px 12px; font-size: 0.76rem;">
+                                    <i class="fas fa-save"></i> Opslaan
+                                </button>
+                            </div>
+                            <div id="invoice-number-status-feedback" style="font-size: 0.72rem; color: #94a3b8; margin-top: 5px;">
+                                Wordt gebruikt voor iDEAL links, PDF's &amp; portaal.
+                            </div>
+                        </div>
+
+                        <!-- 4. Directe Links & Tools -->
                         <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem;">
                             <a href="http://100.65.226.112:8888/" target="_blank" rel="noopener" class="btn btn-sm" style="background: linear-gradient(135deg, #065f46, #047857); border: 1px solid #10b981; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; padding: 8px 12px;">
                                 <i class="fas fa-external-link-alt"></i> Open Pi-Boekhouding Web
@@ -953,6 +970,10 @@
             <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 14px;">
                 Koppel een officiële Mollie / iDEAL betaallink (bijv. van Plink of Mollie Dashboard) aan dit project. De klant kan direct via het portaal afrekenen.
             </p>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.75rem; color: #34d399; text-transform: uppercase; font-weight: 700;">Officieel Factuurnummer (Pi Boekhouding) *</label>
+                <input type="text" id="modal-mollie-inv-input" class="admin-input" placeholder="Bijv. 2026-009" style="margin-top: 4px; font-weight: 600;">
+            </div>
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase;">Mollie Plink Betaal-URL *</label>
                 <input type="url" id="modal-mollie-url-input" class="admin-input" placeholder="https://useplink.com/2/..." style="margin-top: 4px;">

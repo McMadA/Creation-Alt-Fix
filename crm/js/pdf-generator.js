@@ -522,7 +522,7 @@ export async function generateInvoicePDF(p) {
 
     const dateFormatted = docDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
     const dueDateFormatted = dueDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
-    const invoiceNumber = `CAF-FAC-${docDate.getFullYear()}-${String(p.id || '101').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase()}`;
+    const invoiceNumber = p.invoiceNumber || p.factuurnummer || p.latestInvoice?.number || `CAF-FAC-${docDate.getFullYear()}-${String(p.id || '101').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase()}`;
 
     // ==========================================
     // 1. TOP 3-COLOR GRADIENT ACCENT STRIPE

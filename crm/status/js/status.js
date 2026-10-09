@@ -517,8 +517,9 @@ function renderDashboard(data) {
     // Render Realtime Website & Systeem Uptime Monitoring (TASK-827)
     renderClientUptimeSection(data);
 
-    // Setup invoice download card & profile modal
+    // Setup invoice download card, invoice archive & profile modal
     setupInvoiceDownload(data);
+    setupClientInvoicesArchive(data);
     setupProfileModal();
 }
 
@@ -1890,7 +1891,9 @@ function setupInvoiceDownload(data) {
         statusText.includes('Live') ||
         statusText.includes('Voldaan') ||
         statusText === 'Afgerond' ||
-        data.invoicePdfUrl
+        data.invoicePdfUrl ||
+        data.invoiceNumber ||
+        data.factuurnummer
     );
 
     if (isDeliveredOrMollie) {
@@ -1904,7 +1907,11 @@ function setupInvoiceDownload(data) {
             const origHtml = invCard.innerHTML;
             invCard.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: var(--color-accent);"></i> <div><h4>Factuur Genereren...</h4><p>Een ogenblik geduld alstublieft</p></div>';
             try {
-                const projData = { ...data, id: currentProjectDocId };
+                const projData = { 
+                    ...data, 
+                    id: currentProjectDocId,
+                    invoiceNumber: data.invoiceNumber || data.factuurnummer
+                };
                 const { doc: invDoc, filename } = await generateInvoicePDF(projData);
                 invDoc.save(filename);
             } catch (err) {
@@ -1917,6 +1924,119 @@ function setupInvoiceDownload(data) {
     } else {
         invCard.classList.add('hidden');
     }
+}
+
+function setupClientInvoicesArchive(data) {
+    const archiveCard = document.getElementById('client-invoices-archive-card');
+    const tableContainer = document.getElementById('client-invoices-table-container');
+    const countBadge = document.getElementById('client-invoices-count-badge');
+    if (!archiveCard || !tableContainer) return;
+
+    // Verzamel alle geregistreerde facturen van dit project
+    const invoices = Array.isArray(data.invoices) ? [...data.invoices] : [];
+    
+    // Voeg standalone invoice toe indien niet aanwezig in array
+    if ((data.invoiceNumber || data.factuurnummer) && !invoices.some(i => i.invoiceNumber === (data.invoiceNumber || data.factuurnummer))) {
+        const invNum = data.invoiceNumber || data.factuurnummer;
+        invoices.push({
+            invoiceNumber: invNum,
+            invoiceDate: data.invoiceDate || data.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+            amountIncl: data.proposalPrice ? (data.proposalPrice * 1.21) : 0,
+            status: data.status?.toLowerCase().includes('voldaan') || data.status?.toLowerCase().includes('paid') ? 'paid' : 'open',
+            pdfUrl: data.invoicePdfUrl || null
+        });
+    }
+
+    if (invoices.length === 0) {
+        archiveCard.classList.add('hidden');
+        return;
+    }
+
+    archiveCard.classList.remove('hidden');
+    if (countBadge) countBadge.innerText = `${invoices.length} factu${invoices.length === 1 ? 'ur' : 'ren'}`;
+
+    tableContainer.innerHTML = `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead>
+                    <tr style="text-align: left; opacity: 0.7; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; text-transform: uppercase;">
+                        <th style="padding: 8px 10px;">Factuurnr</th>
+                        <th style="padding: 8px 10px;">Datum</th>
+                        <th style="padding: 8px 10px;">Bedrag (Incl.)</th>
+                        <th style="padding: 8px 10px;">Status</th>
+                        <th style="padding: 8px 10px; text-align: right;">Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${invoices.map((inv, idx) => {
+                        const isPaid = inv.status === 'paid' || inv.status === 'voldaan';
+                        const badgeStyle = isPaid 
+                            ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
+                            : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
+                        const badgeText = isPaid ? '✅ Voldaan' : '⏳ Openstaand';
+                        const safeNum = escapeHtml(inv.invoiceNumber || 'Factuur');
+                        const safeDate = escapeHtml(inv.invoiceDate || '—');
+                        const amountStr = inv.amountIncl ? formatCurrency(inv.amountIncl) : '—';
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; font-weight: 700; color: #fff;">${safeNum}</td>
+                                <td style="padding: 10px; opacity: 0.8;">${safeDate}</td>
+                                <td style="padding: 10px; font-weight: 600; color: #34d399;">${amountStr}</td>
+                                <td style="padding: 10px;">
+                                    <span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.72rem; font-weight: 600; ${badgeStyle}">
+                                        ${badgeText}
+                                    </span>
+                                </td>
+                                <td style="padding: 10px; text-align: right;">
+                                    <button type="button" class="btn btn-secondary btn-sm btn-dl-hist-inv" data-idx="${idx}" style="padding: 3px 10px; font-size: 0.75rem; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent); cursor: pointer;">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    // Hook up download buttons for each invoice row
+    tableContainer.querySelectorAll('.btn-dl-hist-inv').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.getAttribute('data-idx'), 10);
+            const inv = invoices[idx];
+            if (!inv) return;
+
+            if (inv.pdfUrl) {
+                const safeUrl = sanitizeUrl(inv.pdfUrl);
+                if (safeUrl !== '#') {
+                    window.open(safeUrl, '_blank');
+                    return;
+                }
+            }
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            try {
+                const invoiceProj = {
+                    ...data,
+                    id: currentProjectDocId,
+                    invoiceNumber: inv.invoiceNumber,
+                    proposalPrice: inv.amountExcl || (inv.amountIncl ? (inv.amountIncl / 1.21) : data.proposalPrice)
+                };
+                const { doc: invDoc, filename } = await generateInvoicePDF(invoiceProj);
+                invDoc.save(filename);
+            } catch (err) {
+                console.error("Fout bij downloaden historische factuur:", err);
+                alert("Kon factuur PDF niet downloaden.");
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        });
+    });
 }
 
 function setupProfileModal() {

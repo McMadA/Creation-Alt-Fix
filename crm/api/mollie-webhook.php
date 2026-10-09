@@ -20,6 +20,25 @@ if (!$paymentId) {
 
 $apiKey = getenv('MOLLIE_API_KEY') ?: '';
 
+// Fallback: lees MOLLIE_API_KEY uit .env bestand in bovenliggende crm map
+if (empty($apiKey)) {
+    $envFile = dirname(__DIR__) . '/.env';
+    if (file_exists($envFile)) {
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line) || $line[0] === '#') continue;
+            if (strpos($line, '=') !== false) {
+                list($k, $v) = explode('=', $line, 2);
+                if (trim($k) === 'MOLLIE_API_KEY') {
+                    $apiKey = trim($v, " \t\n\r\0\x0B\"'");
+                    break;
+                }
+            }
+        }
+    }
+}
+
 $logFile = __DIR__ . '/mollie-payments-log.json';
 $existingLogs = file_exists($logFile) ? json_decode(file_get_contents($logFile), true) : [];
 if (!is_array($existingLogs)) {

@@ -2,6 +2,22 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Mollie Test API Validatie, Factuurnummer Koppeling & Klantportaal Factuurarchief ([crm/api/create-payment.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/create-payment.php), [crm/admin/project.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/project.html), [crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html))**:
+  - **Mollie Test Key Verificatie**: De geconfigureerde `MOLLIE_API_KEY` in `crm/.env` succesvol geverifieerd via de Mollie API v2 (3 actieve betaalmethodes: iDEAL, Creditcard, Pay By Bank) en een echte test transactie (`tr_AU6egVPaYGTFdqtb7ouXJ`) gegenereerd.
+  - **Backend & Webhook Endpoint**: `crm/api/create-payment.php` gecreëerd voor PHP/DirectAdmin en `crm/api/mollie-webhook.php` voorzien van automatische `.env` fallback.
+  - **Factuurnummer Koppeling (Pi Boekhouding)**: Invoerveld `#edit-invoice-number` en Mollie modal input `#modal-mollie-inv-input` toegevoegd. Dummy nummers (`FAC-2026-xxxx` en `CAF-FAC-...`) vervangen door het echte opgeslagen factuurnummer in zowel de iDEAL betaallink als de gegenereerde PDF.
+  - **Inlogportaal Beveiliging**: Klanten worden conform AVG/GDPR naar `https://portal.creationaltfix.nl/` geleid om in te loggen in plaats van onbeveiligde directe statuslinks.
+  - **Historisch Factuurarchief Klantportaal**: In het klantenportaal de module `#client-invoices-archive-card` geactiveerd, waardoor klanten na inloggen al hun eerdere projectfacturen en jaaroverzichten met status en PDF downloadknop kunnen raadplegen.
+
+
+- **[2026-10-09] Mollie iDEAL & Boekhouding vs. CRM Architectuuradvies ([crm/api/mollie-webhook.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/mollie-webhook.php), [crm/admin/js/modules/project-billing.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/modules/project-billing.js))**:
+  - **Probleem**: Frictie en risico op desynchronisatie tussen lokale fiscale boekhouding op Raspberry Pi (opeenvolgende factuurnummers `2026-xxx` & BTW-aangifte) en het cloud CRM met Mollie iDEAL betaallinks en online webhook listeners.
+  - **Oplossing & Architectuur**: Strikte scheiding van Front-Office en Back-Office.
+    1. *Back-Office (Pi)*: Blijft de enige fiscale bron van waarheid voor opeenvolgende factuurnummers en Belastingdienst BTW-aangiftes. Wordt niet direct publiek blootgesteld aan openbare internet-webhooks (veilig & storingsongevoelig).
+    2. *Front-Office (Vimexx CRM)*: Handelt de klantinteractie af (offertes `OFF-2026-xxx`, Mollie iDEAL betaallink generatie, 24/7 HTTPS webhook listener op `mollie-webhook.php` en directe statusupdate naar 'Betaald' met groen vinkje in `/crm/status/`).
+    3. *Aflettering*: Uitbetalingen van Mollie komen binnen op de zakelijke bankrekening en worden in de Pi Boekhouding gekoppeld aan de officiële factuur, waardoor BTW- en kasstromen 100% sluitend blijven zonder complexe tweeweg real-time database synchronisatie.
+
+
 - **[2026-10-09] Model Begroeting & Sessie Handshake**:
   - Geverifieerd dat de assistent operationeel is en instructies direct en beknopt opvolgt conform CKE-richtlijnen.
 

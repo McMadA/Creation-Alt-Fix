@@ -594,6 +594,23 @@
                         </div>
                     </button>
 
+                    <!-- Facturen & Jaaroverzicht Container (Historische Facturen) -->
+                    <div id="client-invoices-archive-card" class="action-card hidden" style="width: 100%; border: 1px solid rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.05); text-align: left; display: block; padding: 18px 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-file-invoice" style="color: #34d399; font-size: 1.3rem;"></i>
+                                <h4 style="margin: 0; font-size: 1.05rem;" data-translate-key="statusInvoicesArchiveTitle">Mijn Facturen &amp; Jaaroverzicht</h4>
+                            </div>
+                            <span id="client-invoices-count-badge" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: rgba(52, 211, 153, 0.2); color: #34d399; font-weight: 700;">—</span>
+                        </div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;" data-translate-key="statusInvoicesArchiveDesc">
+                            Overzicht van officiële facturen van dit project. Download direct de voldane PDF administratie.
+                        </p>
+                        <div id="client-invoices-table-container">
+                            <!-- Invoices rendered by JS -->
+                        </div>
+                    </div>
+
                     <!-- In-App Bericht / Ticket Sturen (Vervangt mailto) -->
                     <button type="button" id="btn-open-messaging-card" class="action-card" style="width: 100%; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.08); text-align: left; cursor: pointer; font-family: inherit;">
                         <i class="fas fa-comments" style="color: var(--color-accent);"></i>
