@@ -2,6 +2,10 @@
 
 ## Recent Insights
 
+- **[2026-10-09] Mollie Single-Use Transactie Lifecycle & 'Paid' Redirect Verificatie ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/api/create-payment.php](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/api/create-payment.php))**:
+  - **Context & Gedrag**: Een Mollie checkout URL is strikt eenmalig (`single-use`). Zodra een transactie (`tr_...`) in Mollie de status `paid` (of `expired`) heeft bereikt, blokkeert Mollie herhaalde betalingen en stuurt de bezoeker direct door naar de geconfigureerde `redirectUrl` (`...&paid=true&invoice=2026-TEST`).
+  - **Gebruikerservaring**: Hierdoor ziet de klant bij het opnieuw aanklikken van een reeds betaalde link direct de bevestigingsmodal in het portaal ("Payment Successfully Completed!"), wat dubbele betalingen voorkomt. Voor een nieuwe betaaltest moet altijd een verse transactie-URL gegenereerd worden via de Mollie API (`tr_hihZLSPaMRo9PN7UwxuXJ`).
+
 - **[2026-10-09] Prominente Openstaande Factuur Banner & Inline iDEAL Knoppen ([crm/status/index.html](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/index.html), [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js), [crm/status/js/modules/translations.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/modules/translations.js))**:
   - **Probleem**: Klanten met openstaande facturen zagen de Mollie betaalknop over het hoofd doordat `#mollie-link` onderaan de pagina stond bij *Snelle Acties & Contact*. In de tabel *Mijn Facturen & Jaaroverzicht* stond alleen een PDF-downloadknop en geen directe betaalknop.
   - **Oplossing**:
