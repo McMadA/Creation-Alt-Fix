@@ -548,24 +548,24 @@ export async function generateProposalPDF(p, isSigned = false) {
     // 4 Pillars Grid (2 columns x 2 rows)
     const cardW = (contentWidth - 6) / 2;
     const cardH = 90;
-    const col1X = margin;
-    const col2X = margin + cardW + 6;
+    const p2Col1X = margin;
+    const p2Col2X = margin + cardW + 6;
 
     // Row 1: Pillar 1 (Left) & Pillar 2 (Right)
     const row1Y = p2Y;
 
-    // Pillar 1: Juridisch & AVG (col1)
+    // Pillar 1: Juridisch & AVG (p2Col1X)
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(col1X, row1Y, cardW, cardH, 2, 2, 'F');
+    doc.roundedRect(p2Col1X, row1Y, cardW, cardH, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(col1X, row1Y, cardW, cardH, 2, 2, 'S');
+    doc.roundedRect(p2Col1X, row1Y, cardW, cardH, 2, 2, 'S');
 
     doc.setFillColor(238, 242, 255);
-    doc.rect(col1X, row1Y, cardW, 8, 'F');
+    doc.rect(p2Col1X, row1Y, cardW, 8, 'F');
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(79, 70, 229);
-    doc.text("1. JURIDISCH & AVG/GDPR COMPLIANCE (4)", col1X + 4, row1Y + 5.5);
+    doc.text("1. JURIDISCH & AVG/GDPR COMPLIANCE (4)", p2Col1X + 4, row1Y + 5.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.2);
@@ -580,22 +580,22 @@ export async function generateProposalPDF(p, isSigned = false) {
     ];
     let itY = row1Y + 14;
     p1Items.forEach(item => {
-        doc.text(item, col1X + 4, itY);
+        doc.text(item, p2Col1X + 4, itY);
         itY += 12;
     });
 
-    // Pillar 2: Google SEO & Rich Snippets (col2)
+    // Pillar 2: Google SEO & Rich Snippets (p2Col2X)
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(col2X, row1Y, cardW, cardH, 2, 2, 'F');
+    doc.roundedRect(p2Col2X, row1Y, cardW, cardH, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(col2X, row1Y, cardW, cardH, 2, 2, 'S');
+    doc.roundedRect(p2Col2X, row1Y, cardW, cardH, 2, 2, 'S');
 
     doc.setFillColor(236, 253, 245);
-    doc.rect(col2X, row1Y, cardW, 8, 'F');
+    doc.rect(p2Col2X, row1Y, cardW, 8, 'F');
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(5, 150, 105);
-    doc.text("2. GOOGLE SEO & RICH SNIPPETS (8)", col2X + 4, row1Y + 5.5);
+    doc.text("2. GOOGLE SEO & RICH SNIPPETS (8)", p2Col2X + 4, row1Y + 5.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.2);
@@ -612,7 +612,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     ];
     itY = row1Y + 14;
     p2Items.forEach(item => {
-        doc.text(item, col2X + 4, itY);
+        doc.text(item, p2Col2X + 4, itY);
         itY += 9.5;
     });
 
@@ -620,18 +620,18 @@ export async function generateProposalPDF(p, isSigned = false) {
     const row2Y = row1Y + cardH + 5;
     const cardH2 = 78;
 
-    // Pillar 3: Conversie & Anti-Spam (col1)
+    // Pillar 3: Conversie & Anti-Spam (p2Col1X)
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(col1X, row2Y, cardW, cardH2, 2, 2, 'F');
+    doc.roundedRect(p2Col1X, row2Y, cardW, cardH2, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(col1X, row2Y, cardW, cardH2, 2, 2, 'S');
+    doc.roundedRect(p2Col1X, row2Y, cardW, cardH2, 2, 2, 'S');
 
     doc.setFillColor(254, 243, 199);
-    doc.rect(col1X, row2Y, cardW, 8, 'F');
+    doc.rect(p2Col1X, row2Y, cardW, 8, 'F');
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(180, 83, 9);
-    doc.text("3. CONVERSIE, UX & ANTI-SPAM (4)", col1X + 4, row2Y + 5.5);
+    doc.text("3. CONVERSIE, UX & ANTI-SPAM (4)", p2Col1X + 4, row2Y + 5.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.2);
@@ -645,22 +645,22 @@ export async function generateProposalPDF(p, isSigned = false) {
     ];
     itY = row2Y + 14;
     p3Items.forEach(item => {
-        doc.text(item, col1X + 4, itY);
+        doc.text(item, p2Col1X + 4, itY);
         itY += 12;
     });
 
-    // Pillar 4: Snelheid & Zuiverheid (col2)
+    // Pillar 4: Snelheid & Zuiverheid (p2Col2X)
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(col2X, row2Y, cardW, cardH2, 2, 2, 'F');
+    doc.roundedRect(p2Col2X, row2Y, cardW, cardH2, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(col2X, row2Y, cardW, cardH2, 2, 2, 'S');
+    doc.roundedRect(p2Col2X, row2Y, cardW, cardH2, 2, 2, 'S');
 
     doc.setFillColor(243, 232, 255);
-    doc.rect(col2X, row2Y, cardW, 8, 'F');
+    doc.rect(p2Col2X, row2Y, cardW, 8, 'F');
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(126, 34, 206);
-    doc.text("4. SNELHEID & TOEGANKELIJKHEID (4)", col2X + 4, row2Y + 5.5);
+    doc.text("4. SNELHEID & TOEGANKELIJKHEID (4)", p2Col2X + 4, row2Y + 5.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.2);
@@ -674,7 +674,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     ];
     itY = row2Y + 14;
     p4Items.forEach(item => {
-        doc.text(item, col2X + 4, itY);
+        doc.text(item, p2Col2X + 4, itY);
         itY += 12;
     });
 
