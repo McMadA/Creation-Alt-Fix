@@ -493,6 +493,220 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.text("Voor vragen over deze offerte kun je direct contact opnemen via info@creationaltfix.nl of telefonisch.", margin, footerY + 16);
     doc.text("Creation+Alt+Fix • Algemene Voorwaarden gedeponeerd bij KVK Groningen • creationaltfix.nl", margin, footerY + 22);
 
+    // ==========================================
+    // 9. PAGE 2: 20-PUNTEN KWALITEITSKEURMERK & OPLEVERGARANTIE
+    // ==========================================
+    doc.addPage('a4', 'portrait');
+
+    // Accent Stripe
+    doc.setFillColor(99, 102, 241); doc.rect(0, 0, 70, 3, 'F');
+    doc.setFillColor(168, 85, 247); doc.rect(70, 0, 70, 3, 'F');
+    doc.setFillColor(34, 211, 238); doc.rect(140, 0, 70, 3, 'F');
+
+    let p2Y = 16;
+    // Brand header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.setTextColor(10, 14, 26);
+    doc.text("Creation+Alt+Fix", margin, p2Y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Officiële Bijlage bij Offerte #${quoteNumber}`, margin, p2Y + 4.5);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(30, 41, 59);
+    doc.text("20-PUNTEN KWALITEITSKEURMERK & OPLEVERGARANTIE", pageWidth - margin, p2Y, { align: "right" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(16, 185, 129); // Green
+    doc.text("100% Inbegrepen bij Oplevering", pageWidth - margin, p2Y + 4.5, { align: "right" });
+
+    p2Y += 9;
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.line(margin, p2Y, pageWidth - margin, p2Y);
+
+    // Intro explanation box
+    p2Y += 5;
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin, p2Y, contentWidth, 13, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(margin, p2Y, contentWidth, 13, 2, 2, 'S');
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Elke website van Creation+Alt+Fix wordt standaard en zonder meerprijs opgeleverd conform ons 20-punten keurmerk.", margin + 5, p2Y + 5);
+    doc.text("Dit garandeert volledige AVG-bescherming, Google top-vindbaarheid via Schema.org, spam-vrije formulieren en sub-seconde snelheid.", margin + 5, p2Y + 9.5);
+
+    p2Y += 17;
+
+    // 4 Pillars Grid (2 columns x 2 rows)
+    const cardW = (contentWidth - 6) / 2;
+    const cardH = 90;
+    const col1X = margin;
+    const col2X = margin + cardW + 6;
+
+    // Row 1: Pillar 1 (Left) & Pillar 2 (Right)
+    const row1Y = p2Y;
+
+    // Pillar 1: Juridisch & AVG (col1)
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(col1X, row1Y, cardW, cardH, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(col1X, row1Y, cardW, cardH, 2, 2, 'S');
+
+    doc.setFillColor(238, 242, 255);
+    doc.rect(col1X, row1Y, cardW, 8, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(79, 70, 229);
+    doc.text("1. JURIDISCH & AVG/GDPR COMPLIANCE (4)", col1X + 4, row1Y + 5.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(51, 65, 85);
+    const p1Items = [
+        "[X] Ingebouwde Privacy Policy modal (#modal-privacy)",
+        "[X] Algemene Voorwaarden modal (#modal-terms)",
+        "[X] Zero-tracking cookiemelding met bewaarbeleid",
+        "[X] Footer KVK, BTW en contactidentiteit",
+        "[X] 0% risico op AVG boetes van toezichthouders",
+        "[X] Sluitende verwerkersovereenkomst conform wet"
+    ];
+    let itY = row1Y + 14;
+    p1Items.forEach(item => {
+        doc.text(item, col1X + 4, itY);
+        itY += 12;
+    });
+
+    // Pillar 2: Google SEO & Rich Snippets (col2)
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(col2X, row1Y, cardW, cardH, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(col2X, row1Y, cardW, cardH, 2, 2, 'S');
+
+    doc.setFillColor(236, 253, 245);
+    doc.rect(col2X, row1Y, cardW, 8, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(5, 150, 105);
+    doc.text("2. GOOGLE SEO & RICH SNIPPETS (8)", col2X + 4, row1Y + 5.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(51, 65, 85);
+    const p2Items = [
+        "[X] Schema.org LocalBusiness microdata",
+        "[X] Schema.org FAQPage rich snippets in Google",
+        "[X] Interactieve FAQ accordion (twijfel-wegnemer)",
+        "[X] Canonical URL tags (voorkomt duplicate content)",
+        "[X] Robots.txt meta indexering geconfigureerd",
+        "[X] Social Open Graph & Twitter share cards",
+        "[X] Thematische SVG vector favicon",
+        "[X] H1-H3 gestructureerde zoekmachine hierarchie"
+    ];
+    itY = row1Y + 14;
+    p2Items.forEach(item => {
+        doc.text(item, col2X + 4, itY);
+        itY += 9.5;
+    });
+
+    // Row 2: Pillar 3 (Left) & Pillar 4 (Right)
+    const row2Y = row1Y + cardH + 5;
+    const cardH2 = 78;
+
+    // Pillar 3: Conversie & Anti-Spam (col1)
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(col1X, row2Y, cardW, cardH2, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(col1X, row2Y, cardW, cardH2, 2, 2, 'S');
+
+    doc.setFillColor(254, 243, 199);
+    doc.rect(col1X, row2Y, cardW, 8, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(180, 83, 9);
+    doc.text("3. CONVERSIE, UX & ANTI-SPAM (4)", col1X + 4, row2Y + 5.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(51, 65, 85);
+    const p3Items = [
+        "[X] Anti-Spam Honeypot trap (100% spam-vrij)",
+        "[X] Geen irritante reCAPTCHA puzzels voor klanten",
+        "[X] 1-Klik WhatsApp & Bellen directe knoppen",
+        "[X] Client-side formuliervalidatie op velden",
+        "[X] Hoge conversie CTA plaatsing op sleutelposities"
+    ];
+    itY = row2Y + 14;
+    p3Items.forEach(item => {
+        doc.text(item, col1X + 4, itY);
+        itY += 12;
+    });
+
+    // Pillar 4: Snelheid & Zuiverheid (col2)
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(col2X, row2Y, cardW, cardH2, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(col2X, row2Y, cardW, cardH2, 2, 2, 'S');
+
+    doc.setFillColor(243, 232, 255);
+    doc.rect(col2X, row2Y, cardW, 8, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(126, 34, 206);
+    doc.text("4. SNELHEID & TOEGANKELIJKHEID (4)", col2X + 4, row2Y + 5.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(51, 65, 85);
+    const p4Items = [
+        "[X] Vanilla code < 50 KB (geen WordPress bloat)",
+        "[X] Laadtijd < 0,8 seconde (Lighthouse 95+)",
+        "[X] 100% Fluid Mobile Responsive (320px tot 4K)",
+        "[X] WCAG toegankelijkheidscontrast & ARIA",
+        "[X] 0 console errors, maximale stabiliteit"
+    ];
+    itY = row2Y + 14;
+    p4Items.forEach(item => {
+        doc.text(item, col2X + 4, itY);
+        itY += 12;
+    });
+
+    // Quality Seal Banner Box at bottom
+    const sealY = row2Y + cardH2 + 5;
+    doc.setFillColor(240, 253, 244);
+    doc.roundedRect(margin, sealY, contentWidth, 13, 2, 2, 'F');
+    doc.setDrawColor(34, 197, 94);
+    doc.setLineWidth(0.6);
+    doc.roundedRect(margin, sealY, contentWidth, 13, 2, 2, 'S');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(22, 101, 52);
+    doc.text("[CERTIFICAAT] SCHRIFTELIJKE OPLEVERGARANTIE CREATION+ALT+FIX", margin + 5, sealY + 5);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(21, 128, 61);
+    doc.text("Voldoet een opgeleverde website niet aan een van deze 20 punten? Dan lossen wij dit binnen 48 uur kosteloos voor u op.", margin + 5, sealY + 9.5);
+
+    // Footer on Page 2
+    doc.setFillColor(10, 14, 26);
+    doc.rect(0, footerY, pageWidth, footerHeight, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text("Creation+Alt+Fix • 20-Punten Kwaliteitskeurmerk & Oplevergarantie", margin, footerY + 10);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Officiële bijlage behorende bij offerte #${quoteNumber} • creationaltfix.nl • KVK 94200632`, margin, footerY + 18);
+
     const safeClient = (clientName || 'Klant').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 30);
     const filename = `Offerte-CreationAltFix-${safeClient}-${quoteNumber}.pdf`;
     const blob = doc.output('blob');
