@@ -754,7 +754,25 @@ export const translations = {
         "pdfModalDesc": "In het echte Creation+Alt+Fix portaal wordt direct een rechtsgeldige PDF gegenereerd via jsPDF met live status updates.",
         "lblDigitalSig": "Plaats hier een digitale handtekening (teken met muis / vinger):",
         "btnClearSig": "Wissen",
-        "btnSignProposal": "Offerte Digitaal Ondertekenen"
+        "btnSignProposal": "Offerte Digitaal Ondertekenen",
+        "qualityBadge": "100% Oplevergarantie",
+        "qualityTitle": "Ons 20-Punten <span>Kwaliteitskeurmerk</span>",
+        "qualitySubtitle": "Standaard inbegrepen bij elk project. Geen verborgen kosten, geen trage WordPress plugins en nul privacyrisico's.",
+        "qualityDocsBtn": "Alle 20 criteria inzien (Gids)",
+        "qualityP1Title": "1. Juridisch & AVG/GDPR",
+        "qualityP1Desc": "Privacy policy, algemene voorwaarden & zero-tracking banner ingebouwd. 100% AVG-proof zonder boeterisico.",
+        "qualityP1Badge": "✓ 4 Criteria Inbegrepen",
+        "qualityP2Title": "2. Google SEO & Rich Snippets",
+        "qualityP2Desc": "Schema.org LocalBusiness & FAQ rich snippets, canonicals en sitemap voor directe top-posities in Google.",
+        "qualityP2Badge": "✓ 8 Criteria Inbegrepen",
+        "qualityP3Title": "3. Conversie & Anti-Spam",
+        "qualityP3Desc": "Verborgen honeypot trap filtert 100% van de spambots zonder captchas. Directe 1-klik WhatsApp & belknoppen.",
+        "qualityP3Badge": "✓ 4 Criteria Inbegrepen",
+        "qualityP4Title": "4. Snelheid & Kwaliteit",
+        "qualityP4Desc": "Pure vanilla code (< 50 KB), laadtijd < 0,8 seconde (Lighthouse 95+), 100% mobile fluid en 0 console errors.",
+        "qualityP4Badge": "✓ 4 Criteria Inbegrepen",
+        "heroQualityPill": "20-Punten Keurmerk Inbegrepen: 100% AVG-Proof • Google Rich Snippets • < 0.8s Snelheid",
+        "heroQualityLink": "Bekijk keurmerk"
     },
     "en": {
         "pageTitle": "Creation+Alt+Fix - Intelligent AI Solutions & IT Services Groningen",
@@ -1506,7 +1524,25 @@ export const translations = {
         "pdfModalDesc": "In the live Creation+Alt+Fix portal, a legally compliant PDF proposal is dynamically generated via jsPDF with realtime status tracking.",
         "lblDigitalSig": "Sign digitally below (draw with mouse or finger):",
         "btnClearSig": "Clear",
-        "btnSignProposal": "Sign Proposal Digitally"
+        "btnSignProposal": "Sign Proposal Digitally",
+        "qualityBadge": "100% Delivery Guarantee",
+        "qualityTitle": "Our 20-Point <span>Quality Standard</span>",
+        "qualitySubtitle": "Standard with every project. No hidden fees, no bloated WordPress plugins, and zero compliance risks.",
+        "qualityDocsBtn": "View all 20 criteria (Guide)",
+        "qualityP1Title": "1. Legal & GDPR Compliance",
+        "qualityP1Desc": "Built-in privacy policy, terms of service & zero-tracking notice. 100% GDPR-compliant with zero fine risk.",
+        "qualityP1Badge": "✓ 4 Criteria Included",
+        "qualityP2Title": "2. Google SEO & Rich Snippets",
+        "qualityP2Desc": "Schema.org LocalBusiness & FAQ rich snippets, canonical tags, and sitemap for immediate top Google rankings.",
+        "qualityP2Badge": "✓ 8 Criteria Included",
+        "qualityP3Title": "3. Conversion & Anti-Spam",
+        "qualityP3Desc": "Hidden honeypot trap filters 100% of spam bots without captchas. Instant 1-click WhatsApp & call buttons.",
+        "qualityP3Badge": "✓ 4 Criteria Included",
+        "qualityP4Title": "4. Speed & Quality",
+        "qualityP4Desc": "Pure vanilla code (< 50 KB), load time < 0.8s (Lighthouse 95+), 100% mobile fluid, and 0 console errors.",
+        "qualityP4Badge": "✓ 4 Criteria Included",
+        "heroQualityPill": "20-Point Standard Included: 100% GDPR • Google Rich Snippets • < 0.8s Speed",
+        "heroQualityLink": "View standard"
     }
 };
 
