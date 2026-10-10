@@ -9,7 +9,8 @@ service cloud.firestore {
     // ============================================================
     function isAdmin() {
       return request.auth != null && (
-        (request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']
+        (request.auth.token.email != null && request.auth.token.email is string
+         && request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']
          && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com')) ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid))
       );
@@ -20,8 +21,9 @@ service cloud.firestore {
     // ============================================================
     function isVerifiedClient(docData) {
       return request.auth != null && (
-        docData.clientUid == request.auth.uid ||
-        (docData.email == request.auth.token.email 
+        (docData.clientUid != null && docData.clientUid is string && request.auth.uid is string && docData.clientUid == request.auth.uid) ||
+        (docData.email != null && docData.email is string && request.auth.token.email != null && request.auth.token.email is string 
+         && docData.email == request.auth.token.email 
          && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com'))
       );
     }
@@ -63,11 +65,25 @@ service cloud.firestore {
       && (!('proposalPdfUrl' in affected)
           || request.resource.data.proposalPdfUrl == null
           || request.resource.data.proposalPdfUrl.matches('^https://(firebasestorage\\.googleapis\\.com|portal\\.creationaltfix\\.nl|.*\\.firebasestorage\\.app)/.*'))
-      // 4. Price tamper protection: cannot forge arbitrary subscription prices
+      // 4. Price tamper protection: cannot forge arbitrary subscription prices or zero-rate contracts
       && (!('subscriptionPlan2027Price' in affected)
-          || request.resource.data.subscriptionPlan2027Price in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00', '0,00'])
+          || (resource.data.subscriptionPlan2027Price == null
+              ? request.resource.data.subscriptionPlan2027Price in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00']
+              : request.resource.data.subscriptionPlan2027Price == resource.data.subscriptionPlan2027Price))
       && (!('subscriptionPrice' in affected)
-          || request.resource.data.subscriptionPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00', '0,00']);
+          || (resource.data.subscriptionPrice == null
+              ? request.resource.data.subscriptionPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00']
+              : request.resource.data.subscriptionPrice == resource.data.subscriptionPrice))
+      && (!('subscriptionPlan2027Id' in affected)
+          || request.resource.data.subscriptionPlan2027Id in ['managed_nl', 'transition_2027_loyalty', 'managed_com', 'managed_multi', 'managed_custom', 'security_apk', 'allin_apk', 'legacy_22'])
+      && (!('subscriptionPlanId' in affected)
+          || request.resource.data.subscriptionPlanId in ['managed_nl', 'transition_2027_loyalty', 'managed_com', 'managed_multi', 'managed_custom', 'security_apk', 'allin_apk', 'legacy_22'])
+      && (!('subscriptionPlan2027Status' in affected)
+          || request.resource.data.subscriptionPlan2027Status in ['bevestigd', 'voorgesteld'])
+      && (!('proposalSignedBy' in affected)
+          || (request.resource.data.proposalSignedBy is string && request.resource.data.proposalSignedBy.size() <= 100))
+      && (!('proposalAcceptedAt' in affected)
+          || (request.resource.data.proposalAcceptedAt is string && request.resource.data.proposalAcceptedAt.size() <= 40));
     }
 
     // ============================================================
@@ -124,6 +140,12 @@ service cloud.firestore {
         && request.resource.data.service.size() <= 120
         && (!('status' in request.resource.data) || request.resource.data.status in ['Intake Voltooid', 'Nieuwe Lead', 'Fase 1: Nieuwe Lead'])
         && (!('invoices' in request.resource.data))
+        && (!('proposalPrice' in request.resource.data))
+        && (!('mollieLink' in request.resource.data))
+        && (!('subscriptionPlanPrice' in request.resource.data) || request.resource.data.subscriptionPlanPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00'])
+        && (!('subscriptionPlanId' in request.resource.data) || request.resource.data.subscriptionPlanId in ['managed_nl', 'transition_2027_loyalty', 'managed_com', 'managed_multi', 'managed_custom', 'security_apk', 'allin_apk', 'legacy_22'])
+        && (!('clientUid' in request.resource.data) || (request.auth != null && request.resource.data.clientUid == request.auth.uid))
+        && (!('isClientAccount' in request.resource.data) || request.resource.data.isClientAccount == false)
       );
 
       // GET & LIST:

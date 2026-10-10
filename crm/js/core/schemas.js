@@ -91,6 +91,35 @@
  * @property {string} updatedAt
  */
 
+function safeUrl(u) {
+    if (!u || typeof u !== 'string') return '';
+    const trimmed = u.trim();
+    if (/^(https?:\/\/|\/)/i.test(trimmed) && !/[\r\n\x00-\x1F\x7F]/.test(trimmed)) {
+        return trimmed;
+    }
+    return '';
+}
+
+function safeDataUrl(u) {
+    if (!u || typeof u !== 'string') return '';
+    const trimmed = u.trim();
+    if (/^data:image\/(png|jpeg|webp);base64,[a-zA-Z0-9+/=]+$/i.test(trimmed)) {
+        return trimmed;
+    }
+    return '';
+}
+
+function safeIp(ip) {
+    if (!ip || typeof ip !== 'string') return '';
+    const trimmed = ip.trim();
+    const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^([0-9a-fA-F]{1,4}:){1,7}[0-9a-fA-F]{1,4}$/;
+    if (ipv4Regex.test(trimmed) || ipv6Regex.test(trimmed)) {
+        return trimmed;
+    }
+    return '';
+}
+
 export const Schemas = {
     /**
      * Saniteert en normaliseert een ruw Firestore projectdocument
@@ -210,9 +239,9 @@ export const Schemas = {
             amountIncl: incl,
             status: status,
             molliePaymentId: String(rawInvoice.molliePaymentId || ''),
-            mollieCheckoutUrl: String(rawInvoice.mollieCheckoutUrl || rawInvoice.mollieLink || ''),
+            mollieCheckoutUrl: safeUrl(rawInvoice.mollieCheckoutUrl || rawInvoice.mollieLink || ''),
             paidAt: rawInvoice.paidAt || null,
-            pdfUrl: String(rawInvoice.pdfUrl || '')
+            pdfUrl: safeUrl(rawInvoice.pdfUrl || '')
         };
     },
 
@@ -223,17 +252,17 @@ export const Schemas = {
     sanitizeAnnotation(rawAnn = {}) {
         if (!rawAnn || typeof rawAnn !== 'object') rawAnn = {};
         return {
-            id: String(rawAnn.id || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`),
+            id: String(rawAnn.id || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50),
             xPercent: Math.max(0, Math.min(100, Number(rawAnn.xPercent || 50))),
             yPercent: Math.max(0, Math.min(100, Number(rawAnn.yPercent || 50))),
             viewportWidth: Number(rawAnn.viewportWidth || 1280),
-            targetUrl: String(rawAnn.targetUrl || ''),
-            comment: String(rawAnn.comment || '').trim(),
+            targetUrl: safeUrl(rawAnn.targetUrl || ''),
+            comment: String(rawAnn.comment || '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, 1000),
             status: rawAnn.status === 'resolved' ? 'resolved' : 'open',
-            author: String(rawAnn.author || 'Klant'),
+            author: String(rawAnn.author || 'Klant').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 100),
             createdAt: rawAnn.createdAt || new Date().toISOString(),
             resolvedAt: rawAnn.resolvedAt || null,
-            screenshotUrl: String(rawAnn.screenshotUrl || '')
+            screenshotUrl: safeUrl(rawAnn.screenshotUrl || '')
         };
     },
 
@@ -244,16 +273,16 @@ export const Schemas = {
     sanitizeContract(rawContract = {}) {
         if (!rawContract || typeof rawContract !== 'object') rawContract = {};
         return {
-            contractNumber: String(rawContract.contractNumber || `SLA-${new Date().getFullYear()}-001`),
-            planId: String(rawContract.planId || 'managed_nl'),
-            planName: String(rawContract.planName || 'Managed Cloud Hosting'),
+            contractNumber: String(rawContract.contractNumber || `SLA-${new Date().getFullYear()}-001`).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50),
+            planId: String(rawContract.planId || 'managed_nl').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50),
+            planName: String(rawContract.planName || 'Managed Cloud Hosting').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 100),
             annualPrice: Number(rawContract.annualPrice || 150),
             serviceMinutesIncluded: Number(rawContract.serviceMinutesIncluded || 30),
-            signedByName: String(rawContract.signedByName || '').trim(),
+            signedByName: String(rawContract.signedByName || '').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 100),
             signedAt: rawContract.signedAt || new Date().toISOString(),
-            signerIp: String(rawContract.signerIp || ''),
-            signatureDataUrl: String(rawContract.signatureDataUrl || ''),
-            pdfStorageUrl: String(rawContract.pdfStorageUrl || ''),
+            signerIp: safeIp(rawContract.signerIp || ''),
+            signatureDataUrl: safeDataUrl(rawContract.signatureDataUrl || ''),
+            pdfStorageUrl: safeUrl(rawContract.pdfStorageUrl || ''),
             status: ['active', 'draft', 'expired'].includes(rawContract.status) ? rawContract.status : 'active'
         };
     }

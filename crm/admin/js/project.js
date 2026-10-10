@@ -2369,6 +2369,10 @@ function setupFormHandlers() {
         let tempPassword = 'CAF-';
         for (let i = 0; i < 16; i++) tempPassword += charset[randBytes[i] % charset.length];
 
+        if (!secondaryAuth) {
+            throw new Error("Secundaire Authenticatie instantie is niet geïnitialiseerd.");
+        }
+
         try {
             let clientUid = null;
             try {
@@ -2384,12 +2388,7 @@ function setupFormHandlers() {
                 }
             }
 
-            if (!clientUid && !currentProjectData?.clientUid) {
-                await sendPasswordResetEmail(auth, email);
-                await logAuditEvent('auth_reset_dispatched', `Wachtwoord-herstellink verstuurd naar bestaand account ${email}.`);
-                alert(`Let op: Er bestaat reeds een Firebase Auth account voor ${email}. Er is een wachtwoord-instel link naar de klant verzonden.`);
-                return;
-            }
+            const isExistingAuthAccount = (!clientUid && !currentProjectData?.clientUid);
 
             if (db && currentProjectId) {
                 const updatePayload = {
@@ -2405,8 +2404,14 @@ function setupFormHandlers() {
             }
 
             await sendPasswordResetEmail(auth, email);
-            await logAuditEvent('auth_activated', `Klantenportaal account geactiveerd voor ${email} en welkomst/wachtwoordlink verstuurd.`);
-            alert(`Succes! Het account voor ${email} is geactiveerd in Firebase Auth en er is een wachtwoord-instel e-mail verzonden.`);
+
+            if (isExistingAuthAccount) {
+                await logAuditEvent('auth_activated_existing', `Bestaand Firebase Auth account gekoppeld aan project voor ${email} en inloglink verstuurd.`);
+                alert(`Bestaand account gekoppeld: Er bestond reeds een Firebase Auth account voor ${email}. Het project is nu succesvol geactiveerd en er is een inlog-/wachtwoordlink naar de klant verzonden.`);
+            } else {
+                await logAuditEvent('auth_activated', `Klantenportaal account nieuw aangemaakt voor ${email} en welkomst/wachtwoordlink verstuurd.`);
+                alert(`Succes! Het account voor ${email} is nieuw geactiveerd in Firebase Auth en er is een wachtwoord-instel e-mail verzonden.`);
+            }
             renderProjectWorkspace(currentProjectData);
         } catch (error) {
             console.error("Fout bij activeren account:", error);

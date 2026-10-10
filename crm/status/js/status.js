@@ -535,47 +535,60 @@ function renderDashboard(data) {
 function checkPaymentSuccessModal(data) {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === 'true') {
-        const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '—';
+        const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '';
 
-        // Direct verbergen van eventuele openstaande banners en Mollie actieknop
-        const banner = document.getElementById('unpaid-invoice-banner');
-        if (banner) banner.classList.add('hidden');
-        const mollieCard = document.getElementById('mollie-link');
-        if (mollieCard) mollieCard.classList.add('hidden');
-
-        const modal = document.getElementById('payment-success-modal');
-        const invSpan = document.getElementById('modal-paid-invoice-num');
-        if (modal) {
-            if (invSpan) invSpan.textContent = invNum;
-            modal.style.display = 'flex';
-            modal.classList.remove('hidden');
-
-            const closeBtn = document.getElementById('btn-close-payment-modal');
-            if (closeBtn) {
-                closeBtn.onclick = () => {
-                    modal.style.display = 'none';
-                    modal.classList.add('hidden');
-
-                    // Zorg dat de factuurbanner en actieknop definitief verborgen blijven
-                    if (banner) banner.classList.add('hidden');
-                    if (mollieCard) mollieCard.classList.add('hidden');
-
-                    const archiveCard = document.getElementById('client-invoices-archive-card');
-                    if (archiveCard) {
-                        archiveCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                };
+        // Zero-Trust: Verifieer of de betaling werkelijk is geregistreerd in het project- of factuurrecord
+        let isVerifiedPaid = isInvoicePaid(invNum, data?.status);
+        if (!isVerifiedPaid && Array.isArray(data?.invoices) && invNum) {
+            const matchedInv = data.invoices.find(i => (i.invoiceNumber || i.factuurnummer) === invNum);
+            if (matchedInv && isInvoicePaid(invNum, matchedInv.status)) {
+                isVerifiedPaid = true;
             }
-
-            // Clean up the URL to prevent showing modal again on page refresh
-            try {
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.delete('paid');
-                currentUrl.searchParams.delete('invoice');
-                const newQuery = currentUrl.searchParams.toString();
-                window.history.replaceState({}, document.title, currentUrl.pathname + (newQuery ? '?' + newQuery : ''));
-            } catch (e) {}
         }
+
+        // Alleen wanneer de backend status daadwerkelijk 'betaald' / 'voldaan' bevestigt, tonen we het succes-scherm
+        if (isVerifiedPaid) {
+            const banner = document.getElementById('unpaid-invoice-banner');
+            if (banner) banner.classList.add('hidden');
+            const mollieCard = document.getElementById('mollie-link');
+            if (mollieCard) mollieCard.classList.add('hidden');
+
+            const modal = document.getElementById('payment-success-modal');
+            const invSpan = document.getElementById('modal-paid-invoice-num');
+            if (modal) {
+                if (invSpan) invSpan.textContent = invNum || '—';
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+
+                const closeBtn = document.getElementById('btn-close-payment-modal');
+                if (closeBtn) {
+                    closeBtn.onclick = () => {
+                        modal.style.display = 'none';
+                        modal.classList.add('hidden');
+
+                        // Zorg dat de factuurbanner en actieknop definitief verborgen blijven
+                        if (banner) banner.classList.add('hidden');
+                        if (mollieCard) mollieCard.classList.add('hidden');
+
+                        const archiveCard = document.getElementById('client-invoices-archive-card');
+                        if (archiveCard) {
+                            archiveCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    };
+                }
+            }
+        } else {
+            console.info("[Payment Security] URL parameter ?paid=true genegeerd: betaling is nog niet geverifieerd in het projectrecord.");
+        }
+
+        // Clean up the URL to prevent showing modal again on page refresh
+        try {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('paid');
+            currentUrl.searchParams.delete('invoice');
+            const newQuery = currentUrl.searchParams.toString();
+            window.history.replaceState({}, document.title, currentUrl.pathname + (newQuery ? '?' + newQuery : ''));
+        } catch (e) {}
     }
 }
 
@@ -1165,7 +1178,8 @@ function setupProposalActionFlow(data) {
     if (btnConfirmSign) {
         btnConfirmSign.onclick = async () => {
             const errBox = document.getElementById('sign-modal-error');
-            const signerName = document.getElementById('sign-signer-name')?.value.trim();
+            const rawSignerName = document.getElementById('sign-signer-name')?.value || '';
+            const signerName = rawSignerName.replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
             const agreementChecked = document.getElementById('sign-agreement-checkbox')?.checked;
 
             if (!signerName) {
@@ -1361,7 +1375,8 @@ function renderDesignSection(data) {
         designStatusPill.className = "offerte-status-pill action-required";
         designStatusPill.innerHTML = `<i class="fas fa-palette"></i> ${currentLang === 'en' ? 'Action Required: Review Design' : 'Actie Vereist: Design Beoordelen'}`;
 
-        const previewUrl = data.designUrl || data.figmaUrl || '#';
+        const rawPreview = data.designUrl || data.figmaUrl;
+        const previewUrl = rawPreview ? sanitizeUrl(rawPreview) : '#';
         const designTitle = data.designTitle || (currentLang === 'en' ? 'Visual Concept & Wireframe' : 'Visueel Ontwerp & Wireframe');
         const designNotes = data.designNotes || '';
 
@@ -1370,7 +1385,7 @@ function renderDesignSection(data) {
             <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 10px; padding: 14px; margin-bottom: 14px;">
                 <h4 style="margin: 0 0 6px 0; color: #fff; font-size: 1rem;"><i class="fas fa-layer-group text-accent"></i> ${escapeHtml(designTitle)}</h4>
                 ${designNotes ? `<p style="margin: 0 0 10px 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">${escapeHtml(designNotes)}</p>` : ''}
-                <a href="${previewUrl}" target="_blank" class="design-preview-link" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600;">
+                <a href="${previewUrl}" target="_blank" rel="noopener noreferrer" class="design-preview-link" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600;">
                     <i class="fas fa-external-link-alt"></i> ${t.statusDesignViewLink}
                 </a>
             </div>
@@ -1514,7 +1529,7 @@ function renderFilesSection(data) {
                         <div style="font-size: 0.75rem; color: var(--text-muted);">${t.statusAddedOn} ${dateStr}</div>
                     </div>
                 </div>
-                <a href="${safeUrl}" target="_blank" style="color: #22d3ee; background: rgba(34, 211, 238, 0.1); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; flex-shrink: 0; transition: all 0.2s;">
+                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color: #22d3ee; background: rgba(34, 211, 238, 0.1); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; flex-shrink: 0; transition: all 0.2s;">
                     <i class="fas fa-download"></i> ${t.statusViewFile}
                 </a>
             </div>
@@ -1660,8 +1675,10 @@ function setupChatListeners() {
             const messageEl = document.getElementById('chat-message-input');
             const sendBtn = document.getElementById('btn-send-message');
 
-            const category = categoryEl ? categoryEl.value : 'general';
-            const messageText = messageEl ? messageEl.value.trim() : '';
+            const rawCategory = categoryEl ? categoryEl.value : 'general';
+            const category = ['general', 'revision', 'urgent', 'question'].includes(rawCategory) ? rawCategory : 'general';
+            const rawMessage = messageEl ? messageEl.value : '';
+            const messageText = rawMessage.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, 3000);
 
             if (!messageText || !currentProjectDocId) return;
 
@@ -1675,8 +1692,15 @@ function setupChatListeners() {
                     ? [...activeProject.data.messages] 
                     : [];
 
-                const clientName = (activeProject && (activeProject.data.contactName || activeProject.data.client)) || 'Klant';
-                const clientEmail = auth?.currentUser?.email || (activeProject && activeProject.data.email) || '';
+                // Prevent Firestore document bloat (1MB cap): retain latest 100 messages
+                if (existingMessages.length >= 100) {
+                    existingMessages.splice(0, existingMessages.length - 99);
+                }
+
+                const rawClientName = (activeProject && (activeProject.data.contactName || activeProject.data.client)) || 'Klant';
+                const clientName = String(rawClientName).replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 100) || 'Klant';
+                const rawClientEmail = auth?.currentUser?.email || (activeProject && activeProject.data.email) || '';
+                const clientEmail = String(rawClientEmail).replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().slice(0, 150);
 
                 const newMsg = {
                     id: 'msg_' + Date.now(),
@@ -2099,7 +2123,7 @@ function setupClientInvoicesArchive(data) {
                                 </td>
                                 <td style="padding: 10px; text-align: right; white-space: nowrap;">
                                     ${mollieUrl ? `
-                                        <a href="${escapeHtml(mollieUrl)}" target="_blank" class="btn btn-sm btn-ideal-pay" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: #fff; padding: 4px 11px; border-radius: 6px; font-weight: 600; text-decoration: none; margin-right: 6px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(14,165,233,0.3); transition: transform 0.15s ease;">
+                                        <a href="${sanitizeUrl(mollieUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-ideal-pay" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: #fff; padding: 4px 11px; border-radius: 6px; font-weight: 600; text-decoration: none; margin-right: 6px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(14,165,233,0.3); transition: transform 0.15s ease;">
                                             <i class="fas fa-credit-card"></i> <span>Betaal iDEAL</span>
                                         </a>
                                     ` : ''}
@@ -2241,14 +2265,15 @@ function setupProfileModal() {
             btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opslaan...';
             btnSave.disabled = true;
 
-            const companyName = document.getElementById('prof-company-name').value.trim();
-            const contactName = document.getElementById('prof-contact-name').value.trim();
-            const phone = document.getElementById('prof-phone').value.trim();
-            const streetAndNumber = document.getElementById('prof-street').value.trim();
-            const postalCode = document.getElementById('prof-postal-code').value.trim();
-            const city = document.getElementById('prof-city').value.trim();
-            const kvkNumber = document.getElementById('prof-kvk').value.trim();
-            const vatNumber = document.getElementById('prof-vat').value.trim();
+            const cleanStr = (val, maxLen) => String(val || '').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLen);
+            const companyName = cleanStr(document.getElementById('prof-company-name')?.value, 120);
+            const contactName = cleanStr(document.getElementById('prof-contact-name')?.value, 100);
+            const phone = cleanStr(document.getElementById('prof-phone')?.value, 30);
+            const streetAndNumber = cleanStr(document.getElementById('prof-street')?.value, 150);
+            const postalCode = cleanStr(document.getElementById('prof-postal-code')?.value, 20);
+            const city = cleanStr(document.getElementById('prof-city')?.value, 80);
+            const kvkNumber = cleanStr(document.getElementById('prof-kvk')?.value, 20);
+            const vatNumber = cleanStr(document.getElementById('prof-vat')?.value, 30);
 
             const activeProj = clientProjectsList.find(p => p.id === currentProjectDocId);
 

@@ -43,7 +43,7 @@
 <body>
 
     <!-- Admin Klantview Preview Banner (Visible in Beheerdersmodus) -->
-    <div id="admin-preview-banner" class="hidden" style="background: linear-gradient(135deg, #0f172a, #1e1b4b); border-bottom: 2px solid #22d3ee; padding: 10px 24px; color: #fff; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 10000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-wrap: wrap;"></div>
+    <div id="admin-preview-banner" class="hidden" style="background: linear-gradient(135deg, #0f172a, #1e1b4b); border-bottom: 2px solid #22d3ee; padding: 10px clamp(16px, 3vw, 48px); color: #fff; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 10000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-wrap: wrap;"></div>
 
     <!-- Top Navigation Bar -->
     <header class="navbar">
@@ -265,9 +265,9 @@
                     </span>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                <div class="quality-pillars-grid">
                     <!-- Pillar 1: Legal & AVG -->
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 20px;">
+                    <div class="quality-pillar-card">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
                             <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;"><i class="fas fa-scale-balanced"></i></span>
                             <strong style="color: #f1f5f9; font-size: 0.98rem;">1. Juridisch & AVG/GDPR</strong>
@@ -281,7 +281,7 @@
                     </div>
 
                     <!-- Pillar 2: Google SEO & Schema.org -->
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 20px;">
+                    <div class="quality-pillar-card">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
                             <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #34d399; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;"><i class="fas fa-magnifying-glass"></i></span>
                             <strong style="color: #f1f5f9; font-size: 0.98rem;">2. Google Vindbaarheid (SEO)</strong>
@@ -295,7 +295,7 @@
                     </div>
 
                     <!-- Pillar 3: Conversie & Anti-Spam -->
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 20px;">
+                    <div class="quality-pillar-card">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
                             <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;"><i class="fas fa-bullhorn"></i></span>
                             <strong style="color: #f1f5f9; font-size: 0.98rem;">3. Conversie & Anti-Spam</strong>
@@ -309,7 +309,7 @@
                     </div>
 
                     <!-- Pillar 4: Snelheid & Toegankelijkheid -->
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 20px;">
+                    <div class="quality-pillar-card">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
                             <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(168, 85, 247, 0.15); color: #c084fc; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;"><i class="fas fa-bolt"></i></span>
                             <strong style="color: #f1f5f9; font-size: 0.98rem;">4. Snelheid & Toegankelijkheid</strong>

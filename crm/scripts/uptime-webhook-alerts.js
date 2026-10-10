@@ -11,28 +11,68 @@ import https from 'https';
 import http from 'http';
 import { URL } from 'url';
 
+const TELEGRAM_TOKEN_REGEX = /^[0-9]{8,10}:[a-zA-Z0-9_-]{35}$/;
+const TELEGRAM_CHAT_ID_REGEX = /^-?[0-9]{5,16}$/;
+const DISCORD_WEBHOOK_REGEX = /^https:\/\/(?:ptb\.|canary\.)?discord(?:app)?\.com\/api\/webhooks\/\d{15,22}\/[A-Za-z0-9_-]{50,80}$/;
+
 /**
- * Verstuurt een veilige HTTPS GET of POST request
+ * Valideert of een externe webhook hostname veilig is (CWE-918 SSRF Defensie)
+ */
+function isSafeExternalHost(host) {
+  if (!host || typeof host !== 'string') return false;
+  const clean = host.toLowerCase();
+  if (clean === 'localhost' || clean === '127.0.0.1' || clean === '::1' || clean === '0.0.0.0') return false;
+  if (clean.endsWith('.local') || clean.endsWith('.internal') || clean.endsWith('.lan')) return false;
+  const ipv4 = clean.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4) {
+    const [, b1, b2] = ipv4.map(Number);
+    if (b1 === 10) return false;
+    if (b1 === 172 && b2 >= 16 && b2 <= 31) return false;
+    if (b1 === 192 && b2 === 168) return false;
+    if (b1 === 169 && b2 === 254) return false;
+    if (b1 === 100 && b2 >= 64 && b2 <= 127) return false;
+    if (b1 === 127 || b1 === 0) return false;
+  }
+  return true;
+}
+
+/**
+ * Escapes special Markdown characters for Telegram API (API 400 defense)
+ */
+export function sanitizeMarkdown(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/[_*`\[\]()~>#+\-=|{}.!\\]/g, '\\$&');
+}
+
+/**
+ * Verstuurt een veilige HTTPS GET of POST request (SSRF-beveiligd)
  */
 function makeRequest(urlStr, options = {}, postData = null) {
   return new Promise((resolve, reject) => {
     try {
       const parsedUrl = new URL(urlStr);
-      const isHttps = parsedUrl.protocol === 'https:';
-      const client = isHttps ? https : http;
+      if (parsedUrl.protocol !== 'https:') {
+        return reject(new Error('Enkel HTTPS verbindingen zijn toegestaan voor veilige webhook alerts'));
+      }
+      if (!isSafeExternalHost(parsedUrl.hostname)) {
+        return reject(new Error(`SSRF blokkade: ${parsedUrl.hostname} is een intern adres`));
+      }
 
       const reqOptions = {
         hostname: parsedUrl.hostname,
-        port: parsedUrl.port || (isHttps ? 443 : 80),
+        port: parsedUrl.port || 443,
         path: parsedUrl.pathname + parsedUrl.search,
         method: options.method || 'GET',
         headers: options.headers || {},
         timeout: 10000
       };
 
-      const req = client.request(reqOptions, (res) => {
+      const req = https.request(reqOptions, (res) => {
         let body = '';
-        res.on('data', chunk => body += chunk);
+        const MAX_BODY_BYTES = 64 * 1024;
+        res.on('data', chunk => {
+          if (body.length < MAX_BODY_BYTES) body += chunk;
+        });
         res.on('end', () => {
           resolve({
             statusCode: res.statusCode,
@@ -64,19 +104,25 @@ function makeRequest(urlStr, options = {}, postData = null) {
  * 1. WhatsApp Alert via CallMeBot API
  */
 export async function sendWhatsAppCallMeBotAlert({ domain, statusCode, reason, timestamp }, phone = null, apiKey = null) {
-  const targetPhone = phone || process.env.CALLMEBOT_PHONE || '31619135453';
-  const targetKey = apiKey || process.env.CALLMEBOT_API_KEY || '';
+  const rawPhone = phone || process.env.CALLMEBOT_PHONE || '31619135453';
+  const targetPhone = String(rawPhone).replace(/[^0-9+]/g, '');
+  const targetKey = String(apiKey || process.env.CALLMEBOT_API_KEY || '').trim();
 
-  if (!targetKey) {
-    console.warn('⚠️ [Alerts] Geen CALLMEBOT_API_KEY geconfigureerd. WhatsApp alert overgeslagen.');
+  if (!targetKey || !targetPhone) {
+    console.warn('⚠️ [Alerts] Geen CALLMEBOT_API_KEY of geldig telefoonnummer geconfigureerd. WhatsApp alert overgeslagen.');
     return false;
   }
 
+  const cleanDomain = String(domain || 'Onbekend').slice(0, 100);
+  const cleanStatus = String(statusCode || 'DOWN').slice(0, 50);
+  const cleanReason = String(reason || 'Geen response').slice(0, 200);
+  const cleanTime = String(timestamp || new Date().toLocaleTimeString('nl-NL')).slice(0, 50);
+
   const message = `🚨 *CREATION+ALT+FIX ALERT*\n\n` +
-    `Domein: *${domain}*\n` +
-    `Status: *OFFLINE* (Code ${statusCode || 'DOWN'})\n` +
-    `Oorzaak: ${reason || 'Geen response'}\n` +
-    `Tijdstip: ${timestamp || new Date().toLocaleTimeString('nl-NL')}\n\n` +
+    `Domein: *${cleanDomain}*\n` +
+    `Status: *OFFLINE* (Code ${cleanStatus})\n` +
+    `Oorzaak: ${cleanReason}\n` +
+    `Tijdstip: ${cleanTime}\n\n` +
     `Beheer: https://portal.creationaltfix.nl/crm/admin/index.html?view=monitoring`;
 
   const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(targetPhone)}&text=${encodeURIComponent(message)}&apikey=${encodeURIComponent(targetKey)}`;
@@ -96,26 +142,31 @@ export async function sendWhatsAppCallMeBotAlert({ domain, statusCode, reason, t
  * 2. Discord Webhook Alert
  */
 export async function sendDiscordWebhookAlert({ domain, statusCode, reason, timestamp }, webhookUrl = null) {
-  const targetUrl = webhookUrl || process.env.DISCORD_UPTIME_WEBHOOK_URL || '';
+  const targetUrl = (webhookUrl || process.env.DISCORD_UPTIME_WEBHOOK_URL || '').trim();
 
-  if (!targetUrl || !targetUrl.startsWith('https://discord.com/api/webhooks/')) {
+  if (!DISCORD_WEBHOOK_REGEX.test(targetUrl)) {
     console.warn('⚠️ [Alerts] Geen geldige Discord webhook URL geconfigureerd.');
     return false;
   }
+
+  const cleanDomain = String(domain || 'Onbekend').slice(0, 100);
+  const cleanStatus = String(statusCode || '0 (TIMEOUT)').slice(0, 50);
+  const cleanReason = String(reason || 'Verbinding geweigerd').slice(0, 200);
+  const cleanTime = String(timestamp || new Date().toISOString()).slice(0, 50);
 
   const payload = JSON.stringify({
     username: "Creation+Alt+Fix Uptime Guard",
     avatar_url: "https://creationaltfix.nl/apple-touch-icon.png",
     embeds: [
       {
-        title: `🚨 Uptime Incident: ${domain}`,
+        title: `🚨 Uptime Incident: ${cleanDomain}`,
         description: `Het gemonitorde domein reageert niet of geeft een serverfout.`,
         color: 15158332, // Rood (#E74C3C)
         fields: [
-          { name: "Domein", value: `\`${domain}\``, inline: true },
-          { name: "Statuscode", value: `${statusCode || '0 (TIMEOUT)'}`, inline: true },
-          { name: "Oorzaak", value: `${reason || 'Verbinding geweigerd'}`, inline: true },
-          { name: "Gedetecteerd op", value: `${timestamp || new Date().toISOString()}`, inline: false }
+          { name: "Domein", value: `\`${cleanDomain}\``, inline: true },
+          { name: "Statuscode", value: `${cleanStatus}`, inline: true },
+          { name: "Oorzaak", value: `${cleanReason}`, inline: true },
+          { name: "Gedetecteerd op", value: `${cleanTime}`, inline: false }
         ],
         footer: {
           text: "Creation+Alt+Fix DNS & Uptime Monitoring Suite"
@@ -146,19 +197,24 @@ export async function sendDiscordWebhookAlert({ domain, statusCode, reason, time
  * 3. Telegram Bot Alert
  */
 export async function sendTelegramAlert({ domain, statusCode, reason, timestamp }, botToken = null, chatId = null) {
-  const token = botToken || process.env.TELEGRAM_BOT_TOKEN || '';
-  const chat = chatId || process.env.TELEGRAM_CHAT_ID || '';
+  const token = (botToken || process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chat = (chatId || process.env.TELEGRAM_CHAT_ID || '').trim();
 
-  if (!token || !chat) {
-    console.warn('⚠️ [Alerts] Geen Telegram bot token of chat ID geconfigureerd.');
+  if (!TELEGRAM_TOKEN_REGEX.test(token) || !TELEGRAM_CHAT_ID_REGEX.test(chat)) {
+    console.warn('⚠️ [Alerts] Geen geldig Telegram bot token of chat ID geconfigureerd.');
     return false;
   }
 
+  const safeDomain = sanitizeMarkdown(domain || 'Onbekend');
+  const safeReason = sanitizeMarkdown(reason || 'Geen response');
+  const safeTimestamp = sanitizeMarkdown(timestamp || new Date().toISOString());
+  const safeStatus = String(statusCode || 'DOWN').replace(/[^0-9a-zA-Z_-]/g, '');
+
   const text = `🚨 *Creation+Alt+Fix Uptime Incident*\n\n` +
-    `*Domein:* \`${domain}\`\n` +
-    `*Status:* OFFLINE (Code ${statusCode || 'DOWN'})\n` +
-    `*Oorzaak:* ${reason || 'Geen response'}\n` +
-    `*Tijd:* ${timestamp || new Date().toISOString()}`;
+    `*Domein:* \`${safeDomain}\`\n` +
+    `*Status:* OFFLINE (Code ${safeStatus})\n` +
+    `*Oorzaak:* ${safeReason}\n` +
+    `*Tijd:* ${safeTimestamp}`;
 
   const payload = JSON.stringify({
     chat_id: chat,

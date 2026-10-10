@@ -11,9 +11,9 @@ import { getPiBoekhoudingInfo } from "./bookkeeping-data.js";
  */
 export function generate2027ProposalText(project, planId) {
     const p = project || {};
-    const clientName = p.client || p.contactName || p.companyName || 'Beste relatie';
-    const domain = p.domainName || p.domain || 'jouw website';
-    const clientEmail = (p.email || p.clientEmail || '').trim();
+    const clientName = String(p.client || p.contactName || p.companyName || 'Beste relatie').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+    const domain = String(p.domainName || p.domain || 'jouw website').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+    const clientEmail = String(p.email || p.clientEmail || '').replace(/[\r\n\x00-\x1F\x7F]/g, '').trim();
     const targetPlan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
     const info = getPiBoekhoudingInfo(p);
     
@@ -26,7 +26,8 @@ export function generate2027ProposalText(project, planId) {
         pricingDetails += ` (ter vervanging van het eerdere/historische tarief van € ${oldPrice}/jr)`;
     }
 
-    const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
+    const cleanId = p.id ? String(p.id).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) : '';
+    const portalUrl = cleanId ? `https://creationaltfix.nl/crm/status/?id=${cleanId}` : 'https://creationaltfix.nl/crm/status/';
 
     const loginEmailLine = clientEmail 
         ? `• Inloggen kan direct met jouw e-mailadres: ${clientEmail}`
@@ -78,11 +79,12 @@ E-mail: info@creationaltfix.nl`;
  */
 export function generate2027WhatsAppText(project, planId) {
     const p = project || {};
-    const clientName = p.client || p.contactName || 'beste';
-    const domain = p.domainName || p.domain || 'je website';
-    const clientEmail = (p.email || p.clientEmail || '').trim();
+    const clientName = String(p.client || p.contactName || 'beste').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+    const domain = String(p.domainName || p.domain || 'je website').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+    const clientEmail = String(p.email || p.clientEmail || '').replace(/[\r\n\x00-\x1F\x7F]/g, '').trim();
     const targetPlan = SUBSCRIPTION_PLANS[planId] || SUBSCRIPTION_PLANS['managed_nl'];
-    const portalUrl = p.id ? `https://creationaltfix.nl/crm/status/?id=${encodeURIComponent(p.id)}` : 'https://creationaltfix.nl/crm/status/';
+    const cleanId = p.id ? String(p.id).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) : '';
+    const portalUrl = cleanId ? `https://creationaltfix.nl/crm/status/?id=${cleanId}` : 'https://creationaltfix.nl/crm/status/';
 
     let pricingLine = `Tarief: € ${targetPlan.price},- excl. BTW per jaar (facturatie jan 2027)`;
     if (planId === 'transition_2027_loyalty') {
@@ -114,7 +116,7 @@ Laat gerust weten als je nog vragen hebt! 👍`;
  * Creates and displays the 2027 Subscription Communication Modal.
  */
 export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTicket, onConfirmPlan }) {
-    if (!project) return;
+    if (!project || typeof project !== 'object') return;
 
     let modal = document.getElementById('modal-2027-subscription');
     if (!modal) {
@@ -256,7 +258,9 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
         // Event: Copy Text
         modal.querySelector('#btn-2027-copy-text')?.addEventListener('click', () => {
             const body = modal.querySelector('#modal-2027-message-body')?.value || '';
-            navigator.clipboard.writeText(body);
+            if (navigator?.clipboard?.writeText) {
+                navigator.clipboard.writeText(body).catch(() => {});
+            }
             const btn = modal.querySelector('#btn-2027-copy-text');
             if (btn) {
                 const orig = btn.innerHTML;
@@ -271,7 +275,9 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
             const email = (project.email || '').trim();
             const subject = encodeURIComponent(`Creation+Alt+Fix: Hosting- & Serviceplan 2027 voor ${domain}`);
             const mailtoUrl = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`;
-            navigator.clipboard.writeText(body);
+            if (navigator?.clipboard?.writeText) {
+                navigator.clipboard.writeText(body).catch(() => {});
+            }
             window.location.href = mailtoUrl;
         });
 

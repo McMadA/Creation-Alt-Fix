@@ -76,10 +76,15 @@ export const REQUIRED_CONSECUTIVE_FAILURES = 3;
 export function getConsecutiveFailures(domain) {
     if (!domain) return 0;
     const clean = normalizeDomain(domain);
+    if (!clean || clean === '__proto__' || clean === 'constructor' || clean === 'prototype') return 0;
+    if (typeof localStorage === 'undefined') return 0;
     try {
         const stored = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
-        const map = stored ? JSON.parse(stored) : {};
-        return typeof map[clean] === 'number' ? map[clean] : 0;
+        const map = stored ? JSON.parse(stored) : null;
+        if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, clean)) {
+            return typeof map[clean] === 'number' ? map[clean] : 0;
+        }
+        return 0;
     } catch (e) {
         return 0;
     }
@@ -96,9 +101,13 @@ export function getConsecutiveFailures(domain) {
 export function recordDomainCheckResult(domain, overallStatus) {
     if (!domain) return 0;
     const clean = normalizeDomain(domain);
+    if (!clean || clean === '__proto__' || clean === 'constructor' || clean === 'prototype') return 0;
+    if (typeof localStorage === 'undefined') return overallStatus === 'down' ? 1 : 0;
     try {
         const stored = localStorage.getItem(LOCAL_STORAGE_CONSECUTIVE_DOWN);
-        const map = stored ? JSON.parse(stored) : {};
+        let parsed = stored ? JSON.parse(stored) : {};
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) parsed = {};
+        const map = Object.assign(Object.create(null), parsed);
 
         if (overallStatus === 'down') {
             const current = typeof map[clean] === 'number' ? map[clean] : 0;
@@ -176,16 +185,29 @@ export async function setDomainIgnored(db, domain, isIgnored = true) {
     // Persist to Firestore if db available
     if (db) {
         try {
-            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-            const cleanKey = clean.replace(/[^a-zA-Z0-9]/g, '_');
-            const docRef = doc(db, "monitors", cleanKey);
-            await setDoc(docRef, { isIgnored, updatedAt: new Date().toISOString() }, { merge: true });
+            const cleanKey = getMonitorDocKey(clean);
+            if (cleanKey) {
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                const docRef = doc(db, "monitors", cleanKey);
+                await setDoc(docRef, { isIgnored, updatedAt: new Date().toISOString() }, { merge: true });
+            }
         } catch (e) {
             console.warn("Could not save ignore state to Firestore:", e.message);
         }
     }
 
     return isIgnored;
+}
+
+/**
+ * Converteert een domeinnaam naar een veilige Firestore document key
+ * @param {string} domain 
+ * @returns {string|null}
+ */
+export function getMonitorDocKey(domain) {
+    if (!domain || typeof domain !== 'string') return null;
+    const clean = normalizeDomain(domain).replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 100);
+    return clean.length > 0 ? clean : null;
 }
 
 /**
@@ -465,7 +487,9 @@ export async function probeDomainHttps(domain, path = "/") {
 
     // 1. Try internal healthcheck proxy if on live host (Vimexx cURL endpoint)
     try {
-        const basePath = (typeof window !== 'undefined' && window.location.pathname.includes('/crm/')) ? '/crm' : '';
+        const basePath = (typeof window !== 'undefined' && (window.location.pathname.includes('/portal') || window.location.pathname.includes('/portal/'))) 
+            ? '/portal' 
+            : ((typeof window !== 'undefined' && (window.location.pathname.includes('/crm') || window.location.pathname.includes('/crm/'))) ? '/crm' : '');
         const pathParam = (path && path !== '/') ? `&path=${encodeURIComponent(path)}` : '';
         const proxyUrl = `${basePath}/api/healthcheck.php?domain=${encodeURIComponent(cleanDomain)}${pathParam}`;
         const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(6500) });
@@ -655,10 +679,11 @@ export async function runAllDomainChecks(domainList, onProgressCallback = null) 
  * Persists domain check report to Firestore (/monitors/{domainKey}) if db & user available.
  */
 export async function saveDomainReportToFirestore(db, report) {
-    if (!db || !report) return false;
+    if (!db || !report || !report.domain) return false;
+    const cleanKey = getMonitorDocKey(report.domain);
+    if (!cleanKey) return false;
     try {
         const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const cleanKey = report.domain.replace(/[^a-zA-Z0-9]/g, '_');
         const docRef = doc(db, "monitors", cleanKey);
         await setDoc(docRef, {
             ...report,
@@ -676,8 +701,10 @@ export async function saveDomainReportToFirestore(db, report) {
  * Retrieves the latest monitor status for a domain from Firestore or runs an instant check.
  */
 export async function getDomainStatusWithFallback(db, domainName) {
-    const cleanDomain = domainName.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
-    const cleanKey = cleanDomain.replace(/[^a-zA-Z0-9]/g, '_');
+    if (!domainName || typeof domainName !== 'string') return null;
+    const cleanDomain = normalizeDomain(domainName);
+    const cleanKey = getMonitorDocKey(cleanDomain);
+    if (!cleanKey) return null;
 
     // 1. Try Firestore
     if (db) {
@@ -774,11 +801,16 @@ export async function dispatchDowntimeAlert(report, options = {}) {
             "Admin Dashboard Link": "https://portal.creationaltfix.nl/crm/admin/"
         };
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (res.ok) {
             localStorage.setItem(throttleKey, Date.now().toString());
@@ -799,36 +831,66 @@ export async function dispatchDowntimeAlert(report, options = {}) {
     return true;
 }
 
+// CWE-918: Strikte SSRF validatie voor externe meldings-endpoints
+const DISCORD_WEBHOOK_REGEX = /^https:\/\/(?:ptb\.|canary\.)?(?:discord\.com|discordapp\.com)\/api\/webhooks\/[0-9]{15,22}\/[A-Za-z0-9_-]+$/;
+const TELEGRAM_TOKEN_REGEX = /^[0-9]{8,12}:[a-zA-Z0-9_-]{30,50}$/;
+const TELEGRAM_CHAT_ID_REGEX = /^(?:-?[0-9]{5,16}|@[a-zA-Z0-9_]{4,32})$/;
+
+/**
+ * Escapes characters for Telegram HTML parse_mode (&, <, >)
+ * Voorkomt Telegram 400 Bad Request entity parsing errors en HTML injecties
+ * @param {string} str 
+ * @returns {string}
+ */
+export function escapeTelegramHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
 /**
  * Sends a rich downtime embed to a configured Discord Webhook.
  * @param {Object} report 
  * @param {string} webhookUrl 
  */
 export async function sendDiscordWebhookAlert(report, webhookUrl) {
-    if (!webhookUrl || typeof webhookUrl !== 'string' || !webhookUrl.startsWith('https://')) return false;
+    if (!webhookUrl || typeof webhookUrl !== 'string' || !DISCORD_WEBHOOK_REGEX.test(webhookUrl.trim())) return false;
 
     try {
+        const safeDomain = String(report.domain || 'Onbekend').slice(0, 100);
+        const safeName = String(report.name || report.domain || 'Onbekend').slice(0, 150);
+        const safeClient = report.client ? `(${String(report.client).slice(0, 100)})` : '';
+        const safeHttpCode = String(report.httpCode || 'Geen response').slice(0, 50);
+        const safeDnsStatus = String(report.dnsStatus || 'Onbekend').slice(0, 50);
+
         const payload = {
             username: "Creation+Alt+Fix Sentry",
             avatar_url: "https://creationaltfix.nl/images/logo.webp",
             embeds: [{
-                title: `🚨 DOWNTIME ALERT: ${report.domain} IS DOWN!`,
-                description: `**Klant/Project:** ${report.name || report.domain} ${report.client ? `(${report.client})` : ''}\n**HTTP Status:** ${report.httpCode || 'Geen response'}\n**DNS Status:** ${report.dnsStatus || 'Onbekend'}\n**Incident Tijdstip:** ${new Date().toLocaleString('nl-NL')}`,
+                title: `🚨 DOWNTIME ALERT: ${safeDomain} IS DOWN!`.slice(0, 250),
+                description: `**Klant/Project:** ${safeName} ${safeClient}\n**HTTP Status:** ${safeHttpCode}\n**DNS Status:** ${safeDnsStatus}\n**Incident Tijdstip:** ${new Date().toLocaleString('nl-NL')}`.slice(0, 2000),
                 color: 15158332, // #e74c3c
                 fields: [
-                    { name: "Domein", value: String(report.domain), inline: true },
-                    { name: "Gemeten Fouten", value: `${report.consecutiveFailures || REQUIRED_CONSECUTIVE_FAILURES}x achter elkaar`, inline: true }
+                    { name: "Domein", value: safeDomain, inline: true },
+                    { name: "Gemeten Fouten", value: `${report.consecutiveFailures || REQUIRED_CONSECUTIVE_FAILURES}x achter elkaar`.slice(0, 100), inline: true }
                 ],
                 footer: { text: "Creation+Alt+Fix 24/7 DoH Uptime Engine" },
                 timestamp: new Date().toISOString()
             }]
         };
 
-        const res = await fetch(webhookUrl, {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const res = await fetch(webhookUrl.trim(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
         return res.ok;
     } catch (e) {
         console.warn("[Monitor] Discord alert mislukt:", e);
@@ -843,27 +905,39 @@ export async function sendDiscordWebhookAlert(report, webhookUrl) {
  * @param {string} chatId 
  */
 export async function sendTelegramAlert(report, botToken, chatId) {
-    if (!botToken || !chatId) return false;
+    if (!botToken || !chatId || typeof botToken !== 'string') return false;
+    const cleanToken = botToken.trim();
+    const cleanChat = String(chatId).trim();
+    if (!TELEGRAM_TOKEN_REGEX.test(cleanToken) || !TELEGRAM_CHAT_ID_REGEX.test(cleanChat)) return false;
 
     try {
-        const text = `🚨 <b>DOWNTIME ALERT: ${report.domain} IS DOWN!</b>\n\n` +
-            `🏢 <b>Project:</b> ${report.name || report.domain}\n` +
-            `🌐 <b>Domein:</b> ${report.domain}\n` +
-            `⚠️ <b>Statuscode:</b> ${report.httpCode || 'Geen verbinding'}\n` +
+        const safeDomain = escapeTelegramHtml(report.domain || 'Onbekend');
+        const safeName = escapeTelegramHtml(report.name || report.domain || 'Onbekend');
+        const safeHttpCode = escapeTelegramHtml(String(report.httpCode || 'Geen verbinding'));
+
+        const text = `🚨 <b>DOWNTIME ALERT: ${safeDomain} IS DOWN!</b>\n\n` +
+            `🏢 <b>Project:</b> ${safeName}\n` +
+            `🌐 <b>Domein:</b> ${safeDomain}\n` +
+            `⚠️ <b>Statuscode:</b> ${safeHttpCode}\n` +
             `⏱️ <b>Tijdstip:</b> ${new Date().toLocaleString('nl-NL')}\n\n` +
             `<a href="https://portal.creationaltfix.nl/crm/admin/">👉 Open Admin Dashboard</a>`;
 
-        const url = `https://api.telegram.org/bot${encodeURIComponent(botToken)}/sendMessage`;
+        const url = `https://api.telegram.org/bot${encodeURIComponent(cleanToken)}/sendMessage`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: chatId,
+                chat_id: cleanChat,
                 text: text,
                 parse_mode: 'HTML',
                 disable_web_page_preview: true
-            })
+            }),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
         return res.ok;
     } catch (e) {
         console.warn("[Monitor] Telegram alert mislukt:", e);
@@ -994,9 +1068,11 @@ export async function removeDomainFromMonitoring(db, domainName) {
     if (db) {
         try {
             const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-            const oldKey = clean.replace(/[^a-zA-Z0-9]/g, '_');
-            await deleteDoc(doc(db, "monitors", oldKey));
-            console.log(`🗑️ Verouderd Firestore monitor document verwijderd: /monitors/${oldKey}`);
+            const oldKey = getMonitorDocKey(clean);
+            if (oldKey) {
+                await deleteDoc(doc(db, "monitors", oldKey));
+                console.log(`🗑️ Verouderd Firestore monitor document verwijderd: /monitors/${oldKey}`);
+            }
         } catch (err) {
             console.warn("Fout bij verwijderen oud Firestore monitor document:", err.message);
         }

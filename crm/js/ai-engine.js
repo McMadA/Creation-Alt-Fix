@@ -48,12 +48,37 @@ export function hasGeminiApiKey() {
 }
 
 /**
+ * Robuuste JSON extractor die conversational preambles/postambles en markdown codeblocks
+ * van LLMs isoleert en valideert (voorkomt onnodige SyntaxErrors en ReDoS crashes).
+ */
+export function extractJsonObject(text) {
+    if (!text || typeof text !== 'string') return null;
+    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    try {
+        return JSON.parse(cleaned);
+    } catch (_) {}
+
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+        return JSON.parse(match[0]);
+    } catch (_) {
+        return null;
+    }
+}
+
+/**
  * Call Gemini REST API
  */
 async function callGeminiApi(promptText, systemInstruction = '') {
     const apiKey = getGeminiApiKey();
     if (!apiKey) {
         throw new Error("Geen Gemini API sleutel geconfigureerd.");
+    }
+
+    const cleanApiKey = apiKey.replace(/[\r\n\x00-\x1F\x7F]/g, '').trim();
+    if (!cleanApiKey) {
+        throw new Error("Ongeldig formaat van Gemini API sleutel.");
     }
 
     const rawModel = getGeminiModel() || DEFAULT_GEMINI_MODEL;
@@ -64,34 +89,42 @@ async function callGeminiApi(promptText, systemInstruction = '') {
         contents: [
             {
                 role: 'user',
-                parts: [{ text: promptText }]
+                parts: [{ text: String(promptText || '').slice(0, 15000) }]
             }
         ]
     };
 
     if (systemInstruction) {
         requestBody.systemInstruction = {
-            parts: [{ text: systemInstruction }]
+            parts: [{ text: String(systemInstruction).slice(0, 5000) }]
         };
     }
 
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey.trim()
-        },
-        body: JSON.stringify(requestBody)
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
-    if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `Gemini API HTTP ${response.status}`);
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-goog-api-key': cleanApiKey
+            },
+            body: JSON.stringify(requestBody),
+            signal: controller.signal
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData?.error?.message || `Gemini API HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        return textOutput;
+    } finally {
+        clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-    const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    return textOutput;
 }
 
 /**
@@ -158,8 +191,10 @@ Geef je antwoord ALTIJD uitsluitend als geldig JSON object in het volgende forma
 Zorg voor een heldere deliverables opsomming, realistische fasering, duidelijke splitsing van eenmalige realisatie en de jaarlijkse Managed Hosting (€ 150,-/jr).`;
 
             const rawResponse = await callGeminiApi(userPrompt, systemPrompt);
-            const cleanedJson = rawResponse.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
-            const parsed = JSON.parse(cleanedJson);
+            const parsed = extractJsonObject(rawResponse);
+            if (!parsed) {
+                throw new Error("Ongeldig JSON formaat ontvangen van Gemini API");
+            }
             parsed.isAiGenerated = true;
             return parsed;
 
@@ -320,12 +355,26 @@ Genereer een JSON response met exact de volgende structuur:
 Geef UITSLUITEND valide JSON terug zonder markdown backticks.`;
 
             const rawResponse = await callGeminiApi(prompt);
-            const cleaned = rawResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(cleaned);
+            const parsed = extractJsonObject(rawResponse);
+            if (!parsed) {
+                throw new Error("Ongeldig JSON formaat ontvangen van Gemini API");
+            }
             if (parsed.suggestedPrototypeUrl) {
                 const safeUrl = sanitizeUrl(parsed.suggestedPrototypeUrl);
                 parsed.suggestedPrototypeUrl = safeUrl === '#' ? `https://${domain}` : safeUrl;
             }
+            if (Array.isArray(parsed.colorPalette)) {
+                parsed.colorPalette = parsed.colorPalette
+                    .filter(c => typeof c === 'string' && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(c.trim()))
+                    .map(c => c.trim().toLowerCase());
+                if (parsed.colorPalette.length === 0) {
+                    parsed.colorPalette = ["#0a0e1a", "#6366f1", "#22d3ee"];
+                }
+            }
+            if (parsed.conceptTitle) parsed.conceptTitle = String(parsed.conceptTitle).slice(0, 150);
+            if (parsed.aiImagePrompt) parsed.aiImagePrompt = String(parsed.aiImagePrompt).slice(0, 1000);
+            if (parsed.designRationale) parsed.designRationale = String(parsed.designRationale).slice(0, 1500);
+
             return {
                 ...parsed,
                 isAiGenerated: true

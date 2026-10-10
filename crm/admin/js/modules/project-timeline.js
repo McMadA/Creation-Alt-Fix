@@ -23,15 +23,36 @@ export function calculateVisualPulse(activityLogs = []) {
         };
     }
 
-    // Sorteer op meest recente timestamp
-    const sorted = [...activityLogs].sort((a, b) => {
+    // Filter geldige logs en sorteer op meest recente timestamp
+    const validLogs = activityLogs.filter(log => log && typeof log === 'object');
+    if (validLogs.length === 0) {
+        return {
+            state: 'passive',
+            label: 'Geen recente klantactiviteit',
+            color: '#64748b',
+            icon: '💤',
+            timeAgo: 'Onbekend'
+        };
+    }
+
+    const sorted = [...validLogs].sort((a, b) => {
         const tA = new Date(a.timestamp || 0).getTime();
         const tB = new Date(b.timestamp || 0).getTime();
-        return tB - tA;
+        return (isNaN(tB) ? 0 : tB) - (isNaN(tA) ? 0 : tA);
     });
 
     const latest = sorted[0];
     const latestTime = new Date(latest.timestamp || 0).getTime();
+    if (isNaN(latestTime) || latestTime <= 0) {
+        return {
+            state: 'passive',
+            label: 'Geen recente klantactiviteit',
+            color: '#64748b',
+            icon: '💤',
+            timeAgo: 'Onbekend'
+        };
+    }
+
     const diffMinutes = Math.floor((Date.now() - latestTime) / (1000 * 60));
 
     if (diffMinutes < 5) {
@@ -113,11 +134,19 @@ export function renderTimelineHtml(timelineEvents = []) {
         return `<div style="text-align: center; opacity: 0.6; padding: 32px;">Nog geen tijdlijn- of audit gebeurtenissen vastgelegd.</div>`;
     }
 
-    const itemsHtml = timelineEvents.map(evt => {
+    const validEvents = timelineEvents.filter(evt => evt && typeof evt === 'object');
+    if (validEvents.length === 0) {
+        return `<div style="text-align: center; opacity: 0.6; padding: 32px;">Nog geen tijdlijn- of audit gebeurtenissen vastgelegd.</div>`;
+    }
+
+    const itemsHtml = validEvents.map(evt => {
         const isClientAction = evt.actor === 'client' || evt.type === 'client_activity';
         const icon = isClientAction ? '👤' : (evt.type === 'status_change' ? '🔄' : '📝');
         const borderColor = isClientAction ? '#38bdf8' : (evt.type === 'status_change' ? '#10b981' : 'rgba(255,255,255,0.2)');
-        const dateStr = evt.timestamp ? new Date(evt.timestamp).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+        const rawTime = evt.timestamp ? new Date(evt.timestamp).getTime() : 0;
+        const dateStr = (!isNaN(rawTime) && rawTime > 0)
+            ? new Date(rawTime).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })
+            : '—';
 
         return `
             <div class="timeline-item" style="display: flex; gap: 14px; position: relative; margin-bottom: 20px;">

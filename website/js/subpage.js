@@ -40,28 +40,43 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
-        // Keys containing HTML markup — must use innerHTML; all others use textContent for XSS safety
+        // Keys containing HTML markup — strictly whitelisted and sanitized before innerHTML; all others use textContent for XSS safety (CWE-79)
         var htmlKeys = new Set([
-            'dienstenOverviewTitle', 'dienstenOverviewH1',
-            'itH1', 'itP3', 'itP4', 'aiH1', 'aiP3', 'aiP4',
-            'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4',
-            'hbiH1', 'hbiH2Features',
-            'windH1', 'windH2Features',
-            'overMijH1', 'overMijMissieP3',
-            'projectenH1', 'projectenCaseStudyTitle', 'projectenGridTitle',
-            'heroHeadline', 'aiServicesTitle', 'learnMore', 'webDesignTitle',
-            'aiOplossingenTitle', 'portfolioTitle', 'faqTitle', 'githubTitle',
-            'trustTitle', 'contactTitle', 'termsH1', 'privacyH1', 'landingH1', 'liveDemoH1',
-            'workflowSectionTitle', 'crmH1', 'crmChallengeP2', 'crmPillarsTitle'
+            'aboutTitle', 'aiH1', 'aiH2', 'aiOplossingenTitle', 'aiP3', 'aiP4', 'aiServicesTitle',
+            'contactTitle', 'crmChallengeP2', 'crmH1', 'crmPillarsTitle',
+            'dashH1', 'dashP3', 'dashP4', 'dienstenOverviewH1', 'dienstenOverviewTitle',
+            'error404Title', 'faqTitle', 'githubTitle',
+            'hbiH1', 'hbiH2Features', 'heroHeadline', 'heroQualityPill',
+            'itH1', 'itP3', 'itP4', 'landingH1', 'learnMore', 'liveDemoH1',
+            'overMijH1', 'overMijMissieP3', 'portfolioTitle',
+            'privacyH1', 'privacyLi3_1', 'privacyLi3_2', 'privacyLi3_3',
+            'privacyP1_1', 'privacyP1_2', 'privacyP6_1', 'privacyP8_2',
+            'projectenCaseStudyTitle', 'projectenGridTitle', 'projectenH1',
+            'qualityBadge', 'qualityP4Desc', 'qualityTitle', 'radarH2',
+            'shieldH2', 'stagingH2', 'studioH2',
+            'termsH1', 'termsLi1_1', 'termsLi1_2', 'termsLi1_3',
+            'termsP10_1', 'termsP2_1', 'termsP3_1', 'termsP4_1', 'termsP5_1',
+            'termsP6_1', 'termsP7_1', 'termsP8_1', 'termsP9_1',
+            'trustTitle', 'watermarkText', 'webDesignTitle',
+            'webH1', 'webP3', 'webP4', 'windH1', 'windH2Features', 'workflowSectionTitle'
         ]);
+
+        function sanitizeTrustedHtml(str) {
+            if (typeof str !== 'string') return '';
+            return str
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/\bon\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '')
+                .replace(/javascript:\s*/gi, '');
+        }
 
         document.querySelectorAll('[data-translate-key]').forEach(function(element) {
             var key = element.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
+                var val = translations[lang][key];
                 if (htmlKeys.has(key)) {
-                    element.innerHTML = translations[lang][key];
+                    element.innerHTML = sanitizeTrustedHtml(val);
                 } else {
-                    element.textContent = translations[lang][key];
+                    element.textContent = val;
                 }
             }
         });

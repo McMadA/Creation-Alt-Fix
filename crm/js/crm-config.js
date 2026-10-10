@@ -172,7 +172,8 @@ export function escapeHtml(str) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/'/g, '&#039;')
+        .replace(/`/g, '&#96;');
 }
 
 /**
@@ -186,10 +187,12 @@ export function sanitizeUrl(url) {
     const trimmed = url.trim();
     // Neutralize control characters
     if (/[\x00-\x1F\x7F]/.test(trimmed)) return '#';
-    // Reject protocol-relative URLs (//attacker.com)
-    if (trimmed.startsWith('//')) return '#';
-    // Whitelist safe web protocols and strictly relative paths (e.g. /path, but not //)
-    if (/^(https?:\/\/|\/(?!\/)|mailto:|tel:)/i.test(trimmed)) {
+    // Reject attribute breakouts, tags and script injection characters
+    if (/[\s<>"'`]/.test(trimmed)) return '#';
+    // Reject protocol-relative and backslash injection (//attacker.com, /\attacker.com, \\attacker.com, \path)
+    if (/^[\/\\]{2}/.test(trimmed) || /^\/[\\\/]/.test(trimmed) || trimmed.startsWith('\\')) return '#';
+    // Whitelist safe web protocols and strictly relative paths (e.g. /path, but not // or /\)
+    if (/^(https?:\/\/|\/(?![\/\\])|mailto:|tel:)/i.test(trimmed)) {
         return trimmed;
     }
     return '#';

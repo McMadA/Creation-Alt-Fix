@@ -202,11 +202,19 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       }
     }
 
-    // Bepaal slug
-    const slug = name
+    // Bepaal veilige slug en valideer website protocol
+    let cleanWeb = (website || '').trim();
+    if (!/^https?:\/\//i.test(cleanWeb)) {
+      cleanWeb = null;
+    }
+
+    let slug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') || 'zzp-concept';
+    if (slug.length > 64) {
+      slug = slug.slice(0, 64).replace(/-+$/, '');
+    }
 
     return {
       name,
@@ -216,11 +224,39 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       reviewsCount,
       address,
       phone,
-      website: website || null,
+      website: cleanWeb,
       reviews,
       googleMapsUrl: mapsUrl,
-      hasWebsite: Boolean(website),
+      hasWebsite: Boolean(cleanWeb),
       scannedAt: new Date().toISOString()
     };
   }, { fallbackName, mapsUrl });
+}
+
+/**
+ * Saniteert en normaliseert gescrapete lead gegevens (CWE-79 URI injectie & Windows Path Bounds)
+ * @param {Object} data 
+ * @returns {Object|null}
+ */
+export function sanitizeLeadData(data) {
+  if (!data || typeof data !== 'object') return null;
+  const name = typeof data.name === 'string' ? data.name.trim().slice(0, 150) : 'Lokale Ondernemer';
+  let slug = (typeof data.slug === 'string' ? data.slug : name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'zzp-concept';
+  if (slug.length > 64) {
+    slug = slug.slice(0, 64).replace(/-+$/, '');
+  }
+  let website = typeof data.website === 'string' ? data.website.trim() : '';
+  if (!/^https?:\/\//i.test(website)) {
+    website = null;
+  }
+  return {
+    ...data,
+    name,
+    slug,
+    website,
+    hasWebsite: Boolean(website)
+  };
 }

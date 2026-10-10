@@ -8,6 +8,36 @@
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
+// Restrict CORS to authorized portal domains and loopback development
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'https://portal.creationaltfix.nl',
+    'https://creationaltfix.nl',
+    'https://www.creationaltfix.nl'
+];
+$originMatched = false;
+if (!empty($origin)) {
+    if (in_array($origin, $allowedOrigins, true) || preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+        header("Access-Control-Allow-Origin: " . $origin);
+        header("Vary: Origin");
+        $originMatched = true;
+    }
+    if (!$originMatched) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Origin niet toegestaan']);
+        exit;
+    }
+} else {
+    header("Access-Control-Allow-Origin: https://portal.creationaltfix.nl");
+}
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method Not Allowed']);
@@ -35,6 +65,10 @@ if (!empty($idToken)) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['idToken' => $idToken]));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+    if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+    }
     $verifyRes = curl_exec($ch);
     $verifyCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -49,17 +83,17 @@ if (!empty($idToken)) {
     }
 }
 
-// Lokale bridge fallback voor CLI / test omgevingen
-$clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-$isLocalhost = in_array($clientIp, ['127.0.0.1', '::1'], true);
+// Strikte authenticatie: webverzoeken vereisen een geverifieerd admin token.
+// Alleen CLI scripts (php_sapi_name === 'cli') hebben lokale testtoegang.
+$isCli = (php_sapi_name() === 'cli');
 
-if (!$isAuthenticatedAdmin && !$isLocalhost) {
+if (!$isAuthenticatedAdmin && !$isCli) {
     http_response_code(401);
     echo json_encode(['error' => 'Ongeautoriseerd: Alleen beheerders met een geldig Firebase ID token mogen betaallinks genereren.']);
     exit;
 }
 
-$rawBody = file_get_contents('php://input');
+$rawBody = file_get_contents('php://input', false, null, 0, 10240);
 $data = json_decode($rawBody, true);
 
 if (!is_array($data)) {
@@ -70,19 +104,26 @@ if (!is_array($data)) {
 
 $projectId = trim($data['projectId'] ?? '');
 $invoiceNumber = trim($data['invoiceNumber'] ?? ($data['factuurnummer'] ?? ''));
-$clientName = trim($data['clientName'] ?? ($data['klant_naam'] ?? 'Klant'));
+$clientName = substr(strip_tags(trim($data['clientName'] ?? ($data['klant_naam'] ?? 'Klant'))), 0, 80);
 $amountIncl = floatval($data['amountIncl'] ?? ($data['bedrag_incl'] ?? 0));
-$description = trim($data['description'] ?? ($data['beschrijving'] ?? ""));
+$rawDesc = trim($data['description'] ?? ($data['beschrijving'] ?? ""));
 
-if (empty($invoiceNumber) || $amountIncl <= 0) {
+$cleanProjectId = preg_replace('/[^\w\-]/', '', $projectId);
+$cleanInvNumber = preg_replace('/[^\w\-\/]/', '', $invoiceNumber);
+
+if (empty($cleanProjectId) || empty($cleanInvNumber) || $amountIncl < 0.01 || $amountIncl > 50000) {
     http_response_code(400);
-    echo json_encode(['error' => 'Factuurnummer en een positief bedrag zijn verplicht']);
+    echo json_encode(['error' => 'Factuurnummer en een positief bedrag (max. € 50.000,-) zijn verplicht']);
     exit;
 }
 
-if (empty($description)) {
+if (empty($rawDesc)) {
     $description = "Factuur {$invoiceNumber} - Creation+Alt+Fix ({$clientName})";
+} else {
+    $description = $rawDesc;
 }
+// Strip HTML tags, control tekens en begrenzen tot Mollie API limiet (128 tekens)
+$description = substr(preg_replace('/[\x00-\x1F\x7F]/', '', strip_tags($description)), 0, 128);
 
 // 1. Sleutel ophalen uit environment of .env
 $apiKey = getenv('MOLLIE_API_KEY') ?: '';
@@ -141,6 +182,13 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "Content-Type: application/json"
 ]);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+    curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+}
+if (defined('CURLOPT_REDIR_PROTOCOLS')) {
+    curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, 0);
+}
 
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -166,9 +214,8 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($mollieData['_links']['checkout
     ]);
 } else {
     http_response_code($httpCode >= 400 ? $httpCode : 500);
-    $detail = $mollieData['detail'] ?? ($mollieData['error'] ?? 'Onbekende fout van Mollie API');
+    $detail = substr(strip_tags($mollieData['detail'] ?? ($mollieData['error'] ?? 'Onbekende fout van Mollie API')), 0, 200);
     echo json_encode([
-        'error' => "Mollie API fout: {$detail}",
-        'mollie_response' => $mollieData
+        'error' => "Mollie API fout: {$detail}"
     ]);
 }

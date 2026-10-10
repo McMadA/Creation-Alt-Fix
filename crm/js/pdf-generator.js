@@ -1064,17 +1064,25 @@ export async function generateInvoicePDF(p) {
  * Uploads a generated PDF to Firebase Storage and returns the public download URL
  */
 export async function uploadPdfToStorage(storageInstance, pdfBlob, projectId, filename) {
-    if (!storageInstance || !projectId) return null;
+    if (!storageInstance || !projectId || !pdfBlob) return null;
+    if (typeof pdfBlob.size === 'number' && pdfBlob.size <= 0) return null;
     try {
         const timestamp = Date.now();
-        const safeName = filename || `document_${timestamp}.pdf`;
-        const storagePath = `projects/${projectId}/documents/${timestamp}_${safeName}`;
+        const cleanProjectId = String(projectId).replace(/[^a-zA-Z0-9_-]/g, '');
+        if (!cleanProjectId) return null;
+
+        let rawName = String(filename || `document_${timestamp}.pdf`).trim();
+        let safeName = rawName.replace(/[^a-zA-Z0-9._-]/g, '_').substring(0, 80);
+        if (!safeName.toLowerCase().endsWith('.pdf')) {
+            safeName += '.pdf';
+        }
+        const storagePath = `projects/${cleanProjectId}/documents/${timestamp}_${safeName}`;
         const fileRef = ref(storageInstance, storagePath);
 
         const snapshot = await uploadBytes(fileRef, pdfBlob, {
             contentType: 'application/pdf',
             customMetadata: {
-                projectId: String(projectId),
+                projectId: cleanProjectId,
                 uploadedAt: new Date().toISOString()
             }
         });

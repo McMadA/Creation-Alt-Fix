@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 /**
  * Creation+Alt+Fix - Motion Design HTML Generator
@@ -7,12 +8,24 @@ import path from 'path';
  * with embedded base64 assets, glowing gradients, 3D device mockups, and glassmorphic UI.
  */
 
-const ROOT_DIR = path.resolve('factory/video');
-const WEBSITE_IMG_DIR = path.resolve('website/images');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const logoB64 = fs.readFileSync(path.join(WEBSITE_IMG_DIR, 'logo.webp')).toString('base64');
-const besselingB64 = fs.readFileSync(path.join(WEBSITE_IMG_DIR, 'besseling.webp')).toString('base64');
-const arnoldB64 = fs.readFileSync(path.join(WEBSITE_IMG_DIR, 'arnolddesign.webp')).toString('base64');
+const ROOT_DIR = __dirname;
+const WEBSITE_IMG_DIR = path.resolve(__dirname, '../../website/images');
+
+const safeReadBase64 = (filePath) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      return fs.readFileSync(filePath).toString('base64');
+    }
+  } catch (_) {}
+  return '';
+};
+
+const logoB64 = safeReadBase64(path.join(WEBSITE_IMG_DIR, 'logo.webp'));
+const besselingB64 = safeReadBase64(path.join(WEBSITE_IMG_DIR, 'besseling.webp'));
+const arnoldB64 = safeReadBase64(path.join(WEBSITE_IMG_DIR, 'arnolddesign.webp'));
 
 const htmlContent = `<!DOCTYPE html>
 <html lang="nl">

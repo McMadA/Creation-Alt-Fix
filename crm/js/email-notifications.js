@@ -91,7 +91,35 @@ async function ensureEmailJS() {
 // Throttle Guard
 // ============================================================
 
+export function sanitizeHeader(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Strikt valideren en saneren van ontvangers e-mailadres
+ * Voorkomt CC/BCC injectie, header injection en multi-recipient misbruik
+ * @param {string} email 
+ * @returns {string} Schoon e-mailadres of lege string indien ongeldig
+ */
+export function sanitizeRecipientEmail(email) {
+    if (!email || typeof email !== 'string') return '';
+    const clean = email.trim().toLowerCase().replace(/[\r\n\x00-\x1F\x7F,; ]/g, '');
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(clean) ? clean : '';
+}
+
+function pruneSentLog() {
+    const now = Date.now();
+    for (const [k, timestamp] of _sentLog.entries()) {
+        if (now - timestamp > THROTTLE_MS * 2) {
+            _sentLog.delete(k);
+        }
+    }
+}
+
 function isThrottled(key) {
+    pruneSentLog();
     const last = _sentLog.get(key);
     if (last && (Date.now() - last) < THROTTLE_MS) return true;
     return false;
@@ -193,11 +221,18 @@ const PHASE_DESCRIPTIONS = {
  * Sends to info@creationaltfix.nl via EmailJS (existing template).
  */
 export async function notifyAdminNewMessage({ clientName, clientEmail, projectName, messagePreview, category }) {
-    const throttleKey = `admin_msg_${clientEmail}_${Date.now().toString().slice(0, -5)}`;
+    const cleanEmail = sanitizeHeader(clientEmail || '');
+    const cleanName = sanitizeHeader(clientName || 'Klant');
+    const cleanProject = sanitizeHeader(projectName || 'Project');
+    const cleanCategory = sanitizeHeader(category || 'Algemeen');
+
+    const throttleKey = `admin_msg_${cleanEmail}_${Date.now().toString().slice(0, -5)}`;
     if (isThrottled(throttleKey)) {
         console.log('[CRM Notify] Admin alert throttled (duplicate prevention)');
         return false;
     }
+
+    const safeSubject = `💬 Nieuw bericht van ${cleanName} — ${cleanProject}`;
 
     try {
         const ready = await ensureEmailJS();
@@ -205,23 +240,23 @@ export async function notifyAdminNewMessage({ clientName, clientEmail, projectNa
             console.warn('[CRM Notify] EmailJS not available, using FormSubmit fallback');
             return await sendFormSubmitFallback({
                 to: EMAILJS_CONFIG.toEmail,
-                subject: `💬 Nieuw bericht van ${clientName} — ${projectName}`,
-                html: buildAdminAlertHtml({ clientName, clientEmail, projectName, messagePreview, category })
+                subject: safeSubject,
+                html: buildAdminAlertHtml({ clientName: cleanName, clientEmail: cleanEmail, projectName: cleanProject, messagePreview, category: cleanCategory })
             });
         }
 
         await window.emailjs.send(EMAILJS_CONFIG.serviceId, TEMPLATES.adminAlert, {
             to_name: 'Allard',
             to_email: EMAILJS_CONFIG.toEmail,
-            from_name: clientName || 'Klant',
-            reply_to: clientEmail,
-            subject: `💬 Nieuw bericht van ${clientName} — ${projectName}`,
-            message: `Nieuw klantbericht ontvangen:\n\nKlant: ${clientName}\nE-mail: ${clientEmail}\nProject: ${projectName}\nCategorie: ${category || 'Algemeen'}\n\nBericht:\n"${messagePreview}"\n\nBekijk in Admin Dashboard: ${ADMIN_URL}`,
-            message_html: buildAdminAlertHtml({ clientName, clientEmail, projectName, messagePreview, category })
+            from_name: cleanName,
+            reply_to: cleanEmail,
+            subject: safeSubject,
+            message: `Nieuw klantbericht ontvangen:\n\nKlant: ${cleanName}\nE-mail: ${cleanEmail}\nProject: ${cleanProject}\nCategorie: ${cleanCategory}\n\nBericht:\n"${messagePreview}"\n\nBekijk in Admin Dashboard: ${ADMIN_URL}`,
+            message_html: buildAdminAlertHtml({ clientName: cleanName, clientEmail: cleanEmail, projectName: cleanProject, messagePreview, category: cleanCategory })
         });
 
         markSent(throttleKey);
-        console.log(`[CRM Notify] ✅ Admin notificatie verstuurd voor bericht van ${clientName}`);
+        console.log(`[CRM Notify] ✅ Admin notificatie verstuurd voor bericht van ${cleanName}`);
         return true;
     } catch (err) {
         console.error('[CRM Notify] Admin alert failed:', err);
@@ -234,11 +269,14 @@ export async function notifyAdminNewMessage({ clientName, clientEmail, projectNa
  * Sends branded email to client's email via EmailJS (client template).
  */
 export async function notifyClientAdminReply({ clientEmail, clientName, projectName, messagePreview }) {
-    const cleanEmail = (clientEmail || '').replace(/[\r\n]/g, '').trim();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
+    const cleanEmail = sanitizeRecipientEmail(clientEmail || '');
+    if (!cleanEmail) {
         console.warn('[CRM Notify] No valid client email provided, skipping notification');
         return false;
     }
+
+    const cleanName = sanitizeHeader(clientName || 'Klant');
+    const cleanProject = sanitizeHeader(projectName || 'Project');
 
     const throttleKey = `client_reply_${cleanEmail}_${Date.now().toString().slice(0, -5)}`;
     if (isThrottled(throttleKey)) {
@@ -246,18 +284,20 @@ export async function notifyClientAdminReply({ clientEmail, clientName, projectN
         return false;
     }
 
+    const safeSubject = `💬 Allard heeft gereageerd — ${cleanProject}`;
+
     try {
         const ready = await ensureEmailJS();
         if (!ready) return false;
 
         await window.emailjs.send(EMAILJS_CONFIG.serviceId, TEMPLATES.clientNotification, {
-            to_name: clientName || 'Klant',
+            to_name: cleanName,
             to_email: cleanEmail,
             from_name: 'Allard (Creation+Alt+Fix)',
             reply_to: 'info@creationaltfix.nl',
-            subject: `💬 Allard heeft gereageerd — ${projectName}`,
-            message: `Hallo ${clientName},\n\nAllard heeft gereageerd op je bericht voor "${projectName}":\n\n"${messagePreview}"\n\nBekijk het volledige antwoord in je klantenportaal:\n${PORTAL_URL}`,
-            message_html: buildClientNotificationHtml({ clientName, projectName, messagePreview, type: 'reply' })
+            subject: safeSubject,
+            message: `Hallo ${cleanName},\n\nAllard heeft gereageerd op je bericht voor "${cleanProject}":\n\n"${messagePreview}"\n\nBekijk het volledige antwoord in je klantenportaal:\n${PORTAL_URL}`,
+            message_html: buildClientNotificationHtml({ clientName: cleanName, projectName: cleanProject, messagePreview, type: 'reply' })
         });
 
         markSent(throttleKey);
@@ -275,41 +315,48 @@ export async function notifyClientAdminReply({ clientEmail, clientName, projectN
  * Sends branded milestone update to client's email.
  */
 export async function notifyClientPhaseChange({ clientEmail, clientName, projectName, newPhaseLabel }) {
-    const cleanEmail = (clientEmail || '').replace(/[\r\n]/g, '').trim();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
+    const cleanEmail = sanitizeRecipientEmail(clientEmail || '');
+    if (!cleanEmail) {
         console.warn('[CRM Notify] No valid client email for phase notification, skipping');
         return false;
     }
 
-    const throttleKey = `phase_${cleanEmail}_${newPhaseLabel}`;
+    const cleanName = sanitizeHeader(clientName || 'Klant');
+    const cleanProject = sanitizeHeader(projectName || 'Project');
+    const cleanPhase = sanitizeHeader(newPhaseLabel || 'Nieuwe Mijlpaal');
+
+    const throttleKey = `phase_${cleanEmail}_${cleanPhase}`;
     if (isThrottled(throttleKey)) {
         console.log('[CRM Notify] Phase notification throttled');
         return false;
     }
 
-    const description = PHASE_DESCRIPTIONS[newPhaseLabel] || `Je project is bijgewerkt naar: ${newPhaseLabel}`;
+    const safePhase = escapeHtml(cleanPhase);
+    const rawDesc = PHASE_DESCRIPTIONS[newPhaseLabel] || `Je project is bijgewerkt naar: ${cleanPhase}`;
+    const safeDesc = escapeHtml(rawDesc);
+    const safeSubject = `🚀 Mijlpaal bereikt — ${cleanProject}: ${cleanPhase}`;
 
     try {
         const ready = await ensureEmailJS();
         if (!ready) return false;
 
         await window.emailjs.send(EMAILJS_CONFIG.serviceId, TEMPLATES.clientNotification, {
-            to_name: clientName || 'Klant',
+            to_name: cleanName,
             to_email: cleanEmail,
             from_name: 'Creation+Alt+Fix',
             reply_to: 'info@creationaltfix.nl',
-            subject: `🚀 Mijlpaal bereikt — ${projectName}: ${newPhaseLabel}`,
-            message: `Hallo ${clientName},\n\nGoed nieuws! Er is een update voor je project "${projectName}".\n\n${newPhaseLabel}\n${description}\n\nVolg de live voortgang via je klantenportaal:\n${PORTAL_URL}`,
+            subject: safeSubject,
+            message: `Hallo ${cleanName},\n\nGoed nieuws! Er is een update voor je project "${cleanProject}".\n\n${cleanPhase}\n${rawDesc}\n\nVolg de live voortgang via je klantenportaal:\n${PORTAL_URL}`,
             message_html: buildClientNotificationHtml({ 
-                clientName, 
-                projectName, 
-                messagePreview: `<strong>${newPhaseLabel}</strong><br/><br/>${description}`, 
+                clientName: cleanName, 
+                projectName: cleanProject, 
+                messagePreview: `<strong>${safePhase}</strong><br/><br/>${safeDesc}`, 
                 type: 'phase' 
             })
         });
 
         markSent(throttleKey);
-        console.log(`[CRM Notify] ✅ Fase-notificatie verstuurd naar ${clientEmail}: ${newPhaseLabel}`);
+        console.log(`[CRM Notify] ✅ Fase-notificatie verstuurd naar ${cleanEmail}: ${cleanPhase}`);
         return true;
     } catch (err) {
         console.error('[CRM Notify] Phase notification failed:', err);
@@ -322,18 +369,23 @@ export async function notifyClientPhaseChange({ clientEmail, clientName, project
 // ============================================================
 
 async function sendFormSubmitFallback({ to, subject, html }) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 8000) : null;
     try {
         const resp = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            signal: controller ? controller.signal : undefined,
             body: JSON.stringify({
                 subject: subject,
                 message: html,
                 _template: 'box'
             })
         });
+        if (timer) clearTimeout(timer);
         return resp.ok;
     } catch (err) {
+        if (timer) clearTimeout(timer);
         console.warn('[CRM Notify] FormSubmit fallback failed:', err);
         return false;
     }

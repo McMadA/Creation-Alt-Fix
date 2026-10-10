@@ -63,8 +63,8 @@ try {
     $rf = @fopen($rateFile, 'c+');
     if ($rf) {
         if (@flock($rf, LOCK_EX)) {
-            $size = @filesize($rateFile);
-            $raw = $size > 0 ? @fread($rf, $size) : '';
+            @rewind($rf);
+            $raw = @stream_get_contents($rf);
             if ($raw) {
                 $parsed = @json_decode($raw, true);
                 if (is_array($parsed) && isset($parsed['window']) && ($now - $parsed['window']) < 60) {
@@ -89,6 +89,7 @@ try {
             @flock($rf, LOCK_UN);
         }
         @fclose($rf);
+        @chmod($rateFile, 0600);
     }
 
     $rawDomain = $_GET['domain'] ?? '';
@@ -115,22 +116,31 @@ try {
     }
 
     // Block private IP ranges / localhost / loopback SSRF / Tailscale (RFC 6598)
-    $resolvedIp = gethostbyname($cleanDomain);
+    // Validate ALL resolved A records to eliminate DNS round-robin SSRF bypasses
+    $resolvedIps = @gethostbynamel($cleanDomain);
+    $resolvedIp = (is_array($resolvedIps) && count($resolvedIps) > 0) ? $resolvedIps[0] : gethostbyname($cleanDomain);
     $isPrivateOrBlocked = false;
 
-    if ($resolvedIp === $cleanDomain || filter_var($resolvedIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
-        $isPrivateOrBlocked = true;
-    } else {
-        $ipLong = ip2long($resolvedIp);
+    if (empty($resolvedIps) || !is_array($resolvedIps)) {
+        $resolvedIps = [$resolvedIp];
+    }
+
+    foreach ($resolvedIps as $ip) {
+        if ($ip === $cleanDomain || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            $isPrivateOrBlocked = true;
+            break;
+        }
+        $ipLong = ip2long($ip);
         if ($ipLong === false) {
             $isPrivateOrBlocked = true;
-        } else {
-            // RFC 6598 Carrier-Grade NAT / Tailscale range: 100.64.0.0 to 100.127.255.255
-            $cgnatStart = ip2long('100.64.0.0');
-            $cgnatEnd   = ip2long('100.127.255.255');
-            if ($ipLong >= $cgnatStart && $ipLong <= $cgnatEnd) {
-                $isPrivateOrBlocked = true;
-            }
+            break;
+        }
+        // RFC 6598 Carrier-Grade NAT / Tailscale range: 100.64.0.0 to 100.127.255.255
+        $cgnatStart = ip2long('100.64.0.0');
+        $cgnatEnd   = ip2long('100.127.255.255');
+        if ($ipLong >= $cgnatStart && $ipLong <= $cgnatEnd) {
+            $isPrivateOrBlocked = true;
+            break;
         }
     }
 
@@ -183,6 +193,9 @@ try {
     }
     if (defined('CURLOPT_REDIR_PROTOCOLS')) {
         $curlOptions[CURLOPT_REDIR_PROTOCOLS] = 0;
+    }
+    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
+        $curlOptions[CURLOPT_IPRESOLVE] = CURL_IPRESOLVE_V4;
     }
 
     curl_setopt_array($ch, $curlOptions);
@@ -244,6 +257,8 @@ try {
 
 } catch (\Throwable $e) {
     http_response_code(200);
+    $safeErrorMsg = preg_replace('/[a-zA-Z]:\\\\[^\s\'"]+|\/(?:home|var|usr|etc)\/[^\s\'"]+/', '[sanitized_path]', $e->getMessage());
+    $safeErrorMsg = substr(preg_replace('/[\r\n\x00-\x1F\x7F]/', ' ', $safeErrorMsg), 0, 150);
     echo json_encode([
         'success' => false,
         'domain' => $cleanDomain ?? '',
@@ -252,8 +267,8 @@ try {
         'http_code' => 500,
         'ssl_valid' => false,
         'latency_ms' => 0,
-        'message' => 'Server Healthcheck Fout: ' . $e->getMessage(),
-        'error_detail' => $e->getMessage()
+        'message' => 'Server Healthcheck Fout: ' . $safeErrorMsg,
+        'error_detail' => $safeErrorMsg
     ], JSON_PRETTY_PRINT);
     exit;
 }

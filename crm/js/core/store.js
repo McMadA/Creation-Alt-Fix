@@ -29,6 +29,11 @@ export class ReactiveStore extends EventTarget {
                 return value;
             },
             set(target, prop, value, receiver) {
+                // CWE-1321: Prototype Pollution Defensie
+                if (prop === '__proto__' || prop === 'constructor' || prop === 'prototype') {
+                    console.warn(`[ReactiveStore] Blokkade prototype pollution poging op prop: ${String(prop)}`);
+                    return false;
+                }
                 const oldValue = Reflect.get(target, prop, receiver);
                 if (oldValue === value) return true;
 

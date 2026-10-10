@@ -14,7 +14,10 @@
     };
 
     function getCurrentLanguage() {
-        const saved = localStorage.getItem('preferredLanguage');
+        let saved = null;
+        try {
+            saved = localStorage.getItem('preferredLanguage');
+        } catch (e) {}
         if (saved && translations[saved]) return saved;
         const browser = (navigator.language || 'nl').split('-')[0];
         return translations[browser] ? browser : 'nl';
@@ -31,7 +34,10 @@
     }
 
     function initCookieConsent() {
-        const consent = localStorage.getItem('cookie_consent');
+        let consent = null;
+        try {
+            consent = localStorage.getItem('cookie_consent');
+        } catch (e) {}
         if (consent) return; // Already accepted or rejected
 
         let banner = document.getElementById('cookie-consent-banner');
@@ -131,12 +137,12 @@
         document.body.appendChild(banner);
 
         document.getElementById('cookie-accept-btn').addEventListener('click', function() {
-            localStorage.setItem('cookie_consent', 'accepted');
+            try { localStorage.setItem('cookie_consent', 'accepted'); } catch (e) {}
             banner.remove();
         });
 
         document.getElementById('cookie-decline-btn').addEventListener('click', function() {
-            localStorage.setItem('cookie_consent', 'declined');
+            try { localStorage.setItem('cookie_consent', 'declined'); } catch (e) {}
             banner.remove();
         });
 

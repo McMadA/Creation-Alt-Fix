@@ -9,6 +9,7 @@ export const translations = {
         "navHome": "Home",
         "navServices": "Diensten",
         "navWorkflow": "Werkwijze",
+        "navKeurmerk": "Keurmerk",
         "navProjects": "Projecten",
         "navAbout": "Over Ons",
         "navContact": "Contact",
@@ -34,6 +35,7 @@ export const translations = {
         "navAIServicesSection": "AI-Gedreven Oplossingen",
         "navWhyUsSection": "Waarom Creation+Alt+Fix?",
         "navWorkflowSection": "5-Stappen Aanpak (Home)",
+        "navQualitySection": "20-Punten Keurmerk (Home)",
         "navPortalCase": "Klantenportaal Case Study",
         "navDocsLink": "DevOps & AI Documentatie",
         "navPortalDirect": "Direct naar Klantenportaal",
@@ -772,13 +774,16 @@ export const translations = {
         "qualityP4Desc": "Pure vanilla code (< 50 KB), laadtijd < 0,8 seconde (Lighthouse 95+), 100% mobile fluid en 0 console errors.",
         "qualityP4Badge": "✓ 4 Criteria Inbegrepen",
         "heroQualityPill": "20-Punten Keurmerk Inbegrepen: 100% AVG-Proof • Google Rich Snippets • < 0.8s Snelheid",
-        "heroQualityLink": "Bekijk keurmerk"
+        "heroQualityLink": "Bekijk keurmerk",
+        "qualityFooterNotice": "Alle 20 kwaliteitseisen worden contractueel vastgelegd als officiële bijlage in de offerte en live gemonitord in jouw klantenportaal.",
+        "qualityFooterLink": "Lees Kwaliteitsdossier"
     },
     "en": {
         "pageTitle": "Creation+Alt+Fix - Intelligent AI Solutions & IT Services Groningen",
         "navHome": "Home",
         "navServices": "Services",
         "navWorkflow": "Workflow",
+        "navKeurmerk": "Quality Seal",
         "navProjects": "Projects",
         "navAbout": "About Us",
         "navContact": "Contact",
@@ -804,6 +809,7 @@ export const translations = {
         "navAIServicesSection": "AI-Driven Solutions",
         "navWhyUsSection": "Why Creation+Alt+Fix?",
         "navWorkflowSection": "5-Step Approach (Home)",
+        "navQualitySection": "20-Point Quality Seal (Home)",
         "navPortalCase": "Client Portal Case Study",
         "navDocsLink": "DevOps & AI Documentation",
         "navPortalDirect": "Go to Client Portal",
@@ -1542,7 +1548,9 @@ export const translations = {
         "qualityP4Desc": "Pure vanilla code (< 50 KB), load time < 0.8s (Lighthouse 95+), 100% mobile fluid, and 0 console errors.",
         "qualityP4Badge": "✓ 4 Criteria Included",
         "heroQualityPill": "20-Point Standard Included: 100% GDPR • Google Rich Snippets • < 0.8s Speed",
-        "heroQualityLink": "View standard"
+        "heroQualityLink": "View standard",
+        "qualityFooterNotice": "All 20 quality requirements are contractually certified in the official proposal appendix and tracked in your client portal.",
+        "qualityFooterLink": "Read Quality Dossier"
     }
 };
 

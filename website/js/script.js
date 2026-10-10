@@ -40,26 +40,43 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentLanguage = lang;
         document.documentElement.lang = lang;
 
-        // Keys containing HTML markup — must use innerHTML; all others use textContent for XSS safety
+        // Keys containing HTML markup — strictly whitelisted and sanitized before innerHTML; all others use textContent for XSS safety (CWE-79)
         var htmlKeys = new Set([
-            'heroHeadline', 'aiServicesTitle', 'learnMore', 'webDesignTitle',
-            'aiOplossingenTitle', 'portfolioTitle', 'faqTitle', 'githubTitle',
-            'trustTitle', 'contactTitle', 'dienstenOverviewTitle', 'dienstenOverviewH1',
-            'itH1', 'itP3', 'itP4', 'aiH1', 'aiP3', 'aiP4',
-            'webH1', 'webP3', 'webP4', 'dashH1', 'dashP3', 'dashP4',
-            'hbiH1', 'hbiH2Features', 'windH1', 'windH2Features',
-            'overMijH1', 'overMijMissieP3', 'projectenH1', 'projectenCaseStudyTitle',
-            'projectenGridTitle', 'termsH1', 'privacyH1', 'landingH1', 'liveDemoH1',
-            'workflowSectionTitle', 'crmH1', 'crmChallengeP2', 'crmPillarsTitle'
+            'aboutTitle', 'aiH1', 'aiH2', 'aiOplossingenTitle', 'aiP3', 'aiP4', 'aiServicesTitle',
+            'contactTitle', 'crmChallengeP2', 'crmH1', 'crmPillarsTitle',
+            'dashH1', 'dashP3', 'dashP4', 'dienstenOverviewH1', 'dienstenOverviewTitle',
+            'error404Title', 'faqTitle', 'githubTitle',
+            'hbiH1', 'hbiH2Features', 'heroHeadline', 'heroQualityPill',
+            'itH1', 'itP3', 'itP4', 'landingH1', 'learnMore', 'liveDemoH1',
+            'overMijH1', 'overMijMissieP3', 'portfolioTitle',
+            'privacyH1', 'privacyLi3_1', 'privacyLi3_2', 'privacyLi3_3',
+            'privacyP1_1', 'privacyP1_2', 'privacyP6_1', 'privacyP8_2',
+            'projectenCaseStudyTitle', 'projectenGridTitle', 'projectenH1',
+            'qualityBadge', 'qualityP4Desc', 'qualityTitle', 'radarH2',
+            'shieldH2', 'stagingH2', 'studioH2',
+            'termsH1', 'termsLi1_1', 'termsLi1_2', 'termsLi1_3',
+            'termsP10_1', 'termsP2_1', 'termsP3_1', 'termsP4_1', 'termsP5_1',
+            'termsP6_1', 'termsP7_1', 'termsP8_1', 'termsP9_1',
+            'trustTitle', 'watermarkText', 'webDesignTitle',
+            'webH1', 'webP3', 'webP4', 'windH1', 'windH2Features', 'workflowSectionTitle'
         ]);
+
+        function sanitizeTrustedHtml(str) {
+            if (typeof str !== 'string') return '';
+            return str
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/\bon\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '')
+                .replace(/javascript:\s*/gi, '');
+        }
 
         document.querySelectorAll('[data-translate-key]').forEach(function(element) {
             var key = element.getAttribute('data-translate-key');
             if (translations[lang][key] !== undefined) {
+                var val = translations[lang][key];
                 if (htmlKeys.has(key)) {
-                    element.innerHTML = translations[lang][key];
+                    element.innerHTML = sanitizeTrustedHtml(val);
                 } else {
-                    element.textContent = translations[lang][key];
+                    element.textContent = val;
                 }
             }
         });
@@ -152,12 +169,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Intercept clicks on links that point to anchors on current page
+    // Intercept clicks on links that point to anchors on current page (navbar, hero, or in-page CTA)
     document.addEventListener('click', function(e) {
-        var link = e.target.closest('#navbar a[href*="#"]');
+        var link = e.target.closest('a[href*="#"]');
         if (!link) return;
 
         var href = link.getAttribute('href');
+        if (!href || href === '#' || href.startsWith('javascript:')) return;
+        if (link.getAttribute('target') === '_blank') return;
+
         var url;
         try {
             url = new URL(href, window.location.origin);
@@ -168,23 +188,29 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Check if link points to current page with hash
         if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === window.location.pathname) {
             if (url.hash) {
-                e.preventDefault();
-                scrollToHash(url.hash);
-                if (history.pushState) {
-                    history.pushState(null, '', url.hash);
-                }
-                
-                // Close mobile menu if open
-                var navMenuItems = document.getElementById('nav-menu-items');
-                var hamburgerBtn = document.getElementById('hamburger-menu');
-                if (navMenuItems && navMenuItems.classList.contains('active')) {
-                    navMenuItems.classList.remove('active');
-                    if (hamburgerBtn) {
-                        hamburgerBtn.setAttribute('aria-expanded', 'false');
-                        var icon = hamburgerBtn.querySelector('i');
-                        if (icon) {
-                            icon.classList.remove('fa-times');
-                            icon.classList.add('fa-bars');
+                var targetElement = null;
+                try {
+                    targetElement = document.querySelector(url.hash);
+                } catch (err) {}
+                if (targetElement) {
+                    e.preventDefault();
+                    scrollToHash(url.hash);
+                    if (history.pushState) {
+                        history.pushState(null, '', url.hash);
+                    }
+                    
+                    // Close mobile menu if open
+                    var navMenuItems = document.getElementById('nav-menu-items');
+                    var hamburgerBtn = document.getElementById('hamburger-menu');
+                    if (navMenuItems && navMenuItems.classList.contains('active')) {
+                        navMenuItems.classList.remove('active');
+                        if (hamburgerBtn) {
+                            hamburgerBtn.setAttribute('aria-expanded', 'false');
+                            var icon = hamburgerBtn.querySelector('i');
+                            if (icon) {
+                                icon.classList.remove('fa-times');
+                                icon.classList.add('fa-bars');
+                            }
                         }
                     }
                 }

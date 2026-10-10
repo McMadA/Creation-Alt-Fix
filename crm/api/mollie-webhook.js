@@ -21,15 +21,12 @@ const PORT = process.env.MOLLIE_WEBHOOK_PORT || 3030;
  */
 export async function fetchMolliePaymentStatus(paymentId, apiKey = MOLLIE_API_KEY) {
   if (!apiKey) {
-    console.warn(`[Mollie Webhook] Geen live MOLLIE_API_KEY ingesteld. Betaling ${paymentId} wordt gesimuleerd als 'paid'.`);
-    return {
-      id: paymentId,
-      status: 'paid',
-      amount: { value: '150.00', currency: 'EUR' },
-      method: 'ideal',
-      metadata: { invoiceNumber: 'FACT-2027-001', clientName: 'Mollie Test Client' },
-      paidAt: new Date().toISOString()
-    };
+    throw new Error('Missing MOLLIE_API_KEY in environment. Fail-closed security enforced.');
+  }
+
+  const MOLLIE_ID_REGEX = /^tr_[a-zA-Z0-9]{5,32}$/;
+  if (!paymentId || !MOLLIE_ID_REGEX.test(paymentId)) {
+    throw new Error('Ongeldig Mollie payment id formaat (verwacht: tr_xxx).');
   }
 
   return new Promise((resolve, reject) => {
@@ -57,6 +54,11 @@ export async function fetchMolliePaymentStatus(paymentId, apiKey = MOLLIE_API_KE
       });
     });
 
+    // Timeout bescherming tegen hanging sockets (CWE-400)
+    req.setTimeout(15000, () => {
+      req.destroy(new Error('Mollie API request timeout na 15 seconden'));
+    });
+
     req.on('error', reject);
     req.end();
   });
@@ -67,8 +69,10 @@ export async function fetchMolliePaymentStatus(paymentId, apiKey = MOLLIE_API_KE
  */
 export async function updateInvoicePaymentStatus(paymentDetails) {
   const { id: paymentId, status, metadata, paidAt } = paymentDetails;
-  const invoiceNumber = metadata?.invoiceNumber || metadata?.factuurnummer || 'ONBEKEND';
-  const clientName = metadata?.clientName || metadata?.klant_naam || 'Klant';
+  const rawInvoice = metadata?.invoiceNumber || metadata?.factuurnummer || 'ONBEKEND';
+  const rawClient = metadata?.clientName || metadata?.klant_naam || 'Klant';
+  const invoiceNumber = String(rawInvoice).replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 50);
+  const clientName = String(rawClient).replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 100);
 
   console.log(`💳 [Mollie Webhook] Verwerken transactie ${paymentId}: Status = ${status} (Factuur: ${invoiceNumber})`);
 
@@ -101,7 +105,14 @@ export async function updateInvoicePaymentStatus(paymentDetails) {
     logData.unshift(record);
   }
 
-  fs.writeFileSync(auditLogFile, JSON.stringify(logData, null, 2), 'utf8');
+  if (logData.length > 100) {
+    logData = logData.slice(0, 100);
+  }
+
+  fs.writeFileSync(auditLogFile, JSON.stringify(logData, null, 2), { encoding: 'utf8', mode: 0o600 });
+  try {
+    fs.chmodSync(auditLogFile, 0o600);
+  } catch (_) {}
 
   // Als betaling succesvol is voldaan (status === 'paid'), markeer als 'Betaald'
   if (status === 'paid') {
@@ -121,19 +132,39 @@ export function handleWebhookRequest(req, res) {
   }
 
   let body = '';
+  let bodySize = 0;
+  const MAX_BODY_SIZE = 10 * 1024; // 10KB limiet tegen DoS
+
   req.on('data', chunk => {
+    bodySize += chunk.length;
+    if (bodySize > MAX_BODY_SIZE) {
+      req.destroy();
+      res.writeHead(413, { 'Content-Type': 'text/plain' });
+      return res.end('Payload Too Large');
+    }
     body += chunk;
   });
 
   req.on('end', async () => {
     try {
-      // Mollie stuurt `id=tr_xxx` via `application/x-www-form-urlencoded`
-      const params = new URLSearchParams(body);
-      const paymentId = params.get('id');
+      // Mollie stuurt `id=tr_xxx` via `application/x-www-form-urlencoded` of JSON payload
+      let paymentId = '';
+      try {
+        const jsonBody = JSON.parse(body);
+        if (jsonBody && jsonBody.id) {
+          paymentId = String(jsonBody.id);
+        }
+      } catch (_) {}
 
       if (!paymentId) {
+        const params = new URLSearchParams(body);
+        paymentId = params.get('id') || '';
+      }
+
+      const MOLLIE_ID_REGEX = /^tr_[a-zA-Z0-9]{5,32}$/;
+      if (!paymentId || !MOLLIE_ID_REGEX.test(paymentId)) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
-        return res.end('Ongeldige aanroep: Geen Mollie payment id gevonden.');
+        return res.end('Ongeldige aanroep: Ongeldig Mollie payment id formaat.');
       }
 
       const payment = await fetchMolliePaymentStatus(paymentId);

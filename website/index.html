@@ -302,7 +302,7 @@
         <div class="hero-trust-badge fade-in" style="margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(34, 211, 238, 0.35); padding: 8px 18px; border-radius: 30px; font-size: 0.82rem; color: #cbd5e1; backdrop-filter: blur(8px);">
           <i class="fas fa-shield-halved" style="color: var(--color-accent, #22d3ee);"></i>
           <span data-translate-key="heroQualityPill">20-Punten Keurmerk Inbegrepen: 100% AVG-Proof • Google Rich Snippets • &lt; 0.8s Snelheid</span>
-          <a href="#kwaliteitskeurmerk" style="color: #22d3ee; text-decoration: underline; margin-left: 4px; font-weight: 600;" data-translate-key="heroQualityLink">Bekijk keurmerk</a>
+          <a href="#kwaliteitskeurmerk" id="hero-quality-link" style="color: #22d3ee; text-decoration: underline; margin-left: 4px; font-weight: 600; cursor: pointer;" data-translate-key="heroQualityLink">Bekijk keurmerk</a>
         </div>
       </div>
     </header>
@@ -735,10 +735,12 @@
         </div>
       </section>
 
-      <div class="shimme      <!-- 20-Punten Kwaliteitskeurmerk & Oplevergarantie (Kort & Krachtig) -->
-      <section id="kwaliteitskeurmerk" class="section section-darker" style="padding: 3.5rem 0;">
+      <div class="shimmer-divider"></div>
+
+      <!-- 20-Punten Kwaliteitskeurmerk & Oplevergarantie (Kort & Krachtig) -->
+      <section id="kwaliteitskeurmerk" class="section section-darker" style="padding: clamp(4.5rem, 6vw, 6rem) 0 clamp(5rem, 7vw, 7.5rem) 0; scroll-margin-top: 90px;">
         <div class="container">
-          <div class="fade-in" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin-bottom: 2rem;">
+          <div class="fade-in" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin-bottom: 2.2rem;">
             <div>
               <div class="hero-badge" style="margin-bottom: 0.5rem;" data-translate-key="qualityBadge">
                 <i class="fas fa-certificate text-accent"></i> 100% Oplevergarantie
@@ -755,7 +757,7 @@
             </a>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 1.5rem;">
             <!-- Pijler 1 -->
             <div class="fade-in" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 14px; padding: 22px 20px; display: flex; flex-direction: column; justify-content: space-between;">
               <div>
@@ -811,6 +813,17 @@
               </div>
               <span style="font-size: 0.78rem; color: #c084fc; font-weight: 600;" data-translate-key="qualityP4Badge">✓ 4 Criteria Inbegrepen</span>
             </div>
+          </div>
+
+          <!-- Reassurance Footer Banner -->
+          <div class="fade-in" style="margin-top: 2rem; padding: 18px 24px; background: rgba(34, 211, 238, 0.04); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i class="fas fa-shield-halved" style="font-size: 1.4rem; color: var(--color-accent, #22d3ee);"></i>
+              <span style="font-size: 0.9rem; color: #cbd5e1;" data-translate-key="qualityFooterNotice">Alle 20 kwaliteitseisen worden contractueel vastgelegd als officiële bijlage in de offerte en live gemonitord in jouw klantenportaal.</span>
+            </div>
+            <a href="/docs/#quality-standard" class="btn btn-outline btn-sm" style="font-size: 0.82rem; border-color: rgba(34, 211, 238, 0.4); color: #22d3ee;" data-translate-key="qualityFooterLink">
+              Lees Kwaliteitsdossier <i class="fas fa-arrow-right" style="margin-left: 4px;"></i>
+            </a>
           </div>
         </div>
       </section>

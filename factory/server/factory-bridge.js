@@ -77,14 +77,42 @@ let isCycleRunning = false;
 
 addLog("Factory Bridge geïnitialiseerd. Veiligheidscontroles actief.");
 
+// DNS Rebinding Defense (RFC 7230 / CWE-918): Valideer Host header tegen loopback spoofing
+export function validateBridgeHost(h) {
+  if (!h || typeof h !== 'string') return false;
+  const hostname = h.split(':')[0].toLowerCase();
+  return ['127.0.0.1', 'localhost', 'creationaltfix.nl', 'portal.creationaltfix.nl'].includes(hostname) || hostname.endsWith('.creationaltfix.nl');
+}
+
 // 2. HTTP Server met Zero-Trust Beveiliging
 const server = http.createServer(async (req, res) => {
   const origin = req.headers['origin'] || '';
   const host = req.headers['host'] || '';
 
+  // CWE-400: Begrens inkomende HTTP payloads tot 1MB tegen DoS en geheugenuitputting
+  let receivedBytes = 0;
+  req.on('data', chunk => {
+    receivedBytes += chunk.length;
+    if (receivedBytes > 1024 * 1024) {
+      if (!res.headersSent) {
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "Payload Too Large: Maximaal 1MB toegestaan" }));
+      }
+      req.destroy();
+    }
+  });
+
+  // Valideer Host header tegen DNS rebinding
+  if (!validateBridgeHost(host)) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: "Ongeldige Host header (DNS rebinding geblokkeerd)" }));
+    return;
+  }
+
   // CORS Origin Validatie (Strikte whitelist en veilige URL parsing ter voorkoming van CWE-346)
   function validateOrigin(orig) {
-    if (!orig || orig === 'null') return true; // Directe non-browser of loopback requests
+    if (!orig) return true; // Directe non-browser/CLI tools of same-origin zonder Origin header
+    if (orig === 'null') return false; // CWE-346: Blokkeer zandbak-iframes en data: URIs
     try {
       const u = new URL(orig);
       // HTTPS en HTTP voor creationaltfix.nl en officiële subdomeinen
@@ -109,10 +137,12 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  const safeCorsOrigin = (origin && isAllowedOrigin && origin !== 'null') ? origin : 'http://127.0.0.1:3847';
+
   // Preflight OPTIONS afhandeling (inclusief Chrome Private Network Access - PNA)
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Origin': safeCorsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, x-caf-auth, Access-Control-Request-Private-Network',
       'Access-Control-Allow-Private-Network': 'true',
@@ -123,7 +153,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Standaard response headers (inclusief PNA voor browser loopback cross-origin access)
-  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  res.setHeader('Access-Control-Allow-Origin', safeCorsOrigin);
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-caf-auth, Access-Control-Request-Private-Network');
   res.setHeader('Access-Control-Allow-Private-Network', 'true');
   res.setHeader('Content-Type', 'application/json');
@@ -132,12 +162,10 @@ const server = http.createServer(async (req, res) => {
   const pathname = url.pathname;
   const clientToken = req.headers['x-caf-auth'] || url.searchParams.get('token');
   const isTokenValid = Boolean(clientToken && clientToken === AUTH_TOKEN);
-  // Geauthenticeerd als token klopt OF als verzoek afkomstig is van een geautoriseerde CORS origin (portal/loopback)
-  const isAuthenticated = isTokenValid || isAllowedOrigin;
 
-  // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken
+  // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken: strikt token verplicht (Zero-Trust)
   if (req.method === 'POST') {
-    if (!isAuthenticated) {
+    if (!isTokenValid) {
       res.writeHead(401);
       res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
       return;
@@ -179,15 +207,25 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 3. GET /api/logs (Live activity logs)
+  // 3. GET /api/logs (Live activity logs - token beveiligd)
   if (req.method === 'GET' && pathname === '/api/logs') {
+    if (!isTokenValid) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
+      return;
+    }
     res.writeHead(200);
     res.end(JSON.stringify({ logs: RECENT_LOGS }));
     return;
   }
 
-  // 3b. GET /api/leads (Haalt actuele leads direct van schijf voor real-time CRM weergave)
+  // 3b. GET /api/leads (Haalt actuele leads direct van schijf voor real-time CRM weergave - token beveiligd)
   if (req.method === 'GET' && pathname === '/api/leads') {
+    if (!isTokenValid) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
+      return;
+    }
     const db = engine.loadDatabase();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(db));
@@ -318,7 +356,32 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (targetFile) {
+      const baseName = path.basename(targetFile);
       const ext = path.extname(targetFile).toLowerCase();
+
+      // CWE-552 / CWE-200: Hermetische blokkade op data-, configuratie- en backend mappen
+      const normalizedSegments = targetFile.split(path.sep).map(p => p.toLowerCase());
+      if (normalizedSegments.includes('data') || normalizedSegments.includes('config') || normalizedSegments.includes('node_modules') || normalizedSegments.includes('.git')) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "Toegang geweigerd: Vertrouwelijke map is niet publiek toegankelijk" }));
+        return;
+      }
+
+      // CWE-552: Blokkeer dotfiles (.env, .git, .htaccess etc.) en gevoelige systeembestanden
+      if (baseName.startsWith('.') || targetFile.split(path.sep).some(p => p.startsWith('.') && p !== '.' && p !== '..')) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "Toegang geweigerd: Verborgen bestanden zijn niet toegankelijk" }));
+        return;
+      }
+
+      // Blokkeer server-side scripts en gevoelige bestandsextensies
+      const BLOCKED_EXTENSIONS = ['.env', '.db', '.sqlite', '.sqlite3', '.sql', '.log', '.sh', '.ps1', '.bat', '.cmd', '.bak', '.config', '.token', '.key', '.php', '.ini', '.swp', '.backup', '.conf'];
+      if (BLOCKED_EXTENSIONS.includes(ext)) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "Toegang geweigerd: Bestandstype niet toegestaan" }));
+        return;
+      }
+
       const MIME_MAP = {
         '.html': 'text/html; charset=utf-8',
         '.js': 'application/javascript; charset=utf-8',
@@ -336,10 +399,19 @@ const server = http.createServer(async (req, res) => {
       const contentType = MIME_MAP[ext] || 'application/octet-stream';
       res.writeHead(200, {
         'Content-Type': contentType,
-        'Access-Control-Allow-Origin': origin || '*',
+        'Access-Control-Allow-Origin': safeCorsOrigin,
         'Access-Control-Allow-Private-Network': 'true'
       });
-      fs.createReadStream(targetFile).pipe(res);
+      const fileStream = fs.createReadStream(targetFile);
+      fileStream.on('error', (err) => {
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: "Fout bij inlezen bestand" }));
+        } else {
+          res.destroy();
+        }
+      });
+      fileStream.pipe(res);
       return;
     }
   }
@@ -349,17 +421,34 @@ const server = http.createServer(async (req, res) => {
   res.end(JSON.stringify({ error: "Endpoint niet gevonden" }));
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`\n============================================================`);
-  console.log(`🛡️ [Creation+Alt+Fix] Beveiligde CRM Bridge Server Actief!`);
-  console.log(`📍 Luistert op: http://${HOST}:${PORT}`);
-  console.log(`🔑 Sessie Auth Token: ${AUTH_TOKEN.substring(0, 8)}... (Opgeslagen in .bridge-token)`);
-  console.log(`🔒 Beveiliging: Alleen loopback, Origin whitelist & CSRF protectie`);
-  console.log(`============================================================\n`);
-});
+// CWE-400: Socket en header timeouts tegen Slowloris en resource-uitputting
+server.timeout = 30000;
+server.keepAliveTimeout = 5000;
+server.headersTimeout = 6000;
 
-// Schakel netjes uit bij procesafsluiting
-process.on('SIGINT', () => {
-  addLog("Bridge server wordt afgesloten...");
-  server.close(() => process.exit(0));
-});
+const isMain = Boolean(process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]));
+
+if (isMain) {
+  server.listen(PORT, HOST, () => {
+    console.log(`\n============================================================`);
+    console.log(`🛡️ [Creation+Alt+Fix] Beveiligde CRM Bridge Server Actief!`);
+    console.log(`📍 Luistert op: http://${HOST}:${PORT}`);
+    console.log(`🔑 Sessie Auth Token: ${AUTH_TOKEN.substring(0, 8)}... (Opgeslagen in .bridge-token)`);
+    console.log(`🔒 Beveiliging: Alleen loopback, Origin whitelist & CSRF protectie`);
+    console.log(`============================================================\n`);
+  });
+
+  // Schakel netjes uit bij procesafsluiting en ruim timers op
+  const gracefulShutdown = () => {
+    if (daemonIntervalId) {
+      clearInterval(daemonIntervalId);
+      daemonIntervalId = null;
+    }
+    addLog("Bridge server wordt afgesloten...");
+    server.close(() => process.exit(0));
+  };
+  process.on('SIGINT', gracefulShutdown);
+  process.on('SIGTERM', gracefulShutdown);
+}
+
+export { server, AUTH_TOKEN, PORT, HOST };

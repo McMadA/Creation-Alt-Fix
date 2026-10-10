@@ -37,7 +37,7 @@ export async function fetchTodoMarkdown() {
 
     for (const url of candidateUrls) {
         try {
-            const res = await fetch(url);
+            const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
             if (res.ok) {
                 const text = await res.text();
                 if (text && text.includes('Sprint Status Dashboard')) {
@@ -93,11 +93,12 @@ export function renderSyncBreakdown(tasks) {
     if (!breakdownGrid) return;
 
     breakdownGrid.innerHTML = '';
-    const summaryByProject = {};
+    const summaryByProject = Object.create(null);
 
     (tasks || []).forEach(t => {
         const p = t.targetProject || PROJECT_PROFILES.CRM_PORTAL;
-        const pName = p.client;
+        const pName = p.client || 'Project';
+        if (pName === '__proto__' || pName === 'constructor' || pName === 'prototype') return;
         if (!summaryByProject[pName]) {
             summaryByProject[pName] = { profile: p, tasks: [] };
         }
@@ -253,13 +254,20 @@ export function handleDownloadExportMarkdown() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+        try { URL.revokeObjectURL(url); } catch (e) {}
+    }, 1000);
 }
+
+let isTodoSyncInitialized = false;
 
 /**
  * Initialiseert alle listeners voor de TODO sync modal
  */
 export function setupTodoSyncListeners(getProjectsFn, db, onSyncComplete) {
+    if (isTodoSyncInitialized) return;
+    isTodoSyncInitialized = true;
+
     document.getElementById('btn-open-todo-sync-modal')?.addEventListener('click', () => openTodoSyncModal(getProjectsFn));
     document.getElementById('btn-close-todo-sync-modal')?.addEventListener('click', () => {
         document.getElementById('todo-sync-modal')?.classList.add('hidden');

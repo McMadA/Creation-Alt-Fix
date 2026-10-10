@@ -357,6 +357,23 @@ for (let i = 0; i < TOTAL_SAMPLES; i++) {
 // 5. ENCODE TO 16-BIT STEREO PCM WAV FILE
 // ----------------------------------------------------
 export function generateSoundtrackWav(outputPath) {
+  if (typeof outputPath !== 'string' || !outputPath.trim()) {
+    throw new Error('Ongeldig output pad voor soundtrack generatie');
+  }
+  if (!outputPath.toLowerCase().endsWith('.wav')) {
+    throw new Error('Bestandsnaam moet eindigen op .wav');
+  }
+  if (outputPath.includes('\0')) {
+    throw new Error('Null bytes zijn niet toegestaan in bestandspaden');
+  }
+
+  const resolved = path.resolve(outputPath);
+  const baseName = path.basename(resolved).toLowerCase();
+  const WINDOWS_RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
+  if (WINDOWS_RESERVED.test(baseName)) {
+    throw new Error('Windows gereserveerde apparaatnamen zijn niet toegestaan als bestandsnaam');
+  }
+
   const bytesPerSample = 2; // 16-bit
   const blockAlign = 2 * bytesPerSample; // 2 channels
   const byteRate = SAMPLE_RATE * blockAlign;
@@ -397,10 +414,10 @@ export function generateSoundtrackWav(outputPath) {
     offset += 2;
   }
 
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, buffer);
-  console.log(`✅ Soundtrack successfully written to: ${outputPath} (${(buffer.length / 1024 / 1024).toFixed(2)} MB)`);
-  return outputPath;
+  fs.mkdirSync(path.dirname(resolved), { recursive: true });
+  fs.writeFileSync(resolved, buffer);
+  console.log(`✅ Soundtrack successfully written to: ${resolved} (${(buffer.length / 1024 / 1024).toFixed(2)} MB)`);
+  return resolved;
 }
 
 // Standalone CLI execution

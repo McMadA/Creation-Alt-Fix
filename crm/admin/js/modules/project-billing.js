@@ -6,7 +6,7 @@
  * Creation+Alt+Fix CRM (2026/2027)
  */
 
-import { escapeHtml, formatCurrency } from "../../../js/firebase-config.js";
+import { escapeHtml, formatCurrency, sanitizeUrl } from "../../../js/firebase-config.js";
 import { Toast } from "../../../js/core/toast.js";
 import { Schemas } from "../../../js/core/schemas.js";
 import { getPiBoekhoudingInfo } from "./bookkeeping-data.js";
@@ -289,7 +289,7 @@ export function renderBillingCardHtml(projectData) {
                     <td style="padding: 12px 10px; white-space: nowrap;">
                         ${checkoutUrl ? `
                             <div style="display: inline-flex; gap: 4px; align-items: center;">
-                                <a href="${escapeHtml(checkoutUrl)}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8; text-decoration: none;" title="Open iDEAL betaalpagina">
+                                <a href="${sanitizeUrl(checkoutUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8; text-decoration: none;" title="Open iDEAL betaalpagina">
                                     <i class="fas fa-credit-card"></i> Betaal
                                 </a>
                                 <button type="button" data-action="billing:copy-link" data-url="${escapeHtml(checkoutUrl)}" class="btn btn-secondary btn-sm" style="padding: 3px 6px; font-size: 0.72rem;" title="Kopieer betaallink">
@@ -331,7 +331,7 @@ export function renderBillingCardHtml(projectData) {
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <a href="http://100.65.226.112:8888/facturen" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <a href="http://100.65.226.112:8888/facturen" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
                         <i class="fas fa-external-link-alt"></i> Open Pi-Boekhouding Web
                     </a>
                     <button type="button" data-action="billing:open-create-modal" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">

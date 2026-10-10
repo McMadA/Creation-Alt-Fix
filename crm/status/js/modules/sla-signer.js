@@ -147,7 +147,7 @@ export function renderSlaSigningModalHtml(contractDetails) {
 
                 <div style="margin-bottom: 16px;">
                     <label style="display: block; font-size: 12.5px; font-weight: 500; margin-bottom: 6px;">Ondertekenaar (Volledige Naam):</label>
-                    <input type="text" id="sla-signer-name" value="${escapeHtml(contractDetails.clientName)}" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px;">
+                    <input type="text" id="sla-signer-name" maxlength="100" value="${escapeHtml(contractDetails.clientName)}" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px;">
                 </div>
 
                 <div style="margin-bottom: 16px;">
@@ -163,7 +163,7 @@ export function renderSlaSigningModalHtml(contractDetails) {
                 <div style="margin-bottom: 20px;">
                     <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; opacity: 0.85; cursor: pointer;">
                         <input type="checkbox" id="sla-terms-agree" style="margin-top: 2px;">
-                        <span>Ik verklaar bevoegd te zijn namens de Opdrachtgever en ga uitdrukkelijk akkoord met het Creation+Alt+Fix 2027 hostingvoorstel, de <a href="https://creationaltfix.nl/algemene-voorwaarden.html" target="_blank" style="color: #38bdf8; text-decoration: underline;">Algemene Voorwaarden</a> (incl. 12 mnd B2B stilzwijgende verlenging en art. 6:119a BW rente) en de Verwerkersovereenkomst conform Artikel 28 AVG.</span>
+                        <span>Ik verklaar bevoegd te zijn namens de Opdrachtgever en ga uitdrukkelijk akkoord met het Creation+Alt+Fix 2027 hostingvoorstel, de <a href="https://creationaltfix.nl/algemene-voorwaarden.html" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline;">Algemene Voorwaarden</a> (incl. 12 mnd B2B stilzwijgende verlenging en art. 6:119a BW rente) en de Verwerkersovereenkomst conform Artikel 28 AVG.</span>
                     </label>
                 </div>
 

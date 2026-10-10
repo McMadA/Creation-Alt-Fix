@@ -34,6 +34,30 @@ export class OfflineQueue {
      * @param {Object} [item.data]
      */
     static async enqueue({ action, collection, docId, data = {} }) {
+        if (!['update', 'set', 'delete'].includes(action)) {
+            throw new Error(`Ongeldige offline actie: ${action}`);
+        }
+        if (!collection || typeof collection !== 'string') {
+            throw new Error('Collectienaam is verplicht');
+        }
+        const ALLOWED_COLLECTIONS = ['projects', 'audit_logs', 'monitors', 'leads_factory', 'settings', 'leads'];
+        if (!ALLOWED_COLLECTIONS.includes(collection)) {
+            throw new Error(`Ongeautoriseerde collectie voor offline queue: ${collection}`);
+        }
+        if (!docId || typeof docId !== 'string') {
+            throw new Error('Document ID is verplicht');
+        }
+        const cleanDocId = docId.trim();
+        if (!/^[a-zA-Z0-9_-]{1,100}$/.test(cleanDocId)) {
+            throw new Error('Ongeldig document ID formaat');
+        }
+        if (data && typeof data === 'object') {
+            const payloadStr = JSON.stringify(data);
+            if (payloadStr.length > 2 * 1024 * 1024) {
+                throw new Error('Offline queue data overschrijdt 2MB limiet');
+            }
+        }
+
         const db = await this._openDB();
         if (!db) return;
 

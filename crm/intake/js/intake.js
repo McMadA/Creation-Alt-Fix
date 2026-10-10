@@ -739,22 +739,21 @@ document.addEventListener('DOMContentLoaded', () => {
             domainCostNote = `Geschat hosting- & domeintarief (indicatief i.v.m. ${detectedTld} registratiekosten).`;
         }
 
-        // Gather Data Payload
+        // Gather Data Payload (Voldoet 100% aan firestore.rules Zero-Trust create schema)
         const formData = {
-            client: companyInput,
-            contactName: contactInput,
+            client: companyInput.slice(0, 120),
+            contactName: contactInput.slice(0, 120),
             email: emailInput,
-            clientUid: clientUid,
-            isClientAccount: true,
-            service: serviceInputVal,
-            domainName: finalDomain,
+            isClientAccount: false,
+            service: serviceInputVal.slice(0, 120),
+            domainName: finalDomain.slice(0, 200),
             domainTld: detectedTld,
             subscriptionPlanId: recommendedPlan,
             subscriptionPlanName: recommendedPlanName,
             subscriptionPlanPrice: recommendedPrice,
             domainCostNote: domainCostNote,
-            goals: finalGoals,
-            design: finalDesign,
+            goals: finalGoals.slice(0, 1000),
+            design: finalDesign.slice(0, 1000),
             status: "Intake Voltooid",
             statusClass: "active",
             date: new Date().toLocaleDateString('nl-NL'),

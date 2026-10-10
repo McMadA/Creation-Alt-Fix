@@ -445,23 +445,60 @@ export function getPiBoekhoudingInfo(p) {
     if (!p) return null;
     const name = (p.client || p.companyName || '').toLowerCase().trim();
     const cleanName = name.replace(/[^a-z0-9]/g, '');
-    const dom = (p.domainName || p.domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
 
+    // Parse host and subpath cleanly
+    const rawDomain = (p.domainName || p.domain || '').toLowerCase().trim();
+    const cleanUrl = rawDomain.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    const [domHost, ...pathSegments] = cleanUrl.split('/');
+    const domPath = pathSegments.join('/');
+    const cleanDomHost = (domHost || '').replace(/[^a-z0-9.-]/g, '');
+    const cleanPath = domPath.replace(/[^a-z0-9]/g, '');
+
+    // Priority 1: Exact Domain or Subdomain Equality (Excluding generic shared domain)
     for (const [domainKey, data] of Object.entries(PI_BOEKHOUDING_CLIENT_DATA)) {
-        if (dom && (dom.includes(domainKey) || domainKey.includes(dom))) return data;
+        if (domainKey === 'creationaltfix.nl') continue;
+        if (cleanDomHost && (cleanDomHost === domainKey || cleanDomHost.endsWith('.' + domainKey))) {
+            return data;
+        }
+    }
+
+    // Priority 2: Staging path match or exact alias / client name match
+    for (const [domainKey, data] of Object.entries(PI_BOEKHOUDING_CLIENT_DATA)) {
+        if (domainKey === 'creationaltfix.nl') continue;
+
+        // Path segment matches domain base (e.g. creationaltfix.nl/besselinginstallatietechniek/)
+        const domainBase = domainKey.replace(/\.(nl|com)$/i, '');
+        if (cleanPath && (cleanPath === domainBase || cleanPath.startsWith(domainBase))) {
+            return data;
+        }
+
+        // Exact client name match
         const cName = data.clientName.toLowerCase();
         const cleanCName = cName.replace(/[^a-z0-9]/g, '');
-        if (name && (name.includes(cName) || cName.includes(name))) return data;
-        if (cleanName && cleanName.length >= 3 && (cleanCName.includes(cleanName) || cleanName.includes(cleanCName))) return data;
-        
+        if (name && (name === cName || (cleanName.length >= 5 && cleanName === cleanCName))) {
+            return data;
+        }
+
+        // Bounded alias matching (strictly exact, preventing substring leaks)
         if (Array.isArray(data.aliases)) {
             for (const alias of data.aliases) {
-                const aLow = alias.toLowerCase();
+                const aLow = alias.toLowerCase().trim();
                 const cleanA = aLow.replace(/[^a-z0-9]/g, '');
-                if (dom && (dom.includes(aLow) || aLow.includes(dom))) return data;
-                if (name && (name.includes(aLow) || aLow.includes(name))) return data;
-                if (cleanName && cleanName.length >= 3 && (cleanName.includes(cleanA) || cleanA.includes(cleanName))) return data;
+                if (cleanDomHost && cleanDomHost === aLow) return data;
+                if (cleanPath && (cleanPath === cleanA || cleanPath.startsWith(cleanA))) return data;
+                if (name && name === aLow) return data;
+                if (cleanA.length >= 4 && cleanName && cleanName === cleanA) return data;
             }
+        }
+    }
+
+    // Priority 3: Internal creation+alt+fix platform
+    if (cleanDomHost === 'creationaltfix.nl' || cleanDomHost === 'hbi.creationaltfix.nl') {
+        if (cleanDomHost === 'hbi.creationaltfix.nl' || cleanName.includes('hbi') || cleanName.includes('homebuyer')) {
+            return PI_BOEKHOUDING_CLIENT_DATA['hbi.creationaltfix.nl'];
+        }
+        if (!cleanPath || cleanPath === 'caf' || cleanName.includes('creationaltfix')) {
+            return PI_BOEKHOUDING_CLIENT_DATA['creationaltfix.nl'];
         }
     }
 
@@ -469,10 +506,10 @@ export function getPiBoekhoudingInfo(p) {
     let recPlanId = "managed_nl";
     let recReason = "Standaard advies: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr excl. BTW).";
 
-    if (p.domainTld === '.com' || dom.endsWith('.com')) {
+    if (p.domainTld === '.com' || cleanDomHost.endsWith('.com')) {
         recPlanId = "managed_com";
         recReason = "Advies voor .com domein: Managed Cloud Hosting & .com Domein All-in (€ 165,-/jr excl. BTW).";
-    } else if (p.domainTld && p.domainTld !== '.nl' && !dom.endsWith('.nl')) {
+    } else if (p.domainTld && p.domainTld !== '.nl' && !cleanDomHost.endsWith('.nl')) {
         recPlanId = "managed_custom";
         recReason = "Advies voor internationaal/speciaal TLD: Managed Cloud Hosting (€ 175,-/jr excl. BTW).";
     }

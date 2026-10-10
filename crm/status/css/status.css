@@ -32,13 +32,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 40px;
-    background: rgba(10, 14, 26, 0.9);
+    padding: 16px clamp(16px, 3vw, 48px);
+    background: rgba(10, 14, 26, 0.92);
     border-bottom: 1px solid var(--card-border);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-brand {
@@ -88,21 +90,25 @@ body {
     color: #fff;
 }
 
-/* Main Container */
+/* Main Container - Full-Width Responsive Workspace Layout */
 .container {
-    max-width: 900px;
-    margin: 40px auto 0;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 24px clamp(16px, 3vw, 48px);
+    box-sizing: border-box;
 }
 
 .card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 16px;
-    padding: 30px;
+    padding: clamp(20px, 2vw, 32px);
     margin-bottom: 24px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .accent-text {
@@ -191,24 +197,21 @@ body {
 .timeline {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+    gap: clamp(12px, 1.2vw, 20px);
     margin-top: 20px;
     position: relative;
-}
-
-@media (max-width: 900px) {
-    .timeline {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
+    width: 100%;
 }
 
 .step-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--card-border);
     border-radius: 12px;
-    padding: 20px 16px;
+    padding: clamp(16px, 1.4vw, 22px);
     position: relative;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .step-card.done {
@@ -379,9 +382,14 @@ body {
 /* Quick Actions Grid */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
     margin-top: 15px;
+    width: 100%;
+}
+
+#client-invoices-archive-card {
+    grid-column: 1 / -1;
 }
 
 .action-card {
@@ -531,7 +539,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-width: 85%;
+    max-width: min(85%, 820px);
     padding: 14px 18px;
     border-radius: 14px;
     font-size: 0.92rem;
@@ -926,7 +934,13 @@ body {
 
 .staging-viewport-container.viewport-desktop {
     width: 100%;
-    min-height: 600px;
+    min-height: 620px;
+    height: clamp(560px, 60vh, 850px);
+}
+
+.staging-viewport-container.viewport-desktop .staging-frame-relative-box {
+    height: calc(100% - 38px);
+    min-height: 560px;
 }
 
 .staging-viewport-container.viewport-tablet {
@@ -1172,6 +1186,176 @@ body {
 @keyframes pulse-red {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.35; transform: scale(1.4); }
+}
+
+/* ===========================================
+   20-PUNTEN KWALITEITSKEURMERK GRID SYSTEM
+   =========================================== */
+.quality-pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(14px, 1.4vw, 20px);
+    margin-top: 16px;
+    width: 100%;
+}
+
+.quality-pillar-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.25s ease;
+}
+
+.quality-pillar-card:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ===========================================
+   RESPONSIVE & MOBILE-FRIENDLY BREAKPOINTS
+   =========================================== */
+@media (max-width: 1280px) {
+    .quality-pillars-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .timeline {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .navbar > div:first-child {
+        justify-content: space-between;
+    }
+    .nav-user {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 10px;
+    }
+    .user-badge {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+    }
+    .btn-logout {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    .container {
+        padding: 16px 12px;
+    }
+    .card {
+        padding: 18px 14px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+    }
+    .staging-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .staging-device-selector {
+        justify-content: center;
+    }
+    .staging-viewport-container.viewport-desktop {
+        min-height: 440px;
+        height: 480px;
+    }
+    .staging-viewport-container.viewport-desktop .staging-frame-relative-box,
+    .staging-frame-relative-box {
+        height: 440px;
+        min-height: 400px;
+    }
+    .chat-bubble {
+        max-width: 92%;
+    }
+}
+
+@media (max-width: 680px) {
+    .quality-pillars-grid {
+        grid-template-columns: 1fr;
+    }
+    .timeline {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .step-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+    }
+    .step-icon {
+        margin-bottom: 0;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        font-size: 0.95rem;
+    }
+    .step-number {
+        font-size: 0.7rem;
+        margin-bottom: 2px;
+    }
+    .step-title {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+    .step-desc {
+        font-size: 0.78rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .project-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .project-title h1 {
+        font-size: 1.45rem;
+    }
+    .section-title {
+        font-size: 1.15rem;
+    }
+    .offerte-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .offerte-price {
+        font-size: 1.5rem;
+    }
+    .btn-akkoord {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+    }
+    .actions-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .chat-compose-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #btn-send-message {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 

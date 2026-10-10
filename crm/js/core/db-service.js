@@ -23,6 +23,16 @@ const PROJECTS_COLLECTION = "projects";
 const MONITORS_COLLECTION = "monitors";
 
 /**
+ * Valideert Firestore Document ID's tegen path traversal en ongeldige tekens.
+ * @param {string} id 
+ * @returns {boolean}
+ */
+export function isValidDocId(id) {
+    if (!id || typeof id !== 'string') return false;
+    return /^[a-zA-Z0-9_-]{1,128}$/.test(id.trim());
+}
+
+/**
  * Fetches all projects from Firestore.
  * @returns {Promise<Array<Object>>}
  */
@@ -51,9 +61,9 @@ export async function getAllProjects() {
  * @returns {Promise<Object|null>}
  */
 export async function getProjectById(projectId) {
-    if (!db || !projectId) return null;
+    if (!db || !isValidDocId(projectId)) return null;
     try {
-        const docRef = doc(db, PROJECTS_COLLECTION, projectId);
+        const docRef = doc(db, PROJECTS_COLLECTION, projectId.trim());
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             return { id: docSnap.id, ...docSnap.data() };
@@ -72,9 +82,9 @@ export async function getProjectById(projectId) {
  * @returns {Promise<void>}
  */
 export async function updateProject(projectId, updateData) {
-    if (!db || !projectId) return;
+    if (!db || !isValidDocId(projectId)) return;
     try {
-        const docRef = doc(db, PROJECTS_COLLECTION, projectId);
+        const docRef = doc(db, PROJECTS_COLLECTION, projectId.trim());
         const payload = {
             ...updateData,
             updatedAt: new Date().toISOString()
@@ -113,9 +123,9 @@ export async function createProject(projectData) {
  * @returns {Promise<void>}
  */
 export async function deleteProjectDoc(projectId) {
-    if (!db || !projectId) return;
+    if (!db || !isValidDocId(projectId)) return;
     try {
-        await deleteDoc(doc(db, PROJECTS_COLLECTION, projectId));
+        await deleteDoc(doc(db, PROJECTS_COLLECTION, projectId.trim()));
     } catch (err) {
         console.error(`[DB Service] Fout bij verwijderen project ${projectId}:`, err);
         throw err;
@@ -131,17 +141,20 @@ export async function deleteProjectDoc(projectId) {
  * @returns {Promise<Array>} Updated logs array
  */
 export async function recordAuditLog(projectId, type, description, currentLogs = []) {
-    if (!projectId) return currentLogs;
+    if (!isValidDocId(projectId)) return currentLogs;
     const now = new Date();
+    const cleanType = String(type || "INFO").replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 32);
+    const cleanDescription = String(description || "").replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().substring(0, 500);
     const newLog = {
         id: "log_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-        type: type || "INFO",
-        description: description || "",
+        type: cleanType,
+        description: cleanDescription,
         timestamp: now.toISOString(),
         dateFormatted: now.toLocaleDateString("nl-NL", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
     };
     
-    const updated = [newLog, ...(currentLogs || [])];
+    // Bounded log array (max 100 entries) ter bescherming tegen Firestore document payload bloat
+    const updated = [newLog, ...(currentLogs || [])].slice(0, 100);
     await updateProject(projectId, { auditLogs: updated });
     return updated;
 }
@@ -154,8 +167,23 @@ export async function recordAuditLog(projectId, type, description, currentLogs =
  * @returns {Promise<Array>}
  */
 export async function appendProjectMessage(projectId, message, currentMessages = []) {
-    if (!projectId || !message) return currentMessages;
-    const updated = [...(currentMessages || []), message];
+    if (!isValidDocId(projectId) || !message || typeof message !== 'object') return currentMessages;
+    
+    const sender = String(message.sender || 'Klant').replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 100);
+    const text = String(message.text || message.content || '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().substring(0, 5000);
+    const role = ['client', 'admin', 'system'].includes(message.role) ? message.role : 'client';
+    const timestamp = message.timestamp || new Date().toISOString();
+
+    const cleanMsg = {
+        id: message.id || ("msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6)),
+        sender,
+        text,
+        role,
+        timestamp
+    };
+
+    // Bounded message list (max 250 entries) ter voorkoming van Document Size Limit (1MB) overschrijding
+    const updated = [...(currentMessages || []), cleanMsg].slice(-250);
     await updateProject(projectId, { messages: updated });
     return updated;
 }

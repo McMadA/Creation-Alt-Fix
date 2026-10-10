@@ -1,5 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    // CWE-79: Veilige HTML entity escaping voor dynamische annotaties en UI rendering
+    function escapeHtml(str) {
+        if (!str || typeof str !== 'string') return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/`/g, '&#96;');
+    }
+
     // ==========================================================================
     // 1. LAB NAVIGATION STICKY SPY & SMOOTH SCROLL
     // ==========================================================================
@@ -249,7 +261,8 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (type === 'success') tag += `<span class="log-success">[SHIELD OK]</span> `;
         else tag += `<span class="log-time">[INFO]</span> `;
 
-        entry.innerHTML = tag + msg;
+        entry.innerHTML = tag;
+        entry.appendChild(document.createTextNode(String(msg || '')));
         shieldTerminalLogs.appendChild(entry);
         shieldTerminalLogs.scrollTop = shieldTerminalLogs.scrollHeight;
     }
@@ -357,26 +370,26 @@ document.addEventListener('DOMContentLoaded', function() {
             pinEl.style.left = pin.x + '%';
             pinEl.style.top = pin.y + '%';
             pinEl.textContent = pin.id;
-            pinEl.title = pin.title;
+            pinEl.setAttribute('title', String(pin.title || '').slice(0, 100));
             stagingCanvas.appendChild(pinEl);
         });
 
         if (pinsCountSpan) pinsCountSpan.textContent = pins.length;
 
-        // Render backlog list
+        // Render backlog list (CWE-79: alle dynamische velden strikt geëscaped)
         if (stagingNotesList) {
             stagingNotesList.innerHTML = '';
             pins.forEach(pin => {
                 const item = document.createElement('div');
                 item.className = 'staging-note-item';
-                item.setAttribute('data-pin-id', pin.id);
+                item.setAttribute('data-pin-id', String(pin.id));
                 item.innerHTML = `
-                    <span class="note-pin-num">${pin.id}</span>
+                    <span class="note-pin-num">${escapeHtml(String(pin.id))}</span>
                     <div class="note-content-text">
-                        <strong>${pin.title}</strong>
-                        <span>Positie: (${Math.round(pin.x)}%, ${Math.round(pin.y)}%) • Status: ${pin.status}</span>
+                        <strong>${escapeHtml(String(pin.title || ''))}</strong>
+                        <span>Positie: (${Math.round(pin.x)}%, ${Math.round(pin.y)}%) • Status: ${escapeHtml(String(pin.status || ''))}</span>
                     </div>
-                    <button type="button" class="note-delete-btn" data-id="${pin.id}" title="Verwijder"><i class="fas fa-times"></i></button>
+                    <button type="button" class="note-delete-btn" data-id="${escapeHtml(String(pin.id))}" title="Verwijder"><i class="fas fa-times"></i></button>
                 `;
                 stagingNotesList.appendChild(item);
             });
@@ -386,8 +399,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stagingCanvas) {
         stagingCanvas.addEventListener('click', function(e) {
             const rect = stagingCanvas.getBoundingClientRect();
-            const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-            const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+            if (!rect.width || !rect.height) return;
+
+            const rawX = ((e.clientX - rect.left) / rect.width) * 100;
+            const rawY = ((e.clientY - rect.top) / rect.height) * 100;
+            const xPercent = Math.max(0, Math.min(100, Number(rawX.toFixed(2))));
+            const yPercent = Math.max(0, Math.min(100, Number(rawY.toFixed(2))));
+
+            if (isNaN(xPercent) || isNaN(yPercent)) return;
             pendingPinCoords = { x: xPercent, y: yPercent };
 
             if (pinTitleInput) pinTitleInput.value = '';
@@ -404,12 +423,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btnSavePin) {
         btnSavePin.addEventListener('click', () => {
-            const title = pinTitleInput.value.trim() || 'Feedback annotatie #' + (pins.length + 1);
+            const rawTitle = (pinTitleInput ? pinTitleInput.value : '').trim();
+            const cleanTitle = rawTitle.replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 100) || ('Feedback annotatie #' + (pins.length + 1));
             const newPin = {
                 id: pins.length + 1,
-                x: pendingPinCoords.x,
-                y: pendingPinCoords.y,
-                title: title,
+                x: pendingPinCoords ? Math.max(0, Math.min(100, Number(pendingPinCoords.x) || 0)) : 50,
+                y: pendingPinCoords ? Math.max(0, Math.min(100, Number(pendingPinCoords.y) || 0)) : 50,
+                title: cleanTitle,
                 status: 'Open'
             };
             pins.push(newPin);

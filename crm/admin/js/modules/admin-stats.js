@@ -11,6 +11,10 @@ import { formatProjectStatus } from "../../../js/crm-config.js";
  * @returns {{ leads: number, projects: number, waiting: number, delivered: number, openTasks: number }}
  */
 export function calculateDashboardStats(projects = []) {
+    if (!Array.isArray(projects)) {
+        return { leads: 0, projects: 0, waiting: 0, delivered: 0, openTasks: 0 };
+    }
+
     let leads = 0;
     let active = 0;
     let waiting = 0;
@@ -18,6 +22,7 @@ export function calculateDashboardStats(projects = []) {
     let openTasks = 0;
 
     projects.forEach(p => {
+        if (!p || typeof p !== 'object') return;
         const info = formatProjectStatus(p.status, p.statusClass);
 
         // Fase 1: Leads & Intakes
@@ -33,9 +38,11 @@ export function calculateDashboardStats(projects = []) {
         if (info.phase === 5) delivered++;
 
         // Openstaande taken
-        const tasks = p.tasks || [];
+        const tasks = Array.isArray(p.tasks) ? p.tasks : [];
         tasks.forEach(t => {
-            if (!t.completed && t.status !== 'done') openTasks++;
+            if (t && typeof t === 'object' && !t.completed && t.status !== 'done') {
+                openTasks++;
+            }
         });
     });
 
@@ -47,15 +54,16 @@ export function calculateDashboardStats(projects = []) {
  * @param {{ leads: number, projects: number, waiting: number, delivered: number, openTasks: number }} stats 
  */
 export function updateDashboardStatsUI(stats) {
+    const s = stats || { leads: 0, projects: 0, waiting: 0, delivered: 0, openTasks: 0 };
     const elLeads = document.getElementById('stat-leads');
     const elProjects = document.getElementById('stat-projects');
     const elWaiting = document.getElementById('stat-waiting');
     const elDelivered = document.getElementById('stat-delivered');
     const elTasks = document.getElementById('stat-tasks');
 
-    if (elLeads) elLeads.innerText = stats.leads;
-    if (elProjects) elProjects.innerText = stats.projects;
-    if (elWaiting) elWaiting.innerText = stats.waiting;
-    if (elDelivered) elDelivered.innerText = stats.delivered;
-    if (elTasks) elTasks.innerText = stats.openTasks;
+    if (elLeads) elLeads.textContent = String(s.leads ?? 0);
+    if (elProjects) elProjects.textContent = String(s.projects ?? 0);
+    if (elWaiting) elWaiting.textContent = String(s.waiting ?? 0);
+    if (elDelivered) elDelivered.textContent = String(s.delivered ?? 0);
+    if (elTasks) elTasks.textContent = String(s.openTasks ?? 0);
 }

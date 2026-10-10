@@ -3,7 +3,7 @@
  * Manages the dedicated Subscriptions tab, metrics calculation, and customer migration tracking.
  */
 
-import { SUBSCRIPTION_PLANS, escapeHtml } from "../../../js/crm-config.js";
+import { SUBSCRIPTION_PLANS, escapeHtml, sanitizeUrl } from "../../../js/crm-config.js";
 import { getPiBoekhoudingInfo } from "./bookkeeping-data.js";
 import { open2027SubscriptionModal } from "./subscription-2027.js";
 
@@ -52,7 +52,10 @@ export function calculateSubscriptionKPIs(projects = []) {
     let legacyCount = 0;
     let totalRevenue = 0;
 
-    projects.forEach(p => {
+    const list = Array.isArray(projects) ? projects : [];
+
+    list.forEach(p => {
+        if (!p || typeof p !== 'object') return;
         const info = getPiBoekhoudingInfo(p);
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
         const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
@@ -82,32 +85,39 @@ export function calculateSubscriptionKPIs(projects = []) {
         }
     });
 
-    const elConfirmed = document.getElementById('kpi-sub-confirmed');
-    if (elConfirmed) elConfirmed.innerHTML = `${confirmedCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">klanten</span>`;
+    if (typeof document !== 'undefined') {
+        const elConfirmed = document.getElementById('kpi-sub-confirmed');
+        if (elConfirmed) elConfirmed.innerHTML = `${confirmedCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">klanten</span>`;
 
-    const elProposed = document.getElementById('kpi-sub-proposed');
-    if (elProposed) elProposed.innerHTML = `${proposedCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">voorstellen</span>`;
+        const elProposed = document.getElementById('kpi-sub-proposed');
+        if (elProposed) elProposed.innerHTML = `${proposedCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">voorstellen</span>`;
 
-    const elLegacy = document.getElementById('kpi-sub-legacy');
-    if (elLegacy) elLegacy.innerHTML = `${legacyCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">actie vereist</span>`;
+        const elLegacy = document.getElementById('kpi-sub-legacy');
+        if (elLegacy) elLegacy.innerHTML = `${legacyCount} <span style="font-size: 0.9rem; font-weight: 500; color: #94a3b8;">actie vereist</span>`;
 
-    const elRevenue = document.getElementById('kpi-sub-revenue');
-    if (elRevenue) {
-        const fmtRevenue = totalRevenue.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        elRevenue.innerText = `€ ${fmtRevenue}`;
+        const elRevenue = document.getElementById('kpi-sub-revenue');
+        if (elRevenue) {
+            const fmtRevenue = totalRevenue.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            elRevenue.innerText = `€ ${fmtRevenue}`;
+        }
     }
+
+    return { confirmedCount, proposedCount, legacyCount, totalRevenue };
 }
 
 /**
  * Renders the customers migration table.
  */
 export function renderSubscriptionsTable(projects = [], handlers = {}) {
+    if (typeof document === 'undefined') return;
     const tbody = document.getElementById('subscriptions-tbody');
     if (!tbody) return;
 
     tbody.innerHTML = '';
 
-    const filtered = projects.filter(p => {
+    const list = Array.isArray(projects) ? projects : [];
+    const filtered = list.filter(p => {
+        if (!p || typeof p !== 'object') return false;
         const info = getPiBoekhoudingInfo(p);
         const planId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
         const isInternal = planId === 'internal_project' || info?.currentPlanId === 'internal_project';
@@ -132,7 +142,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         const safeClient = escapeHtml(p.client || p.companyName || 'Onbekend');
         const rawDomain = (p.domainName || p.domain || '').trim();
         const safeDomain = rawDomain ? escapeHtml(rawDomain) : '<span style="color:#64748b; font-style:italic;">Geen domein</span>';
-        const domainHref = rawDomain ? (rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`) : '#';
+        const domainHref = rawDomain ? sanitizeUrl(rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`) : '#';
 
         // Project category
         const currentPlanId = p.subscriptionPlanId || info?.currentPlanId || 'managed_nl';
@@ -204,7 +214,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         if (isInternal) {
             actionsHtml = `
                 <span style="font-size: 0.75rem; color: #64748b; margin-right: 6px; font-style: italic;">Intern project</span>
-                <a href="project.html?id=${escapeHtml(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none;" title="Open Werkplek">
+                <a href="project.html?id=${encodeURIComponent(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none;" title="Open Werkplek">
                     <i class="fas fa-desktop"></i>
                 </a>
             `;
@@ -213,7 +223,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
                 <button type="button" class="btn btn-sm btn-action-proposal" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Open communicatie modal">
                     <i class="fas fa-paper-plane"></i> Bericht
                 </button>
-                <a href="project.html?id=${escapeHtml(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none; margin-left: 4px;" title="Open Werkplek">
+                <a href="project.html?id=${encodeURIComponent(p.id)}" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 5px 8px; text-decoration: none; margin-left: 4px;" title="Open Werkplek">
                     <i class="fas fa-desktop"></i>
                 </a>
             `;
@@ -222,7 +232,7 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong style="color: #fff;">${safeClient}</strong></td>
-            <td>${rawDomain ? `<a href="${domainHref}" target="_blank" rel="noopener" style="color: #38bdf8; text-decoration: none;"><i class="fas fa-globe"></i> ${safeDomain}</a>` : safeDomain}</td>
+            <td>${rawDomain ? `<a href="${domainHref}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: none;"><i class="fas fa-globe"></i> ${safeDomain}</a>` : safeDomain}</td>
             <td>${currentPlanBadge}</td>
             <td>${planDetailsHtml}</td>
             <td>${statusHtml}</td>

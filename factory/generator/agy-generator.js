@@ -6,6 +6,20 @@ import { applyCodeProtection } from '../security/code-drm.js';
 const execFileAsync = util.promisify(execFile);
 
 /**
+ * Neutraliseert HTML speciale tekens ter voorkoming van XSS en template injection (CWE-79)
+ */
+export function escapeHtml(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/`/g, '&#96;');
+}
+
+/**
  * Creation+Alt+Fix - AGY Generator Service
  * Roept de lokale Antigravity CLI ('agy --print') aan om complete websites en acquisitie-pitches
  * te programmeren met jouw actieve AI-abonnement (0 extra API-kosten!).
@@ -959,6 +973,9 @@ export function buildOutreachPitch(b) {
   }
 
   // 3. HTML E-mail Body (Uitgebreide, persoonlijke acquisitie-e-mail)
+  const safeName = escapeHtml(b.name || 'Ondernemer');
+  const safeCategory = escapeHtml(b.category || 'diensten');
+  const safeHook = escapeHtml(b.pitchHook || '');
   const ratingStars = b.rating ? '★'.repeat(Math.round(b.rating)) + ` ${b.rating}/5` : '★★★★★ 5/5';
   const reviewCountLine = b.reviewsCount && b.reviewsCount > 0
     ? `(${b.reviewsCount} geverifieerde Google reviews)`
@@ -970,19 +987,19 @@ export function buildOutreachPitch(b) {
   <!-- Header Banner -->
   <div style="background: linear-gradient(135deg, #0F172A, #1E3A5F); padding: 24px 28px; text-align: center;">
     <p style="color: #94A3B8; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px;">Creation+Alt+Fix · Hoogezand</p>
-    <h2 style="color: #F8FAFC; margin: 0; font-size: 1.4rem; font-weight: 700;">Vrijblijvend Concept voor ${b.name}</h2>
+    <h2 style="color: #F8FAFC; margin: 0; font-size: 1.4rem; font-weight: 700;">Vrijblijvend Concept voor ${safeName}</h2>
     <p style="color: #38BDF8; font-size: 0.9rem; margin: 8px 0 0;">✨ Al klaar en direct te bekijken op je telefoon</p>
   </div>
 
   <!-- Body -->
   <div style="padding: 28px 32px;">
-    <p style="font-size: 16px; margin-top: 0;">Beste ${b.name},</p>
+    <p style="font-size: 16px; margin-top: 0;">Beste ${safeName},</p>
 
-    <p>${b.pitchHook}</p>
+    <p>${safeHook}</p>
 
     <p>Mijn naam is <strong>Allard Veldman</strong> en ik run <strong>Creation+Alt+Fix</strong> vanuit Hoogezand. Ik help lokale ZZP'ers en kleine bedrijven in Groningen en Drenthe aan een professionele online aanwezigheid die écht werkt op mobiel — snel, duidelijk, en met directe contactknoppen zodat klanten met één klik kunnen bellen of appen.</p>
 
-    <p>Ik heb alvast <strong>gratis en vrijblijvend</strong> een compleet, werkend concept voor je gebouwd. Geen template-rommel, maar een website specifiek voor <strong>${b.name}</strong> — inclusief jouw ${b.category || 'diensten'}, contactgegevens${b.rating ? ` en je Google beoordeling van <strong>${ratingStars}</strong> ${reviewCountLine}` : ''}.</p>
+    <p>Ik heb alvast <strong>gratis en vrijblijvend</strong> een compleet, werkend concept voor je gebouwd. Geen template-rommel, maar een website specifiek voor <strong>${safeName}</strong> — inclusief jouw ${safeCategory}, contactgegevens${b.rating ? ` en je Google beoordeling van <strong>${ratingStars}</strong> ${reviewCountLine}` : ''}.</p>
 
     <!-- CTA Knop -->
     <div style="margin: 30px 0; text-align: center;">
@@ -993,7 +1010,7 @@ export function buildOutreachPitch(b) {
     </div>
 
     <!-- Wat zit erin -->
-    <p style="margin-bottom: 10px;"><strong>Wat zit er al in dit concept voor ${b.name}:</strong></p>
+    <p style="margin-bottom: 10px;"><strong>Wat zit er al in dit concept voor ${safeName}:</strong></p>
     <ul style="padding-left: 20px; line-height: 2; margin-bottom: 20px;">
       ${bulletsHtml}
       <li><strong>Professionele uitstraling:</strong> Responsive design dat op elk scherm perfect werkt</li>
@@ -1040,7 +1057,7 @@ export function buildOutreachPitch(b) {
       <li>Jij krijgt toegang tot jouw eigen klantenportaal voor verdere aanpassingen</li>
     </ol>
 
-    <p>Heb je vragen? Geen probleem — bel of app me gerust, dan kijken we er samen naar. Geen verplichtingen, gewoon eerlijk overleggen wat het beste past bij ${b.name}.</p>
+    <p>Heb je vragen? Geen probleem — bel of app me gerust, dan kijken we er samen naar. Geen verplichtingen, gewoon eerlijk overleggen wat het beste past bij ${safeName}.</p>
 
     <!-- Afsluitende CTA -->
     <div style="background: #F8FAFC; border-radius: 8px; padding: 16px 20px; margin: 24px 0; display: flex; align-items: center; gap: 12px;">
@@ -1369,6 +1386,14 @@ export function resolveArchetypeFaqs(archetypeKey, b) {
  * Voldoet 100% aan alle 20 kwaliteit- en optimalisatiecriteria uit het auditrapport.
  */
 export function buildFallbackTemplate(b) {
+  const safeName = escapeHtml(b.name || 'Lokale Vakman');
+  const safeAddress = escapeHtml(b.address || 'Groningen');
+  const safePhone = escapeHtml(b.phone || '');
+  const safeTel = (b.phone || '').replace(/[^0-9+]/g, '');
+  const safeCategory = escapeHtml(b.category || 'Vakmanschap');
+  const safeSlug = (b.slug || '').replace(/[^a-z0-9_-]/g, '');
+  const safeWhatsApp = (b.whatsAppNumber || '').replace(/[^0-9]/g, '');
+
   const theme = resolveDesignArchetype(b);
   const faqs = resolveArchetypeFaqs(theme.key, b);
 
@@ -1376,8 +1401,8 @@ export function buildFallbackTemplate(b) {
     ? b.reviews.map(r => `
         <div class="review-card">
           <div class="stars">★★★★★</div>
-          <p class="review-text">"${r.text}"</p>
-          <div class="review-author">— ${r.author} (Geverifieerde Google Review)</div>
+          <p class="review-text">"${escapeHtml(r.text)}"</p>
+          <div class="review-author">— ${escapeHtml(r.author)} (Geverifieerde Google Review)</div>
         </div>
       `).join('')
     : `
@@ -1400,16 +1425,16 @@ export function buildFallbackTemplate(b) {
             <span class="service-num">0${idx + 1}</span>
             <span class="service-icon">✦</span>
           </div>
-          <h3>${s.title}</h3>
-          <p>${s.desc}</p>
+          <h3>${escapeHtml(s.title)}</h3>
+          <p>${escapeHtml(s.desc)}</p>
         </div>
       `).join('');
 
   const processHtml = theme.processSteps.map(p => `
     <div class="process-card">
-      <div class="process-step-num">${p.nr}</div>
-      <h4>${p.title}</h4>
-      <p>${p.desc}</p>
+      <div class="process-step-num">${escapeHtml(p.nr)}</div>
+      <h4>${escapeHtml(p.title)}</h4>
+      <p>${escapeHtml(p.desc)}</p>
     </div>
   `).join('');
 
@@ -1428,8 +1453,8 @@ export function buildFallbackTemplate(b) {
             ${theme.usps.map(u => `<li><span class="check-icon">✓</span> ${u}</li>`).join('')}
           </ul>
           <div class="cta-group">
-            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Direct Bellen</a>` : ''}
-            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
+            ${safeTel ? `<a href="tel:${safeTel}" class="btn btn-primary" aria-label="Bel ${safeName}">📞 Direct Bellen</a>` : ''}
+            ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}?text=Hallo%20${encodeURIComponent(b.name || '')},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
             <a href="#contact" class="btn btn-outline" aria-label="Offerte aanvragen">✉️ Offerte Aanvragen</a>
           </div>
         </div>
@@ -1437,10 +1462,10 @@ export function buildFallbackTemplate(b) {
           <div class="quick-contact-card">
             <div class="status-pill"><span class="pulse-dot"></span> Vandaag bereikbaar</div>
             <h3>Direct Contact & Advies</h3>
-            <p>Heeft u een vraag of wilt u een indicatie? Neem direct contact op met ${b.name}:</p>
+            <p>Heeft u een vraag of wilt u een indicatie? Neem direct contact op met ${safeName}:</p>
             <div class="widget-actions">
-              ${b.phone ? `<a href="tel:${b.phone}" class="widget-btn widget-btn-call" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
-              ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="widget-btn widget-btn-wa" target="_blank" aria-label="WhatsApp chat">💬 WhatsApp Chat</a>` : ''}
+              ${safeTel ? `<a href="tel:${safeTel}" class="widget-btn widget-btn-call" aria-label="Bel ${safePhone}">📞 ${safePhone}</a>` : ''}
+              ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}" class="widget-btn widget-btn-wa" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp chat">💬 WhatsApp Chat</a>` : ''}
             </div>
             <div class="widget-meta">
               <span>⚡ Snelle reactie gegarandeerd</span>
@@ -1458,8 +1483,8 @@ export function buildFallbackTemplate(b) {
         <h1>${theme.heroHeading}</h1>
         <p class="hero-desc">${theme.heroSubtitle}</p>
         <div class="cta-group">
-          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Direct Bellen</a>` : ''}
-          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
+          ${safeTel ? `<a href="tel:${safeTel}" class="btn btn-primary" aria-label="Bel ${safeName}">📞 Direct Bellen</a>` : ''}
+          ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}?text=Hallo%20${encodeURIComponent(b.name || '')},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp bericht">💬 Stuur WhatsApp</a>` : ''}
           <a href="#contact" class="btn btn-outline" aria-label="Offerte aanvragen">✉️ Vrijblijvende Aanvraag</a>
         </div>
         <div class="metrics-row">
@@ -1484,7 +1509,7 @@ export function buildFallbackTemplate(b) {
       <section class="hero hero-action">
         <div class="urgent-banner">
           <span>⚡ Direct contact voor advies of afspraak in de regio:</span>
-          ${b.phone ? `<a href="tel:${b.phone}" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
+          ${safeTel ? `<a href="tel:${safeTel}" aria-label="Bel ${safePhone}">📞 ${safePhone}</a>` : ''}
         </div>
         <span class="badge">${theme.badgeText}</span>
         <h1>${theme.heroHeading}</h1>
@@ -1495,8 +1520,8 @@ export function buildFallbackTemplate(b) {
             <p>Geen verborgen kosten achteraf. Eerlijke tarieven en betrouwbaar vakwerk.</p>
           </div>
           <div class="cta-group">
-            ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.name}">📞 Bel ${b.phone}</a>` : ''}
-            ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp bericht">💬 WhatsApp</a>` : ''}
+            ${safeTel ? `<a href="tel:${safeTel}" class="btn btn-primary" aria-label="Bel ${safeName}">📞 Bel ${safePhone}</a>` : ''}
+            ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}?text=Hallo%20${encodeURIComponent(b.name || '')},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp bericht">💬 WhatsApp</a>` : ''}
             <a href="#contact" class="btn btn-outline" aria-label="Offerte formulier">✉️ Offerte</a>
           </div>
         </div>
@@ -1547,21 +1572,21 @@ export function buildFallbackTemplate(b) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="index, follow">
-  <title>${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand & Regio Groningen</title>
-  <meta name="description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk onze diensten, beoordelingen en vraag direct een vrijblijvende offerte aan.">
-  <link rel="canonical" href="https://creationaltfix.nl/concept/${b.slug}/">
+  <title>${safeName} | ${safeCategory} in Hoogezand & Regio Groningen</title>
+  <meta name="description" content="Professionele ${safeCategory} door ${safeName} in Hoogezand en omstreken. Bekijk onze diensten, beoordelingen en vraag direct een vrijblijvende offerte aan.">
+  <link rel="canonical" href="https://creationaltfix.nl/concept/${safeSlug}/">
   <link rel="icon" type="image/svg+xml" href="${svgFavicon}">
   
   <!-- Social Share (Open Graph & Twitter Cards) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand">
-  <meta property="og:description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
-  <meta property="og:url" content="https://creationaltfix.nl/concept/${b.slug}/">
-  <meta property="og:site_name" content="${b.name}">
+  <meta property="og:title" content="${safeName} | ${safeCategory} in Hoogezand">
+  <meta property="og:description" content="Professionele ${safeCategory} door ${safeName} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
+  <meta property="og:url" content="https://creationaltfix.nl/concept/${safeSlug}/">
+  <meta property="og:site_name" content="${safeName}">
   <meta property="og:locale" content="nl_NL">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${b.name} | ${b.category || 'Vakmanschap'} in Hoogezand">
-  <meta name="twitter:description" content="Professionele ${b.category || 'diensten'} door ${b.name} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
+  <meta name="twitter:title" content="${safeName} | ${safeCategory} in Hoogezand">
+  <meta name="twitter:description" content="Professionele ${safeCategory} door ${safeName} in Hoogezand en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2089,21 +2114,21 @@ ${JSON.stringify(schemaGraph, null, 2)}
       <div class="concept-bar-badge">
         <span class="concept-bar-avatar">AV</span>
         <span>
-          <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>${b.name}</strong>
+          <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>${safeName}</strong>
         </span>
       </div>
       <div>
-        <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20websiteconcept%20voor%20${encodeURIComponent(b.name)}%20bekeken!" class="concept-wa-btn" target="_blank">
+        <a href="https://wa.me/31619135453?text=Hoi%20Allard,%20ik%20heb%20het%20websiteconcept%20voor%20${encodeURIComponent(b.name || '')}%20bekeken!" class="concept-wa-btn" target="_blank" rel="noopener noreferrer">
           💬 Vraag stellen aan Allard
         </a>
       </div>
     </div>
   </div>
   <header>
-    <div class="logo">${b.name}<span>.</span></div>
+    <div class="logo">${safeName}<span>.</span></div>
     <div class="header-actions">
-      ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-secondary" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
-      ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}" class="btn btn-primary" target="_blank" aria-label="WhatsApp">💬 WhatsApp</a>` : ''}
+      ${safeTel ? `<a href="tel:${safeTel}" class="btn btn-secondary" aria-label="Bel ${safePhone}">📞 ${safePhone}</a>` : ''}
+      ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">💬 WhatsApp</a>` : ''}
     </div>
   </header>
   <main>
@@ -2148,11 +2173,11 @@ ${JSON.stringify(schemaGraph, null, 2)}
         ${faqs.map(faq => `
           <details class="faq-item">
             <summary class="faq-question">
-              <span>${faq.question}</span>
+              <span>${escapeHtml(faq.question)}</span>
               <span class="faq-icon">+</span>
             </summary>
             <div class="faq-answer">
-              <p>${faq.answer}</p>
+              <p>${escapeHtml(faq.answer)}</p>
             </div>
           </details>
         `).join('')}
@@ -2162,11 +2187,11 @@ ${JSON.stringify(schemaGraph, null, 2)}
     <section class="section" id="contact">
       <div class="contact-card">
         <span class="badge">Vrijblijvend Contact</span>
-        <h3>Direct Contact Opnemen met ${b.name}?</h3>
+        <h3>Direct Contact Opnemen met ${safeName}?</h3>
         <p>Heeft u een vraag of wilt u een indicatie? Bel direct, stuur een WhatsApp of verzend onderstaand aanvraagformulier.</p>
         <div class="cta-group" style="justify-content: center; margin-bottom: 24px;">
-          ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-primary" aria-label="Bel ${b.phone}">📞 ${b.phone}</a>` : ''}
-          ${b.hasWhatsApp ? `<a href="https://wa.me/${b.whatsAppNumber}?text=Hallo%20${encodeURIComponent(b.name)},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" aria-label="WhatsApp">💬 WhatsApp Chat</a>` : ''}
+          ${safeTel ? `<a href="tel:${safeTel}" class="btn btn-primary" aria-label="Bel ${safePhone}">📞 ${safePhone}</a>` : ''}
+          ${b.hasWhatsApp && safeWhatsApp ? `<a href="https://wa.me/${safeWhatsApp}?text=Hallo%20${encodeURIComponent(b.name || '')},%20ik%20heb%20een%20vraag" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">💬 WhatsApp Chat</a>` : ''}
         </div>
 
         <form class="concept-contact-form" id="concept-contact-form" onsubmit="handleConceptFormSubmit(event)">
@@ -2195,7 +2220,7 @@ ${JSON.stringify(schemaGraph, null, 2)}
   </main>
 
   <footer>
-    <p>&copy; ${new Date().getFullYear()} ${b.name}. Alle rechten voorbehouden. ${b.address ? '• ' + b.address : ''}</p>
+    <p>&copy; ${new Date().getFullYear()} ${safeName}. Alle rechten voorbehouden. ${b.address ? '• ' + safeAddress : ''}</p>
     <div class="footer-legal-links">
       <a href="#privacy" onclick="event.preventDefault(); openPrivacyModal();">Privacybeleid</a>
       <span>•</span>
@@ -2224,13 +2249,13 @@ ${JSON.stringify(schemaGraph, null, 2)}
     <div class="concept-modal-backdrop" onclick="closePrivacyModal()"></div>
     <div class="concept-modal-dialog">
       <div class="concept-modal-header">
-        <h3 id="privacy-modal-title">Privacyverklaring • ${b.name}</h3>
+        <h3 id="privacy-modal-title">Privacyverklaring • ${safeName}</h3>
         <button type="button" class="modal-close-btn" onclick="closePrivacyModal()" aria-label="Sluit privacy modal">&times;</button>
       </div>
       <div class="concept-modal-body">
         <p><strong>Laatst bijgewerkt:</strong> 2026 • Conform Algemene Verordening Gegevensbescherming (AVG/GDPR)</p>
         <h4>1. Identiteit van de onderneming</h4>
-        <p><strong>${b.name}</strong>, gevestigd te ${b.address || 'regio Hoogezand / Groningen'}${b.phone ? ' (telefoon: ' + b.phone + ')' : ''}, is de verwerkingsverantwoordelijke voor de verwerking van persoonsgegevens via deze website.</p>
+        <p><strong>${safeName}</strong>, gevestigd te ${safeAddress}${safeTel ? ' (telefoon: ' + safePhone + ')' : ''}, is de verwerkingsverantwoordelijke voor de verwerking van persoonsgegevens via deze website.</p>
         <h4>2. Welke gegevens verwerken wij?</h4>
         <p>Wanneer u contact opneemt via het offerteformulier, telefoon of WhatsApp, verwerken wij uitsluitend de door u actief verstrekte gegevens: uw naam, telefoonnummer en de inhoud van uw bericht of klusomschrijving.</p>
         <h4>3. Doel van de verwerking</h4>
@@ -2251,16 +2276,16 @@ ${JSON.stringify(schemaGraph, null, 2)}
     <div class="concept-modal-backdrop" onclick="closeTermsModal()"></div>
     <div class="concept-modal-dialog">
       <div class="concept-modal-header">
-        <h3 id="terms-modal-title">Algemene Voorwaarden • ${b.name}</h3>
+        <h3 id="terms-modal-title">Algemene Voorwaarden • ${safeName}</h3>
         <button type="button" class="modal-close-btn" onclick="closeTermsModal()" aria-label="Sluit voorwaarden modal">&times;</button>
       </div>
       <div class="concept-modal-body">
         <h4>1. Toepasselijkheid</h4>
-        <p>Deze voorwaarden zijn van toepassing op alle offertes, overeenkomsten en werkzaamheden uitgevoerd door ${b.name} voor particuliere en zakelijke opdrachtgevers.</p>
+        <p>Deze voorwaarden zijn van toepassing op alle offertes, overeenkomsten en werkzaamheden uitgevoerd door ${safeName} voor particuliere en zakelijke opdrachtgevers.</p>
         <h4>2. Prijsopgaven & Offertes</h4>
         <p>Alle prijsindicaties en offertes zijn geheel vrijblijvend, tenzij uitdrukkelijk schriftelijk anders is overeengekomen. Prijzen zijn helder en transparant gespecificeerd.</p>
         <h4>3. Kwaliteit, Garantie & Oplevering</h4>
-        <p>${b.name} verricht werkzaamheden met vakmanschap en hoogwaardige materialen. Bij oplevering worden de werkzaamheden gezamenlijk geïnspecteerd. Eventuele garanties zijn van toepassing conform de geldende kwaliteitsnormen.</p>
+        <p>${safeName} verricht werkzaamheden met vakmanschap en hoogwaardige materialen. Bij oplevering worden de werkzaamheden gezamenlijk geïnspecteerd. Eventuele garanties zijn van toepassing conform de geldende kwaliteitsnormen.</p>
         <h4>4. Betaling</h4>
         <p>Betalingen geschieden conform de afgesproken termijn. Bij onvoorziene omstandigheden communiceren we altijd tijdig en transparant.</p>
       </div>

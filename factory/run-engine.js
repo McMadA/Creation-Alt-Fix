@@ -17,6 +17,33 @@ const regions = JSON.parse(fs.readFileSync(regionsPath, 'utf-8'));
 const sectors = JSON.parse(fs.readFileSync(sectorsPath, 'utf-8'));
 
 /**
+ * Veilig en atomisch JSON wegschrijven via .tmp bestand met 0600 permissies
+ * Voorkomt data-corruptie en 0-byte bestanden bij plotselinge procesonderbrekingen
+ */
+export function atomicWriteJsonSync(targetPath, data) {
+  const content = JSON.stringify(data, null, 2);
+  const dir = path.dirname(targetPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const tempPath = path.join(dir, `.${path.basename(targetPath)}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`);
+  fs.writeFileSync(tempPath, content, { encoding: 'utf-8', mode: 0o600 });
+  try {
+    fs.renameSync(tempPath, targetPath);
+  } catch (err) {
+    try {
+      fs.copyFileSync(tempPath, targetPath);
+      fs.unlinkSync(tempPath);
+    } catch (copyErr) {
+      if (fs.existsSync(tempPath)) {
+        try { fs.unlinkSync(tempPath); } catch (_) {}
+      }
+      throw err;
+    }
+  }
+}
+
+/**
  * Hoofdklasse voor de Autonome Lead & Concept Machine
  */
 export class LeadFactoryEngine {
@@ -38,7 +65,7 @@ export class LeadFactoryEngine {
         totalSent: 0,
         leads: []
       };
-      fs.writeFileSync(this.databaseFile, JSON.stringify(initial, null, 2), 'utf-8');
+      atomicWriteJsonSync(this.databaseFile, initial);
     }
   }
 
@@ -49,12 +76,12 @@ export class LeadFactoryEngine {
 
   saveDatabase(db) {
     db.updatedAt = new Date().toISOString();
-    fs.writeFileSync(this.databaseFile, JSON.stringify(db, null, 2), 'utf-8');
+    atomicWriteJsonSync(this.databaseFile, db);
     // Directe synchronisatie met CRM Admin Dashboard
     const crmAdminDbPath = path.resolve(__dirname, '..', 'crm', 'admin', 'data', 'leads.json');
     try {
       if (fs.existsSync(path.dirname(crmAdminDbPath))) {
-        fs.writeFileSync(crmAdminDbPath, JSON.stringify(db, null, 2), 'utf-8');
+        atomicWriteJsonSync(crmAdminDbPath, db);
       }
     } catch (e) {
       console.warn('⚠️ Kon leads.json niet direct naar CRM admin data kopiëren:', e.message);
@@ -210,21 +237,33 @@ export class LeadFactoryEngine {
   }
 }
 
+// CLI Argument Sanitization & Bounds (CWE-20)
+export function parseCliArgs(args = []) {
+  const isDaemon = args.includes('--daemon');
+  const limitArg = args.find(a => typeof a === 'string' && a.startsWith('--limit='));
+  const queryArg = args.find(a => typeof a === 'string' && a.startsWith('--query='));
+  const intervalArg = args.find(a => typeof a === 'string' && a.startsWith('--interval='));
+
+  const rawLimit = limitArg ? parseInt(limitArg.slice(limitArg.indexOf('=') + 1), 10) : 1;
+  const limit = Math.max(1, Math.min(50, isNaN(rawLimit) ? 1 : rawLimit));
+
+  const rawQuery = queryArg ? queryArg.slice(queryArg.indexOf('=') + 1) : null;
+  const query = rawQuery ? String(rawQuery).replace(/[\r\n\x00-\x1F\x7F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) : null;
+
+  const rawInterval = intervalArg ? parseInt(intervalArg.slice(intervalArg.indexOf('=') + 1), 10) : 30;
+  const interval = Math.max(1, Math.min(1440, isNaN(rawInterval) ? 30 : rawInterval));
+
+  return { isDaemon, limit, query, interval };
+}
+
 // CLI Execution Support
 if (process.argv[1] && process.argv[1].endsWith('run-engine.js')) {
   const args = process.argv.slice(2);
-  const isDaemon = args.includes('--daemon');
-  const limitArg = args.find(a => a.startsWith('--limit='));
-  const queryArg = args.find(a => a.startsWith('--query='));
-
-  const limit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 1;
-  const query = queryArg ? queryArg.split('=')[1] : null;
+  const { isDaemon, limit, query, interval } = parseCliArgs(args);
 
   const engine = new LeadFactoryEngine();
 
   if (isDaemon) {
-    const intervalArg = args.find(a => a.startsWith('--interval='));
-    const interval = intervalArg ? parseInt(intervalArg.split('=')[1], 10) : 30;
     engine.startDaemon(interval);
   } else {
     engine.runCycle({ limit, query }).then(() => {

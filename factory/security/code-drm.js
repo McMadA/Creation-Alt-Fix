@@ -11,6 +11,7 @@
 
 export function applyCodeProtection(html, business) {
   if (!html || typeof html !== 'string') return html;
+  if (html.includes('id="caf-security-guard"')) return html;
 
   const allowedDomains = [
     'creationaltfix.nl',
@@ -91,7 +92,11 @@ export function applyCodeProtection(html, business) {
       t.style.transition = 'opacity 0.3s ease';
       document.body.appendChild(t);
     }
-    t.innerHTML = '&#128274; <strong>Creation+Alt+Fix Beveiliging:</strong> ' + msg;
+    t.textContent = '';
+    const strong = document.createElement('strong');
+    strong.textContent = '🔒 Creation+Alt+Fix Beveiliging: ';
+    t.appendChild(strong);
+    t.appendChild(document.createTextNode(String(msg || '')));
     t.style.opacity = '1';
     clearTimeout(t._timer);
     t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);

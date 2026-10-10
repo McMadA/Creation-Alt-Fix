@@ -3,25 +3,60 @@ import path from 'path';
 import { FACTORY_CONFIG } from '../config/factory-config.js';
 
 /**
+ * Valideert en saneert concept HTML payload tegen geheugenuitputting en null bytes
+ */
+export function validateConceptHtml(content) {
+  if (typeof content !== 'string' || !content.trim()) {
+    throw new Error('Ongeldige of lege HTML inhoud voor deployment');
+  }
+  if (Buffer.byteLength(content, 'utf-8') > 5 * 1024 * 1024) {
+    throw new Error('Concept HTML overschrijdt de maximale toegestane bestandsgrootte van 5MB');
+  }
+  return content.replace(/\0/g, '');
+}
+
+/**
  * Creation+Alt+Fix - Vimexx FTPS Deployment Client
  * Uploadt gegenereerde concept-websites rechtstreeks naar de Vimexx DirectAdmin server
  */
 export async function deployConceptToVimexx(slug, localHtmlContent) {
-  console.log(`🚀 [FTPS Deployer] Start deployment voor concept: "${slug}"...`);
+  // CWE-22: Strikte slug sanitization ter voorkoming van path traversal / willekeurige directory write
+  const WINDOWS_RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
+  const cleanSlug = String(slug || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9_-]/g, '')
+    .substring(0, 64)
+    .replace(/[-_]+$/, '');
 
-  // 1. Zorg dat het concept ook lokaal netjes bewaard blijft
-  const localSlugDir = path.join(FACTORY_CONFIG.localConceptDir, slug);
+  if (!cleanSlug || WINDOWS_RESERVED.test(cleanSlug)) {
+    throw new Error('Ongeldige of ontbrekende slug voor deployment (alleen a-z, 0-9, _ en - toegestaan, geen Windows device namen)');
+  }
+
+  // CWE-400 / CWE-20: Valideer en saneer HTML content
+  const sanitizedHtml = validateConceptHtml(localHtmlContent);
+
+  console.log(`🚀 [FTPS Deployer] Start deployment voor concept: "${cleanSlug}"...`);
+
+  // 1. Zorg dat het concept ook lokaal netjes bewaard blijft binnen de toegestane map
+  const resolvedConceptBase = path.resolve(FACTORY_CONFIG.localConceptDir);
+  const localSlugDir = path.resolve(resolvedConceptBase, cleanSlug);
+
+  if (!localSlugDir.startsWith(resolvedConceptBase)) {
+    throw new Error('Path traversal poging gedetecteerd in slug directory pad');
+  }
+
   fs.mkdirSync(localSlugDir, { recursive: true });
   const localFilePath = path.join(localSlugDir, 'index.html');
-  fs.writeFileSync(localFilePath, localHtmlContent, 'utf-8');
+  fs.writeFileSync(localFilePath, sanitizedHtml, 'utf-8');
   console.log(`📁 [FTPS Deployer] Lokaal opgeslagen in: ${localFilePath}`);
 
-  const liveUrl = `${FACTORY_CONFIG.conceptBaseUrl}/${slug}/`;
+  const liveUrl = `${FACTORY_CONFIG.conceptBaseUrl}/${cleanSlug}/`;
 
   // 2. Controleer of FTP credentials beschikbaar zijn
   const { host, port, user, password, remoteRoot } = FACTORY_CONFIG.ftp;
   if (!user || !password) {
-    console.log(`ℹ️ [FTPS Deployer] Geen directe FTP credentials gevonden in .env. Concept is lokaal gereed in /website/concept/${slug}/.`);
+    console.log(`ℹ️ [FTPS Deployer] Geen directe FTP credentials gevonden in .env. Concept is lokaal gereed in /website/concept/${cleanSlug}/.`);
     console.log(`   (Tip: vul FTP_USERNAME en FTP_PASSWORD in om direct live naar Vimexx te syncen, of push via Git)`);
     return {
       success: true,
@@ -35,6 +70,8 @@ export async function deployConceptToVimexx(slug, localHtmlContent) {
   const ftp = await import('basic-ftp');
   const client = new ftp.Client();
   client.ftp.verbose = false;
+  // CWE-400: Dwing 20-seconden socket timeout af tegen hanging connections bij netwerkonderbreking
+  client.timeout = 20000;
 
   try {
     console.log(`🔌 [FTPS Deployer] Verbinden met Vimexx server (${host}:${port}) als '${user}'...`);
@@ -49,7 +86,7 @@ export async function deployConceptToVimexx(slug, localHtmlContent) {
       }
     });
 
-    const targetRemoteDir = `${remoteRoot}/${slug}`;
+    const targetRemoteDir = `${remoteRoot}/${cleanSlug}`;
     console.log(`📂 [FTPS Deployer] Aanmaken remote map: ${targetRemoteDir}...`);
     await client.ensureDir(targetRemoteDir);
 
@@ -90,6 +127,8 @@ export async function syncLeadsDatabaseToVimexx() {
   const ftp = await import('basic-ftp');
   const client = new ftp.Client();
   client.ftp.verbose = false;
+  // CWE-400: Dwing 20-seconden socket timeout af tegen hanging connections bij netwerkonderbreking
+  client.timeout = 20000;
 
   try {
     await client.access({

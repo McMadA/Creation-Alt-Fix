@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { generateSoundtrackWav } from './audio-synth.js';
@@ -11,7 +11,9 @@ import { generateSoundtrackWav } from './audio-synth.js';
  */
 
 const ROOT_DIR = path.resolve('factory/video');
-const DOWNLOADS_DIR = 'C:\\Users\\739530\\Downloads';
+const DOWNLOADS_DIR = process.env.USERPROFILE 
+  ? path.join(process.env.USERPROFILE, 'Downloads') 
+  : path.resolve(ROOT_DIR, 'dist');
 const HTML_FILE = path.join(ROOT_DIR, 'motion-template.html');
 const WAV_FILE = path.join(ROOT_DIR, 'soundtrack.wav');
 
@@ -70,9 +72,24 @@ async function renderVideo({ width, height, outputFilename, label }) {
 
   console.log(`🎛️ Encoding high-bitrate H.264 MP4 with synchronized soundtrack...`);
   // FFMPEG command: combine video and audio with faststart and yuv420p for Instagram & LinkedIn
-  const ffmpegCmd = `"${ffmpegPath}" -y -i "${rawWebm}" -i "${WAV_FILE}" -map 0:v:0 -map 1:a:0 -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart "${finalMp4}"`;
+  const ffmpegArgs = [
+    '-y',
+    '-i', rawWebm,
+    '-i', WAV_FILE,
+    '-map', '0:v:0',
+    '-map', '1:a:0',
+    '-c:v', 'libx264',
+    '-preset', 'slow',
+    '-crf', '19',
+    '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac',
+    '-b:a', '192k',
+    '-shortest',
+    '-movflags', '+faststart',
+    finalMp4
+  ];
 
-  execSync(ffmpegCmd, { stdio: 'inherit' });
+  execFileSync(ffmpegPath, ffmpegArgs, { stdio: 'inherit' });
 
   const stats = fs.statSync(finalMp4);
   console.log(`\n🎉 SUCCESS! Motion design video ready:`);

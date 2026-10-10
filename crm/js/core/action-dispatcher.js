@@ -51,6 +51,21 @@ export class ActionDispatcher {
     }
 
     /**
+     * Filter gevaarlijke prototype pollution keys (__proto__, constructor, prototype)
+     * @param {Object} obj 
+     * @returns {Object}
+     */
+    static sanitizePayload(obj) {
+        if (!obj || typeof obj !== 'object') return {};
+        const clean = {};
+        for (const [key, val] of Object.entries(obj)) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+            clean[key] = val;
+        }
+        return clean;
+    }
+
+    /**
      * Voer een actie programmatisch uit
      * @param {string} actionName 
      * @param {Object} dataset 
@@ -60,7 +75,17 @@ export class ActionDispatcher {
     dispatch(actionName, dataset = {}, event = null, targetElement = null) {
         const handler = this.actions.get(actionName);
         if (typeof handler === 'function') {
-            return handler(dataset, event, targetElement);
+            try {
+                const safeData = ActionDispatcher.sanitizePayload(dataset);
+                const res = handler(safeData, event, targetElement);
+                if (res && typeof res.catch === 'function') {
+                    res.catch(err => console.error(`[ActionDispatcher] Async fout in actie "${actionName}":`, err));
+                }
+                return res;
+            } catch (err) {
+                console.error(`[ActionDispatcher] Fout in actie "${actionName}":`, err);
+                return null;
+            }
         }
         console.warn(`[ActionDispatcher] Geen handler geregistreerd voor actie: "${actionName}"`);
         return null;
@@ -86,7 +111,11 @@ export class ActionDispatcher {
             const handler = this.actions.get(actionName);
             if (typeof handler === 'function') {
                 try {
-                    handler(target.dataset, event, target);
+                    const safeDataset = ActionDispatcher.sanitizePayload(target.dataset);
+                    const res = handler(safeDataset, event, target);
+                    if (res && typeof res.catch === 'function') {
+                        res.catch(err => console.error(`[ActionDispatcher] Async fout in actie "${actionName}":`, err));
+                    }
                 } catch (err) {
                     console.error(`[ActionDispatcher] Fout in actie "${actionName}":`, err);
                 }
@@ -107,10 +136,15 @@ export class ActionDispatcher {
             if (typeof handler === 'function') {
                 try {
                     const formData = new FormData(target);
-                    const payload = Object.fromEntries(formData.entries());
+                    const rawPayload = Object.fromEntries(formData.entries());
+                    const safePayload = ActionDispatcher.sanitizePayload(rawPayload);
+                    const safeDataset = ActionDispatcher.sanitizePayload(target.dataset);
                     // Voeg eventuele data-attributen samen met formdata velden
-                    const mergedData = { ...target.dataset, ...payload };
-                    handler(mergedData, event, target);
+                    const mergedData = { ...safeDataset, ...safePayload };
+                    const res = handler(mergedData, event, target);
+                    if (res && typeof res.catch === 'function') {
+                        res.catch(err => console.error(`[ActionDispatcher] Async fout in formulieractie "${actionName}":`, err));
+                    }
                 } catch (err) {
                     console.error(`[ActionDispatcher] Fout in formulieractie "${actionName}":`, err);
                 }

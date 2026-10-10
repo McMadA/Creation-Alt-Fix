@@ -41,11 +41,25 @@ const docsTranslations = {
     }
 };
 
-let currentLang = localStorage.getItem('preferredLanguage') || (navigator.language?.startsWith('en') ? 'en' : 'nl');
+let currentLang = 'nl';
+try {
+    const hasStorage = typeof localStorage !== 'undefined';
+    const hasNav = typeof navigator !== 'undefined';
+    currentLang = (hasStorage ? localStorage.getItem('preferredLanguage') : null) || (hasNav && navigator.language?.startsWith('en') ? 'en' : 'nl');
+} catch (e) {
+    currentLang = 'nl';
+}
 
 export function applyDocsLanguage(lang) {
     currentLang = lang;
-    localStorage.setItem('preferredLanguage', lang);
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('preferredLanguage', lang);
+        }
+    } catch (e) {
+        // Silent fallback when localStorage is restricted
+    }
+    if (typeof document === 'undefined') return;
     const dict = docsTranslations[lang] || docsTranslations.nl;
 
     document.querySelectorAll('[data-docs-translate]').forEach(el => {
@@ -283,8 +297,38 @@ async function loadComponents() {
 // --- 3. Interactive Checklist Persistence ---
 const CHECKLIST_STORAGE_KEY = 'caf_docs_handover_checklist';
 
+export function getChecklistState() {
+    try {
+        if (typeof localStorage === 'undefined') return {};
+        const raw = localStorage.getItem(CHECKLIST_STORAGE_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            const clean = Object.create(null);
+            for (const [k, v] of Object.entries(parsed)) {
+                if (k !== '__proto__' && k !== 'constructor' && k !== 'prototype') {
+                    clean[k] = Boolean(v);
+                }
+            }
+            return clean;
+        }
+    } catch (e) {
+        // Fallback on empty state if corrupted
+    }
+    return {};
+}
+
+export function saveChecklistState(state) {
+    try {
+        if (typeof localStorage === 'undefined') return;
+        localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+        console.warn('Checklist state could not be saved to localStorage:', e);
+    }
+}
+
 function initChecklist() {
-    const savedState = JSON.parse(localStorage.getItem(CHECKLIST_STORAGE_KEY) || '{}');
+    const savedState = getChecklistState();
     const items = document.querySelectorAll('.checklist-item');
 
     items.forEach((item, index) => {
@@ -298,7 +342,7 @@ function initChecklist() {
         item.addEventListener('click', () => {
             const isCompleted = item.classList.toggle('completed');
             savedState[id] = isCompleted;
-            localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(savedState));
+            saveChecklistState(savedState);
             
             const checkbox = item.querySelector('.checklist-checkbox');
             if (checkbox) {
@@ -372,13 +416,18 @@ function initCodeCopy() {
     document.querySelectorAll('.btn-copy-code').forEach(btn => {
         btn.addEventListener('click', () => {
             const pre = btn.closest('.code-snippet-box')?.querySelector('pre');
-            if (pre) {
-                navigator.clipboard.writeText(pre.innerText.trim());
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> Gekopieerd!';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                }, 2000);
+            if (pre && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(pre.innerText.trim())
+                    .then(() => {
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-check"></i> Gekopieerd!';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.warn("Kon code niet kopiëren naar klembord:", err);
+                    });
             }
         });
     });
@@ -393,20 +442,32 @@ function initPrintTrigger() {
     });
 }
 
+/**
+ * Sanitizes documentation personalization parameters.
+ * Strips control characters, dangerous script injection chars and caps length.
+ */
+export function sanitizeDocsParam(val, maxLen = 80) {
+    if (!val || typeof val !== 'string') return '';
+    const clean = val
+        .replace(/[\x00-\x1F\x7F<>'"`;\\]/g, '')
+        .trim();
+    return clean.slice(0, maxLen);
+}
+
 // --- 8. URL Parameter Personalization ---
 function initProjectPersonalization() {
     const params = new URLSearchParams(window.location.search);
-    const domain = params.get('domain') || params.get('url');
-    const client = params.get('client');
+    const domain = sanitizeDocsParam(params.get('domain') || params.get('url'), 80);
+    const client = sanitizeDocsParam(params.get('client'), 80);
 
     if (domain) {
         document.querySelectorAll('.project-domain-display').forEach(el => {
-            el.innerText = domain;
+            el.textContent = domain;
         });
     }
     if (client) {
         document.querySelectorAll('.project-client-display').forEach(el => {
-            el.innerText = client;
+            el.textContent = client;
         });
     }
 }
@@ -440,14 +501,16 @@ function initScrollReveal() {
 }
 
 // Initialize on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadComponents();
-    applyDocsLanguage(currentLang);
-    initChecklist();
-    initSearch();
-    initScrollSpy();
-    initCodeCopy();
-    initPrintTrigger();
-    initProjectPersonalization();
-    initScrollReveal();
-});
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadComponents();
+        applyDocsLanguage(currentLang);
+        initChecklist();
+        initSearch();
+        initScrollSpy();
+        initCodeCopy();
+        initPrintTrigger();
+        initProjectPersonalization();
+        initScrollReveal();
+    });
+}

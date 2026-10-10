@@ -20,8 +20,11 @@ service firebase.storage {
     function isProjectOwner(projectId) {
       return request.auth != null &&
         firestore.exists(/databases/(default)/documents/projects/$(projectId)) && (
-          firestore.get(/databases/(default)/documents/projects/$(projectId)).data.clientUid == request.auth.uid ||
-          (firestore.get(/databases/(default)/documents/projects/$(projectId)).data.email == request.auth.token.email
+          (firestore.get(/databases/(default)/documents/projects/$(projectId)).data.clientUid != null &&
+           firestore.get(/databases/(default)/documents/projects/$(projectId)).data.clientUid == request.auth.uid) ||
+          (firestore.get(/databases/(default)/documents/projects/$(projectId)).data.email != null &&
+           request.auth.token.email != null &&
+           firestore.get(/databases/(default)/documents/projects/$(projectId)).data.email == request.auth.token.email
            && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com'))
         );
     }
@@ -39,8 +42,12 @@ service firebase.storage {
 
       allow create, update: if isAdmin()
                    || (isProjectOwner(projectId)
+                       && request.resource.size > 0
                        && request.resource.size < 10 * 1024 * 1024
-                       && request.resource.contentType.matches('image/(jpeg|png|webp|gif)|application/pdf|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*'));
+                       && request.resource.contentType.matches('image/(jpeg|png|webp|gif)|application/pdf|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*')
+                       && !allPaths.matches('.*\\.\\..*')
+                       && allPaths.matches('(?i).*\\.(jpg|jpeg|png|webp|gif|pdf|txt|doc|docx|xls|xlsx|csv)$')
+                       && !allPaths.matches('(?i).*\\.(php|phtml|phar|html|htm|js|jsx|ts|tsx|exe|dll|sh|bat|cmd|vbs|jar|svg|asp|aspx|py|pl|cgi|ps1|com|scr|msi|hta|cpl|wsf|jsp|jspx|xhtml|shtml|env|config|htaccess|ini)$'));
 
       allow delete: if isAdmin() || isProjectOwner(projectId);
     }
@@ -50,17 +57,25 @@ service firebase.storage {
     // Path: proposals/{projectId}/{fileName}
     // Path: invoices/{projectId}/{fileName}
     //
-    // - Only admins can write/generate/overwrite PDFs
+    // - Only admins can write/generate/overwrite PDFs (enforce max 20MB, application/pdf and .pdf extension)
     // - Authenticated project owners and admins can download
     // ============================================================
     match /proposals/{projectId}/{allPaths=**} {
       allow read: if isAdmin() || isProjectOwner(projectId);
-      allow write: if isAdmin();
+      allow write: if isAdmin()
+                   && request.resource.size > 0
+                   && request.resource.size < 20 * 1024 * 1024
+                   && request.resource.contentType == 'application/pdf'
+                   && allPaths.matches('(?i).*\\.pdf$');
     }
 
     match /invoices/{projectId}/{allPaths=**} {
       allow read: if isAdmin() || isProjectOwner(projectId);
-      allow write: if isAdmin();
+      allow write: if isAdmin()
+                   && request.resource.size > 0
+                   && request.resource.size < 20 * 1024 * 1024
+                   && request.resource.contentType == 'application/pdf'
+                   && allPaths.matches('(?i).*\\.pdf$');
     }
 
     // ============================================================

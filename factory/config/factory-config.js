@@ -21,6 +21,8 @@ function loadEnvSafely(envPath) {
       const eqIdx = trimmed.indexOf('=');
       if (eqIdx > 0) {
         const key = trimmed.slice(0, eqIdx).trim();
+        // CWE-1321: Prototype pollution verdediging
+        if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
         let val = trimmed.slice(eqIdx + 1).trim();
         if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
           val = val.slice(1, -1);

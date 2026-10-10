@@ -418,17 +418,19 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
         projectsAffected: 0,
         projectsCreated: 0,
         tasksAddedOrUpdated: 0,
-        detailsByProject: {}
+        detailsByProject: Object.create(null)
     };
 
     // Group parsed tasks by target project identifier
-    const tasksByTarget = {};
+    const tasksByTarget = Object.create(null);
     parsedTasks.forEach(task => {
         // Skip cancelled tasks
         if (task.status === 'cancelled') return;
 
         const target = task.targetProject || PROJECT_PROFILES.CRM_PORTAL;
-        const targetId = target.id;
+        const targetId = String(target.id || 'default');
+        if (targetId === '__proto__' || targetId === 'constructor' || targetId === 'prototype') return;
+
         if (!tasksByTarget[targetId]) {
             tasksByTarget[targetId] = {
                 profile: target,
@@ -556,22 +558,28 @@ export async function syncTodoToFirestore(currentProjects, parsedTasks, db = nul
             }
         });
 
-        // Update in-memory project
-        existingProj.tasks = mergedTasks;
+        // Bounded task array (max 150) ter voorkoming van Firestore 1MB document bloat
+        const boundedTasks = mergedTasks.slice(0, 150);
+        existingProj.tasks = boundedTasks;
         summary.projectsAffected++;
         summary.detailsByProject[profile.client] = {
-            taskCount: mergedTasks.length,
+            taskCount: boundedTasks.length,
             isNew: isNewlyCreated
         };
 
         // Write to Firestore if connected
         if (db && docFn) {
             try {
-                const docRef = docFn(db, "projects", String(existingProj.id));
-                if (isNewlyCreated && setDocFn) {
-                    await setDocFn(docRef, existingProj);
-                } else if (updateDocFn) {
-                    await updateDocFn(docRef, { tasks: mergedTasks });
+                const cleanDocId = String(existingProj.id || '').trim();
+                if (/^[a-zA-Z0-9_-]{1,128}$/.test(cleanDocId)) {
+                    const docRef = docFn(db, "projects", cleanDocId);
+                    if (isNewlyCreated && setDocFn) {
+                        await setDocFn(docRef, { ...existingProj, tasks: boundedTasks });
+                    } else if (updateDocFn) {
+                        await updateDocFn(docRef, { tasks: boundedTasks, updatedAt: new Date().toISOString() });
+                    }
+                } else {
+                    console.warn(`[TodoSync] Ongeldig project document ID overgeslagen: "${cleanDocId}"`);
                 }
             } catch (err) {
                 console.warn(`Kon project ${profile.client} niet opslaan naar Firestore:`, err);

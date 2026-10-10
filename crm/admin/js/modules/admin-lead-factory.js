@@ -5,6 +5,23 @@
 
 import { escapeHtml, sanitizeUrl } from "../../../js/crm-config.js";
 
+/**
+ * Sanitizes preview HTML of generated outreach pitches.
+ * Strips executable scripts, stylesheets, iframe/embed tags, inline event handlers, and javascript: links.
+ * @param {string} html
+ * @returns {string} Safe HTML string
+ */
+export function sanitizePitchHtml(html) {
+    if (!html || typeof html !== 'string') return '';
+    return html
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+        .replace(/<(iframe|object|embed|applet|meta|link|base)\b[^>]*>/gi, '')
+        .replace(/\son\w+\s*=\s*(['"]).*?\1/gi, '')
+        .replace(/\son\w+\s*=\s*[^>\s]+/gi, '')
+        .replace(/href\s*=\s*(['"])\s*javascript:[^'"]*\1/gi, 'href="#"');
+}
+
 let _leads = [];
 let _activeFilter = 'concept_ready';
 let _searchTerm = '';
@@ -696,7 +713,9 @@ function renderSingleLeadCard(lead) {
         statusBadge = `<span class="badge" style="background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25);"><i class="fas fa-archive"></i> Gearchiveerd</span>`;
     }
 
-    const ratingStars = lead.rating ? `⭐ ${lead.rating} (${lead.reviewsCount || 0} reviews)` : '⭐ 5.0 (Nieuw)';
+    const safeRating = escapeHtml(String(lead.rating || '5.0'));
+    const safeReviews = parseInt(lead.reviewsCount, 10) || 0;
+    const ratingStars = lead.rating ? `⭐ ${safeRating} (${safeReviews} reviews)` : '⭐ 5.0 (Nieuw)';
     const cleanUrl = lead.liveUrl || `https://creationaltfix.nl/concept/${lead.slug}/`;
     const safeLiveUrl = sanitizeUrl(cleanUrl);
 
@@ -833,11 +852,14 @@ function attachCardActionListeners(container, leads, handlers) {
             const id = btn.getAttribute('data-lead-id');
             const lead = leads.find(l => (l.id || l.slug) === id);
             if (lead) {
-                const text = encodeURIComponent(lead.pitch?.whatsAppText || `Hallo ${lead.name}, ik heb een website concept voor je klaarstaan: ${lead.liveUrl}`);
-                const waUrl = `https://wa.me/${lead.whatsAppNumber}?text=${text}`;
-                window.open(waUrl, '_blank');
-                if (effectiveHandlers.onUpdateStatus) {
-                    effectiveHandlers.onUpdateStatus(lead, 'sent_whatsapp');
+                const cleanWaNumber = (lead.whatsAppNumber || lead.phone || '').replace(/[^0-9]/g, '');
+                if (cleanWaNumber) {
+                    const text = encodeURIComponent(lead.pitch?.whatsAppText || `Hallo ${lead.name}, ik heb een website concept voor je klaarstaan: ${lead.liveUrl}`);
+                    const waUrl = `https://wa.me/${cleanWaNumber}?text=${text}`;
+                    window.open(waUrl, '_blank', 'noopener,noreferrer');
+                    if (effectiveHandlers.onUpdateStatus) {
+                        effectiveHandlers.onUpdateStatus(lead, 'sent_whatsapp');
+                    }
                 }
             }
         });
@@ -891,11 +913,18 @@ export function openConceptPreviewModal(url, title = 'Concept Website') {
         }
     }
 
-    if (titleEl) titleEl.textContent = title;
-    if (urlBadge) urlBadge.textContent = targetUrl;
-    if (extLink) extLink.href = targetUrl;
+    const safeTargetUrl = sanitizeUrl(targetUrl);
+    if (safeTargetUrl === '#') return;
 
-    iframe.src = targetUrl;
+    if (titleEl) titleEl.textContent = title;
+    if (urlBadge) urlBadge.textContent = safeTargetUrl;
+    if (extLink) {
+        extLink.href = safeTargetUrl;
+        extLink.setAttribute('target', '_blank');
+        extLink.setAttribute('rel', 'noopener noreferrer');
+    }
+
+    iframe.src = safeTargetUrl;
     modal.classList.remove('hidden');
 }
 
@@ -952,10 +981,11 @@ function openPitchModal(lead, handlers) {
     const pitch = lead.pitch || {};
     const subject = pitch.subject || `Concept website voor ${lead.name}`;
     const plainText = pitch.bodyPlain || '';
-    const htmlBody = pitch.bodyHtml || `<p>${escapeHtml(plainText)}</p>`;
+    const htmlBody = pitch.bodyHtml ? sanitizePitchHtml(pitch.bodyHtml) : `<p>${escapeHtml(plainText)}</p>`;
     const whatsAppText = pitch.whatsAppText || '';
     const archetypeLabel = pitch.archetypeLabel || lead.archetypeLabel || 'Vakmanschap (Archetype A)';
     const isSent = lead.status === 'sent' || lead.status === 'email_sent';
+    const cleanPitchWa = (lead.whatsAppNumber || lead.phone || '').replace(/[^0-9]/g, '');
 
     const modalHtml = `
         <div id="factory-pitch-detail-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;">
@@ -1027,9 +1057,9 @@ ${escapeHtml(plainText)}
                         <div style="background: #ffffff; color: #1e293b; padding: 14px 16px; border-radius: 8px 8px 0 8px; font-size: 0.9rem; line-height: 1.5; word-break: break-word;">
                             ${escapeHtml(whatsAppText)}
                         </div>
-                        ${lead.whatsAppNumber ? `
+                        ${cleanPitchWa ? `
                             <div style="margin-top: 16px; text-align: center;">
-                                <a href="https://wa.me/${lead.whatsAppNumber}?text=${encodeURIComponent(whatsAppText)}" id="btn-pitch-modal-wa-link" target="_blank" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
+                                <a href="https://wa.me/${cleanPitchWa}?text=${encodeURIComponent(whatsAppText)}" id="btn-pitch-modal-wa-link" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
                                     <i class="fab fa-whatsapp"></i> Nu Openen in WhatsApp Web
                                 </a>
                             </div>

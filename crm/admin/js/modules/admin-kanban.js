@@ -252,20 +252,29 @@ export async function saveGlobalTask(e, projectsList, db, onTaskChanged) {
     const prioritySelect = document.getElementById('global-task-priority');
 
     const projectId = projectSelect ? projectSelect.value : null;
-    const title = titleInput ? titleInput.value.trim() : '';
-    const dueDate = dateInput ? dateInput.value : '';
-    const priority = prioritySelect ? prioritySelect.value : 'medium';
+    const rawTitle = titleInput ? titleInput.value.trim() : '';
+    const rawDueDate = dateInput ? dateInput.value : '';
+    const rawPriority = prioritySelect ? prioritySelect.value : 'medium';
 
-    if (!projectId || !title) return;
+    const cleanTitle = rawTitle.replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 200);
+    if (!projectId || !cleanTitle) return;
 
     const project = (projectsList || []).find(p => p.id == projectId);
     if (!project) return;
 
+    if ((project.tasks || []).length >= 150) {
+        Toast.show({ title: "Limiet bereikt", message: "Maximaal 150 taken per project toegestaan om document bloat te voorkomen.", type: "warning" });
+        return;
+    }
+
+    const cleanPriority = ['low', 'medium', 'high'].includes(rawPriority) ? rawPriority : 'medium';
+    const cleanDueDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDueDate) ? rawDueDate : null;
+
     const newTask = {
         id: 'task_' + Date.now(),
-        title: title,
-        dueDate: dueDate || null,
-        priority: priority || 'medium',
+        title: cleanTitle,
+        dueDate: cleanDueDate,
+        priority: cleanPriority,
         status: 'todo',
         completed: false,
         createdAt: new Date().toISOString()

@@ -19,7 +19,7 @@ export class VisualFeedbackOverlay {
     constructor({ containerElement, projectId, authorName = 'Klant', onSavePin }) {
         this.container = containerElement;
         this.projectId = projectId;
-        this.authorName = authorName;
+        this.authorName = String(authorName || 'Klant').replace(/[\r\n\x00-\x1F\x7F]/g, ' ').trim().slice(0, 50) || 'Klant';
         this.onSavePin = onSavePin;
         this.isActive = false;
         this.pins = [];
@@ -55,10 +55,16 @@ export class VisualFeedbackOverlay {
             if (e.target.closest('.caf-pin-marker') || e.target.closest('.caf-pin-dialog')) return;
 
             const rect = this.overlayEl.getBoundingClientRect();
-            const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-            const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+            if (!rect.width || !rect.height) return;
 
-            this._promptPinCreation(xPercent, yPercent);
+            const rawX = ((e.clientX - rect.left) / rect.width) * 100;
+            const rawY = ((e.clientY - rect.top) / rect.height) * 100;
+            const safeX = Math.max(0, Math.min(100, Number(rawX.toFixed(2))));
+            const safeY = Math.max(0, Math.min(100, Number(rawY.toFixed(2))));
+
+            if (isNaN(safeX) || isNaN(safeY)) return;
+
+            this._promptPinCreation(safeX, safeY);
         });
     }
 
@@ -158,7 +164,7 @@ export class VisualFeedbackOverlay {
                 <span>📍 Nieuwe Annotatie</span>
                 <span id="close-dialog" style="cursor: pointer; opacity: 0.6;">&times;</span>
             </div>
-            <textarea id="pin-comment" placeholder="Beschrijf je feedback of gewenste wijziging..." rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 6px; color: #fff; font-size: 12px; resize: none; margin-bottom: 8px;"></textarea>
+            <textarea id="pin-comment" maxlength="1000" placeholder="Beschrijf je feedback of gewenste wijziging..." rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 6px; color: #fff; font-size: 12px; resize: none; margin-bottom: 8px;"></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 6px;">
                 <button id="cancel-pin" style="padding: 4px 8px; font-size: 11px; background: rgba(255,255,255,0.1); border: none; border-radius: 4px; color: #fff; cursor: pointer;">Annuleren</button>
                 <button id="save-pin" style="padding: 4px 10px; font-size: 11px; background: #0284c7; border: none; border-radius: 4px; color: #fff; font-weight: 600; cursor: pointer;">Opslaan</button>
@@ -174,7 +180,8 @@ export class VisualFeedbackOverlay {
         dialog.querySelector('#cancel-pin').addEventListener('click', close);
 
         dialog.querySelector('#save-pin').addEventListener('click', async () => {
-            const comment = textarea.value.trim();
+            const rawComment = textarea.value || '';
+            const comment = rawComment.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, 1000);
             if (!comment) return;
 
             const newPin = Schemas.sanitizeAnnotation({
@@ -189,7 +196,11 @@ export class VisualFeedbackOverlay {
 
             close();
             if (typeof this.onSavePin === 'function') {
-                await this.onSavePin(newPin);
+                try {
+                    await this.onSavePin(newPin);
+                } catch (err) {
+                    console.error("[VisualFeedback] Fout bij opslaan pin:", err);
+                }
             }
         });
     }
@@ -216,6 +227,10 @@ export class VisualFeedbackOverlay {
             pointer-events: auto;
         `;
 
+        const dateStr = pin.createdAt && !isNaN(new Date(pin.createdAt).getTime())
+            ? new Date(pin.createdAt).toLocaleString('nl-NL')
+            : 'Recent';
+
         dialog.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <span style="font-weight: 600; color: ${isResolved ? '#10b981' : '#38bdf8'};">${escapeHtml(pin.author)}</span>
@@ -225,7 +240,7 @@ export class VisualFeedbackOverlay {
                 ${escapeHtml(pin.comment)}
             </div>
             <div style="font-size: 10.5px; opacity: 0.5; margin-bottom: 8px;">
-                ${new Date(pin.createdAt).toLocaleString('nl-NL')}
+                ${dateStr}
             </div>
             <div style="display: flex; justify-content: flex-end;">
                 <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: ${isResolved ? 'rgba(16, 185, 129, 0.2)' : 'rgba(2, 132, 199, 0.2)'}; color: ${isResolved ? '#10b981' : '#38bdf8'};">

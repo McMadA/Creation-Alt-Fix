@@ -5,6 +5,8 @@
  * Creation+Alt+Fix CRM (2026/2027)
  */
 
+import { escapeHtml } from '../crm-config.js';
+
 export class Toast {
     static _ensureContainer() {
         if (typeof document === 'undefined') return null;
@@ -71,16 +73,7 @@ export class Toast {
 
         const icon = this._getIconSvg(type);
 
-        toast.innerHTML = `
-            <div style="flex-shrink: 0; margin-top: 2px;">${icon}</div>
-            <div style="flex-grow: 1;">
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.3;">${title}</div>
-                ${message ? `<div style="font-size: 12px; opacity: 0.8; margin-top: 4px; line-height: 1.4;">${message}</div>` : ''}
-                ${action ? `<button id="toast-action-btn" style="background: none; border: 1px solid rgba(255,255,255,0.3); color: #38bdf8; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; margin-top: 8px;">${action.label}</button>` : ''}
-            </div>
-            <button id="toast-close-btn" style="background:none; border:none; color: rgba(255,255,255,0.4); cursor:pointer; font-size:16px; padding:0; margin-left: 4px;">&times;</button>
-            <div class="toast-progress" style="position: absolute; bottom: 0; left: 0; height: 3px; background: ${this._getBorderColor(type)}; width: 100%; transition: width ${duration}ms linear;"></div>
-        `;
+        toast.innerHTML = this._renderToastHtml({ title, message, type, duration, action });
 
         container.appendChild(toast);
 
@@ -116,6 +109,28 @@ export class Toast {
     }
 
     /**
+     * Genereert veilige HTML voor de toast body met XSS bescherming
+     * @private
+     */
+    static _renderToastHtml({ title, message = '', type = 'info', duration = 4000, action = null }) {
+        const icon = this._getIconSvg(type);
+        const safeTitle = escapeHtml(title || '');
+        const safeMessage = message ? escapeHtml(message) : '';
+        const safeActionLabel = action && action.label ? escapeHtml(action.label) : '';
+
+        return `
+            <div style="flex-shrink: 0; margin-top: 2px;">${icon}</div>
+            <div style="flex-grow: 1;">
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.3;">${safeTitle}</div>
+                ${safeMessage ? `<div style="font-size: 12px; opacity: 0.8; margin-top: 4px; line-height: 1.4;">${safeMessage}</div>` : ''}
+                ${action ? `<button id="toast-action-btn" style="background: none; border: 1px solid rgba(255,255,255,0.3); color: #38bdf8; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; margin-top: 8px;">${safeActionLabel}</button>` : ''}
+            </div>
+            <button id="toast-close-btn" style="background:none; border:none; color: rgba(255,255,255,0.4); cursor:pointer; font-size:16px; padding:0; margin-left: 4px;">&times;</button>
+            <div class="toast-progress" style="position: absolute; bottom: 0; left: 0; height: 3px; background: ${this._getBorderColor(type)}; width: 100%; transition: width ${duration}ms linear;"></div>
+        `;
+    }
+
+    /**
      * Non-blocking modal confirm dialoog die een Promise retourneert (vervangt window.confirm)
      * @param {Object} options
      * @param {string} options.title
@@ -141,13 +156,18 @@ export class Toast {
                 animation: fadeIn 0.2s ease-out;
             `;
 
+            const safeTitle = escapeHtml(title || '');
+            const safeMessage = escapeHtml(message || '');
+            const safeConfirmText = escapeHtml(confirmText || 'Bevestigen');
+            const safeCancelText = escapeHtml(cancelText || 'Annuleren');
+
             overlay.innerHTML = `
                 <div style="background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 90%; max-width: 440px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                    <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 600;">${title}</h3>
-                    <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #94a3b8; line-height: 1.5;">${message}</p>
+                    <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 600;">${safeTitle}</h3>
+                    <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #94a3b8; line-height: 1.5;">${safeMessage}</p>
                     <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button id="modal-cancel-btn" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; font-size: 13px;">${cancelText}</button>
-                        <button id="modal-confirm-btn" style="padding: 8px 16px; border-radius: 6px; background: ${danger ? '#ef4444' : '#0284c7'}; border: none; color: #fff; cursor: pointer; font-weight: 500; font-size: 13px;">${confirmText}</button>
+                        <button id="modal-cancel-btn" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; font-size: 13px;">${safeCancelText}</button>
+                        <button id="modal-confirm-btn" style="padding: 8px 16px; border-radius: 6px; background: ${danger ? '#ef4444' : '#0284c7'}; border: none; color: #fff; cursor: pointer; font-weight: 500; font-size: 13px;">${safeConfirmText}</button>
                     </div>
                 </div>
             `;

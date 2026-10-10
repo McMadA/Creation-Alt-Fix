@@ -120,6 +120,16 @@ export function setupMonitoringEventListeners(getProjectsFn, db) {
             renderMonitorsTable();
         });
     });
+
+    document.getElementById('monitors-tbody')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action="inspect-monitor"]');
+        if (btn) {
+            const domain = btn.getAttribute('data-domain');
+            if (domain && typeof window.openMonitorDetailModal === 'function') {
+                window.openMonitorDetailModal(domain);
+            }
+        }
+    });
 }
 
 /**
@@ -251,7 +261,7 @@ export function renderMonitorsTable() {
                 <td style="padding: 12px 14px; font-size: 12px;">${escapeHtml(r.httpCode || '—')}</td>
                 <td style="padding: 12px 14px; font-size: 11px; opacity: 0.6;">${r.lastChecked ? new Date(r.lastChecked).toLocaleTimeString('nl-NL') : '—'}</td>
                 <td style="padding: 12px 14px; text-align: right;">
-                    <button onclick="window.openMonitorDetailModal('${escapeHtml(r.domain)}')" class="btn-secondary" style="padding: 3px 8px; font-size: 11px;">
+                    <button data-action="inspect-monitor" data-domain="${escapeHtml(r.domain)}" class="btn-secondary" style="padding: 3px 8px; font-size: 11px;">
                         Inspecteren
                     </button>
                 </td>

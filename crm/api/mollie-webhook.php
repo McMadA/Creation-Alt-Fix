@@ -14,8 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $paymentId = $_POST['id'] ?? null;
 if (!$paymentId) {
+    $rawInput = file_get_contents('php://input', false, null, 0, 10240);
+    if (!empty($rawInput)) {
+        $jsonBody = json_decode($rawInput, true);
+        if (is_array($jsonBody) && !empty($jsonBody['id'])) {
+            $paymentId = $jsonBody['id'];
+        }
+    }
+}
+
+if (!$paymentId || !preg_match('/^tr_[a-zA-Z0-9]{5,32}$/', $paymentId)) {
     http_response_code(400);
-    exit('Missing payment ID');
+    exit('Missing or invalid payment ID format');
 }
 
 $apiKey = getenv('MOLLIE_API_KEY') ?: '';
@@ -53,6 +63,13 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "Content-Type: application/json"
 ]);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+    curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+}
+if (defined('CURLOPT_REDIR_PROTOCOLS')) {
+    curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, 0);
+}
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
@@ -60,8 +77,8 @@ curl_close($ch);
 if ($httpCode === 200) {
     $payment = json_decode($response, true);
     $status = $payment['status'] ?? 'unknown';
-    $invoiceNumber = $payment['metadata']['invoiceNumber'] ?? 'ONBEKEND';
-    $clientName = $payment['metadata']['clientName'] ?? 'Klant';
+    $invoiceNumber = preg_replace('/[^\w\-\/]/', '', $payment['metadata']['invoiceNumber'] ?? 'ONBEKEND');
+    $clientName = substr(strip_tags(trim($payment['metadata']['clientName'] ?? 'Klant')), 0, 80);
 
     $record = [
         'paymentId' => $paymentId,
@@ -79,8 +96,8 @@ if ($httpCode === 200) {
     $fp = fopen($logFile, 'c+');
     if ($fp) {
         if (flock($fp, LOCK_EX)) {
-            $filesize = filesize($logFile);
-            $content = $filesize > 0 ? fread($fp, $filesize) : '';
+            rewind($fp);
+            $content = stream_get_contents($fp);
             $existingLogs = !empty($content) ? json_decode($content, true) : [];
             if (!is_array($existingLogs)) {
                 $existingLogs = [];
@@ -113,6 +130,7 @@ if ($httpCode === 200) {
             flock($fp, LOCK_UN);
         }
         fclose($fp);
+        @chmod($logFile, 0600);
     }
 } else {
     error_log("[Mollie Webhook] Kon payment {$paymentId} niet verifiëren bij Mollie API (HTTP {$httpCode}).");
