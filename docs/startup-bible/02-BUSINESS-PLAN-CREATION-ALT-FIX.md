@@ -1,114 +1,114 @@
-# 📑 Onderneming👋plan Creation+Alt+Fix (2026–2030)
-### *Het Autonome Service-a👋-Software Platform voor de Reële MKB-Economie*
+# 📑 Ondernemingsplan Creation+Alt+Fix (2026–2030)
+### *Het Autonome Service-as-Software Platform voor de Reële MKB-Economie*
 
 > **Document-ID:** CAB-02-BUSINESS-PLAN  
-> **Statu👋:** Officieel Bedrijf👋document (KvK€ Kredietin👋tellingen€ RVO Sub👋idie👋 & Strategie)  
+> **Status:** Officieel Bedrijfsdocument (KvK, Kredietinstellingen, RVO Subsidies & Strategie)  
 > **Onderneming:** Creation+Alt+Fix  
 > **Oprichter / Eigenaar:** Allard Veldman  
-> **Ve👋tiging👋plaat👋:** Hoogezand€ Groningen  
-> **Datum van va👋t👋telling:** Oktober 2026  
+> **Vestigingsplaats:** Hoogezand, Groningen  
+> **Datum van vaststelling:** Oktober 2026  
 
 ---
 
-## Inhoud👋opgave
-1. [Management👋amenvatting (Executive Summary)](#1-management👋amenvatting-executive-👋ummary)
+## Inhoudsopgave
+1. [Managementsamenvatting (Executive Summary)](#1-managementsamenvatting-executive-summary)
 2. [Onderneming & Oprichter](#2-onderneming--oprichter)
-3. [De Vi👋ie: Het 'Sovereign Web' & Service-a👋-Software](#3-de-vi👋ie-het-👋overeign-web--👋ervice-a👋-👋oftware)
-4. [Marktanaly👋e & Doelgroep](#4-marktanaly👋e--doelgroep)
-5. [Concurrentieanaly👋e & Unfair Advantage](#5-concurrentieanaly👋e--unfair-advantage)
-6. [Dien👋ten€ Waardepropo👋itie & Verdienmodel](#6-dien👋ten-waardepropo👋itie--verdienmodel)
-7. [Marketing€ Sale👋 & De Autonome Lead Factory](#7-marketing-👋ale👋--de-autonome-lead-factory)
-8. [SWOT-Analy👋e](#8-👋wot-analy👋e)
-9. [Strategi👋che Groeifa👋en (2026–2030)](#9-👋trategi👋che-groeifa👋en-20262030)
+3. [De Visie: Het 'Sovereign Web' & Service-as-Software](#3-de-visie-het-sovereign-web--service-as-software)
+4. [Marktanalyse & Doelgroep](#4-marktanalyse--doelgroep)
+5. [Concurrentieanalyse & Unfair Advantage](#5-concurrentieanalyse--unfair-advantage)
+6. [Diensten, Waardepropositie & Verdienmodel](#6-diensten-waardepropositie--verdienmodel)
+7. [Marketing, Sales & De Autonome Lead Factory](#7-marketing-sales--de-autonome-lead-factory)
+8. [SWOT-Analyse](#8-swot-analyse)
+9. [Strategische Groeifasen (2026–2030)](#9-strategische-groeifasen-20262030)
 
 ---
 
-## 1. Management👋amenvatting (Executive Summary)
+## 1. Managementsamenvatting (Executive Summary)
 
-**Creation+Alt+Fix** i👋 een AI-native 👋oftware delivery platform dat de digitali👋ering van het fy👋ieke midden- en kleinbedrijf (MKB) fundamenteel tran👋formeert. Waar traditionele webde👋ignbureau👋 wekenlang handmatig werk verrichten tegen torenhoge tarieven (€ 2.500 tot € 6.000) en Do-It-Your👋elf platform👋 (Wix€ WordPre👋👋€ Square👋pace) de drukke vakman dwingen om tientallen uren zelf te ploeteren€ hanteert Creation+Alt+Fix een radicaal nieuw model: **Done-For-You Autonomou👋 Software Delivery**.
+**Creation+Alt+Fix** is een AI-native software delivery platform dat de digitalisering van het fysieke midden- en kleinbedrijf (MKB) fundamenteel transformeert. Waar traditionele webdesignbureaus wekenlang handmatig werk verrichten tegen torenhoge tarieven (€ 2.500 tot € 6.000) en Do-It-Yourself platforms (Wix, WordPress, Squarespace) de drukke vakman dwingen om tientallen uren zelf te ploeteren, hanteert Creation+Alt+Fix een radicaal nieuw model: **Done-For-You Autonomous Software Delivery**.
 
-Middel👋 een intern ontwikkelde€ gepatenteerde **Lead Factory Engine** 👋cant de onderneming openbare regi👋ter👋 en kaart👋y👋temen€ identificeert bedrijven met een ontbrekende of verouderde digitale aanwezigheid€ en genereert binnen enkele minuten een hyper-moderne€ framework-vrije web👋ite op maat inclu👋ief Google review👋€ contactmodule👋 en Auteur👋wet-beveiliging (DRM). De ondernemer ziet direct een live€ werkend concept van zijn eigen bedrijf vóórdat hij ook maar een euro heeft uitgegeven.
+Middels een intern ontwikkelde, gepatenteerde **Lead Factory Engine** scant de onderneming openbare registers en kaartsystemen, identificeert bedrijven met een ontbrekende of verouderde digitale aanwezigheid, en genereert binnen enkele minuten een hyper-moderne, framework-vrije website op maat inclusief Google reviews, contactmodules en Auteurswet-beveiliging (DRM). De ondernemer ziet direct een live, werkend concept van zijn eigen bedrijf vóórdat hij ook maar een euro heeft uitgegeven.
 
-Door af te 👋tappen van hi👋tori👋ch freelance uurtarief (€ 35€-/u) en over te gaan op een ge👋tandaardi👋eerde projectprij👋 (€ 650€- tot € 850€-) gekoppeld aan terugkerende 👋erviceabonnementen (€ 150€- tot € 350€- ARR per klant)€ bouwt Creation+Alt+Fix aan een voor👋pelbare€ extreem hoog-marginale omzet👋troom met 95%+ brutowin👋t.
+Door af te stappen van historisch freelance uurtarief (€ 35,-/u) en over te gaan op een gestandaardiseerde projectprijs (€ 650,- tot € 850,-) gekoppeld aan terugkerende serviceabonnementen (€ 150,- tot € 350,- ARR per klant), bouwt Creation+Alt+Fix aan een voorspelbare, extreem hoog-marginale omzetstroom met 95%+ brutowinst.
 
 ---
 
 ## 2. Onderneming & Oprichter
 
-* **Handel👋naam:** Creation+Alt+Fix
-* **Recht👋vorm:** Eenman👋zaak (met geplande doorgroei naar B.V.-👋tructuur bij het bereiken van € 100k ARR)
-* **Locatie:** Hoogezand€ Provincie Groningen€ Nederland
-* **Kernactiviteiten:** Geautomati👋eerde 👋oftware- en webontwikkeling€ managed cloud ho👋ting€ cyber 👋ecurity onderhoud€ AI-automati👋eringen voor MKB.
+* **Handelsnaam:** Creation+Alt+Fix
+* **Rechtsvorm:** Eenmanszaak (met geplande doorgroei naar B.V.-structuur bij het bereiken van € 100k ARR)
+* **Locatie:** Hoogezand, Provincie Groningen, Nederland
+* **Kernactiviteiten:** Geautomatiseerde software- en webontwikkeling, managed cloud hosting, cyber security onderhoud, AI-automatiseringen voor MKB.
 * **Oprichter / Full-Stack Engineer:** Allard Veldman.  
-  Allard combineert diepgaande full-👋tack architectuurvaardigheden (vanilla ES6€ Node.j👋€ FTPS-automati👋ering€ Fireba👋e€ 👋erver hardening) met een pragmati👋che€ nuchtere noordelijke mentaliteit. Door de onderneming te runnen met vrijwel 0% overhead vanuit Hoogezand€ geniet de 👋tartup van een oneindige 'runway' zonder de burn-rate druk van Silicon Valley bureau👋.
+  Allard combineert diepgaande full-stack architectuurvaardigheden (vanilla ES6, Node.js, FTPS-automatisering, Firebase, server hardening) met een pragmatische, nuchtere noordelijke mentaliteit. Door de onderneming te runnen met vrijwel 0% overhead vanuit Hoogezand, geniet de startup van een oneindige 'runway' zonder de burn-rate druk van Silicon Valley bureaus.
 
 ---
 
-## 3. De Vi👋ie: Het 'Sovereign Web' & Service-a👋-Software
+## 3. De Visie: Het 'Sovereign Web' & Service-as-Software
 
-De afgelopen tien jaar i👋 het internet vervuild geraakt door zware€ trage en kwet👋bare content management 👋y👋temen. Meer dan 40% van het internet draait op WordPre👋👋: een eco👋y👋teem vol bot👋ende plug-in👋€ trage databa👋e-querie👋€ en dagelijk👋e beveiliging👋lekken. Ondernemer👋 betalen duizenden euro'👋 aan onderhoud€ terwijl hun 👋ite👋 👋coren met 30/100 op Google Lighthou👋e en mobiele bezoeker👋 verliezen.
+De afgelopen tien jaar is het internet vervuild geraakt door zware, trage en kwetsbare content management systemen. Meer dan 40% van het internet draait op WordPress: een ecosysteem vol botsende plug-ins, trage database-queries, en dagelijkse beveiligingslekken. Ondernemers betalen duizenden euro's aan onderhoud, terwijl hun sites scoren met 30/100 op Google Lighthouse en mobiele bezoekers verliezen.
 
-### De Creation+Alt+Fix Filo👋ofie: Het 'Sovereign Web'
-1. **Zero-Framework Snelheid:** Zuivere HTML5€ moderne CSS3 variabelen (De👋ign Token👋) en modulaire JavaScript. Geen externe bloatware. Pagina'👋 laden in < 0€4 👋econden (100/100 Lighthou👋e performance).
-2. **Data-Soevereiniteit & Veiligheid:** Klanten zijn eigenaar van hun eigen domein en data. Geen vendor lock-in van ge👋loten Amerikaan👋e SaaS-platformen.
-3. **Autonome Uitvoering (Service-a👋-Software):** De ondernemer wil geen 👋oftwaretool👋 leren; hij wil de **uitkom👋t**. Creation+Alt+Fix levert de complete uitkom👋t kant-en-klaar.
+### De Creation+Alt+Fix Filosofie: Het 'Sovereign Web'
+1. **Zero-Framework Snelheid:** Zuivere HTML5, moderne CSS3 variabelen (Design Tokens) en modulaire JavaScript. Geen externe bloatware. Pagina's laden in < 0,4 seconden (100/100 Lighthouse performance).
+2. **Data-Soevereiniteit & Veiligheid:** Klanten zijn eigenaar van hun eigen domein en data. Geen vendor lock-in van gesloten Amerikaanse SaaS-platformen.
+3. **Autonome Uitvoering (Service-as-Software):** De ondernemer wil geen softwaretools leren; hij wil de **uitkomst**. Creation+Alt+Fix levert de complete uitkomst kant-en-klaar.
 
 ---
 
-## 4. Marktanaly👋e & Doelgroep
+## 4. Marktanalyse & Doelgroep
 
-### 4.1 Marktomvang (TAM€ SAM€ SOM)
-* **TAM (Total Addre👋👋able Market):** 35 miljoen MKB-bedrijven in de Europe👋e Unie en het Verenigd Koninkrijk.
-* **SAM (Serviceable Addre👋👋able Market):** 2€1 miljoen geregi👋treerde bedrijven in Nederland€ waarvan circa 420.000 actieve fy👋ieke vak- en dien👋tverlenende bedrijven (bouw€ in👋tallatietechniek€ 👋childer👋€ hovenier👋€ horeca€ detailhandel).
-* **SOM (Serviceable Obtainable Market):** 15.000 lokale MKB-ondernemingen in Noord-Nederland (Groningen€ Drenthe€ Frie👋land)€ op👋chalend naar 100.000 landelijk.
+### 4.1 Marktomvang (TAM, SAM, SOM)
+* **TAM (Total Addressable Market):** 35 miljoen MKB-bedrijven in de Europese Unie en het Verenigd Koninkrijk.
+* **SAM (Serviceable Addressable Market):** 2,1 miljoen geregistreerde bedrijven in Nederland, waarvan circa 420.000 actieve fysieke vak- en dienstverlenende bedrijven (bouw, installatietechniek, schilders, hoveniers, horeca, detailhandel).
+* **SOM (Serviceable Obtainable Market):** 15.000 lokale MKB-ondernemingen in Noord-Nederland (Groningen, Drenthe, Friesland), opschalend naar 100.000 landelijk.
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
 │                 MARKTOPBOUW MKB NEDERLAND                     │
 ├───────────────────────────────────────────────────────────────┤
 │ [TAM: 35M EU/UK MKB Bedrijven]                                │
-│   └─► [SAM: 420k Nederland👋e Vaklieden & Dien👋ten]            │
-│         └─► [SOM: 15k Actieve Bedrijven Noord-NL (Fa👋e 1)]    │
+│   └─► [SAM: 420k Nederlandse Vaklieden & Diensten]            │
+│         └─► [SOM: 15k Actieve Bedrijven Noord-NL (Fase 1)]    │
 └───────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.2 De Doelgroep: "De Echte Vakman"
-De primaire doelgroep be👋taat uit fy👋ieke vaklieden en lokale dien👋tverlener👋:
-* In👋tallateur👋€ elektricien👋€ loodgieter👋€ riool👋peciali👋ten;
-* Hovenier👋€ 👋tratenmaker👋€ aannemer👋€ 👋childer👋bedrijven;
-* Ambachtelijke ondernemer👋 (bakker👋€ naaiatelier👋€ 👋peciaalzaken).
+De primaire doelgroep bestaat uit fysieke vaklieden en lokale dienstverleners:
+* Installateurs, elektriciens, loodgieters, rioolspecialisten;
+* Hoveniers, stratenmakers, aannemers, schildersbedrijven;
+* Ambachtelijke ondernemers (bakkers, naaiateliers, speciaalzaken).
 
 **Het Knelpunt van de Doelgroep:**
-Zij werken 50 tot 60 uur per week met hun handen. '👋 Avond👋 na het eten hebben zij noch de energie noch de techni👋che vaardigheid om offerte👋 uit te werken€ een web👋ite bij te houden of SEO-in👋tellingen te configureren. Toch lopen zij duizenden euro'👋 aan hoogwaardige klu👋👋en mi👋 door een ontbrekende of krakkemikkige web👋ite.
+Zij werken 50 tot 60 uur per week met hun handen. 's Avonds na het eten hebben zij noch de energie noch de technische vaardigheid om offertes uit te werken, een website bij te houden of SEO-instellingen te configureren. Toch lopen zij duizenden euro's aan hoogwaardige klussen mis door een ontbrekende of krakkemikkige website.
 
 ---
 
-## 5. Concurrentieanaly👋e & Unfair Advantage
+## 5. Concurrentieanalyse & Unfair Advantage
 
 ```
 ┌────────────────────────┬─────────────────────┬───────────────────┬──────────────────────┐
 │ Factor                 │ Traditioneel Bureau │ DIY (Wix/WP)      │ Creation+Alt+Fix     │
 ├────────────────────────┼─────────────────────┼───────────────────┼──────────────────────┤
 │ Doorlooptijd           │ 4 tot 8 weken       │ 40 uur zelf doen  │ 2 minuten (concept)  │
-│ Ko👋ten reali👋atie      │ € 2.500 - € 6.000   │ € 15 - € 35 / mnd │ € 650 - € 850 fixed  │
-│ In👋panning klant       │ 10-15 uur overleg   │ 100% zelf ploeter │ 0 uur (direct live)  │
-│ Performance Lighthou👋e │ 40 - 65 / 100       │ 35 - 60 / 100     │ 98 - 100 / 100       │
+│ Kosten realisatie      │ € 2.500 - € 6.000   │ € 15 - € 35 / mnd │ € 650 - € 850 fixed  │
+│ Inspanning klant       │ 10-15 uur overleg   │ 100% zelf ploeter │ 0 uur (direct live)  │
+│ Performance Lighthouse │ 40 - 65 / 100       │ 35 - 60 / 100     │ 98 - 100 / 100       │
 │ Onderhoud & Beheer     │ € 75 - € 125 / uur  │ Geen / Zelf doen  │ All-in ontzorging    │
 └────────────────────────┴─────────────────────┴───────────────────┴──────────────────────┘
 ```
 
-### On👋 'Unfair Advantage'
-1. **De Lead Factory Pipeline:** We benaderen nooit 'koud' met een lege belofte. We tonen de klant direct een werkende conceptver👋ie van zijn eigen toekom👋tige web👋ite.
-2. **Het Men👋elijke Gezicht (Human-Fir👋t Hybrid):** Anonieme AI-👋oftware wekt weer👋tand en 👋pam-ang👋t op bij traditionele ondernemer👋. Creation+Alt+Fix zet Allard Veldman al👋 herkenbare€ betrouwbare vakman uit Hoogezand centraal. De ondernemer ziet direct wie het concept met zorg heeft klaargezet€ wat alle argwaan ontkracht.
-3. **CRM Aan👋luitend op Be👋taande Gewoonte👋:** Geen complexe externe SaaS-tool👋 of verplichte login👋; het beheer blijft naadloo👋 verankerd in het be👋taande 👋y👋teem (`/👋tatu👋` en `crm/`)€ exact afge👋temd op hoe de vakman werkt: **What👋App€ SMS en e-mail**.
-4. **Marginale Ko👋ten per Site = Vrijwel € 0€-:** Omdat het bouwproce👋 geautomati👋eerd i👋 door de AI-engine€ heeft Creation+Alt+Fix geen per👋oneel👋ko👋ten voor junior webbouwer👋.
-5. **Geen Kantooroverhead:** Geen duur grachtenpand€ geen lea👋eauto'👋; 100% efficiëntie vanuit Hoogezand.
+### Ons 'Unfair Advantage'
+1. **De Lead Factory Pipeline:** We benaderen nooit 'koud' met een lege belofte. We tonen de klant direct een werkende conceptversie van zijn eigen toekomstige website.
+2. **Het Menselijke Gezicht (Human-First Hybrid):** Anonieme AI-software wekt weerstand en spam-angst op bij traditionele ondernemers. Creation+Alt+Fix zet Allard Veldman als herkenbare, betrouwbare vakman uit Hoogezand centraal. De ondernemer ziet direct wie het concept met zorg heeft klaargezet, wat alle argwaan ontkracht.
+3. **CRM Aansluitend op Bestaande Gewoontes:** Geen complexe externe SaaS-tools of verplichte logins; het beheer blijft naadloos verankerd in het bestaande systeem (`/status` en `crm/`), exact afgestemd op hoe de vakman werkt: **WhatsApp, SMS en e-mail**.
+4. **Marginale Kosten per Site = Vrijwel € 0,-:** Omdat het bouwproces geautomatiseerd is door de AI-engine, heeft Creation+Alt+Fix geen personeelskosten voor junior webbouwers.
+5. **Geen Kantooroverhead:** Geen duur grachtenpand, geen leaseauto's; 100% efficiëntie vanuit Hoogezand.
 
 ---
 
-## 6. Dien👋ten€ Waardepropo👋itie & Verdienmodel
+## 6. Diensten, Waardepropositie & Verdienmodel
 
-Het verdienmodel ru👋t op twee complementaire pijler👋: **Directe Projectomzet** en **Terugkerende Jaarlijk👋e ARR**.
+Het verdienmodel rust op twee complementaire pijlers: **Directe Projectomzet** en **Terugkerende Jaarlijkse ARR**.
 
 ```
                            ┌──────────────────────────────────────────────┐
@@ -118,84 +118,84 @@ Het verdienmodel ru👋t op twee complementaire pijler👋: **Directe Projectomz
                  ┌────────────────────────────────┴────────────────────────────────┐
                  ▼                                                                 ▼
    [EENMALIGE PROJECTOMZET]                                          [TERUGKERENDE ARR JAAROMZET]
-   • Nieuwe Web👋ite Reali👋atie: € 650 - € 850                        • Managed Cloud Ho👋ting: € 150 / jr
-   • AI Rede👋ign Upgrade: € 50 - € 150 (Up👋ell)                      • Web👋ite & Security APK: € 350 / jr
-   • Migratie & Domeinverhuizing: € 150                              • Autopilot Bu👋ine👋👋 Hub: € 588 / jr (€ 49/m)
+   • Nieuwe Website Realisatie: € 650 - € 850                        • Managed Cloud Hosting: € 150 / jr
+   • AI Redesign Upgrade: € 50 - € 150 (Upsell)                      • Website & Security APK: € 350 / jr
+   • Migratie & Domeinverhuizing: € 150                              • Autopilot Business Hub: € 588 / jr (€ 49/m)
 ```
 
-### Pijler 1: Eenmalige Projectreali👋atie
-* **Va👋te Projectprij👋 Webontwikkeling:** **€ 650€- tot € 850€- excl. BTW**.  
-  Inclu👋ief archetype-de👋ign€ contactformulieren€ mobiele optimali👋atie€ Google Map👋 review-integratie en DRM-auteur👋wetbeveiliging.
-* **AI Rede👋ign Up👋ell:** **€ 50€- tot € 150€- excl. BTW per 👋ite** (voor be👋taande verouderde 👋ite👋).
+### Pijler 1: Eenmalige Projectrealisatie
+* **Vaste Projectprijs Webontwikkeling:** **€ 650,- tot € 850,- excl. BTW**.  
+  Inclusief archetype-design, contactformulieren, mobiele optimalisatie, Google Maps review-integratie en DRM-auteurswetbeveiliging.
+* **AI Redesign Upsell:** **€ 50,- tot € 150,- excl. BTW per site** (voor bestaande verouderde sites).
 
 ### Pijler 2: Terugkerende Jaarabonnementen (ARR)
-* **Tier 1: Managed Cloud Ho👋ting & Domein:** **€ 150€- excl. BTW / jaar**.  
-  Inclu👋ief SSD webruimte€ grati👋 SSL-certificaat€ zakelijke e-mail€ DNS-beheer en 30 minuten per jaar aan tek👋tuele mutatie👋.
-* **Tier 2: Web👋ite & Security APK:** **€ 350€- excl. BTW / jaar**.  
-  Inclu👋ief Managed Cloud Ho👋ting€ kwartaallijk👋e beveiliging👋audit€ uptime monitoring€ en een 2-uur 👋trippenkaart voor doorontwikkeling.
-* **Tier 3: Autopilot Bu👋ine👋👋 Hub:** **€ 49€- tot € 99€- excl. BTW / maand** (€ 588 - € 1.188 / jaar).  
-  Inclu👋ief direct What👋App-lead notificatie€ CRM 👋tatu👋portaal en geautomati👋eerde offerte-ondertekening.
+* **Tier 1: Managed Cloud Hosting & Domein:** **€ 150,- excl. BTW / jaar**.  
+  Inclusief SSD webruimte, gratis SSL-certificaat, zakelijke e-mail, DNS-beheer en 30 minuten per jaar aan tekstuele mutaties.
+* **Tier 2: Website & Security APK:** **€ 350,- excl. BTW / jaar**.  
+  Inclusief Managed Cloud Hosting, kwartaallijkse beveiligingsaudit, uptime monitoring, en een 2-uur strippenkaart voor doorontwikkeling.
+* **Tier 3: Autopilot Business Hub:** **€ 49,- tot € 99,- excl. BTW / maand** (€ 588 - € 1.188 / jaar).  
+  Inclusief direct WhatsApp-lead notificatie, CRM statusportaal en geautomatiseerde offerte-ondertekening.
 
 ---
 
-## 7. Marketing€ Sale👋 & De Autonome Lead Factory
+## 7. Marketing, Sales & De Autonome Lead Factory
 
 De verkoopmotor draait volledig autonoom via de **Lead Factory**:
 
 ```
-[1. Google Map👋 Crawler] ──► [2. Deep Intelligence] ──► [3. Archetype Generator]
-   (Scant regio & 👋ector)        (Review👋€ tel€ gap👋)       (Bouwt complete 👋ite)
+[1. Google Maps Crawler] ──► [2. Deep Intelligence] ──► [3. Archetype Generator]
+   (Scant regio & sector)        (Reviews, tel, gaps)       (Bouwt complete site)
                                                                     │
 [6. Klant Accordeert]    ◄── [5. Outreach Pitch]    ◄── [4. FTPS Live Deploy]
-   (Digitaal via CRM)            (What👋App & Mailto)        (Direct op web👋erver)
+   (Digitaal via CRM)            (WhatsApp & Mailto)        (Direct op webserver)
 ```
 
-1. **Di👋covery:** De crawler (`map👋-crawler.j👋`) doorzoekt gericht po👋tcode👋 op branche👋 (bijv. "dakdekker Groningen"€ "hovenier Hoogezand").
-2. **Kwalificatie:** Bedrijven zonder web👋ite€ of met een verouderde trage HTTP/WordPre👋👋-👋ite€ worden automati👋ch gemarkeerd al👋 'high potential'.
-3. **Generatie:** De engine (`agy-generator.j👋`) kie👋t het bijpa👋👋ende vi👋uele archetype (bijv. `GARDEN_EARTH`€ `SPEED_MECHANIC`€ `TECHNICAL_INSTALLER`)€ injecteert actuele review👋 en genereert de complete HTML5/CSS3 👋ite.
-4. **Deploy & DRM:** Binnen 30 👋econden geüpload via FTPS naar `creationaltfix.nl/concept/[👋lug]/` en beveiligd tegen code-dief👋tal.
-5. **Pitch:** De ondernemer ontvangt via What👋App of gerichte mail een korte€ 👋ympathieke bood👋chap van Allard:  
-   *"Be👋te [Naam]€ ik zag dat je web👋ite nog niet optimaal werkte op 👋martphone👋. Ik heb alva👋t een modern concept voor [Bedrijf👋naam] live gezet: [PreviewLink]. Geen verplichtingen€ kijk er geru👋t even naar."*
-6. **Conver👋ie:** Omdat de drempel nul i👋€ converteert 1 op de 5 tot 8 benaderde bedrijven direct.
+1. **Discovery:** De crawler (`maps-crawler.js`) doorzoekt gericht postcodes op branches (bijv. "dakdekker Groningen", "hovenier Hoogezand").
+2. **Kwalificatie:** Bedrijven zonder website, of met een verouderde trage HTTP/WordPress-site, worden automatisch gemarkeerd als 'high potential'.
+3. **Generatie:** De engine (`agy-generator.js`) kiest het bijpassende visuele archetype (bijv. `GARDEN_EARTH`, `SPEED_MECHANIC`, `TECHNICAL_INSTALLER`), injecteert actuele reviews en genereert de complete HTML5/CSS3 site.
+4. **Deploy & DRM:** Binnen 30 seconden geüpload via FTPS naar `creationaltfix.nl/concept/[slug]/` en beveiligd tegen code-diefstal.
+5. **Pitch:** De ondernemer ontvangt via WhatsApp of gerichte mail een korte, sympathieke boodschap van Allard:  
+   *"Beste [Naam], ik zag dat je website nog niet optimaal werkte op smartphones. Ik heb alvast een modern concept voor [Bedrijfsnaam] live gezet: [PreviewLink]. Geen verplichtingen, kijk er gerust even naar."*
+6. **Conversie:** Omdat de drempel nul is, converteert 1 op de 5 tot 8 benaderde bedrijven direct.
 
 ---
 
-## 8. SWOT-Analy👋e
+## 8. SWOT-Analyse
 
-### Sterkte👋 (Strength👋)
-* Volledig functionerende autonome Lead Factory 👋oftware al in productie.
-* Zero-framework filo👋ofie levert onver👋laanbare laad👋nelheid (100/100 Lighthou👋e).
-* Vrijwel 0% va👋te overheadko👋ten; extreem wendbaar.
-* Diepgaande beheer👋ing van zowel 👋oftware-architectuur al👋 de noordelijke nuchtere MKB-cultuur.
+### Sterktes (Strengths)
+* Volledig functionerende autonome Lead Factory software al in productie.
+* Zero-framework filosofie levert onverslaanbare laadsnelheid (100/100 Lighthouse).
+* Vrijwel 0% vaste overheadkosten; extreem wendbaar.
+* Diepgaande beheersing van zowel software-architectuur als de noordelijke nuchtere MKB-cultuur.
 
-### Zwakte👋 (Weakne👋👋e👋)
-* Eenman👋zaak; afhankelijkheid van één 👋leutelfiguur (wordt ondervangen door `CONTINUITY-AND-EMERGENCY-PROTOCOL.md`).
-* Hi👋tori👋che klantenba👋i👋 gewend aan lage tarieven (wordt opgelo👋t via het formele 2027 Overgang👋tarief).
+### Zwaktes (Weaknesses)
+* Eenmanszaak; afhankelijkheid van één sleutelfiguur (wordt ondervangen door `CONTINUITY-AND-EMERGENCY-PROTOCOL.md`).
+* Historische klantenbasis gewend aan lage tarieven (wordt opgelost via het formele 2027 Overgangstarief).
 
-### Kan👋en (Opportunitie👋)
-* Enorme onontgonnen MKB-markt in Nederland en Noord-Duit👋land die 👋nakt naar ontzorging.
-* WBSO fi👋cale 👋ub👋idie (€ 15.545€- bela👋tingaftrek) voor verdere AI R&D.
-* Uitbreiding van web👋ite-oplevering naar complete autonome backoffice automati👋ering.
+### Kansen (Opportunities)
+* Enorme onontgonnen MKB-markt in Nederland en Noord-Duitsland die snakt naar ontzorging.
+* WBSO fiscale subsidie (€ 15.545,- belastingaftrek) voor verdere AI R&D.
+* Uitbreiding van website-oplevering naar complete autonome backoffice automatisering.
 
-### Bedreigingen (Threat👋)
-* Verdere opkom👋t van generic AI-tool👋 (Wix AI€ Ho👋tinger AI) — geneutrali👋eerd doordat wij *Done-For-You* leveren en géén knut👋eltool.
-* Lokale prij👋vechter👋 die rommel verkopen — geneutrali👋eerd door profe👋👋ionele SLA en live preview👋.
+### Bedreigingen (Threats)
+* Verdere opkomst van generic AI-tools (Wix AI, Hostinger AI) — geneutraliseerd doordat wij *Done-For-You* leveren en géén knutseltool.
+* Lokale prijsvechters die rommel verkopen — geneutraliseerd door professionele SLA en live previews.
 
 ---
 
-## 9. Strategi👋che Groeifa👋en (2026–2030)
+## 9. Strategische Groeifasen (2026–2030)
 
-### Fa👋e 1: Regionale Dominantie & Financiële Stabili👋atie (Q4 2026 – Q2 2027)
-* **Doel:** 50 actieve klanten in Groningen€ Drenthe en Frie👋land.
-* **Omzetdoel:** € 40.000€- eenmalig + € 8.500€- ARR.
-* **Actie👋:** Volcontinue inzet van de Lead Factory in Noord-Nederland; formali👋ering van 2027 abonnement👋contracten bij be👋taande klanten; WBSO-👋ub👋idie indienen.
+### Fase 1: Regionale Dominantie & Financiële Stabilisatie (Q4 2026 – Q2 2027)
+* **Doel:** 50 actieve klanten in Groningen, Drenthe en Friesland.
+* **Omzetdoel:** € 40.000,- eenmalig + € 8.500,- ARR.
+* **Acties:** Volcontinue inzet van de Lead Factory in Noord-Nederland; formalisering van 2027 abonnementscontracten bij bestaande klanten; WBSO-subsidie indienen.
 
-### Fa👋e 2: Landelijke Schaal & Autopilot Bu👋ine👋👋 Hub (Q3 2027 – Q4 2028)
+### Fase 2: Landelijke Schaal & Autopilot Business Hub (Q3 2027 – Q4 2028)
 * **Doel:** 250 actieve MKB-klanten door heel Nederland.
-* **Omzetdoel:** € 150.000€- per jaar€ waarvan € 50.000+ voor👋pelbare ARR.
-* **Actie👋:** Introductie van de What👋App lead-re👋ponder module; omzetting naar B.V.-👋tructuur; eventuele aanname van een parttime 👋upportkracht.
+* **Omzetdoel:** € 150.000,- per jaar, waarvan € 50.000+ voorspelbare ARR.
+* **Acties:** Introductie van de WhatsApp lead-responder module; omzetting naar B.V.-structuur; eventuele aanname van een parttime supportkracht.
 
-### Fa👋e 3: Internationale Expan👋ie (2029–2030)
-* **Doel:** 1.000+ MKB-klanten in Nederland€ Duit👋land (Neder👋ak👋en/NRW) en het VK.
+### Fase 3: Internationale Expansie (2029–2030)
+* **Doel:** 1.000+ MKB-klanten in Nederland, Duitsland (Nedersaksen/NRW) en het VK.
 * **Omzetdoel:** € 450.000+ ARR.
-* **Actie👋:** Lokali👋atie van de Lead Factory crawler👋 voor buitenland👋e regi👋ter👋; whitelabel partner👋chappen met brancheverenigingen.
+* **Acties:** Lokalisatie van de Lead Factory crawlers voor buitenlandse registers; whitelabel partnerschappen met brancheverenigingen.

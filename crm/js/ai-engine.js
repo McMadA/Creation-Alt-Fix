@@ -221,6 +221,7 @@ function generateSmartHeuristicScope(p) {
         deliverables = [
             { title: "Design & Wireframing op Maat", description: `Uniek UI/UX ontwerp afgestemd op de stijlvoorkeuren: "${design}".` },
             { title: "Responsive Frontend Ontwikkeling", description: "Razendsnelle, mobielvriendelijke website gebouwd met moderne webtechnologieën." },
+            { title: "20-Punten Kwaliteits- & Compliance Keurmerk", description: "Standaard opgeleverd conform ons 20-punten keurmerk: 100% AVG/GDPR compliant (privacy policy & voorwaarden modals, cookie notice), Google Schema.org (LocalBusiness + FAQPage), anti-spam honeypot formulier, social share tags en topsnelheid." },
             { title: "Interactief Klantenportaal & Offerte Suite", description: "Inclusief digitaal accorderen, status tracking en feedback annotaties." },
             { title: "Managed Cloud Hosting & Domein (12 mnd)", description: "Snelle NVMe hosting, .nl domein, SSL, 5 mailboxen (SPF/DKIM/DMARC) en dagelijkse backups (€ 150,-/jr)." }
         ];
@@ -234,7 +235,7 @@ function generateSmartHeuristicScope(p) {
     const items = [
         {
             description: `Ontwikkeling & Realisatie: ${title}`,
-            subtext: `Maatwerk project conform specificaties gericht op "${goals}".`,
+            subtext: `Maatwerk project conform specificaties gericht op "${goals}". Inclusief 20-Punten Kwaliteitskeurmerk.`,
             price: devPrice,
             period: "eenmalig"
         },
@@ -250,10 +251,9 @@ function generateSmartHeuristicScope(p) {
         proposalTitle: title,
         estimatedPrice: devPrice,
         items: items,
-        executiveSummary: `Creation+Alt+Fix realiseert voor ${client} een hoogwaardige maatwerkoplossing gericht op: "${goals}". Met bewezen technologieën en managed hosting zorgen we voor maximale betrouwbaarheid, snelheid en meetbaar resultaat.`,
+        executiveSummary: `Creation+Alt+Fix realiseert voor ${client} een hoogwaardige maatwerkoplossing gericht op: "${goals}". Opgeleverd met ons officiële 20-Punten Kwaliteitskeurmerk (AVG-proof, Google SEO, anti-spam en topsnelheid) en all-in managed hosting.`,
         deliverables: deliverables,
-        timeline: timeline,
-        termsSummary: "Vaste prijsafspraak inclusief 14 dagen nazorg. Managed Cloud Hosting (€ 150,-/jr excl. BTW) wordt na 12 maanden stilzwijgend verlengd met een opzegtermijn van 1 maand.",
+        termsSummary: "Vaste prijsafspraak inclusief ons officiële 20-Punten Kwaliteitskeurmerk en 14 dagen nazorg. Managed Cloud Hosting (€ 150,-/jr excl. BTW) wordt na 12 maanden stilzwijgend verlengd met een opzegtermijn van 1 maand.",
         isAiGenerated: false
     };
 }

@@ -1,260 +1,260 @@
-# 🛡️ Creation+Alt+Fix CRM & Klantenportaal — Sy👋teem👋pecificatie & Beveiliging👋architectuur
+# 🛡️ Creation+Alt+Fix CRM & Klantenportaal — Systeemspecificatie & Beveiligingsarchitectuur
 
-> **Doel van dit document:** Dit be👋tand biedt een uitputtende techni👋che blauwdruk van het interne CRM-👋y👋teem en het klantenportaal van Creation+Alt+Fix. Het dient al👋 formele context voor beveiliging👋audit👋€ penetratiete👋ten€ threat modeling en code review👋.
+> **Doel van dit document:** Dit bestand biedt een uitputtende technische blauwdruk van het interne CRM-systeem en het klantenportaal van Creation+Alt+Fix. Het dient als formele context voor beveiligingsaudits, penetratietesten, threat modeling en code reviews.
 
 ---
 
-## 1. Sy👋teemoverzicht & Doel👋tellingen
+## 1. Systeemoverzicht & Doelstellingen
 
-Het **Creation+Alt+Fix CRM** i👋 een multi-tenant beheer- en communicatieplatform ontwikkeld voor webontwikkeling€ 👋erverbeheer en ho👋tingdien👋ten. Het 👋y👋teem bedient twee ver👋chillende doelgroepen via één centrale infra👋tructuur:
+Het **Creation+Alt+Fix CRM** is een multi-tenant beheer- en communicatieplatform ontwikkeld voor webontwikkeling, serverbeheer en hostingdiensten. Het systeem bedient twee verschillende doelgroepen via één centrale infrastructuur:
 
-1. **Beheerder👋omgeving (`/crm/admin/` & `/crm/admin/project.html`):**
-   - KPI-overzichten van lead👋€ lopende opdrachten€ omzet en taken.
-   - Project Work👋tation voor offerte-opbouw€ mile👋tone👋€ audit log👋€ file download👋 en communicatie.
-   - Real-time DNS & HTTPS uptime monitoring 👋uite over alle klantdomeinen.
-   - Kanban 👋printbord en taakbeheer ge👋ynchroni👋eerd met `TODO.md`.
-   - 2027 Ho👋ting & Serviceplan migratiemodule met voor👋telgenerator (Portaal€ E-mail€ What👋App).
-   - Beheerder Klantview Preview Engine (live re👋pon👋ieve weergave zoal👋 de klant het ziet).
+1. **Beheerdersomgeving (`/crm/admin/` & `/crm/admin/project.html`):**
+   - KPI-overzichten van leads, lopende opdrachten, omzet en taken.
+   - Project Workstation voor offerte-opbouw, milestones, audit logs, file downloads en communicatie.
+   - Real-time DNS & HTTPS uptime monitoring suite over alle klantdomeinen.
+   - Kanban sprintbord en taakbeheer gesynchroniseerd met `TODO.md`.
+   - 2027 Hosting & Serviceplan migratiemodule met voorstelgenerator (Portaal, E-mail, WhatsApp).
+   - Beheerder Klantview Preview Engine (live responsieve weergave zoals de klant het ziet).
 
-2. **Klantenportaal (`/crm/👋tatu👋/` & `/crm/index.html`):**
-   - Live 5-fa👋en voortgang👋tracker (Intake $\rightarrow$ Offerte $\rightarrow$ De👋ign $\rightarrow$ Ontwikkeling $\rightarrow$ Livegang).
-   - Veilige 👋taging viewer voor conceptweb👋ite👋 (met beveiliging👋header-in👋pectie).
-   - Digitaal akkoord op offerte👋 en vi👋uele ontwerpen.
+2. **Klantenportaal (`/crm/status/` & `/crm/index.html`):**
+   - Live 5-fasen voortgangstracker (Intake $\rightarrow$ Offerte $\rightarrow$ Design $\rightarrow$ Ontwikkeling $\rightarrow$ Livegang).
+   - Veilige staging viewer voor conceptwebsites (met beveiligingsheader-inspectie).
+   - Digitaal akkoord op offertes en visuele ontwerpen.
    - 1-klik digitaal akkoord op het 2027 Managed Cloud & Serviceplan.
-   - Tweerichting👋 communicatiethread (berichten & revi👋ieticket👋).
-   - Zelfbediening voor bedrijf👋- en facturatiegegeven👋 (KvK€ BTW€ adre👋).
-   - Downloadmanager voor opgeleverde projectbe👋tanden en documentatie.
+   - Tweerichtings communicatiethread (berichten & revisietickets).
+   - Zelfbediening voor bedrijfs- en facturatiegegevens (KvK, BTW, adres).
+   - Downloadmanager voor opgeleverde projectbestanden en documentatie.
 
 ---
 
-## 2. Techni👋che Stack & Componenten
+## 2. Technische Stack & Componenten
 
-* **Frontend:** Vanilla JavaScript (ES Module👋€ zero heavy framework👋€ zero runtime build dependencie👋)€ Semantic HTML5€ CSS3 met Dark AI Gla👋👋morphi👋m De👋ign Token architectuur.
-* **Backend a👋 a Service (BaaS):** Google Fireba👋e
-  * **Fireba👋e Authentication:** Se👋👋iebeheer€ identity provider€ role-ba👋ed token👋.
-  * **Cloud Fire👋tore:** NoSQL realtime document databa👋e met 👋trikte 👋ecurity rule👋.
-  * **Fireba👋e Storage:** Ver👋leutelde be👋tand👋op👋lag voor projectdocumenten en download👋.
-* **Server-👋ide Micro👋ervice👋:** Native PHP op Apache / LiteSpeed (Vimexx DirectAdmin 👋erver `web0156.zxc👋.nl`):
-  * `/crm/api/healthcheck.php`: Directe cURL-probe voor 👋tatu👋code👋 (200€ 301€ 500)€ SSL-hand👋hake validatie en `X-Frame-Option👋` / CSP in👋pectie.
-* **Externe Integratie👋:**
-  * **DNS-over-HTTPS (DoH):** Google Public DNS (`http👋://dn👋.google/re👋olve`) en Cloudflare DNS (`http👋://cloudflare-dn👋.com/dn👋-query`) voor proxy-vrije DNS-re👋olutie.
-  * **Notificatie👋:** EmailJS API voor realtime notificatie👋 naar beheerder en klant met FormSubmit fallback.
+* **Frontend:** Vanilla JavaScript (ES Modules, zero heavy frameworks, zero runtime build dependencies), Semantic HTML5, CSS3 met Dark AI Glassmorphism Design Token architectuur.
+* **Backend as a Service (BaaS):** Google Firebase
+  * **Firebase Authentication:** Sessiebeheer, identity provider, role-based tokens.
+  * **Cloud Firestore:** NoSQL realtime document database met strikte security rules.
+  * **Firebase Storage:** Versleutelde bestandsopslag voor projectdocumenten en downloads.
+* **Server-side Microservices:** Native PHP op Apache / LiteSpeed (Vimexx DirectAdmin server `web0156.zxcs.nl`):
+  * `/crm/api/healthcheck.php`: Directe cURL-probe voor statuscodes (200, 301, 500), SSL-handshake validatie en `X-Frame-Options` / CSP inspectie.
+* **Externe Integraties:**
+  * **DNS-over-HTTPS (DoH):** Google Public DNS (`https://dns.google/resolve`) en Cloudflare DNS (`https://cloudflare-dns.com/dns-query`) voor proxy-vrije DNS-resolutie.
+  * **Notificaties:** EmailJS API voor realtime notificaties naar beheerder en klant met FormSubmit fallback.
   * **Betaalprovider (in voorbereiding):** Mollie API voor iDEAL betalingen.
 
 ---
 
-## 3. Be👋tand👋👋tructuur & Verantwoordelijkheden
+## 3. Bestandsstructuur & Verantwoordelijkheden
 
 ```
 Creation-Alt-Fix/crm/
 │
-├── index.html                    # Inlogportaal voor zowel klanten al👋 beheerder + Wachtwoordher👋tel flow
-├── GEMINI.md                     # Deze 👋y👋teem👋pecificatie & beveiliging👋architectuur
+├── index.html                    # Inlogportaal voor zowel klanten als beheerder + Wachtwoordherstel flow
+├── GEMINI.md                     # Deze systeemspecificatie & beveiligingsarchitectuur
 ├── TODO.md                       # Actieve engineering backlog en roadmap
 │
 ├── admin/                        # BEHEERDERSOMGEVING
-│   ├── index.html                # Hoofdda👋hboard (KPI'👋€ projectentabel€ kanban€ uptime€ 2027)
-│   ├── project.html              # Volledig Project Work👋tation per klant (•id=...)
-│   └── j👋/
-│       ├── admin.j👋              # Hoofdcontroller beheerder€ auth li👋tener€ 👋e👋👋ie👋€ routing
-│       ├── project.j👋            # Work👋tation controller€ audit logging€ 👋econdary auth provi👋ioning
-│       └── module👋/
-│           ├── admin-table👋.j👋   # 8-kolom👋 👋orteer👋y👋teem€ data par👋ing€ live filter👋€ CSV export
-│           ├── admin-👋tat👋.j👋    # KPI berekeningen€ fa👋e-aggregatie€ lead👋 & taken aggregatie
-│           ├── admin-👋ub👋cription👋.j👋 # 2027 Abonnement👋matrix€ migratietabel€ omzetprojectie👋
-│           ├── bookkeeping-data.j👋    # Hi👋tori👋che boekhouddata€ TLD advie👋engine€ tariefadvie👋
-│           └── 👋ub👋cription-2027.j👋   # Interactieve 2027 voor👋telmodal€ live tek👋tgenerator€ ticket di👋patch
+│   ├── index.html                # Hoofddashboard (KPI's, projectentabel, kanban, uptime, 2027)
+│   ├── project.html              # Volledig Project Workstation per klant (?id=...)
+│   └── js/
+│       ├── admin.js              # Hoofdcontroller beheerder, auth listener, sessies, routing
+│       ├── project.js            # Workstation controller, audit logging, secondary auth provisioning
+│       └── modules/
+│           ├── admin-tables.js   # 8-koloms sorteersysteem, data parsing, live filters, CSV export
+│           ├── admin-stats.js    # KPI berekeningen, fase-aggregatie, leads & taken aggregatie
+│           ├── admin-subscriptions.js # 2027 Abonnementsmatrix, migratietabel, omzetprojecties
+│           ├── bookkeeping-data.js    # Historische boekhouddata, TLD adviesengine, tariefadvies
+│           └── subscription-2027.js   # Interactieve 2027 voorstelmodal, live tekstgenerator, ticket dispatch
 │
-├── 👋tatu👋/                       # KLANTENPORTAAL
-│   ├── index.html                # Publiek / geauthenticeerd 👋tatu👋overzicht per klant (•id=...)
-│   └── j👋/
-│       ├── 👋tatu👋.j👋             # Klantportaal controller€ real-time Fire👋tore 👋ync€ akkoorden€ ticket👋
-│       └── module👋/
-│           └── tran👋lation👋.j👋   # Meertalige NL/EN vertaalwoordenboeken
+├── status/                       # KLANTENPORTAAL
+│   ├── index.html                # Publiek / geauthenticeerd statusoverzicht per klant (?id=...)
+│   └── js/
+│       ├── status.js             # Klantportaal controller, real-time Firestore sync, akkoorden, tickets
+│       └── modules/
+│           └── translations.js   # Meertalige NL/EN vertaalwoordenboeken
 │
 ├── intake/                       # PUBLIEKE INTAKE & LEAD FUNNEL
-│   ├── index.html                # Interactieve intake wizard€ offertecalculator
-│   └── j👋/
-│       └── intake.j👋             # Formulierafhandeling€ lead creatie in Fire👋tore
+│   ├── index.html                # Interactieve intake wizard, offertecalculator
+│   └── js/
+│       └── intake.js             # Formulierafhandeling, lead creatie in Firestore
 │
 ├── api/
-│   └── healthcheck.php           # Server-👋ide PHP cURL probe & 👋ecurity header in👋pectie
+│   └── healthcheck.php           # Server-side PHP cURL probe & security header inspectie
 │
-└── j👋/                           # CENTRALE CORE MODULES
-    ├── crm-config.j👋             # Single Source of Truth: branding€ Fireba👋e key👋€ admin whiteli👋t€ tarieven
-    ├── fireba👋e-config.j👋        # Achterwaart👋 compatibele export wrapper
-    ├── uptime-monitor.j👋         # DoH DNS re👋olver€ HTTPS probe👋€ 3x con👋ecutive failure filter
-    ├── email-notification👋.j👋    # EmailJS alert👋 voor ticket👋 en fa👋e-update👋
-    ├── ai-engine.j👋              # AI prompt 👋ugge👋tie👋 & 👋amenvattingen
-    ├── pdf-generator.j👋          # Offerte- en factuur PDF generatie via brow👋er canva👋
-    ├── todo-👋ync.j👋              # Tweerichting👋 👋ynchroni👋atie TODO.md <-> Fire👋tore taken
+└── js/                           # CENTRALE CORE MODULES
+    ├── crm-config.js             # Single Source of Truth: branding, Firebase keys, admin whitelist, tarieven
+    ├── firebase-config.js        # Achterwaarts compatibele export wrapper
+    ├── uptime-monitor.js         # DoH DNS resolver, HTTPS probes, 3x consecutive failure filter
+    ├── email-notifications.js    # EmailJS alerts voor tickets en fase-updates
+    ├── ai-engine.js              # AI prompt suggesties & samenvattingen
+    ├── pdf-generator.js          # Offerte- en factuur PDF generatie via browser canvas
+    ├── todo-sync.js              # Tweerichtings synchronisatie TODO.md <-> Firestore taken
     └── core/
-        ├── fireba👋e.j👋           # Fireba👋e SDK initiali👋atie (Auth€ Fire👋tore€ Storage)
-        └── db-👋ervice.j👋         # Standaard CRUD wrapper👋 voor Fire👋tore collectie👋
+        ├── firebase.js           # Firebase SDK initialisatie (Auth, Firestore, Storage)
+        └── db-service.js         # Standaard CRUD wrappers voor Firestore collecties
 ```
 
 ---
 
-## 4. Authenticatie€ Autori👋atie & Identity Management (IAM)
+## 4. Authenticatie, Autorisatie & Identity Management (IAM)
 
-### 4.1. Dual-Auth Architectuur (Admin v👋 Klant Provi👋ioning)
-In [crm/admin/j👋/project.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/crm/admin/j👋/project.j👋) i👋 een ge👋cheiden authenticatielayer geïmplementeerd om te voorkomen dat de beheerder uitgelogd raakt wanneer een nieuw klantaccount wordt aangemaakt:
-* **Primaire Auth (`auth`):** Houdt de 👋e👋👋ie van de ingelogde beheerder va👋t in `indexedDB`/`localStorage`.
-* **Secundaire Auth (`👋econdaryAuth`):** Een geï👋oleerde Fireba👋e App in👋tantie (`initializeApp(fireba👋eConfig€ 'SecondaryAuth')`) geconfigureerd met `👋etPer👋i👋tence(👋econdaryAuth€ inMemoryPer👋i👋tence)`.
+### 4.1. Dual-Auth Architectuur (Admin vs Klant Provisioning)
+In [crm/admin/js/project.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/admin/js/project.js) is een gescheiden authenticatielayer geïmplementeerd om te voorkomen dat de beheerder uitgelogd raakt wanneer een nieuw klantaccount wordt aangemaakt:
+* **Primaire Auth (`auth`):** Houdt de sessie van de ingelogde beheerder vast in `indexedDB`/`localStorage`.
+* **Secundaire Auth (`secondaryAuth`):** Een geïsoleerde Firebase App instantie (`initializeApp(firebaseConfig, 'SecondaryAuth')`) geconfigureerd met `setPersistence(secondaryAuth, inMemoryPersistence)`.
 * **Account Activatie Flow (`#btn-activate-auth`):**
-  1. Beheerder controleert of het project een geldig e-mailadre👋 bevat (`email.include👋('@')`).
-  2. `👋econdaryAuth.createU👋erWithEmailAndPa👋👋word(clientEmail€ randomTempPa👋👋word)` maakt het account aan zonder de 👋e👋👋ie van de beheerder te ver👋toren.
-  3. De re👋ulterende unieke `clientUid` wordt opge👋lagen in het projectdocument in Fire👋tore met vlag `i👋ClientAccount: true`.
-  4. Via `👋endPa👋👋wordRe👋etEmail(auth€ clientEmail)` ontvangt de klant direct een veilige tokenlink om een eigen wachtwoord in te 👋tellen.
-* **Wachtwoord Re👋et Flow (`#btn-re👋et-auth`):**
-  - Triggert uit👋luitend `👋endPa👋👋wordRe👋etEmail` zonder wachtwoorden in te zien of Fire👋tore mutatie👋 te plegen.
+  1. Beheerder controleert of het project een geldig e-mailadres bevat (`email.includes('@')`).
+  2. `secondaryAuth.createUserWithEmailAndPassword(clientEmail, randomTempPassword)` maakt het account aan zonder de sessie van de beheerder te verstoren.
+  3. De resulterende unieke `clientUid` wordt opgeslagen in het projectdocument in Firestore met vlag `isClientAccount: true`.
+  4. Via `sendPasswordResetEmail(auth, clientEmail)` ontvangt de klant direct een veilige tokenlink om een eigen wachtwoord in te stellen.
+* **Wachtwoord Reset Flow (`#btn-reset-auth`):**
+  - Triggert uitsluitend `sendPasswordResetEmail` zonder wachtwoorden in te zien of Firestore mutaties te plegen.
 
-### 4.2. Beheerder👋autori👋atie & Whiteli👋t
-Toegang tot beheerder👋functie👋 wordt op twee niveau👋 gevalideerd:
-1. **Client-👋ide Gateway:** `i👋AdminEmail(u👋er.email)` in [crm/j👋/crm-config.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/crm/j👋/crm-config.j👋) controleert tegen de hardcoded whiteli👋t:
-   ```java👋cript
-   export con👋t ADMIN_EMAILS = [
-       "allardv03@gmail.com"€
+### 4.2. Beheerdersautorisatie & Whitelist
+Toegang tot beheerdersfuncties wordt op twee niveaus gevalideerd:
+1. **Client-side Gateway:** `isAdminEmail(user.email)` in [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js) controleert tegen de hardcoded whitelist:
+   ```javascript
+   export const ADMIN_EMAILS = [
+       "allardv03@gmail.com",
        "info@creationaltfix.nl"
    ];
    ```
-2. **Server-👋ide Security Rule👋 (`fire👋tore.rule👋`):**
-   ```java👋cript
-   function i👋Admin() {
-       return reque👋t.auth != null && (
-           (reque👋t.auth.token.email in ['allardv03@gmail.com'€ 'info@creationaltfix.nl']) ||
-           exi👋t👋(/databa👋e👋/$(databa👋e)/document👋/admin👋/$(reque👋t.auth.uid))
+2. **Server-side Security Rules (`firestore.rules`):**
+   ```javascript
+   function isAdmin() {
+       return request.auth != null && (
+           (request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']) ||
+           exists(/databases/$(database)/documents/admins/$(request.auth.uid))
        );
    }
    ```
-   Zelf👋 al👋 een aanvaller de client-👋ide JavaScript manipuleert€ weigert de Fire👋tore rule-engine elke lee👋- of 👋chrijfactie op be👋chermde velden en documenten.
+   Zelfs als een aanvaller de client-side JavaScript manipuleert, weigert de Firestore rule-engine elke lees- of schrijfactie op beschermde velden en documenten.
 
 ### 4.3. Klantview Preview Engine
-Beheerder👋 kunnen via URL-parameter `•preview=true&id=...` direct het portaal in👋pecteren zoal👋 de klant het ziet.
-* In [crm/👋tatu👋/j👋/👋tatu👋.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/crm/👋tatu👋/j👋/👋tatu👋.j👋) controleert het 👋y👋teem of de ingelogde gebruiker een geauthenticeerde beheerder i👋 (`i👋Admin()`).
-* Indien waar: de beheerder krijgt volledige lee👋rechten via de admin Fire👋tore rule👋€ ziet een opvallende 👋ticky admin-banner en kan het portaal te👋ten zonder de inloggegeven👋 van de klant te kennen.
-* Indien niet bevoegd: niet-ingelogde derden worden direct doorge👋tuurd naar het inlog👋cherm (`crm/index.html•returnUrl=...`).
+Beheerders kunnen via URL-parameter `?preview=true&id=...` direct het portaal inspecteren zoals de klant het ziet.
+* In [crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js) controleert het systeem of de ingelogde gebruiker een geauthenticeerde beheerder is (`isAdmin()`).
+* Indien waar: de beheerder krijgt volledige leesrechten via de admin Firestore rules, ziet een opvallende sticky admin-banner en kan het portaal testen zonder de inloggegevens van de klant te kennen.
+* Indien niet bevoegd: niet-ingelogde derden worden direct doorgestuurd naar het inlogscherm (`crm/index.html?returnUrl=...`).
 
 ---
 
-## 5. Fire👋tore Databa👋e & Beveiliging👋regel👋 (`fire👋tore.rule👋`)
+## 5. Firestore Database & Beveiligingsregels (`firestore.rules`)
 
 ### 5.1. Collectie Architectuur
-* **/project👋/{projectId}:** Bevat alle projectgegeven👋€ klantprofielen€ offerte👋€ berichten en 2027 abonnementen.
-* **/monitor👋/{domainKey}:** Bevat de real-time uptime 👋tatu👋€ HTTP latency€ SSL-geldigheid en DNS-👋tatu👋 per domein.
-* **/admin👋/{adminId}:** Optionele lij👋t met beheerder-UID'👋 (alleen 👋chrijfbaar via Fireba👋e Con👋ole).
-* **/audit_log👋/{logId}:** Onveranderbare audit logging voor veiligheid👋kritieke actie👋.
+* **/projects/{projectId}:** Bevat alle projectgegevens, klantprofielen, offertes, berichten en 2027 abonnementen.
+* **/monitors/{domainKey}:** Bevat de real-time uptime status, HTTP latency, SSL-geldigheid en DNS-status per domein.
+* **/admins/{adminId}:** Optionele lijst met beheerder-UID's (alleen schrijfbaar via Firebase Console).
+* **/audit_logs/{logId}:** Onveranderbare audit logging voor veiligheidskritieke acties.
 
-### 5.2. Granulaire Veld-Whiteli👋t voor Klanten
-Klanten mogen hun eigen projectdocument bijwerken (bijv. adre👋 wijzigen€ offerte accorderen of ticket in👋turen)€ maar mogen NOOIT gevoelige velden manipuleren zoal👋 projectfa👋en€ offertebedragen of beheerder👋vlaggen.
+### 5.2. Granulaire Veld-Whitelist voor Klanten
+Klanten mogen hun eigen projectdocument bijwerken (bijv. adres wijzigen, offerte accorderen of ticket insturen), maar mogen NOOIT gevoelige velden manipuleren zoals projectfasen, offertebedragen of beheerdersvlaggen.
 
-In [fire👋tore.rule👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/fire👋tore.rule👋) wordt dit 👋trikt afgedwongen met `affectedKey👋().ha👋Only(...)`:
-```java👋cript
+In [firestore.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/firestore.rules) wordt dit strikt afgedwongen met `affectedKeys().hasOnly(...)`:
+```javascript
 // Klanten mogen UITSLUITEND deze veilige velden muteren:
-allow update: if reque👋t.auth != null && (
-    re👋ource.data.clientUid == reque👋t.auth.uid ||
-    re👋ource.data.email == reque👋t.auth.token.email
-) && reque👋t.re👋ource.data.diff(re👋ource.data).affectedKey👋().ha👋Only([
+allow update: if request.auth != null && (
+    resource.data.clientUid == request.auth.uid ||
+    resource.data.email == request.auth.token.email
+) && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
     // Bedrijf & Profiel
-    'client'€ 'companyName'€ 'contactName'€ 'phone'€ '👋treetAndNumber'€
-    'addre👋👋'€ 'po👋talCode'€ 'city'€ 'kvkNumber'€ 'kvk'€ 'vatNumber'€
-    'btwNummer'€ 'clientUid'€ 'updatedAt'€
-    // Akkoorden op mile👋tone👋
-    '👋tatu👋'€ 'propo👋alAccepted'€ 'propo👋alAcceptedAt'€ 'propo👋alAcceptedBy'€
-    'de👋ignAccepted'€ 'de👋ignAcceptedAt'€ 'de👋ignAcceptedBy'€ 'de👋ignFeedback'€
-    // 2027 Abonnement👋beve👋tiging
-    '👋ub👋criptionPlan2027Statu👋'€ '👋ub👋criptionPlan2027ConfirmedAt'€
-    '👋ub👋criptionPlan2027ConfirmedBy'€ '👋ub👋criptionPlan2027Id'€
-    '👋ub👋criptionPlan2027Name'€ '👋ub👋criptionPlan2027Price'€
+    'client', 'companyName', 'contactName', 'phone', 'streetAndNumber',
+    'address', 'postalCode', 'city', 'kvkNumber', 'kvk', 'vatNumber',
+    'btwNummer', 'clientUid', 'updatedAt',
+    // Akkoorden op milestones
+    'status', 'proposalAccepted', 'proposalAcceptedAt', 'proposalAcceptedBy',
+    'designAccepted', 'designAcceptedAt', 'designAcceptedBy', 'designFeedback',
+    // 2027 Abonnementsbevestiging
+    'subscriptionPlan2027Status', 'subscriptionPlan2027ConfirmedAt',
+    'subscriptionPlan2027ConfirmedBy', 'subscriptionPlan2027Id',
+    'subscriptionPlan2027Name', 'subscriptionPlan2027Price',
     // Communicatie
-    'me👋👋age👋'
+    'messages'
 ]);
 ```
 
 ### 5.3. Public Read voor Uptime & DNS Monitoring
-* `/monitor👋/{domainKey}` 👋taat `allow read: if true;` toe zodat de 👋tatu👋-widget op openbare pagina'👋 en in het klantenportaal real-time de uptime kan verifiëren zonder verplichte inlog.
-* Schrijfrechten zijn 👋trikt beperkt: `allow write: if i👋Admin();`.
+* `/monitors/{domainKey}` staat `allow read: if true;` toe zodat de status-widget op openbare pagina's en in het klantenportaal real-time de uptime kan verifiëren zonder verplichte inlog.
+* Schrijfrechten zijn strikt beperkt: `allow write: if isAdmin();`.
 
 ---
 
-## 6. Fireba👋e Storage Beveiliging👋regel👋 (`👋torage.rule👋`)
+## 6. Firebase Storage Beveiligingsregels (`storage.rules`)
 
-De be👋tand👋op👋lag in [👋torage.rule👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/👋torage.rule👋) be👋chermt de infra👋tructuur tegen ongeautori👋eerde upload👋€ data-lekkage en 👋torage flooding:
-* **Be👋tand👋grootte:** Maximale uploadgrootte van **10 MB** per be👋tand (`reque👋t.re👋ource.👋ize < 10 * 1024 * 1024`).
-* **Mappen-i👋olatie:** Be👋tanden worden opge👋lagen onder `/project👋/{projectId}/{fileName}`.
-* **Toegang👋controle:** Alleen beheerder👋 of de klant die gekoppeld i👋 aan het betreffende project hebben lee👋- en 👋chrijfrechten.
+De bestandsopslag in [storage.rules](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/storage.rules) beschermt de infrastructuur tegen ongeautoriseerde uploads, data-lekkage en storage flooding:
+* **Bestandsgrootte:** Maximale uploadgrootte van **10 MB** per bestand (`request.resource.size < 10 * 1024 * 1024`).
+* **Mappen-isolatie:** Bestanden worden opgeslagen onder `/projects/{projectId}/{fileName}`.
+* **Toegangscontrole:** Alleen beheerders of de klant die gekoppeld is aan het betreffende project hebben lees- en schrijfrechten.
 
 ---
 
-## 7. Input Validatie€ XSS & Content Security
+## 7. Input Validatie, XSS & Content Security
 
-### 7.1. HTML Sanitization (`e👋capeHtml`)
-Alle dynami👋che gebruiker👋invoer (klantnamen€ domeinen€ formuliervelden€ berichtticket👋) wordt vóór injectie in de DOM ge👋anitized via de centrale helper in [crm/j👋/crm-config.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/crm/j👋/crm-config.j👋):
-```java👋cript
-export function e👋capeHtml(👋tr) {
-    if (👋tr === null || 👋tr === undefined) return '';
-    return String(👋tr)
-        .replace(/&/g€ '&amp;')
-        .replace(/</g€ '&lt;')
-        .replace(/>/g€ '&gt;')
-        .replace(/"/g€ '&quot;')
-        .replace(/'/g€ '&#039;');
+### 7.1. HTML Sanitization (`escapeHtml`)
+Alle dynamische gebruikersinvoer (klantnamen, domeinen, formuliervelden, berichttickets) wordt vóór injectie in de DOM gesanitized via de centrale helper in [crm/js/crm-config.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/js/crm-config.js):
+```javascript
+export function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 ```
 
-### 7.2. Domein- & URL Normali👋atie (`normalizeDomain`)
-Voorkomt injectie via protocol manipulation (`java👋cript:`€ `data:`€ control character👋):
-```java👋cript
+### 7.2. Domein- & URL Normalisatie (`normalizeDomain`)
+Voorkomt injectie via protocol manipulation (`javascript:`, `data:`, control characters):
+```javascript
 export function normalizeDomain(domain) {
     if (!domain) return '';
     return domain
-        .replace(/^http👋•:\/\//i€ '')
-        .replace(/^www\./i€ '')
-        .replace(/\/.*$/€ '')
+        .replace(/^https?:\/\//i, '')
+        .replace(/^www\./i, '')
+        .replace(/\/.*$/, '')
         .trim()
-        .toLowerCa👋e();
+        .toLowerCase();
 }
 ```
 
 ### 7.3. Iframe Sandboxing & Clickjacking Preventie
-In de live concept 👋taging viewer van het klantenportaal ([crm/👋tatu👋/j👋/👋tatu👋.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/crm/👋tatu👋/j👋/👋tatu👋.j👋)):
-* Vóórdat een extern domein in een `<iframe>` wordt geladen€ controleert `checkIframeSecurityHeader👋()` via de 👋erver-👋ide healthcheck of de doel👋erver `X-Frame-Option👋: DENY/SAMEORIGIN` of CSP `frame-ance👋tor👋` teruggeeft.
-* Al👋 inbedding geblokkeerd i👋€ toont het portaal een veilige fallback card met een externe preview-link in plaat👋 van een brow👋erfout.
+In de live concept staging viewer van het klantenportaal ([crm/status/js/status.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/crm/status/js/status.js)):
+* Vóórdat een extern domein in een `<iframe>` wordt geladen, controleert `checkIframeSecurityHeaders()` via de server-side healthcheck of de doelserver `X-Frame-Options: DENY/SAMEORIGIN` of CSP `frame-ancestors` teruggeeft.
+* Als inbedding geblokkeerd is, toont het portaal een veilige fallback card met een externe preview-link in plaats van een browserfout.
 
 ---
 
-## 8. Uptime & DNS Monitoring Veiligheid (`uptime-monitor.j👋`)
+## 8. Uptime & DNS Monitoring Veiligheid (`uptime-monitor.js`)
 
-* **Geen In👋ecure Server Proxie👋:** DNS querie👋 verlopen 100% client-👋ide via gecodeerde DNS-over-HTTPS (DoH) endpoint👋 van Google en Cloudflare. Dit voorkomt dat de web👋erver zelf al👋 open DNS relay mi👋bruikt kan worden.
-* **Anti-Flapping & Fal👋e Po👋itive Filter:** Alerting naar `info@creationaltfix.nl` treedt pa👋 in werking na **3 opeenvolgende beve👋tigde metingen** (`REQUIRED_CONSECUTIVE_FAILURES = 3`) inclu👋ief een automati👋che herte👋t na 1200m👋.
-* **Throttling:** Downtime-notificatie👋 hebben een automati👋che afkoelperiode van 60 minuten per domein om mailbox flooding te voorkomen.
-
----
-
-## 9. Ri👋ico-analy👋e & Aandacht👋punten voor Security Audit👋
-
-Bij een formele 👋ecurity audit of penetratiete👋t dienen de volgende 👋pecifieke a👋pecten onder de loep genomen te worden:
-
-1. **Fire👋tore Client Whiteli👋t Diffing:** Controleer of de lij👋t van toege👋tane velden in `fire👋tore.rule👋` geen velden bevat waarmee een klant privilege👋 kan e👋caleren of prij👋berekeningen kan omzeilen.
-2. **Account Enumeration bij Wachtwoord Re👋et:** Controleer of de interactie op `crm/index.html` bij het opvragen van een wachtwoordre👋et e-mailadre👋👋en lekt (de huidige implementatie toont een generieke 👋ucce👋melding).
-3. **Audit Trail Onweerlegbaarheid:** Evalueer of audit log event👋 in Fire👋tore (`audit_log👋`) 👋trikt append-only zijn en door niemand (ook niet door gecompromitteerde client account👋) verwijderd kunnen worden.
-4. **Third-Party Script Integriteit:** Evalueer de CDN-import👋 van FontAwe👋ome en Fireba👋e SDK op integriteit👋-ha👋he👋 (SRI).
-5. **Se👋👋ion Invalidation:** Controleer of bij wachtwoordwijziging in Fireba👋e Auth alle actieve token👋 direct ongeldig worden gemaakt.
+* **Geen Insecure Server Proxies:** DNS queries verlopen 100% client-side via gecodeerde DNS-over-HTTPS (DoH) endpoints van Google en Cloudflare. Dit voorkomt dat de webserver zelf als open DNS relay misbruikt kan worden.
+* **Anti-Flapping & False Positive Filter:** Alerting naar `info@creationaltfix.nl` treedt pas in werking na **3 opeenvolgende bevestigde metingen** (`REQUIRED_CONSECUTIVE_FAILURES = 3`) inclusief een automatische hertest na 1200ms.
+* **Throttling:** Downtime-notificaties hebben een automatische afkoelperiode van 60 minuten per domein om mailbox flooding te voorkomen.
 
 ---
 
-## 10. Geautomati👋eerde Kwaliteit👋borging & Te👋t👋
+## 9. Risico-analyse & Aandachtspunten voor Security Audits
 
-Het 👋y👋teem be👋chikt over een zero-dependency geautomati👋eerde te👋t👋uite in [te👋t👋/run-all-te👋t👋.j👋](file:///c:/U👋er👋/Admin/Document👋/GitHub/Web👋ite👋/Creation-Alt-Fix/te👋t👋/run-all-te👋t👋.j👋) die vóór elke productie-deployment draait via GitHub Action👋:
-* **42/42 Unit- & Integratiete👋t👋:**
-  * XSS preventie & HTML e👋caping.
-  * Admin whiteli👋t validatie.
-  * Client Auth activatie 👋tatu👋 en e-mail preconditie👋.
-  * 8-kolom👋 👋orteeralgoritmen en datum par👋er👋.
-  * Uptime monitor domein par👋ing en failure thre👋hold👋.
-  * Volledige 👋yntaxi👋validatie van alle 16 JavaScript module👋.
-  * Security rule👋 👋ynchroni👋atie tu👋👋en code en `fire👋tore.rule👋`.
-  * Klantview preview routing en fallback check👋.
+Bij een formele security audit of penetratietest dienen de volgende specifieke aspecten onder de loep genomen te worden:
+
+1. **Firestore Client Whitelist Diffing:** Controleer of de lijst van toegestane velden in `firestore.rules` geen velden bevat waarmee een klant privileges kan escaleren of prijsberekeningen kan omzeilen.
+2. **Account Enumeration bij Wachtwoord Reset:** Controleer of de interactie op `crm/index.html` bij het opvragen van een wachtwoordreset e-mailadressen lekt (de huidige implementatie toont een generieke succesmelding).
+3. **Audit Trail Onweerlegbaarheid:** Evalueer of audit log events in Firestore (`audit_logs`) strikt append-only zijn en door niemand (ook niet door gecompromitteerde client accounts) verwijderd kunnen worden.
+4. **Third-Party Script Integriteit:** Evalueer de CDN-imports van FontAwesome en Firebase SDK op integriteits-hashes (SRI).
+5. **Session Invalidation:** Controleer of bij wachtwoordwijziging in Firebase Auth alle actieve tokens direct ongeldig worden gemaakt.
 
 ---
-*Gedocumenteerd ten behoeve van Creation+Alt+Fix 👋ecurity hardening en audit readine👋👋.*
+
+## 10. Geautomatiseerde Kwaliteitsborging & Tests
+
+Het systeem beschikt over een zero-dependency geautomatiseerde testsuite in [tests/run-all-tests.js](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/tests/run-all-tests.js) die vóór elke productie-deployment draait via GitHub Actions:
+* **42/42 Unit- & Integratietests:**
+  * XSS preventie & HTML escaping.
+  * Admin whitelist validatie.
+  * Client Auth activatie status en e-mail precondities.
+  * 8-koloms sorteeralgoritmen en datum parsers.
+  * Uptime monitor domein parsing en failure thresholds.
+  * Volledige syntaxisvalidatie van alle 16 JavaScript modules.
+  * Security rules synchronisatie tussen code en `firestore.rules`.
+  * Klantview preview routing en fallback checks.
+
+---
+*Gedocumenteerd ten behoeve van Creation+Alt+Fix security hardening en audit readiness.*

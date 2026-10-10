@@ -1000,6 +1000,18 @@ export function buildOutreachPitch(b) {
       <li><strong>LocalBusiness SEO:</strong> Google-geoptimaliseerde metadata voor betere lokale vindbaarheid</li>
     </ul>
 
+    <!-- 20-Punten Kwaliteitskeurmerk Box (Commercieel Verkoopargument) -->
+    <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; margin: 24px 0;">
+      <p style="font-size: 0.98rem; font-weight: 700; color: #0F172A; margin: 0 0 8px;">🛡️ Geleverd met ons 20-Punten Kwaliteitskeurmerk (Standaard Inbegrepen):</p>
+      <p style="font-size: 0.88rem; color: #475569; margin: 0 0 10px; line-height: 1.5;">Jouw concept voldoet direct aan alle 20 wettelijke, SEO- en conversie-eisen zonder meerprijs:</p>
+      <ul style="padding-left: 18px; font-size: 0.86rem; color: #334155; line-height: 1.8; margin: 0;">
+        <li><strong>100% AVG/GDPR Compliant:</strong> Ingebouwde privacyverklaring, algemene voorwaarden en zero-tracking cookiemelding</li>
+        <li><strong>Google Top-Vindbaarheid (SEO):</strong> Rijk LocalBusiness + FAQPage Schema.org voor sterren en Q&A in Google</li>
+        <li><strong>Anti-Spam & Conversie:</strong> Direct bellen, 1-klik WhatsApp en offerteformulier met onzichtbare honeypot spamfilter</li>
+        <li><strong>Bliksemsnel & Veilig:</strong> Laadt in minder dan 1 seconde op 4G/5G, veilige SSL-encryptie en geen kwetsbare plugins</li>
+      </ul>
+    </div>
+
     <!-- Prijsblok -->
     <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-left: 5px solid #2563EB; padding: 18px 20px; border-radius: 8px; margin: 24px 0;">
       <p style="font-size: 1rem; font-weight: 700; color: #0F172A; margin: 0 0 12px;">💶 Transparant over de investering</p>
@@ -1072,6 +1084,12 @@ Wat zit er al in dit concept:
 ${bulletsPlain}
 - Professionele uitstraling die goed werkt op elk scherm
 - LocalBusiness SEO voor betere vindbaarheid op Google
+
+🛡️ Standaard opgeleverd met ons 20-Punten Kwaliteitskeurmerk:
+- 100% AVG/GDPR Compliant: Ingebouwde privacyverklaring, algemene voorwaarden en cookiemelding
+- Google SEO Topscore: LocalBusiness + FAQPage Schema.org voor maximale vindbaarheid
+- Anti-Spam & Conversie: Direct bellen, 1-klik WhatsApp en offerteformulier met honeypot spamfilter
+- Bliksemsnel & Mobiel-eerst: Laadt in < 1 seconde op smartphones, 0 kwetsbare plugins en veilige SSL
 
 
 Transparant over de investering (geen kleine lettertjes):

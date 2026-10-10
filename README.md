@@ -1,6 +1,6 @@
 # Creation+Alt+Fix: Autonomous Agency & SaaS CRM Platform
 
-[![CI/CD Tests](https://img.shields.io/badge/tests-84%2F84%20passing-success.svg)](#geautomatiseerde-testen--kwaliteitsborging)
+[![CI/CD Tests](https://img.shields.io/badge/tests-85%2F85%20passing-success.svg)](#geautomatiseerde-testen--kwaliteitsborging)
 [![Architecture](https://img.shields.io/badge/frontend-Zero--Build%20ES%20Modules-blue.svg)](#technische-stack)
 [![Cloud BaaS](https://img.shields.io/badge/backend-Google%20Firebase-orange.svg)](#cloud-infrastructuur)
 [![Security Standard](https://img.shields.io/badge/security-OWASP%20ASVS%20v4.0%20Hardened-green.svg)](#beveiliging--compliance)
@@ -88,6 +88,13 @@ flowchart TD
 - **Concept Generatie & DRM Beveiliging:** Directe generatie van live conceptwebsites voorzien van domein-lock killswitch en Auteurswet 1912 bescherming.
 - **FTPS Deployer:** Directe veilige upload naar Vimexx DirectAdmin servers.
 
+### 5. 20-Punten Kwaliteitskeurmerk & Oplevergarantie
+- **Intrinsieke Compliance by Design:** Alle websites voldoen direct bij creatie aan alle 20 criteria uit het [Kwaliteits- en Auditdossier](docs/20-PUNTEN-KWALITEITSKEURMERK-COMMERCIEEL.md).
+- **Juridisch & AVG Waterdicht:** Ingebouwde Privacy Policy modal, Algemene Voorwaarden modal en zero-tracking cookiebanner. Voorkomt AVG-boetes tot € 20.000,-.
+- **Google SEO & Rich Snippets:** Schema.org `@graph` met `LocalBusiness` en sector-specifieke `FAQPage` snippets voor directe uitklapbare vraag-en-antwoord weergave in Google.
+- **Spam-Vrij & Conversie-Gedreven:** Verborgen honeypot spamfilter (`_hp_trap`), formuliervalidatie en directe 1-klik WhatsApp dispatch.
+- **Superieure Snelheid:** Zuivere Vanilla code (< 50 KB, geen trage WordPress plugins), Lighthouse 95+ en volledige WCAG-toegankelijkheid.
+
 ---
 
 ## Technische Stack
@@ -99,7 +106,7 @@ flowchart TD
 | **Bestandsopslag**| Firebase Storage | 10 MB per-bestand limiet, MIME whitelist, Firestore ownership checks |
 | **Microservices** | PHP 8.x (`/crm/api/`) | Mollie Webhook listener met `flock`, ID token validatie, SSRF DNS pinning |
 | **Lead Factory**  | Node.js 20+, Basic-FTP, Playwright | Autonome Maps crawler, data verrijking, video template synth |
-| **Kwaliteitsborging**| Node.js Native Test Runner (`assert`) | 84 geautomatiseerde unittests over 13 suites, zero external dependencies |
+| **Kwaliteitsborging**| Node.js Native Test Runner (`assert`) | 85 geautomatiseerde unittests over 14 suites, zero external dependencies |
 
 ---
 
