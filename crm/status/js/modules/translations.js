@@ -183,7 +183,10 @@ export const translations = {
         statusPaymentModalInvoice: "Factuur",
         statusPaymentModalDesc: "is succesvol voldaan via iDEAL. Hartelijk dank voor je betaling!",
         statusPaymentModalArchiveNotice: "Je officiële betaalbewijs en factuur staan direct klaar onder Mijn Facturen & Jaaroverzicht.",
-        statusPaymentModalBtn: "Naar Mijn Dashboard"
+        statusPaymentModalBtn: "Naar Mijn Dashboard",
+        status20PointsTitle: "20-Punten Kwaliteitskeurmerk & Oplevergarantie",
+        status20PointsDesc: "Elke website van Creation+Alt+Fix wordt standaard opgeleverd conform onze 20 strenge kwaliteits-, AVG- en vindbaarheidseisen.",
+        status20PointsBadge: "100% Inbegrepen"
     },
     en: {
         statusPageTitle: "My Project Dashboard - Creation+Alt+Fix",
@@ -365,6 +368,9 @@ export const translations = {
         statusPaymentModalInvoice: "Invoice",
         statusPaymentModalDesc: "has been successfully paid via iDEAL. Thank you very much for your payment!",
         statusPaymentModalArchiveNotice: "Your official payment receipt and invoice are directly available under My Invoices & Annual Records.",
-        statusPaymentModalBtn: "To My Dashboard"
+        statusPaymentModalBtn: "To My Dashboard",
+        status20PointsTitle: "20-Point Quality Guarantee & Compliance Standard",
+        status20PointsDesc: "Every Creation+Alt+Fix website is built to intrinsically comply with our 20 strict legal, SEO, conversion, and performance criteria.",
+        status20PointsBadge: "100% Included"
     }
 };
