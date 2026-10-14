@@ -53,10 +53,19 @@ export class LeadFactoryEngine {
   }
 
   ensureDatabase() {
+    const crmAdminDbPath = path.resolve(__dirname, '..', 'crm', 'admin', 'data', 'leads.json');
     if (!fs.existsSync(path.dirname(this.databaseFile))) {
       fs.mkdirSync(path.dirname(this.databaseFile), { recursive: true });
     }
-    if (!fs.existsSync(this.databaseFile)) {
+    if (!fs.existsSync(path.dirname(crmAdminDbPath))) {
+      fs.mkdirSync(path.dirname(crmAdminDbPath), { recursive: true });
+    }
+
+    if (!fs.existsSync(this.databaseFile) && fs.existsSync(crmAdminDbPath)) {
+      fs.copyFileSync(crmAdminDbPath, this.databaseFile);
+    } else if (fs.existsSync(this.databaseFile) && !fs.existsSync(crmAdminDbPath)) {
+      fs.copyFileSync(this.databaseFile, crmAdminDbPath);
+    } else if (!fs.existsSync(this.databaseFile) && !fs.existsSync(crmAdminDbPath)) {
       const initial = {
         updatedAt: new Date().toISOString(),
         totalScanned: 0,
@@ -66,6 +75,7 @@ export class LeadFactoryEngine {
         leads: []
       };
       atomicWriteJsonSync(this.databaseFile, initial);
+      atomicWriteJsonSync(crmAdminDbPath, initial);
     }
   }
 
@@ -77,7 +87,7 @@ export class LeadFactoryEngine {
   saveDatabase(db) {
     db.updatedAt = new Date().toISOString();
     atomicWriteJsonSync(this.databaseFile, db);
-    // Directe synchronisatie met CRM Admin Dashboard
+    // Directe atomische synchronisatie met CRM Admin Dashboard
     const crmAdminDbPath = path.resolve(__dirname, '..', 'crm', 'admin', 'data', 'leads.json');
     try {
       if (fs.existsSync(path.dirname(crmAdminDbPath))) {

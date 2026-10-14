@@ -2177,6 +2177,105 @@ test("Factory and CRM leads databases maintain zero duplicates, exact synchroniz
     }
 });
 
+test("crm/api/leads.php enforces strict origin CORS, anti-caching, and reads canonical leads database", () => {
+    const leadsPhpPath = path.join(ROOT_DIR, "crm/api/leads.php");
+    assert.ok(fs.existsSync(leadsPhpPath), "crm/api/leads.php must exist");
+    const phpContent = fs.readFileSync(leadsPhpPath, "utf-8");
+
+    assert.ok(phpContent.includes("Access-Control-Allow-Origin"), "leads.php must enforce CORS");
+    assert.ok(!phpContent.includes('Access-Control-Allow-Origin: *'), "leads.php must never use wildcard CORS");
+    assert.ok(phpContent.includes("portal.creationaltfix.nl"), "leads.php must whitelist portal.creationaltfix.nl");
+    assert.ok(phpContent.includes("no-store, no-cache, must-revalidate"), "leads.php must enforce anti-caching headers");
+    assert.ok(phpContent.includes("leads.json"), "leads.php must read leads.json");
+    assert.ok(phpContent.includes("405"), "leads.php must reject non-GET methods with 405");
+});
+
+test("sanitizeAndDeduplicateLeads heals dirty leads, eliminates duplicate Heinkens, and decouples Berends from N ten seldam", async () => {
+    const { sanitizeAndDeduplicateLeads } = await import("../crm/admin/js/modules/admin-lead-factory.js");
+    assert.ok(typeof sanitizeAndDeduplicateLeads === "function", "sanitizeAndDeduplicateLeads must be a function");
+
+    // Dirty sample simulating the faulty dashboard PDF state
+    const dirtyLeads = [
+        {
+            id: "lead_seldam",
+            slug: "n-ten-seldam",
+            name: "N ten seldam",
+            category: "Aannemer voor bestrating",
+            phone: "06 12567596",
+            website: "http://www.berendsbestrating.nl/",
+            email: "info@berendsbestrating.nl",
+            hasWebsite: true,
+            pitchHook: "SSL waarschuwing voor Berends",
+            status: "concept_ready"
+        },
+        {
+            id: "lead_berends",
+            slug: "berends",
+            name: "Berends Bestrating & Grondwerk",
+            phone: "06 27 31 94 14",
+            website: "http://www.berendsbestrating.nl/",
+            email: "info@berendsbestrating.nl",
+            hasWebsite: true,
+            status: "concept_ready"
+        },
+        {
+            id: "lead_heinkens_noordlaren",
+            slug: "dakdekker",
+            name: "Dakdekkersbedrijf Heinkens (Noordlaren)",
+            phone: "06 15 42 41 89",
+            website: "http://heinkensdaktechniek.nl/",
+            email: "info@heinkensdaktechniek.nl",
+            hasWebsite: true,
+            status: "concept_ready"
+        },
+        {
+            id: "lead_heinkens_hoogezand",
+            slug: "heinkens-daktechniek",
+            name: "Heinkens Daktechniek (Hoogezand)",
+            phone: "06 15 42 41 89",
+            website: "http://heinkensdaktechniek.nl/",
+            email: "info@heinkensdaktechniek.nl",
+            hasWebsite: true,
+            status: "concept_ready"
+        },
+        {
+            id: "lead_dup_phone",
+            slug: "duplicate-phone-lead",
+            name: "Duplicaat Bedrijf",
+            phone: "06 27 31 94 14", // Identiek aan Berends
+            status: "concept_ready"
+        }
+    ];
+
+    const clean = sanitizeAndDeduplicateLeads(dirtyLeads);
+
+    // Assert dakdekker duplicate is removed
+    assert.ok(!clean.some(l => l.slug === "dakdekker"), "Duplicate 'dakdekker' must be eliminated");
+
+    // Assert only one Heinkens remains
+    const heinkensLeads = clean.filter(l => l.slug === "heinkens-daktechniek");
+    assert.strictEqual(heinkensLeads.length, 1, "Exactly one canonical Heinkens lead must remain");
+    assert.strictEqual(heinkensLeads[0].name, "Heinkens Daktechniek");
+    assert.strictEqual(heinkensLeads[0].phone, "06 15 42 41 89");
+    assert.strictEqual(heinkensLeads[0].website, "http://heinkensdaktechniek.nl/");
+
+    // Assert N ten seldam is completely cleansed of Berends
+    const seldam = clean.find(l => l.slug === "n-ten-seldam");
+    assert.ok(seldam, "N ten seldam must be present");
+    assert.strictEqual(seldam.website, null, "N ten seldam website must be null");
+    assert.strictEqual(seldam.email, null, "N ten seldam email must be null");
+    assert.strictEqual(seldam.hasWebsite, false, "N ten seldam hasWebsite must be false");
+    assert.strictEqual(seldam.archetype, "A_TRADE_DIRECT", "N ten seldam archetype must be A_TRADE_DIRECT");
+    assert.ok(!seldam.pitchHook.includes("SSL"), "Pitch hook must not mention SSL");
+    assert.ok(!seldam.pitch.bodyPlain.includes("Berends"), "Pitch body must not mention Berends");
+
+    // Assert phone duplicate was rejected
+    assert.ok(!clean.some(l => l.slug === "duplicate-phone-lead"), "Duplicate phone lead must be removed");
+
+    // Total clean count should be 2 (seldam, berends, heinkens = 3)
+    assert.strictEqual(clean.length, 3, "Dirty 5 leads should clean into 3 unique leads");
+});
+
 
 // ========================================================
 // FINAL SUMMARY

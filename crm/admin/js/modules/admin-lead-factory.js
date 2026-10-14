@@ -22,6 +22,98 @@ export function sanitizePitchHtml(html) {
         .replace(/href\s*=\s*(['"])\s*javascript:[^'"]*\1/gi, 'href="#"');
 }
 
+/**
+ * Saniteert en dedupliceert leads: elimineert duplicaten (Heinkens), ontkoppelt Berends van N ten seldam,
+ * en dedupliceert op slug, telefoonnummer en domeinnaam.
+ */
+export function sanitizeAndDeduplicateLeads(rawLeads = []) {
+    if (!Array.isArray(rawLeads)) return [];
+
+    const phoneMap = new Map();
+    const domainMap = new Map();
+    const slugMap = new Map();
+    const cleanList = [];
+
+    for (const raw of rawLeads) {
+        if (!raw || typeof raw !== 'object') continue;
+        if (raw.status === 'skipped_has_website' || raw.status === 'skipped') continue;
+
+        const l = { ...raw };
+
+        // 1. Elimineer direct het duplicaat 'dakdekker' (samengevoegd in heinkens-daktechniek)
+        if (l.slug === 'dakdekker') {
+            continue;
+        }
+
+        // 2. Normaliseer canonieke Heinkens Daktechniek (Hoogezand)
+        if (l.slug === 'heinkens-daktechniek' || (l.name && l.name.toLowerCase().includes('heinkens'))) {
+            l.slug = 'heinkens-daktechniek';
+            l.name = 'Heinkens Daktechniek';
+            l.category = 'Dakdekker & Dakrenovatie';
+            l.phone = '06 15 42 41 89';
+            l.normalizedPhone = '0615424189';
+            l.whatsAppNumber = '31615424189';
+            l.website = 'http://heinkensdaktechniek.nl/';
+            l.hasWebsite = true;
+            l.address = 'Burgemeester van Roijenstraat Oost 242, 9602 CP Hoogezand';
+            l.liveUrl = 'https://creationaltfix.nl/concept/heinkens-daktechniek/';
+        }
+
+        // 3. Ontkoppel Berends Bestrating data definitief van N ten seldam
+        if (l.slug === 'n-ten-seldam' || (l.name && l.name.toLowerCase().includes('seldam'))) {
+            l.slug = 'n-ten-seldam';
+            l.name = 'N ten seldam';
+            l.category = 'Stratenmaker & Hovenier';
+            l.phone = '06 12567596';
+            l.normalizedPhone = '0612567596';
+            l.whatsAppNumber = '31612567596';
+            l.hasWhatsApp = true;
+            l.hasWebsite = false;
+            l.website = null;
+            l.email = null;
+            l.archetype = 'A_TRADE_DIRECT';
+            l.archetypeLabel = 'Direct Bellen (Geen Website)';
+            l.strengths = ['Bewezen vakmanschap in sierbestrating & grondwerk', 'Direct contact via telefoon of WhatsApp'];
+            l.liveUrl = 'https://creationaltfix.nl/concept/n-ten-seldam/';
+            if (!l.pitchHook || l.pitchHook.includes('SSL') || l.pitchHook.includes('Berends')) {
+                l.pitchHook = "We zagen jouw vermelding voor N ten seldam op Google Maps in Veendam. Omdat potentiële klanten mobiel zoeken naar een betrouwbare stratenmaker, hebben we alvast een snel concept klaargezet met directe belknoppen.";
+            }
+            if (!l.pitch || l.pitch.bodyPlain?.includes('Berends')) {
+                l.pitch = {
+                    subject: "Mobiel website concept voor N ten seldam",
+                    bodyPlain: "Beste N ten seldam,\n\nWe zagen jouw vermelding voor N ten seldam op Google Maps in Veendam. Omdat veel particulieren mobiel zoeken naar een stratenmaker, hebben we alvast een snel concept klaargezet:\n👉 https://creationaltfix.nl/concept/n-ten-seldam/\n\nGroet,\nAllard Veldman - Creation+Alt+Fix",
+                    whatsAppText: "Hoi N ten seldam! Allard hier van Creation+Alt+Fix. Ik zag jullie Google vermelding zonder website en heb alvast een mobiel concept klaargezet: https://creationaltfix.nl/concept/n-ten-seldam/ - Kijk er gerust naar op je telefoon!"
+                };
+            }
+        }
+
+        // 4. Deduplicatie op telefoonnummer (laatste 8 cijfers)
+        const rawPhone = l.phone ? String(l.phone).replace(/\D/g, '') : null;
+        const phoneSuffix = rawPhone && rawPhone.length >= 8 ? rawPhone.slice(-8) : rawPhone;
+        if (phoneSuffix && phoneMap.has(phoneSuffix)) {
+            continue;
+        }
+
+        // 5. Deduplicatie op domeinnaam
+        const domain = l.website ? l.website.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').trim() : null;
+        if (domain && domainMap.has(domain)) {
+            continue;
+        }
+
+        // 6. Deduplicatie op unieke slug
+        if (slugMap.has(l.slug)) {
+            continue;
+        }
+
+        if (phoneSuffix) phoneMap.set(phoneSuffix, l);
+        if (domain) domainMap.set(domain, l);
+        slugMap.set(l.slug, l);
+        cleanList.push(l);
+    }
+
+    return cleanList;
+}
+
 let _leads = [];
 let _activeFilter = 'concept_ready';
 let _searchTerm = '';
@@ -62,7 +154,7 @@ function updateFilterPillsUI() {
  * Initialiseert de Autonome Leads view in het CRM Admin Dashboard
  */
 export function initLeadFactoryModule(leads = [], handlers = {}) {
-    _leads = leads || [];
+    _leads = sanitizeAndDeduplicateLeads(leads || []);
     if (handlers && Object.keys(handlers).length > 0) {
         _factoryHandlers = handlers;
     }

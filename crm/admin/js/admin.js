@@ -46,7 +46,7 @@ import {
 } from "../../js/uptime-monitor.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
 import { initSubscriptionsTab } from "./modules/admin-subscriptions.js";
-import { initLeadFactoryModule } from "./modules/admin-lead-factory.js";
+import { initLeadFactoryModule, sanitizeAndDeduplicateLeads } from "./modules/admin-lead-factory.js";
 
 import { 
     renderKanbanBoard as renderKanbanBoardModule, 
@@ -568,6 +568,9 @@ function setupNavigation() {
     });
 }
 
+export { sanitizeAndDeduplicateLeads };
+
+
 /**
  * Laadt de data voor het Autonome Leads Werkstation en initialiseert de module
  */
@@ -586,7 +589,22 @@ async function setupAndRenderLeadFactory() {
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 1200);
-                const bridgeResp = await fetch(`${host}/api/leads`, { signal: controller.signal });
+
+                // Handshake voor persistent sessietoken indien vereist
+                let token = '';
+                try {
+                    const tokenResp = await fetch(`${host}/api/session-token`, { signal: controller.signal });
+                    if (tokenResp.ok) {
+                        const tJson = await tokenResp.json();
+                        token = tJson.token || '';
+                    }
+                } catch (_) {}
+
+                const leadsUrl = token ? `${host}/api/leads?token=${encodeURIComponent(token)}` : `${host}/api/leads`;
+                const bridgeResp = await fetch(leadsUrl, { 
+                    headers: token ? { 'x-caf-auth': token } : {},
+                    signal: controller.signal 
+                });
                 clearTimeout(timeout);
                 if (bridgeResp.ok) {
                     const bJson = await bridgeResp.json();
@@ -599,7 +617,20 @@ async function setupAndRenderLeadFactory() {
         }
     } catch (_) {}
 
-    // 2. Fetch leads.json met cache-buster indien bridge niet direct antwoordde
+    // 2. Probeer veilige PHP API endpoint op de server (leest direct en vers crm/admin/data/leads.json)
+    if (leads.length === 0) {
+        try {
+            const apiResp = await fetch(`../api/leads.php?t=${Date.now()}`);
+            if (apiResp.ok) {
+                const json = await apiResp.json();
+                if (json && Array.isArray(json.leads) && json.leads.length > 0) {
+                    leads = json.leads;
+                }
+            }
+        } catch (_) {}
+    }
+
+    // 3. Fetch leads.json met cache-buster indien direct bereikbaar (bijv. lokale dev server)
     if (leads.length === 0) {
         try {
             const resp = await fetch(`./data/leads.json?t=${Date.now()}`);
@@ -609,12 +640,10 @@ async function setupAndRenderLeadFactory() {
                     leads = json.leads;
                 }
             }
-        } catch (err) {
-            // Lokale bestandssysteem fetch fallback
-        }
+        } catch (_) {}
     }
 
-    // 3. Firestore fallback
+    // 4. Firestore fallback
     if (leads.length === 0 && db) {
         try {
             const querySnapshot = await getDocs(collection(db, "leads_factory"));
@@ -705,13 +734,32 @@ async function setupAndRenderLeadFactory() {
         }
     }
 
-    // Sanering: Verwijder per direct alle spook-leads en skipped records
-    leads = (leads || []).filter(l => l && l.status !== 'skipped_has_website');
-
     if (leads.length === 0) {
         leads = defaultLeads;
     }
+
+    // 5. Voer ALTIJD de strikte automatische sanitizer en deduplicatie uit
+    leads = sanitizeAndDeduplicateLeads(leads);
     localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
+
+    // 6. Automatische Firestore Healer & Synchronisatie
+    // Wanneer beheerder is ingelogd: ruim Firestore direct op van verouderde duplicaten
+    if (db) {
+        try {
+            const obsoleteDocIds = ['lead_dakdekker', 'dakdekker'];
+            for (const docId of obsoleteDocIds) {
+                deleteDoc(doc(db, "leads_factory", docId)).catch(() => {});
+            }
+            const seldamLead = leads.find(l => l.slug === 'n-ten-seldam');
+            if (seldamLead && seldamLead.id) {
+                setDoc(doc(db, "leads_factory", seldamLead.id), seldamLead, { merge: true }).catch(() => {});
+            }
+            const heinkensLead = leads.find(l => l.slug === 'heinkens-daktechniek');
+            if (heinkensLead && heinkensLead.id) {
+                setDoc(doc(db, "leads_factory", heinkensLead.id), heinkensLead, { merge: true }).catch(() => {});
+            }
+        } catch (_) {}
+    }
 
     const factoryHandlers = {
         onRefresh: async () => {
