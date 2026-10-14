@@ -7,6 +7,7 @@ import { FACTORY_CONFIG } from '../config/factory-config.js';
 export async function searchGoogleMaps(query, options = {}) {
   const limit = options.limit || FACTORY_CONFIG.scraper.maxResultsPerQuery || 10;
   const headless = options.headless !== undefined ? options.headless : true;
+  const existingLeads = Array.isArray(options.existingLeads) ? options.existingLeads : [];
 
   console.log(`🔍 [Crawler] Start zoekopdracht op Google Maps: "${query}" (Doellimiet: ${limit})...`);
 
@@ -82,8 +83,15 @@ export async function searchGoogleMaps(query, options = {}) {
           // Extraheer bedrijfsdetails uit het rechter/zijpaneel
           const details = await extractPlaceDetails(page, rawAria, href);
           if (details && details.name) {
-            results.push(details);
-            console.log(`   ✔️ Gevonden: ${details.name} | Tel: ${details.phone || 'Geen'} | Website: ${details.website || '❌ GEEN (Hoge potentie!)'}`);
+            const sanitized = sanitizeLeadData(details);
+            if (sanitized) {
+              if (isDuplicateLead(sanitized, results) || isDuplicateLead(sanitized, existingLeads)) {
+                console.log(`   ⏭️ [Crawler] Duplicaat overgeslagen tijdens crawl: ${sanitized.name} (match op website/telefoon)`);
+                continue;
+              }
+              results.push(sanitized);
+              console.log(`   ✔️ Gevonden: ${sanitized.name} | Tel: ${sanitized.phone || 'Geen'} | Website: ${sanitized.website || '❌ GEEN (Hoge potentie!)'}`);
+            }
           }
         } catch (err) {
           console.warn(`⚠️ [Crawler] Fout bij verwerken van listing ${i}: ${err.message}`);
@@ -95,7 +103,12 @@ export async function searchGoogleMaps(query, options = {}) {
       if (await titleEl.isVisible({ timeout: 3000 })) {
         const name = await titleEl.innerText();
         const singleDetails = await extractPlaceDetails(page, name, page.url());
-        if (singleDetails) results.push(singleDetails);
+        if (singleDetails) {
+          const sanitized = sanitizeLeadData(singleDetails);
+          if (sanitized && !isDuplicateLead(sanitized, results) && !isDuplicateLead(sanitized, existingLeads)) {
+            results.push(sanitized);
+          }
+        }
       }
     }
 
@@ -178,6 +191,10 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
     if (!address || !phone || !website) {
       const detailButtons = container.querySelectorAll('button[data-item-id], a[data-item-id], button[aria-label], a[aria-label]');
       for (const btn of detailButtons) {
+        // Sluit gerelateerde bedrijven en advertenties uit om cross-contamination te voorkomen
+        if (btn.closest('div[aria-label*="Vergelijkbaar" i], div[aria-label*="Mensen zochten ook" i], div[aria-label*="In de buurt" i], div[data-attrid*="kc:"]')) {
+          continue;
+        }
         const label = (btn.getAttribute('aria-label') || '').toLowerCase();
         const text = (btn.innerText || '').toLowerCase();
         const href = btn.getAttribute('href') || '';
@@ -234,6 +251,55 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       scannedAt: new Date().toISOString()
     };
   }, { fallbackName, mapsUrl });
+}
+
+/**
+ * Normaliseert een website domein (zonder protocol, www en trailing slashes) voor deduplicatie
+ * @param {string} url 
+ * @returns {string|null}
+ */
+export function normalizeDomain(url) {
+  if (!url || typeof url !== 'string') return null;
+  return url.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').trim() || null;
+}
+
+/**
+ * Normaliseert telefoonnummer naar laatste 8 cijfers ter herkenning van overlappende notaties
+ * @param {string} phone 
+ * @returns {string|null}
+ */
+export function normalizePhoneDigits(phone) {
+  if (!phone || typeof phone !== 'string') return null;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 8 ? digits.slice(-8) : (digits.length >= 6 ? digits : null);
+}
+
+/**
+ * Controleert of een kandidaat-lead al in de resultatenlijst of bestaande database voorkomt
+ * Vergelijkt op slug, genormaliseerd domein en telefoonnummer
+ * @param {Object} candidate 
+ * @param {Array} existingList 
+ * @returns {boolean}
+ */
+export function isDuplicateLead(candidate, existingList = []) {
+  if (!candidate || !Array.isArray(existingList)) return false;
+  const candSlug = candidate.slug;
+  const candDomain = normalizeDomain(candidate.website);
+  const candPhone = normalizePhoneDigits(candidate.phone);
+
+  return existingList.some(existing => {
+    if (!existing) return false;
+    if (candSlug && existing.slug && candSlug === existing.slug) return true;
+    if (candPhone && existing.phone) {
+      const exPhone = normalizePhoneDigits(existing.phone);
+      if (exPhone && candPhone === exPhone) return true;
+    }
+    if (candDomain && existing.website) {
+      const exDomain = normalizeDomain(existing.website);
+      if (exDomain && candDomain === exDomain) return true;
+    }
+    return false;
+  });
 }
 
 /**

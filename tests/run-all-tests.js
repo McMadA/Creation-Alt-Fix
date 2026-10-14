@@ -2056,6 +2056,127 @@ test("Concept Generator en concept websites voldoen intrinsiek aan de 20 audit c
     }
 });
 
+test("maps-crawler and deep-intelligence enforce lead deduplication and cross-contamination defense", async () => {
+    const { isDuplicateLead, normalizeDomain, normalizePhoneDigits } = await import("../factory/discovery/maps-crawler.js");
+    const { isWebsiteMatchingBusiness, enrichBusinessProfile } = await import("../factory/enrichment/deep-intelligence.js");
+
+    // 1. Phone & Domain normalizers
+    assert.strictEqual(normalizeDomain("https://www.heinkensdaktechniek.nl/contact/"), "heinkensdaktechniek.nl");
+    assert.strictEqual(normalizeDomain("http://BerendsBestrating.nl/"), "berendsbestrating.nl");
+    assert.strictEqual(normalizePhoneDigits("+31 6 15 42 41 89"), "15424189");
+    assert.strictEqual(normalizePhoneDigits("06-15424189"), "15424189");
+
+    // 2. Crawler deduplication
+    const existingList = [
+        { slug: "heinkens-daktechniek", phone: "06 15 42 41 89", website: "http://heinkensdaktechniek.nl/" }
+    ];
+
+    // Same slug
+    assert.strictEqual(isDuplicateLead({ slug: "heinkens-daktechniek", phone: "06 99 99 99 99" }, existingList), true);
+    // Same phone with different format
+    assert.strictEqual(isDuplicateLead({ slug: "dakdekker-nieuw", phone: "+31 6 1542 4189" }, existingList), true);
+    // Same website with different protocol/www
+    assert.strictEqual(isDuplicateLead({ slug: "dakdekker-extra", website: "https://www.heinkensdaktechniek.nl/" }, existingList), true);
+    // Unique new business
+    assert.strictEqual(isDuplicateLead({ slug: "uniek-bedrijf", phone: "06 11 22 33 44", website: "https://uniek.nl/" }, existingList), false);
+
+    // 3. Cross-contamination validation (business name vs website domain)
+    assert.strictEqual(isWebsiteMatchingBusiness("Heinkens Daktechniek", "http://heinkensdaktechniek.nl/"), true);
+    assert.strictEqual(isWebsiteMatchingBusiness("Berends Bestrating & Grondwerk", "http://www.berendsbestrating.nl/"), true);
+    assert.strictEqual(isWebsiteMatchingBusiness("N ten seldam", "http://www.berendsbestrating.nl/"), false, "Must reject Berends website for N ten seldam");
+
+    // 4. Autonomous decoupling in enrichBusinessProfile
+    const mismatchedLead = {
+        name: "N ten seldam",
+        slug: "n-ten-seldam-test",
+        phone: "06 12567596",
+        website: "http://www.berendsbestrating.nl/",
+        category: "Stratenmaker"
+    };
+    const enriched = await enrichBusinessProfile(mismatchedLead);
+    assert.strictEqual(enriched.website, null, "enrichBusinessProfile must decouple mismatched website");
+    assert.strictEqual(enriched.hasWebsite, false);
+    assert.strictEqual(enriched.archetype, "A_TRADE_DIRECT");
+});
+
+test("Factory and CRM leads databases maintain zero duplicates, exact synchronization and clean DRM markup", () => {
+    const factoryPath = path.join(ROOT_DIR, "factory/data/leads.json");
+    const crmPath = path.join(ROOT_DIR, "crm/admin/data/leads.json");
+
+    assert.ok(fs.existsSync(factoryPath) && fs.existsSync(crmPath), "Both leads.json files must exist");
+    const factoryRaw = fs.readFileSync(factoryPath, "utf-8");
+    const crmRaw = fs.readFileSync(crmPath, "utf-8");
+    assert.strictEqual(factoryRaw, crmRaw, "factory and crm leads.json must be 100% identical");
+
+    const data = JSON.parse(factoryRaw);
+    const leads = data.leads;
+
+    // Deduplication assertion
+    const phoneSet = new Set();
+    const websiteSet = new Set();
+    const slugSet = new Set();
+
+    for (const lead of leads) {
+        if (lead.phone) {
+            const digits = lead.phone.replace(/\D/g, "");
+            const suffix = digits.length >= 8 ? digits.slice(-8) : digits;
+            assert.ok(!phoneSet.has(suffix), `Duplicate phone found: ${lead.phone} in ${lead.slug}`);
+            phoneSet.add(suffix);
+        }
+        if (lead.website) {
+            const domain = lead.website.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").trim();
+            assert.ok(!websiteSet.has(domain), `Duplicate website found: ${lead.website} in ${lead.slug}`);
+            websiteSet.add(domain);
+        }
+        assert.ok(!slugSet.has(lead.slug), `Duplicate slug found: ${lead.slug}`);
+        slugSet.add(lead.slug);
+    }
+
+    // Heinkens single canon lead
+    assert.ok(!leads.some(l => l.slug === "dakdekker"), "Duplicate 'dakdekker' must be eliminated");
+    const heinkens = leads.find(l => l.slug === "heinkens-daktechniek");
+    assert.ok(heinkens, "Canonical 'heinkens-daktechniek' must exist");
+    assert.ok(heinkens.phone.includes("15 42 41 89"), "Heinkens must have correct phone");
+    assert.ok(heinkens.website.includes("heinkensdaktechniek.nl"), "Heinkens must have correct website");
+
+    // N ten seldam integrity
+    const seldam = leads.find(l => l.slug === "n-ten-seldam");
+    assert.ok(seldam, "Lead 'n-ten-seldam' must exist");
+    assert.strictEqual(seldam.website, null, "N ten seldam website must be null");
+    assert.strictEqual(seldam.email, null, "N ten seldam email must be null");
+    assert.strictEqual(seldam.hasWebsite, false, "N ten seldam hasWebsite must be false");
+    assert.strictEqual(seldam.archetype, "A_TRADE_DIRECT", "N ten seldam archetype must be A_TRADE_DIRECT");
+    assert.ok(!seldam.strengths[0].includes("SSL"), "N ten seldam strength must not reference SSL");
+
+    // Concept DRM and HTML integrity across all 20 concept pages
+    const conceptDir = path.join(ROOT_DIR, "website/concept");
+    for (const l of leads) {
+        const file = path.join(conceptDir, l.slug, "index.html");
+        assert.ok(fs.existsSync(file), `Concept file must exist for ${l.slug}`);
+        const html = fs.readFileSync(file, "utf-8");
+
+        // Exactly one script guard
+        const guards = (html.match(/<script id="caf-security-guard">/g) || []).length;
+        assert.strictEqual(guards, 1, `${l.slug} must have exactly 1 caf-security-guard script`);
+
+        // No leaked DRM outside script
+        const withoutGuard = html.replace(/<script id="caf-security-guard">[\s\S]*?<\/script>/, "");
+        assert.ok(!withoutGuard.includes("Onbevoegde Kopie Gedetecteerd"), `${l.slug} must not leak DRM text outside script`);
+        assert.ok(!withoutGuard.includes("CAF_SECURITY_UNAUTHORIZED_HOST"), `${l.slug} must not leak DRM exception outside script`);
+
+        // Valid structural tags
+        const bodyOpens = (html.match(/<body/gi) || []).length;
+        const bodyCloses = (html.match(/<\/body>/gi) || []).length;
+        assert.strictEqual(bodyOpens, 1, `${l.slug} must have exactly 1 opening body tag`);
+        assert.strictEqual(bodyCloses, 1, `${l.slug} must have exactly 1 closing body tag`);
+
+        const headOpens = (html.match(/<head[\s>]/gi) || []).length;
+        const headCloses = (html.match(/<\/head>/gi) || []).length;
+        assert.strictEqual(headOpens, 1, `${l.slug} must have exactly 1 opening head tag`);
+        assert.strictEqual(headCloses, 1, `${l.slug} must have exactly 1 closing head tag`);
+    }
+});
+
 
 // ========================================================
 // FINAL SUMMARY

@@ -867,62 +867,6 @@
     } catch(e) {}
   </script>
 
-</body></html>';
-    throw new Error("CAF_SECURITY_UNAUTHORIZED_HOST");
-  }
-
-  // 2. ANTI-INSPECT DEFENSE: Blokkeer Rechtermuisklik
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    showSecurityToast("Rechtermuisklik en broncode-inspectie zijn uitgeschakeld ter bescherming van intellectueel eigendom.");
-    return false;
-  }, { capture: true });
-
-  // 3. BLOKKEER INSPECTIE SNELTOETSEN (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
-  document.addEventListener('keydown', function(e) {
-    if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-      (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S'))
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      showSecurityToast("Inspectie en broncode-export zijn beveiligd door Creation+Alt+Fix.");
-      return false;
-    }
-  }, { capture: true });
-
-
-  function showSecurityToast(msg) {
-    let t = document.getElementById('caf-sec-toast');
-    if (!t) {
-      t = document.createElement('div');
-      t.id = 'caf-sec-toast';
-      t.style.position = 'fixed';
-      t.style.bottom = '24px';
-      t.style.left = '50%';
-      t.style.transform = 'translateX(-50%)';
-      t.style.background = 'rgba(15, 23, 42, 0.96)';
-      t.style.color = '#F8FAFC';
-      t.style.padding = '12px 24px';
-      t.style.borderRadius = '8px';
-      t.style.border = '1px solid #EF4444';
-      t.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
-      t.style.fontSize = '0.85rem';
-      t.style.zIndex = '9999999';
-      t.style.fontFamily = 'sans-serif';
-      t.style.textAlign = 'center';
-      t.style.transition = 'opacity 0.3s ease';
-      document.body.appendChild(t);
-    }
-    t.innerHTML = '&#128274; <strong>Creation+Alt+Fix Beveiliging:</strong> ' + msg;
-    t.style.opacity = '1';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);
-  }
-})();
-</script>
-
 <script id="caf-security-guard">
 /*
  * INTELLECTUEEL EIGENDOM VAN CREATION+ALT+FIX (KvK 99986191).

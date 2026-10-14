@@ -17,11 +17,21 @@ export async function enrichBusinessProfile(business) {
     profile.hasWhatsApp = false;
   }
 
-  // 2. Echte live website / SSL verificatie
+  // 2. Data Integrity: Valideer of gekoppelde website werkelijk bij het bedrijf hoort (voorkom cross-contamination)
+  if (profile.website) {
+    if (!isWebsiteMatchingBusiness(profile.name, profile.website)) {
+      console.warn(`⚠️ [Enrichment] Website "${profile.website}" hoort niet bij "${profile.name}". Website losgekoppeld.`);
+      profile.website = null;
+      profile.hasWebsite = false;
+      profile.email = null;
+    }
+  }
+
+  // 3. Echte live website / SSL verificatie
   const probe = await probeWebsite(profile.website);
   profile.websiteProbe = probe;
 
-  // 3. Kwalificatiescore & Potentie-analyse
+  // 4. Kwalificatiescore & Potentie-analyse
   const potentialAnalysis = analyzeBusinessPotential(profile, probe);
   profile.score = potentialAnalysis.score;
   profile.archetype = potentialAnalysis.archetype;
@@ -242,10 +252,22 @@ async function mineEmailFromWebsite(url) {
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
     const matches = text.match(emailRegex);
     if (matches && matches.length > 0) {
+      let targetHost = '';
+      try {
+        const u = new URL(url.startsWith('http') ? url : 'http://' + url);
+        targetHost = u.hostname.toLowerCase().replace(/^www\./, '');
+      } catch {}
+
       // Filter veelvoorkomende dummy/asset emails en valideer lengte & RFC formaat
+      // Zorg dat de e-mail toebehoort aan het domein van de website zelf (geen externe partners/ontwerpers)
       const filtered = matches.filter(e => {
         const clean = e.toLowerCase().trim();
+        const emailDomain = clean.split('@')[1];
+        if (!emailDomain) return false;
+        const isDomainMatch = !targetHost || emailDomain === targetHost || emailDomain.endsWith('.' + targetHost) || targetHost.endsWith('.' + emailDomain);
+
         return clean.length <= 100 && 
+               isDomainMatch &&
                !clean.includes('example') && 
                !clean.includes('.png') && 
                !clean.includes('.jpg') && 
@@ -261,6 +283,70 @@ async function mineEmailFromWebsite(url) {
     if (timeout) clearTimeout(timeout);
   }
   return null;
+}
+
+/**
+ * Valideert of een website plausibel bij het bedrijf hoort en niet bij een ander bedrijf (CWE-20 / Data Integrity)
+ * Voorkomt dat nevenbedrijven of concurrenten per abuis gekoppeld worden aan een lead.
+ * @param {string} businessName 
+ * @param {string} websiteUrl 
+ * @returns {boolean}
+ */
+export function isWebsiteMatchingBusiness(businessName, websiteUrl) {
+  if (!websiteUrl || typeof websiteUrl !== 'string') return false;
+  if (!businessName || typeof businessName !== 'string') return true;
+
+  try {
+    const parsed = new URL(websiteUrl.startsWith('http') ? websiteUrl : 'http://' + websiteUrl);
+    const domain = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    const domainBase = domain.split('.')[0].replace(/[^a-z0-9]/g, '');
+
+    const stopWords = new Set([
+      'de', 'het', 'een', 'en', 'van', 'der', 'den', 'te', 'in', 'op', 'voor',
+      'bv', 'b.v.', 'vof', 'v.o.f.', 'zzp', 'holding', 'groep', 'bedrijf', 'diensten',
+      'service', 'nederland', 'noord', 'groningen', 'hoogezand', 'veendam'
+    ]);
+
+    const nameTokens = businessName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(t => t.length >= 2 && !stopWords.has(t));
+
+    // Als de bedrijfsnaam geen bruikbare tokens heeft, vertrouw crawler
+    if (nameTokens.length === 0) return true;
+
+    // 1. Minstens één significant token (>= 3 letters) uit de bedrijfsnaam komt voor in het domein
+    const significantTokens = nameTokens.filter(t => t.length >= 3);
+    if (significantTokens.length > 0) {
+      if (significantTokens.some(token => domainBase.includes(token))) {
+        return true;
+      }
+    }
+
+    // 2. Acroniem match (bijv. "M&A delivery service" -> "ma-ds" of "mads")
+    const acronym = nameTokens.map(t => t[0]).join('');
+    if (acronym.length >= 2 && domainBase.includes(acronym)) {
+      return true;
+    }
+
+    // 3. Volledige naam match zonder leestekens/spaties
+    const cleanFullName = businessName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (cleanFullName.length >= 4 && (domainBase.includes(cleanFullName) || cleanFullName.includes(domainBase))) {
+      return true;
+    }
+
+    // 4. Match in het URL-pad (bijv. platforms zoals devakman.info/dennisdijkema)
+    const fullPath = (parsed.hostname + parsed.pathname).toLowerCase();
+    if (nameTokens.some(token => token.length >= 3 && fullPath.includes(token))) {
+      return true;
+    }
+
+    // Geen match gevonden: website hoort hoogstwaarschijnlijk bij een ander bedrijf!
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 /**
