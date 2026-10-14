@@ -145,19 +145,22 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
     const catBtn = document.querySelector('button[jsaction*="category"], button[class*="DkEaL"]');
     if (catBtn) category = catBtn.innerText.trim();
 
+    // Scope alle selectors strikt tot het actieve detailpaneel van Google Maps
+    const container = document.querySelector('div[role="main"]') || document.body;
+
     // 4. Adres, Telefoon en Website uit specifieke Google Maps elementen
     let address = '';
     let phone = '';
     let website = '';
 
-    // Website via data-item-id of authority link
-    const webEl = document.querySelector('a[data-item-id="authority"], a[data-item-id*="website"], a[aria-label*="Website:"]');
+    // Website via data-item-id of authority link binnen de detailcontainer
+    const webEl = container.querySelector('a[data-item-id="authority"], a[data-item-id*="website"], a[aria-label*="Website:" i], a[data-tooltip*="website" i]');
     if (webEl) {
       website = webEl.getAttribute('href') || '';
     }
 
-    // Telefoon via data-item-id of phone button
-    const phoneEl = document.querySelector('button[data-item-id*="phone:"], button[data-tooltip*="telefoonnummer"], button[aria-label*="Telefoon:"]');
+    // Telefoon via data-item-id of phone button binnen de detailcontainer
+    const phoneEl = container.querySelector('button[data-item-id*="phone:"], button[data-tooltip*="telefoonnummer" i], button[aria-label*="Telefoon:" i]');
     if (phoneEl) {
       const label = phoneEl.getAttribute('aria-label') || phoneEl.innerText || '';
       const match = label.match(/(\+?31|0)[0-9\s-]{8,14}/);
@@ -165,25 +168,25 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       else phone = label.replace(/Telefoon:|Phone:/i, '').trim();
     }
 
-    // Adres via data-item-id of address button
-    const addrEl = document.querySelector('button[data-item-id*="address"], button[data-tooltip*="adres"], button[aria-label*="Adres:"]');
+    // Adres via data-item-id of address button binnen de detailcontainer
+    const addrEl = container.querySelector('button[data-item-id*="address"], button[data-tooltip*="adres" i], button[aria-label*="Adres:" i]');
     if (addrEl) {
       address = (addrEl.getAttribute('aria-label') || addrEl.innerText || '').replace(/Adres:|Address:/i, '').trim();
     }
 
-    // Fallback door alle knoppen/links te scannen als specifieke selectors ontbraken
+    // Fallback uitsluitend binnen container en met strikte labelvalidatie (voorkomt willekeurige links van andere bedrijven)
     if (!address || !phone || !website) {
-      const detailButtons = document.querySelectorAll('button[data-item-id], a[data-item-id], button[aria-label], a[aria-label]');
+      const detailButtons = container.querySelectorAll('button[data-item-id], a[data-item-id], button[aria-label], a[aria-label]');
       for (const btn of detailButtons) {
-        const label = btn.getAttribute('aria-label') || '';
-        const text = btn.innerText || '';
+        const label = (btn.getAttribute('aria-label') || '').toLowerCase();
+        const text = (btn.innerText || '').toLowerCase();
         const href = btn.getAttribute('href') || '';
 
-        if (!address && (label.includes('Adres:') || label.includes('Address:'))) {
-          address = label.replace(/Adres:|Address:/i, '').trim();
-        } else if (!phone && (label.includes('Telefoon:') || label.includes('Phone:') || href.startsWith('tel:'))) {
-          phone = (label.replace(/Telefoon:|Phone:/i, '').trim() || text.trim() || href.replace('tel:', '')).trim();
-        } else if (!website && (label.includes('Website:') || (href.startsWith('http') && !href.includes('google.com')))) {
+        if (!address && (label.includes('adres:') || label.includes('address:'))) {
+          address = (btn.getAttribute('aria-label') || '').replace(/Adres:|Address:/i, '').trim();
+        } else if (!phone && (label.includes('telefoon:') || label.includes('phone:') || href.startsWith('tel:'))) {
+          phone = ((btn.getAttribute('aria-label') || '').replace(/Telefoon:|Phone:/i, '').trim() || text.trim() || href.replace('tel:', '')).trim();
+        } else if (!website && (label.includes('website:') || label.includes('site:')) && href.startsWith('http') && !href.includes('google.')) {
           website = href;
         }
       }

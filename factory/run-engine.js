@@ -90,10 +90,28 @@ export class LeadFactoryEngine {
 
   isLeadProcessed(db, business) {
     const slug = business.slug;
-    const phone = business.phone ? business.phone.replace(/\D/g, '') : null;
+    const rawPhone = business.phone ? business.phone.replace(/\D/g, '') : null;
+    const phoneSuffix = rawPhone && rawPhone.length >= 8 ? rawPhone.slice(-8) : null;
+    
+    // Genormaliseerd domein (zonder protocol, www en trailing slashes)
+    const normalizeDomain = (url) => {
+      if (!url) return null;
+      return url.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').trim();
+    };
+    const incomingDomain = normalizeDomain(business.website);
+
     const inDb = db.leads.some(l => {
       if (l.slug === slug) return true;
-      if (phone && l.phone && l.phone.replace(/\D/g, '') === phone) return true;
+      // Vergelijk telefoonnummers op de laatste 8 cijfers (matcht 06-, +316 en landlijnen)
+      if (phoneSuffix && l.phone) {
+        const existingCleanPhone = l.phone.replace(/\D/g, '');
+        if (existingCleanPhone.endsWith(phoneSuffix)) return true;
+      }
+      // Vergelijk websites op hoofddomein
+      if (incomingDomain && l.website) {
+        const existingDomain = normalizeDomain(l.website);
+        if (existingDomain && incomingDomain === existingDomain) return true;
+      }
       return false;
     });
     if (inDb) return true;
