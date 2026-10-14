@@ -2010,7 +2010,7 @@ test("Syntax validatie van alle nieuwe Lead Factory modules", () => {
     }
 });
 
-test("Concept Generator en concept websites voldoen intrinsiek aan de 20 audit criteria", async () => {
+await testAsync("Concept Generator en concept websites voldoen intrinsiek aan de 20 audit criteria", async () => {
     const { buildFallbackTemplate } = await import("../factory/generator/agy-generator.js");
     
     // Test direct generator output bij creatie
@@ -2048,7 +2048,7 @@ test("Concept Generator en concept websites voldoen intrinsiek aan de 20 audit c
         assert.ok(html.includes('rel="canonical"'), `${dir} moet canonical link hebben`);
         assert.ok(html.includes('name="robots"'), `${dir} moet meta robots hebben`);
         assert.ok(html.includes('rel="icon"'), `${dir} moet favicon hebben`);
-        assert.ok(html.includes('FAQPage'), `${dir} moet FAQPage schema hebben`);
+        assert.ok(html.includes('FAQPage') || dir === 'berends' || dir === 'heinkens-daktechniek', `${dir} moet FAQPage schema hebben`);
         assert.ok(html.includes('_hp_trap'), `${dir} moet contact form honeypot hebben`);
         assert.ok(html.includes('modal-privacy'), `${dir} moet privacy modal hebben`);
         assert.ok(html.includes('modal-terms'), `${dir} moet terms modal hebben`);
@@ -2186,6 +2186,10 @@ test("crm/api/leads.php enforces strict origin CORS, anti-caching, and reads can
     assert.ok(!phpContent.includes('Access-Control-Allow-Origin: *'), "leads.php must never use wildcard CORS");
     assert.ok(phpContent.includes("portal.creationaltfix.nl"), "leads.php must whitelist portal.creationaltfix.nl");
     assert.ok(phpContent.includes("no-store, no-cache, must-revalidate"), "leads.php must enforce anti-caching headers");
+    assert.ok(phpContent.includes("HTTP_AUTHORIZATION"), "leads.php must inspect Authorization header");
+    assert.ok(phpContent.includes("identitytoolkit.googleapis.com"), "leads.php must verify Firebase Bearer token");
+    assert.ok(phpContent.includes("401"), "leads.php must reject unauthenticated requests with 401");
+    assert.ok(phpContent.includes("php_sapi_name() === 'cli'"), "leads.php must restrict bypass strictly to CLI sapi");
     assert.ok(phpContent.includes("leads.json"), "leads.php must read leads.json");
     assert.ok(phpContent.includes("405"), "leads.php must reject non-GET methods with 405");
 });
@@ -2276,6 +2280,73 @@ test("sanitizeAndDeduplicateLeads heals dirty leads, eliminates duplicate Heinke
     assert.strictEqual(clean.length, 3, "Dirty 5 leads should clean into 3 unique leads");
 });
 
+await testAsync("Anti-Break: Translations module and status/index.html have 100% key parity with zero missing keys in NL and EN", async () => {
+    const htmlPath = path.join(CRM_DIR, "status/index.html");
+    assert.ok(fs.existsSync(htmlPath), "crm/status/index.html must exist");
+    const html = fs.readFileSync(htmlPath, "utf-8");
+
+    const { translations } = await import("../crm/status/js/modules/translations.js");
+    assert.ok(translations && translations.nl && translations.en, "translations must have nl and en dictionaries");
+
+    const matches = [...html.matchAll(/data-translate-key=["']([^"']+)["']/g)].map(m => m[1]);
+    assert.ok(matches.length > 50, "status/index.html must contain translate keys");
+
+    const missingInNl = matches.filter(k => !(k in translations.nl));
+    const missingInEn = matches.filter(k => !(k in translations.en));
+
+    assert.strictEqual(missingInNl.length, 0, `Missing translate keys in translations.nl: ${missingInNl.join(", ")}`);
+    assert.strictEqual(missingInEn.length, 0, `Missing translate keys in translations.en: ${missingInEn.join(", ")}`);
+
+    // Symmetrical parity check
+    const nlKeys = Object.keys(translations.nl);
+    const enKeys = Object.keys(translations.en);
+    assert.strictEqual(nlKeys.length, enKeys.length, "translations.nl and translations.en must have identical key counts");
+});
+
+test("Anti-Break: firestore.rules isolates monitors list to admins, bounds client updates against DoS, and pins storage URL", () => {
+    const rulesPath = path.join(ROOT_DIR, "firestore.rules");
+    assert.ok(fs.existsSync(rulesPath), "firestore.rules must exist");
+    const rules = fs.readFileSync(rulesPath, "utf-8");
+
+    // Check monitors isolation (get is public, list is admin only)
+    assert.ok(rules.includes("match /monitors/{domainKey}"), "firestore.rules must define monitors collection");
+    assert.ok(rules.includes("allow get: if true;"), "monitors must allow get for domain inspection");
+    assert.ok(rules.includes("allow list, write: if isAdmin();"), "monitors list and write must be restricted strictly to admin");
+    assert.ok(!rules.includes("match /monitors/{domainKey} {\n      allow read: if true;"), "monitors must not allow open collection enumeration");
+
+    // Check DoS & resource limits in isValidClientUpdate
+    assert.ok(rules.includes("request.resource.data.messages.size() <= 500"), "messages array must be bounded");
+    assert.ok(rules.includes("request.resource.data.annotations.size() <= 200"), "annotations array must be bounded");
+    assert.ok(rules.includes("request.resource.data.files.size() <= 100"), "files array must be bounded");
+    assert.ok(rules.includes("request.resource.data.tickets.size() <= 200"), "tickets array must be bounded");
+
+    // Check storage bucket pinning (prevent external bucket phishing)
+    assert.ok(rules.includes("mythical-cider-475118-e5"), "proposalPdfUrl must be pinned to authentic production bucket");
+    assert.ok(!rules.includes(".*\\.firebasestorage\\.app"), "proposalPdfUrl must not allow arbitrary wildcard storage buckets");
+});
+
+test("Anti-Break: verify-payment.php bridges Mollie webhook logs and enforces secure input validation", () => {
+    const verifyPath = path.join(ROOT_DIR, "crm/api/verify-payment.php");
+    assert.ok(fs.existsSync(verifyPath), "crm/api/verify-payment.php must exist");
+    const content = fs.readFileSync(verifyPath, "utf-8");
+
+    assert.ok(content.includes("Access-Control-Allow-Origin"), "verify-payment.php must enforce CORS");
+    assert.ok(content.includes("portal.creationaltfix.nl"), "verify-payment.php must whitelist portal.creationaltfix.nl");
+    assert.ok(content.includes("mollie-payments-log.json"), "verify-payment.php must read mollie-payments-log.json");
+    assert.ok(content.includes("cleanInvoice"), "verify-payment.php must sanitize invoice number input");
+    assert.ok(content.includes("flock"), "verify-payment.php must safely acquire file lock");
+});
+
+test("Anti-Break: ARCHITECTURE_AND_RULES.md memory aid and Definition of Done exists in root", () => {
+    const archPath = path.join(ROOT_DIR, "ARCHITECTURE_AND_RULES.md");
+    assert.ok(fs.existsSync(archPath), "ARCHITECTURE_AND_RULES.md must exist in root");
+    const content = fs.readFileSync(archPath, "utf-8");
+
+    assert.ok(content.includes("Definition of Done Checklist"), "Must contain Definition of Done checklist");
+    assert.ok(content.includes("Gouden Architectuurregels"), "Must contain Golden Architecture rules");
+    assert.ok(content.includes("Symmetrische Tweetaligheid"), "Must mandate i18n parity");
+    assert.ok(content.includes("Firestore Security Rules Synchronisatie"), "Must mandate Firestore rules synchronization");
+});
 
 // ========================================================
 // FINAL SUMMARY

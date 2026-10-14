@@ -9,14 +9,14 @@
 
 | Metric                             | Status         | Count                                     |
 | :--------------------------------- | :------------- | :---------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **75 Active Epics & Taken (1 Canceled)**  |
-| **Completed Work Items**           | ✅ Done        | **59 Tasks (79%)**                        |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **80 Active Epics & Taken (1 Canceled)**  |
+| **Completed Work Items**           | ✅ Done        | **59 Tasks (74%)**                        |
 | **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (1%)**                          |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **15 Tasks (20%)**                        |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **20 Tasks (25%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**       |
 
 **Sprint Completion Progress:**
-`[████████████████████░░░░] 79% Complete (1 In Progress, 15 in Queue)`
+`[██████████████████░░░░░░] 74% Complete (1 In Progress, 20 in Queue)`
 
 ---
 
@@ -151,6 +151,52 @@
   - **Details**:
     - Uitbreiden van de geografische actieradius naar Groningen-Stad, Assen en Drachten.
     - Batch-grootte verhogen naar 20 concepten per week en conversieratio's analyseren per branche.
+
+#### 🎯 Klantportaal & Opleverings-Automatisering 2027
+- [ ] `[TASK-909]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Geautomatiseerde WhatsApp & E-mail Milestone Triggers (Server-Side)**
+  - **Scope**: `crm/admin/js/project.js`, `crm/api/`, WhatsApp & E-mail Dispatcher, Beveiligde Magic Links
+  - **Huidige Situatie**: Allard stuurt offertes of status-updates momenteel handmatig via WhatsApp of vertrouwt op client-side EmailJS.
+  - **Waarde & Doel**: Een centrale trigger in het admin dashboard: zodra Allard op "Offerte Gereed" of "Design Concept Live" klikt, stuurt het systeem automatisch een branded WhatsApp/e-mail met een beveiligde 1-klik magic-link naar het portaal van de klant (`/status`).
+  - **Details**:
+    - Server-side trigger integreren in `crm/admin/` bij fase-overgangen en milestone updates.
+    - Gepersonaliseerde WhatsApp template en branded e-mail genereren met directe, beveiligde magic-link naar het specifieke klantproject.
+    - Fallback mechanismen borgen en loggen in het interne audit trail logboek.
+
+- [ ] `[TASK-910]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Interactieve Klant Onboarding & Oplever-Checklist in het Klantenportaal**
+  - **Scope**: `crm/status/index.html`, `crm/status/js/status.js`, Klantenportaal Onboarding UI, Firestore Tasks
+  - **Huidige Situatie**: Klanten weten na aanmelding vaak niet precies wat er van hen verwacht wordt (teksten aanleveren, foto's uploaden, domein verhuiscode sturen).
+  - **Waarde & Doel**: Een interactieve takenlijst in het klantenportaal (`/status/`): *"Stap 1: Logo geüpload (Gereed)"*, *"Stap 2: Domein verhuistoken invoeren (Actie vereist)"*, *"Stap 3: Design beoordelen"*. Dit halveert de doorlooptijd van projecten.
+  - **Details**:
+    - Dynamische stappen-checklist renderen in het klantenportaal op basis van de projectfase en benodigde input.
+    - Directe upload- en invoervelden koppelen aan de actiepunten (bv. bestandsuploader direct bij "Logo aanleveren").
+    - Realtime Firestore statusupdates zodat zowel klant als beheerder direct zien welke acties voltooid zijn.
+
+- [ ] `[TASK-911]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Zelfbediening Domein- & E-mail Setup Wizard (met Live DNS-Check via healthcheck.php)**
+  - **Scope**: `crm/status/js/modules/`, `crm/api/healthcheck.php`, DNS Resolver & Verhuiscode Manager
+  - **Huidige Situatie**: Klanten hebben moeite met DNS-records, DKIM, SPF en e-mailconfiguratie bij de oplevering.
+  - **Waarde & Doel**: Een wizard in het klantenportaal waar de klant zijn domeinnaam kan invoeren, de verhuiscode kan droppen, en met 1 klik via de reeds aanwezige `healthcheck.php` live kan zien of zijn DNS-records goed naar Creation+Alt+Fix verwijzen.
+  - **Details**:
+    - Stapsgewijze wizard bouwen in het portaal voor domeinkoppeling en e-mail instellingen.
+    - Veilige invoer voor EPP-verhuiscode koppelen aan het projectdossier in Firestore.
+    - Integratie met `crm/api/healthcheck.php` voor realtime validatie van A-records, CNAME en MX/SPF/DKIM configuratie met duidelijke groen/rood indicatoren en instructies.
+
+- [ ] `[TASK-912]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Gestructureerde Document & Media Vault met Categorieën en Versiebeheer**
+  - **Scope**: `crm/status/`, `crm/admin/`, Firebase Storage, Bestandsbeheer & Categorisering
+  - **Huidige Situatie**: Geüploade bestanden belanden momenteel in een platte array `files: []` zonder categorisering of versiebeheer.
+  - **Waarde & Doel**: Een georganiseerde documentenkluis met categorieën (*"Huisstijl & Logo's"*, *"Fotografie & Teksten"*, *"Offertes & Facturen (PDF)"*) met preview en download-all functionaliteit.
+  - **Details**:
+    - Datamodel uitbreiden naar gestructureerde categorieën en versiebeheer per bestand.
+    - Filter- en tabbladweergave toevoegen in zowel het klantenportaal (`/status/`) als de Admin Werkplek (`project.html`).
+    - Inline image/PDF previews en 1-klik bulk download (ZIP archief of batch download) implementeren.
+
+- [ ] `[TASK-913]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Realtime In-Portal Chat Notificaties (Geluid & Browservenster Badges)**
+  - **Scope**: `crm/status/js/status.js`, Web Audio API, Document Title / Favicon Notificaties
+  - **Huidige Situatie**: Berichten worden opgeslagen in Firestore, maar er is geen realtime notificatiegeluid of pop-up wanneer de klant of beheerder op de pagina aanwezig is.
+  - **Waarde & Doel**: Web Audio API notificatiegeluid en een subtiele browservenster-titel knipper (*"(1) Nieuw bericht van Allard..."*) wanneer er gereageerd wordt in de ticketthread.
+  - **Details**:
+    - Lichtgewicht Web Audio API chime/blip synthesizer toevoegen (geen externe audio-assets nodig).
+    - Firestore `onSnapshot` listener koppelen aan tabblad focus-detectie (`document.hidden` / `window.onblur`).
+    - Dynamische paginatitel en favicon badge updaten met het aantal ongelezen berichten zodra een nieuw bericht binnenkomt.
 
 #### 📱 Personal Branding & Social Media
 - [ ] `[TASK-843]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Social Media & Personal Branding: Eerste LinkedIn Post & Story Video Publiceren**

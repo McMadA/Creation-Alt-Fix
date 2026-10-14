@@ -532,7 +532,7 @@ function renderDashboard(data) {
     checkPaymentSuccessModal(data);
 }
 
-function checkPaymentSuccessModal(data) {
+async function checkPaymentSuccessModal(data) {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('paid') === 'true') {
         const invNum = urlParams.get('invoice') || (data && (data.invoiceNumber || data.factuurnummer)) || '';
@@ -544,6 +544,20 @@ function checkPaymentSuccessModal(data) {
             if (matchedInv && isInvoicePaid(invNum, matchedInv.status)) {
                 isVerifiedPaid = true;
             }
+        }
+
+        // Bridge: Als Firestore nog niet synchroon is, verifieer direct bij het server betaallog
+        if (!isVerifiedPaid && invNum) {
+            try {
+                const basePath = window.location.pathname.includes('/status') ? '..' : '.';
+                const chkRes = await fetch(`${basePath}/api/verify-payment.php?invoice=${encodeURIComponent(invNum)}&projectId=${encodeURIComponent(currentProjectDocId || '')}`);
+                if (chkRes.ok) {
+                    const chkData = await chkRes.json();
+                    if (chkData && chkData.paid) {
+                        isVerifiedPaid = true;
+                    }
+                }
+            } catch (_) {}
         }
 
         // Alleen wanneer de backend status daadwerkelijk 'betaald' / 'voldaan' bevestigt, tonen we het succes-scherm

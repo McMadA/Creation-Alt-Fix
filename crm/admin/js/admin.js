@@ -620,7 +620,16 @@ async function setupAndRenderLeadFactory() {
     // 2. Probeer veilige PHP API endpoint op de server (leest direct en vers crm/admin/data/leads.json)
     if (leads.length === 0) {
         try {
-            const apiResp = await fetch(`../api/leads.php?t=${Date.now()}`);
+            const reqHeaders = {};
+            if (auth?.currentUser) {
+                try {
+                    const idToken = await auth.currentUser.getIdToken();
+                    if (idToken) {
+                        reqHeaders['Authorization'] = `Bearer ${idToken}`;
+                    }
+                } catch (_) {}
+            }
+            const apiResp = await fetch(`../api/leads.php?t=${Date.now()}`, { headers: reqHeaders });
             if (apiResp.ok) {
                 const json = await apiResp.json();
                 if (json && Array.isArray(json.leads) && json.leads.length > 0) {
@@ -836,9 +845,16 @@ window.openNewLeadModal = () => {
 };
 
 window.saveNewLead = async () => {
-    const name = document.getElementById('new-lead-name').value;
-    const email = document.getElementById('new-lead-email').value;
-    const desc = document.getElementById('new-lead-desc').value;
+    const nameEl = document.getElementById('new-lead-name');
+    const emailEl = document.getElementById('new-lead-email');
+    const descEl = document.getElementById('new-lead-desc');
+    if (!nameEl || !emailEl || !descEl) {
+        console.warn("[CRM] Lead invoervelden ontbreken in de DOM.");
+        return;
+    }
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim();
+    const desc = descEl.value.trim();
     
     if (!name) return alert('Naam of Bedrijf is verplicht');
     

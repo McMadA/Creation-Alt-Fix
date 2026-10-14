@@ -17,7 +17,7 @@ import { escapeHtml } from "./firebase-config.js";
 export const PROJECT_PROFILES = {
     CRM_PORTAL: {
         id: "7",
-        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "epic-11", "task-201", "task-202", "mollie", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827", "task-902", "task-504", "task-505", "task-903", "task-904", "task-905", "task-906", "task-907", "task-908", "wbso", "lead factory"],
+        matchKeys: ["crm", "portaal", "portal", "creation+alt+fix (crm", "epic-01", "epic-02", "epic-03", "epic-04", "epic-06", "epic-11", "task-201", "task-202", "mollie", "task-813", "task-814", "task-815", "task-816", "task-818", "task-821", "task-822", "task-823", "task-824", "task-825", "task-826", "task-827", "task-902", "task-504", "task-505", "task-903", "task-904", "task-905", "task-906", "task-907", "task-908", "task-909", "task-910", "task-911", "task-912", "task-913", "wbso", "lead factory"],
 
         client: "Creation+Alt+Fix (CRM & Portaal)",
         companyName: "Creation+Alt+Fix (CRM & Portaal)",

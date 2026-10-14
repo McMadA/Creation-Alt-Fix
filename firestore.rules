@@ -64,7 +64,7 @@ service cloud.firestore {
       // 3. Stored XSS & Phishing protection: proposal URL must use trusted Google/Creation storage endpoints
       && (!('proposalPdfUrl' in affected)
           || request.resource.data.proposalPdfUrl == null
-          || request.resource.data.proposalPdfUrl.matches('^https://(firebasestorage\\.googleapis\\.com|portal\\.creationaltfix\\.nl|.*\\.firebasestorage\\.app)/.*'))
+          || request.resource.data.proposalPdfUrl.matches('^https://(firebasestorage\\.googleapis\\.com/v0/b/mythical-cider-475118-e5\\.firebasestorage\\.app|mythical-cider-475118-e5\\.firebasestorage\\.app|portal\\.creationaltfix\\.nl)/.*'))
       // 4. Price tamper protection: cannot forge arbitrary subscription prices or zero-rate contracts
       && (!('subscriptionPlan2027Price' in affected)
           || (resource.data.subscriptionPlan2027Price == null
@@ -83,7 +83,15 @@ service cloud.firestore {
       && (!('proposalSignedBy' in affected)
           || (request.resource.data.proposalSignedBy is string && request.resource.data.proposalSignedBy.size() <= 100))
       && (!('proposalAcceptedAt' in affected)
-          || (request.resource.data.proposalAcceptedAt is string && request.resource.data.proposalAcceptedAt.size() <= 40));
+          || (request.resource.data.proposalAcceptedAt is string && request.resource.data.proposalAcceptedAt.size() <= 40))
+      // 5. Resource limits against DoS, payload bloat & array exhaustion (CWE-400)
+      && (!('messages' in affected) || (request.resource.data.messages is list && request.resource.data.messages.size() <= 500))
+      && (!('annotations' in affected) || (request.resource.data.annotations is list && request.resource.data.annotations.size() <= 200))
+      && (!('files' in affected) || (request.resource.data.files is list && request.resource.data.files.size() <= 100))
+      && (!('tickets' in affected) || (request.resource.data.tickets is list && request.resource.data.tickets.size() <= 200))
+      && (!('client' in affected) || (request.resource.data.client is string && request.resource.data.client.size() <= 120))
+      && (!('companyName' in affected) || (request.resource.data.companyName is string && request.resource.data.companyName.size() <= 120))
+      && (!('contactName' in affected) || (request.resource.data.contactName is string && request.resource.data.contactName.size() <= 120));
     }
 
     // ============================================================
@@ -99,12 +107,12 @@ service cloud.firestore {
 
     // ============================================================
     // Realtime Uptime, SSL & DNS Monitoring Collection [TASK-827]
-    // Anyone (clients in /status & visitors) can read monitor status
-    // Only authenticated admins can write/update monitor results
+    // Anyone can read individual domain monitor status (get)
+    // Only authenticated admins can list all monitors or update
     // ============================================================
     match /monitors/{domainKey} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow get: if true;
+      allow list, write: if isAdmin();
     }
 
     // ============================================================

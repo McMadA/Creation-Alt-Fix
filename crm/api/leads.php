@@ -70,6 +70,56 @@ try {
         exit;
     }
 
+    // Server-Side Authentication Guard: Verify Firebase ID token for Admin whitelist
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
+    }
+
+    $idToken = '';
+    if (preg_match('/Bearer\s+(\S+)/i', $authHeader, $matches)) {
+        $idToken = $matches[1];
+    }
+
+    $firebaseApiKey = getenv('FIREBASE_WEB_API_KEY') ?: 'AIzaSyAj2_cXCL6fs9qjp2q89F3ezLbErDp4wI8';
+    $isAuthenticatedAdmin = false;
+
+    if (!empty($idToken)) {
+        $ch = curl_init("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" . $firebaseApiKey);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['idToken' => $idToken]));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        }
+        $verifyRes = curl_exec($ch);
+        $verifyCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($verifyCode === 200) {
+            $parsed = json_decode($verifyRes, true);
+            $userEmail = strtolower($parsed['users'][0]['email'] ?? '');
+            $allowedAdmins = ['allardv03@gmail.com', 'info@creationaltfix.nl'];
+            if (in_array($userEmail, $allowedAdmins, true)) {
+                $isAuthenticatedAdmin = true;
+            }
+        }
+    }
+
+    // Strikte authenticatie: webverzoeken vereisen een geverifieerd admin token.
+    // Alleen CLI scripts (php_sapi_name === 'cli') hebben lokale testtoegang.
+    $isCli = (php_sapi_name() === 'cli');
+
+    if (!$isAuthenticatedAdmin && !$isCli) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Ongeautoriseerd: Alleen beheerders met een geldig Firebase ID token mogen leads opvragen.']);
+        exit;
+    }
+
     // Path to canonical leads database in protected admin data folder
     $leadsFilePath = __DIR__ . '/../admin/data/leads.json';
 
