@@ -112,5 +112,5 @@ jobs:
             fi
             echo "✅ Firestore rules successfully deployed to Firebase!"
           else
-            echo "ℹ️ Firebase credentials niet gevonden in GitHub Secrets. Lokale deployment blijft actief."
+            echo "::warning title=Firestore rules NIET gedeployed::Geen FIREBASE_TOKEN of FIREBASE_SERVICE_ACCOUNT secret gevonden. firestore.rules is NIET naar productie gepusht. Deploy handmatig: firebase deploy --only firestore:rules --project mythical-cider-475118-e5"
           fi

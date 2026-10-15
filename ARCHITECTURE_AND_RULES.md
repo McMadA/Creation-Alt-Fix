@@ -77,6 +77,9 @@ Voordat je jouw antwoord presenteert of een taak als gereed beschouwt, controlee
 - [ ] **3. Firebase Rules & Dataflow**:
   - Als er nieuwe velden door de klant worden geüpdatet, staan deze in `isValidClientUpdate()` in `firestore.rules`?
   - Blijft strikte data-isolatie tussen verschillende klanten gewaarborgd?
+  - Compileert de rules-file? Draai `firebase deploy --only firestore:rules --project mythical-cider-475118-e5 --dry-run`.
+  - Gebruik NOOIT gereserveerde woorden als veldnaam met punt-notatie (`data.service` breekt!). Gebruik `data['service']`.
+  - Let op: de CI-pipeline deployt rules alleen als er een Firebase-secret is. Toont de run een warning "Firestore rules NIET gedeployed"? Dan handmatig deployen.
 
 - [ ] **4. PHP & API Symmetrie**:
   - Verwacht het PHP-endpoint exact dezelfde JSON-sleutels als de JavaScript `fetch()` payload verstuurt?

@@ -2325,6 +2325,23 @@ test("Anti-Break: firestore.rules isolates monitors list to admins, bounds clien
     assert.ok(!rules.includes(".*\\.firebasestorage\\.app"), "proposalPdfUrl must not allow arbitrary wildcard storage buckets");
 });
 
+test("Anti-Break: firestore.rules never uses reserved keywords as dot-accessed field names (compile guard)", () => {
+    const rules = fs.readFileSync(path.join(ROOT_DIR, "firestore.rules"), "utf-8");
+    // Reserved words in the Rules language break compilation when used as `.data.<word>`.
+    // Use bracket notation instead: request.resource.data['service']
+    const reserved = ["service", "match", "allow", "function", "return", "let", "if", "in", "is", "true", "false", "null"];
+    const offenders = [];
+    rules.split(/\r?\n/).forEach((line, idx) => {
+        const code = line.replace(/\/\/.*$/, "");
+        for (const word of reserved) {
+            if (new RegExp(`\\.data\\.${word}\\b`).test(code)) {
+                offenders.push(`line ${idx + 1}: .data.${word}`);
+            }
+        }
+    });
+    assert.strictEqual(offenders.length, 0, `Reserved keyword field access breaks rules compilation (use data['x']): ${offenders.join("; ")}`);
+});
+
 test("Anti-Break: verify-payment.php bridges Mollie webhook logs and enforces secure input validation", () => {
     const verifyPath = path.join(ROOT_DIR, "crm/api/verify-payment.php");
     assert.ok(fs.existsSync(verifyPath), "crm/api/verify-payment.php must exist");

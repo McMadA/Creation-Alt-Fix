@@ -144,8 +144,8 @@ service cloud.firestore {
         && request.resource.data.client.size() <= 120
         && request.resource.data.email is string
         && request.resource.data.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
-        && request.resource.data.service is string
-        && request.resource.data.service.size() <= 120
+        && request.resource.data['service'] is string
+        && request.resource.data['service'].size() <= 120
         && (!('status' in request.resource.data) || request.resource.data.status in ['Intake Voltooid', 'Nieuwe Lead', 'Fase 1: Nieuwe Lead'])
         && (!('invoices' in request.resource.data))
         && (!('proposalPrice' in request.resource.data))
