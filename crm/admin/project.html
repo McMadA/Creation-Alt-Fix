@@ -935,16 +935,16 @@
         </div>
     </div>
 
-    <!-- Modal: Nieuwe Factuur Aanmaken (Multi-Invoice Suite) -->
+    <!-- Modal: Nieuwe Mollie Betaallink & Factuurkoppeling Aanmaken -->
     <div id="modal-create-invoice" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
         <div class="workspace-card" style="max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; background: #0c1020; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.85); padding: 24px;">
             <div class="workspace-card-header" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h3 style="margin: 0; font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-file-invoice-dollar" style="color: #38bdf8;"></i> Nieuwe Factuur Aanmaken
+                        <i class="fas fa-bolt" style="color: #38bdf8;"></i> 1. Mollie iDEAL Betaallink Aanmaken
                     </h3>
                     <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
-                        Voeg een factuur toe aan dit project met automatische iDEAL Mollie betaallink.
+                        Genereer de live iDEAL betaallink en kopieer deze direct naar je Boekhoudsysteem. De gemaakte factuur-PDF kun je daarna in de tabel uploaden.
                     </p>
                 </div>
                 <button type="button" id="btn-close-create-inv-x" style="background: none; border: none; color: var(--color-text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
@@ -954,9 +954,9 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
                         <label style="font-size: 0.75rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">
-                            Factuurnummer *
+                            Factuurnummer (voor in Boekhouding) *
                         </label>
-                        <input type="text" id="modal-inv-num" class="admin-input" placeholder="Bijv. 2026-009" required style="margin-top: 4px; font-weight: 700; font-family: monospace;">
+                        <input type="text" id="modal-inv-num" class="admin-input" placeholder="Bijv. 2026-013" required style="margin-top: 4px; font-weight: 700; font-family: monospace;">
                     </div>
                     <div>
                         <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
@@ -977,7 +977,7 @@
 
                 <div>
                     <label style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; font-weight: 600;">
-                        Factuuromschrijving (Zichtbaar op Factuur &amp; PDF) *
+                        Betaalomschrijving (Zichtbaar bij iDEAL afrekenen &amp; in Portaal) *
                     </label>
                     <input type="text" id="modal-inv-desc" class="admin-input" placeholder="Bijv. Aanbetaling 50% Website &amp; Software Realisatie" required style="margin-top: 4px;">
                 </div>
@@ -1023,27 +1023,38 @@
                         Subtotaal: <strong id="modal-calc-subtotal" style="color: #fff;">€ 0,00</strong> &bull; BTW: <strong id="modal-calc-vat" style="color: #fff;">€ 0,00</strong>
                     </div>
                     <div style="font-size: 0.95rem; font-weight: 700; color: #34d399;">
-                        Totaal incl. BTW: <span id="modal-calc-total">€ 0,00</span>
+                        Te betalen via iDEAL (incl. BTW): <span id="modal-calc-total">€ 0,00</span>
                     </div>
                 </div>
 
                 <!-- Mollie Option -->
                 <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 4px;">
                         <input type="checkbox" id="modal-inv-gen-mollie" checked style="accent-color: #0284c7; width: 16px; height: 16px;">
-                        <span>⚡ Direct officiële Mollie iDEAL betaallink genereren via API</span>
+                        <span>⚡ Direct officiële Mollie iDEAL betaallink genereren &amp; kopiëren naar klembord</span>
                     </label>
+                    <small style="color: #94a3b8; font-size: 0.76rem; display: block;">
+                        Na het klikken staat de betaallink direct op je klembord zodat je hem in Pi-Boekhouding op de factuur kunt plakken.
+                    </small>
                     <div id="modal-inv-manual-url-wrap" class="hidden" style="margin-top: 8px;">
                         <label style="font-size: 0.72rem; color: var(--color-text-secondary); text-transform: uppercase;">Handmatige Betaallink (Optioneel)</label>
                         <input type="url" id="modal-inv-manual-url" class="admin-input" placeholder="https://useplink.com/... of https://www.mollie.com/..." style="margin-top: 4px;">
                     </div>
                 </div>
 
+                <!-- Optioneel: Direct Factuur PDF Uploaden (kan ook achteraf in de tabel) -->
+                <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px;">
+                    <label style="font-size: 0.75rem; color: #fbbf24; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">
+                        <i class="fas fa-file-pdf"></i> Optioneel: Factuur PDF uit Boekhouding toevoegen (kan ook straks via 'Upload Factuur PDF')
+                    </label>
+                    <input type="file" id="modal-inv-pdf-file" accept="application/pdf,.pdf" class="admin-input" style="margin-top: 4px; padding: 6px; font-size: 0.8rem;">
+                </div>
+
                 <!-- Footer Buttons -->
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
                     <button type="button" id="btn-cancel-create-inv" class="btn btn-secondary">Annuleren</button>
                     <button type="submit" id="btn-submit-create-inv" class="btn btn-primary" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700;">
-                        <i class="fas fa-plus-circle"></i> Factuur Aanmaken &amp; Opslaan
+                        <i class="fas fa-bolt"></i> Betaallink Aanmaken &amp; Kopiëren
                     </button>
                 </div>
             </form>

@@ -1788,37 +1788,82 @@ function setupFormHandlers() {
             Toast.show({ title: "Factuur Verwijderd", message: `Factuur ${invNumber} is succesvol verwijderd.`, type: "info" });
         }
 
-        // 4. Download Factuur PDF
-        else if (action === 'billing:download-invoice-pdf') {
+        // 4. Upload Officiële Factuur PDF vanuit Boekhoudsysteem
+        else if (action === 'billing:upload-invoice-pdf') {
             const invNumber = btn.getAttribute('data-inv');
-            const p = currentProjectData || {};
-            const invoices = normalizeProjectInvoices(p);
-            const targetInv = invoices.find(inv => (inv.invoiceNumber || inv.number) === invNumber) || {};
+            if (!invNumber) return;
+            const fileInput = document.getElementById('crm-invoice-pdf-upload-input');
+            if (!fileInput) return;
 
-            const origHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF...';
-            try {
-                const invoiceData = {
-                    ...p,
-                    id: currentProjectId,
-                    invoiceNumber: targetInv.invoiceNumber || invNumber,
-                    invoiceDate: targetInv.invoiceDate || new Date().toISOString().split('T')[0],
-                    dueDate: targetInv.dueDate || '',
-                    invoiceDescription: targetInv.description || 'Werkzaamheden Creation+Alt+Fix',
-                    amountExcl: targetInv.amountExcl || targetInv.amount || p.proposalPrice || 150,
-                    amountVat: targetInv.amountVat || (targetInv.amountExcl ? targetInv.amountExcl * (targetInv.vatRate || 0.21) : 0),
-                    amountIncl: targetInv.amountIncl || targetInv.amount || 150,
-                    mollieLink: targetInv.mollieCheckoutUrl || targetInv.mollieLink || p.mollieLink || ''
-                };
-                const { doc: pdfDoc, filename } = await generateInvoicePDF(invoiceData);
-                pdfDoc.save(filename);
-                Toast.show({ title: "PDF Gedownload", message: `Factuur ${invNumber} PDF succesvol gegenereerd.`, type: "success" });
-            } catch (err) {
-                console.error("Fout bij genereren factuur PDF:", err);
-                Toast.show({ title: "Fout bij PDF", message: err.message, type: "error" });
-            } finally {
-                btn.innerHTML = origHtml;
-            }
+            fileInput.value = '';
+            fileInput.onchange = async (ev) => {
+                const file = ev.target.files?.[0];
+                if (!file) return;
+                if (!storage || !currentProjectId) {
+                    alert("Firebase Storage is niet beschikbaar om de PDF te uploaden.");
+                    return;
+                }
+
+                const origHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploaden...';
+
+                try {
+                    const safeInv = invNumber.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                    const safeFile = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                    const storagePath = `projects/${currentProjectId}/facturen/${Date.now()}_${safeInv}_${safeFile}`;
+                    const storageRef = ref(storage, storagePath);
+
+                    await uploadBytes(storageRef, file, { contentType: 'application/pdf' });
+                    const downloadUrl = await getDownloadURL(storageRef);
+
+                    const p = currentProjectData || {};
+                    const invoices = normalizeProjectInvoices(p);
+                    const targetInv = invoices.find(inv => (inv.invoiceNumber || inv.number) === invNumber);
+                    if (targetInv) {
+                        targetInv.pdfUrl = downloadUrl;
+                        targetInv.pdfName = file.name;
+                    }
+                    p.invoices = invoices;
+                    p.invoicePdfUrl = downloadUrl;
+                    p.invoicePdfName = file.name;
+
+                    // Voeg ook toe aan project bestanden zodat klant hem overal terugvindt
+                    const existingFiles = Array.isArray(p.files) ? [...p.files] : [];
+                    const fileLabel = `Factuur ${invNumber} (${file.name})`;
+                    const filteredFiles = existingFiles.filter(f => !f.name?.includes(`Factuur ${invNumber}`));
+                    filteredFiles.push({
+                        name: fileLabel,
+                        url: downloadUrl,
+                        uploadedAt: new Date().toISOString()
+                    });
+                    p.files = filteredFiles;
+
+                    if (db && currentProjectId) {
+                        await updateDoc(doc(db, "projects", currentProjectId), {
+                            invoices,
+                            invoicePdfUrl: downloadUrl,
+                            invoicePdfName: file.name,
+                            files: filteredFiles
+                        });
+                    }
+
+                    await logAuditEvent('invoice_pdf_uploaded', `Officiële factuur PDF (${file.name}) vanuit Boekhoudsysteem gekoppeld aan factuur ${invNumber}.`);
+                    renderProjectWorkspace(p);
+                    Toast.show({
+                        title: "Factuur PDF Gekoppeld!",
+                        message: `Factuur ${invNumber} staat nu inclusief PDF én iDEAL link klaar in het klantenportaal.`,
+                        type: "success",
+                        duration: 4500
+                    });
+                } catch (err) {
+                    console.error("Fout bij uploaden factuur PDF:", err);
+                    Toast.show({ title: "Fout bij PDF uploaden", message: err.message, type: "error" });
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            };
+            fileInput.click();
         }
 
         // 5. Genereer Mollie Link voor bestaande Factuur
@@ -1852,9 +1897,17 @@ function setupFormHandlers() {
                         mollieLink: linkData.checkoutUrl
                     });
                 }
+                try {
+                    await navigator.clipboard.writeText(linkData.checkoutUrl);
+                } catch (_) {}
                 await logAuditEvent('mollie_link_created', `Mollie betaallink gegenereerd voor factuur ${invNumber}.`);
                 renderProjectWorkspace(p);
-                Toast.show({ title: "Mollie Link Gegenereerd", message: `iDEAL betaallink actief voor factuur ${invNumber}.`, type: "success" });
+                Toast.show({
+                    title: "Betaallink Gegenereerd & Gekopieerd!",
+                    message: `De iDEAL link voor ${invNumber} staat op je klembord. Plak hem nu in je Boekhoudsysteem!`,
+                    type: "success",
+                    duration: 4500
+                });
             } catch (err) {
                 console.error("Fout bij genereren Mollie link:", err);
                 Toast.show({ title: "Fout bij Mollie link", message: err.message, type: "error" });
@@ -1868,7 +1921,7 @@ function setupFormHandlers() {
             const url = btn.getAttribute('data-url');
             if (url) {
                 navigator.clipboard.writeText(url);
-                Toast.show({ title: "Betaallink Gekopieerd", message: "URL staat op je klembord.", type: "info", duration: 2500 });
+                Toast.show({ title: "Betaallink Gekopieerd", message: "Plak deze link in het Boekhoudsysteem bij de factuur.", type: "info", duration: 3000 });
             }
         }
 
@@ -1978,7 +2031,7 @@ function setupFormHandlers() {
     document.getElementById('btn-cancel-create-invoice')?.addEventListener('click', closeInvoiceModal);
     document.getElementById('btn-close-create-inv-x')?.addEventListener('click', closeInvoiceModal);
 
-    // Form Submit: Nieuwe Factuur Toevoegen
+    // Form Submit: Nieuwe Betaallink (& optionele Factuur PDF) Toevoegen
     document.getElementById('form-create-invoice')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('btn-submit-create-inv') || document.getElementById('btn-submit-create-invoice');
@@ -2003,9 +2056,11 @@ function setupFormHandlers() {
 
         const genMollie = document.getElementById('modal-inv-gen-mollie')?.checked;
         const manualUrl = document.getElementById('modal-inv-manual-url')?.value.trim();
+        const pdfFileInput = document.getElementById('modal-inv-pdf-file');
+        const pdfFile = pdfFileInput?.files?.[0] || null;
 
         if (!invNumber) {
-            alert("Voer een geldig factuurnummer in (bijv. 2026-009).");
+            alert("Voer een geldig factuurnummer in (bijv. 2026-013).");
             return;
         }
         if (amountExcl <= 0) {
@@ -2018,7 +2073,7 @@ function setupFormHandlers() {
 
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Bezig met opslaan...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Betaallink aanmaken...';
         }
 
         try {
@@ -2036,11 +2091,28 @@ function setupFormHandlers() {
                     });
                 } catch (mErr) {
                     console.warn("Mollie betaallink genereren mislukt:", mErr);
-                    Toast.show({ title: "Mollie waarschuwing", message: "Factuur opgeslagen, maar Mollie kon niet direct gegenereerd worden: " + mErr.message, type: "warning" });
+                    Toast.show({ title: "Mollie waarschuwing", message: "Regel opgeslagen, maar Mollie kon niet direct gegenereerd worden: " + mErr.message, type: "warning" });
                 }
             }
 
             const checkoutUrl = mollieLinkData?.checkoutUrl || manualUrl || null;
+            if (checkoutUrl) {
+                try {
+                    await navigator.clipboard.writeText(checkoutUrl);
+                } catch (_) {}
+            }
+
+            let uploadedPdfUrl = null;
+            let uploadedPdfName = null;
+            if (pdfFile && storage && currentProjectId) {
+                const safeInv = invNumber.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                const safeFile = pdfFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                const storagePath = `projects/${currentProjectId}/facturen/${Date.now()}_${safeInv}_${safeFile}`;
+                const storageRef = ref(storage, storagePath);
+                await uploadBytes(storageRef, pdfFile, { contentType: 'application/pdf' });
+                uploadedPdfUrl = await getDownloadURL(storageRef);
+                uploadedPdfName = pdfFile.name;
+            }
 
             const newInvoice = {
                 invoiceNumber: invNumber,
@@ -2054,6 +2126,8 @@ function setupFormHandlers() {
                 status: 'open',
                 molliePaymentId: mollieLinkData?.paymentId || null,
                 mollieCheckoutUrl: checkoutUrl,
+                pdfUrl: uploadedPdfUrl,
+                pdfName: uploadedPdfName,
                 createdAt: new Date().toISOString()
             };
 
@@ -2066,27 +2140,38 @@ function setupFormHandlers() {
             if (checkoutUrl) {
                 p.mollieLink = checkoutUrl;
             }
+            if (uploadedPdfUrl) {
+                p.invoicePdfUrl = uploadedPdfUrl;
+                p.invoicePdfName = uploadedPdfName;
+            }
 
             if (db && currentProjectId) {
                 await updateDoc(doc(db, "projects", currentProjectId), {
                     invoices: updatedInvoices,
                     invoiceNumber: invNumber,
                     factuurnummer: invNumber,
-                    ...(checkoutUrl ? { mollieLink: checkoutUrl } : {})
+                    ...(checkoutUrl ? { mollieLink: checkoutUrl } : {}),
+                    ...(uploadedPdfUrl ? { invoicePdfUrl: uploadedPdfUrl, invoicePdfName: uploadedPdfName } : {})
                 });
             }
 
-            await logAuditEvent('invoice_created', `Nieuwe factuur ${invNumber} (€ ${amountIncl.toFixed(2).replace('.', ',')} incl. BTW) toegevoegd.`);
+            if (pdfFileInput) pdfFileInput.value = '';
+            await logAuditEvent('invoice_created', `Mollie betaallink aangemaakt voor factuur ${invNumber} (€ ${amountIncl.toFixed(2).replace('.', ',')} incl. BTW).`);
             renderProjectWorkspace(p);
             closeInvoiceModal();
-            Toast.show({ title: "Factuur Toegevoegd", message: `Factuur ${invNumber} succesvol aangemaakt!`, type: "success" });
+            Toast.show({
+                title: "Betaallink Aangemaakt & Gekopieerd!",
+                message: `De iDEAL link voor ${invNumber} staat op je klembord. Plak deze in Pi-Boekhouding en upload daarna de PDF in de tabel!`,
+                type: "success",
+                duration: 5000
+            });
         } catch (err) {
-            console.error("Fout bij opslaan factuur:", err);
-            alert("Fout bij opslaan factuur: " + err.message);
+            console.error("Fout bij aanmaken betaallink:", err);
+            alert("Fout bij aanmaken betaallink: " + err.message);
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Factuur Aanmaken';
+                submitBtn.innerHTML = '<i class="fas fa-bolt"></i> Betaallink Aanmaken &amp; Kopiëren';
             }
         }
     });

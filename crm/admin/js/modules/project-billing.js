@@ -233,14 +233,15 @@ export function renderBillingCardHtml(projectData) {
     if (invoices.length === 0) {
         rowsHtml = `
             <tr>
-                <td colspan="7" style="text-align: center; opacity: 0.7; padding: 28px 16px;">
-                    <div style="font-size: 1.8rem; margin-bottom: 8px;">🧾</div>
-                    <div style="font-weight: 600; color: #fff;">Nog geen facturen geregistreerd voor dit project</div>
+                <td colspan="7" style="text-align: center; opacity: 0.85; padding: 28px 16px;">
+                    <div style="font-size: 1.8rem; margin-bottom: 8px;">💳</div>
+                    <div style="font-weight: 600; color: #fff;">Nog geen betaallinks of factuur-PDF's gekoppeld aan dit project</div>
                     <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 14px 0;">
-                        Maak een nieuwe factuur aan (bijv. Aanbetaling 50% of Hosting) met automatische Mollie iDEAL link.
+                        <strong>Stap 1:</strong> Maak hieronder eerst de Mollie iDEAL betaallink aan en kopieer deze naar je Boekhoudsysteem.<br>
+                        <strong>Stap 2:</strong> Upload daarna hier de gemaakte factuur-PDF vanuit je Boekhoudsysteem voor in het klantenportaal.
                     </p>
                     <button type="button" data-action="billing:open-create-modal" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700;">
-                        <i class="fas fa-plus-circle"></i> Eerste Factuur Aanmaken
+                        <i class="fas fa-bolt"></i> 1. Eerste Mollie Betaallink Aanmaken
                     </button>
                 </td>
             </tr>
@@ -256,12 +257,12 @@ export function renderBillingCardHtml(projectData) {
                     ? 'background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);'
                     : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);');
 
-            const statusText = isPaid ? '✅ Voldaan' : (isCanceled ? '🚫 Geannuleerd' : '⏳ Openstaand');
             const safeNum = escapeHtml(inv.invoiceNumber || 'Factuur');
             const safeDesc = escapeHtml(inv.description || 'Dienstverlening');
             const safeDate = escapeHtml(inv.invoiceDate || '—');
             const safeDueDate = inv.dueDate ? `<br><small style="color: #94a3b8; font-size: 0.72rem;">Vervalt: ${escapeHtml(inv.dueDate)}</small>` : '';
             const checkoutUrl = inv.mollieCheckoutUrl || inv.mollieLink || '';
+            const pdfUrl = inv.pdfUrl || '';
 
             return `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.15s ease;">
@@ -288,30 +289,41 @@ export function renderBillingCardHtml(projectData) {
                     </td>
                     <td style="padding: 12px 10px; white-space: nowrap;">
                         ${checkoutUrl ? `
-                            <div style="display: inline-flex; gap: 4px; align-items: center;">
-                                <a href="${sanitizeUrl(checkoutUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); color: #38bdf8; text-decoration: none;" title="Open iDEAL betaalpagina">
-                                    <i class="fas fa-credit-card"></i> Betaal
-                                </a>
-                                <button type="button" data-action="billing:copy-link" data-url="${escapeHtml(checkoutUrl)}" class="btn btn-secondary btn-sm" style="padding: 3px 6px; font-size: 0.72rem;" title="Kopieer betaallink">
-                                    <i class="fas fa-copy"></i>
+                            <div style="display: inline-flex; gap: 5px; align-items: center;">
+                                <button type="button" data-action="billing:copy-link" data-url="${escapeHtml(checkoutUrl)}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(14, 165, 233, 0.2); border-color: rgba(14, 165, 233, 0.5); color: #38bdf8; font-weight: 700; cursor: pointer;" title="Kopieer betaallink voor in je Boekhoudsysteem">
+                                    <i class="fas fa-copy"></i> Kopieer Link
                                 </button>
-                                <button type="button" data-action="billing:share-whatsapp" data-url="${escapeHtml(checkoutUrl)}" data-inv="${safeNum}" data-amount="${inv.amountIncl}" class="btn btn-secondary btn-sm" style="padding: 3px 6px; font-size: 0.72rem; color: #34d399;" title="Deel via WhatsApp">
+                                <a href="${sanitizeUrl(checkoutUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.72rem; text-decoration: none;" title="Open iDEAL betaalpagina">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                <button type="button" data-action="billing:share-whatsapp" data-url="${escapeHtml(checkoutUrl)}" data-inv="${safeNum}" data-amount="${inv.amountIncl}" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.72rem; color: #34d399;" title="Deel betaallink via WhatsApp">
                                     <i class="fab fa-whatsapp"></i>
                                 </button>
                             </div>
                         ` : `
-                            <button type="button" data-action="billing:generate-link-for-invoice" data-inv="${safeNum}" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.72rem; border-color: rgba(99, 102, 241, 0.4); color: #818cf8;" title="Genereer een Mollie iDEAL betaallink voor deze factuur">
-                                <i class="fas fa-bolt"></i> Genereer Link
+                            <button type="button" data-action="billing:generate-link-for-invoice" data-inv="${safeNum}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem; border-color: rgba(99, 102, 241, 0.4); color: #818cf8; font-weight: 600; cursor: pointer;" title="Genereer een Mollie iDEAL betaallink">
+                                <i class="fas fa-bolt"></i> Genereer Betaallink
                             </button>
                         `}
                     </td>
                     <td style="padding: 12px 10px; text-align: right; white-space: nowrap;">
-                        <button type="button" data-action="billing:download-invoice-pdf" data-inv="${safeNum}" class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 0.72rem; margin-right: 4px; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent);" title="Download Officiële Factuur (PDF)">
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </button>
-                        <button type="button" data-action="billing:delete-invoice" data-inv="${safeNum}" class="btn btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); cursor: pointer;" title="Factuur verwijderen uit project">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div style="display: inline-flex; gap: 5px; align-items: center; justify-content: flex-end;">
+                            ${pdfUrl ? `
+                                <a href="${sanitizeUrl(pdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 4px 9px; font-size: 0.74rem; background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; text-decoration: none;" title="Bekijk geüploade Factuur PDF (zichtbaar voor klant in portaal)">
+                                    <i class="fas fa-file-pdf"></i> PDF Geüpload
+                                </a>
+                                <button type="button" data-action="billing:upload-invoice-pdf" data-inv="${safeNum}" class="btn btn-secondary btn-sm" style="padding: 4px 7px; font-size: 0.72rem; cursor: pointer;" title="Vervang Factuur PDF vanuit Boekhoudsysteem">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            ` : `
+                                <button type="button" data-action="billing:upload-invoice-pdf" data-inv="${safeNum}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.74rem; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.45); color: #fbbf24; font-weight: 600; cursor: pointer;" title="Upload de officiële Factuur PDF vanuit je Boekhoudsysteem voor in het klantenportaal">
+                                    <i class="fas fa-upload"></i> Upload Factuur PDF
+                                </button>
+                            `}
+                            <button type="button" data-action="billing:delete-invoice" data-inv="${safeNum}" class="btn btn-sm" style="padding: 4px 8px; font-size: 0.72rem; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); cursor: pointer;" title="Verwijderen uit project">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -321,29 +333,29 @@ export function renderBillingCardHtml(projectData) {
     return `
         <div class="workspace-card" style="padding: 24px; border: 1px solid rgba(56, 189, 248, 0.25);">
             <!-- Module Header & Quick Action Buttons -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
                 <div>
                     <h3 style="margin: 0; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-receipt text-accent"></i> Facturen &amp; Mollie iDEAL Betalingen
+                        <i class="fas fa-credit-card text-accent"></i> Mollie Betaallinks &amp; Factuur PDF's (Klantenportaal)
                     </h3>
                     <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
-                        Beheer projectfacturen, aanbetalingen, hostingnota's en deelbare Mollie iDEAL betaallinks.
+                        <strong>1.</strong> Maak hier de betaallink aan &amp; kopieer deze &rarr; <strong>2.</strong> Maak de factuur in Pi-Boekhouding met die link &rarr; <strong>3.</strong> Upload de PDF hier voor het portaal.
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <a href="http://100.65.226.112:8888/facturen" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="border-color: rgba(52, 211, 153, 0.4); color: #34d399; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-external-link-alt"></i> Open Pi-Boekhouding Web
-                    </a>
-                    <button type="button" data-action="billing:open-create-modal" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-plus-circle"></i> Nieuwe Factuur Aanmaken
+                    <button type="button" data-action="billing:open-create-modal" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <i class="fas fa-bolt"></i> 1. Nieuwe Betaallink Aanmaken
                     </button>
+                    <a href="http://100.65.226.112:8888/facturen/nieuw" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="border-color: rgba(52, 211, 153, 0.45); color: #34d399; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                        <i class="fas fa-external-link-alt"></i> 2. Factuur Maken in Boekhouding
+                    </a>
                 </div>
             </div>
 
             <!-- Financiële Overzichtskaarten (KPIs) -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 14px;">
-                    <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 600;">Totaal Gefactureerd</div>
+                    <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 600;">Totaal Bedrag</div>
                     <div style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 3px;">${formatCurrency(totalInvoiced)}</div>
                 </div>
                 <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; padding: 10px 14px;">
@@ -355,12 +367,12 @@ export function renderBillingCardHtml(projectData) {
                     <div style="font-size: 1.15rem; font-weight: 700; color: #f59e0b; margin-top: 3px;">${formatCurrency(totalOpen)}</div>
                 </div>
                 <div style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); border-radius: 8px; padding: 10px 14px;">
-                    <div style="font-size: 0.72rem; text-transform: uppercase; color: #818cf8; font-weight: 600;">Aantal Facturen</div>
+                    <div style="font-size: 0.72rem; text-transform: uppercase; color: #818cf8; font-weight: 600;">Aantal Betaallinks</div>
                     <div style="font-size: 1.15rem; font-weight: 700; color: #cbd5e1; margin-top: 3px;">${invoices.length}</div>
                 </div>
             </div>
 
-            <!-- Facturen Historie Tabel -->
+            <!-- Facturen & Betaallinks Tabel -->
             <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
                     <thead>
@@ -370,8 +382,8 @@ export function renderBillingCardHtml(projectData) {
                             <th style="padding: 10px 10px;">Omschrijving</th>
                             <th style="padding: 10px 10px;">Bedrag (Incl. BTW)</th>
                             <th style="padding: 10px 10px;">Status</th>
-                            <th style="padding: 10px 10px;">Mollie iDEAL Link</th>
-                            <th style="padding: 10px 10px; text-align: right;">Acties</th>
+                            <th style="padding: 10px 10px;">Stap 1: Mollie Betaallink</th>
+                            <th style="padding: 10px 10px; text-align: right;">Stap 2: Factuur PDF (Boekhouding)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -380,20 +392,20 @@ export function renderBillingCardHtml(projectData) {
                 </table>
             </div>
 
+            <!-- Verborgen File Input voor Factuur PDF Upload -->
+            <input type="file" id="crm-invoice-pdf-upload-input" accept="application/pdf,.pdf" style="display: none;">
+
             <!-- Bottom Sync & Pi-Boekhouding Helper Card -->
             <div style="margin-top: 18px; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; color: #94a3b8;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <i class="fas fa-info-circle text-accent"></i>
                     <span>
-                        Officiële factuurnummers worden direct overgenomen in iDEAL betaallinks, klantportaal en de PDF generator.
+                        Zodra je de betaallink hebt aangemaakt en de PDF uit je Boekhoudsysteem hebt geüpload, staat alles direct klaar voor de klant in het portaal.
                     </span>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button type="button" id="btn-copy-facturen-path" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 3px 8px;">
-                        <i class="fas fa-copy"></i> Kopieer DB Map Pad
-                    </button>
-                    <a href="caf-backup://open" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 3px 8px; text-decoration: none;">
-                        <i class="fas fa-shield-alt" style="color: #818cf8;"></i> Backup Manager
+                    <a href="http://100.65.226.112:8888/facturen" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 3px 8px; text-decoration: none;">
+                        <i class="fas fa-list"></i> Alle Facturen in Boekhouding
                     </a>
                 </div>
             </div>

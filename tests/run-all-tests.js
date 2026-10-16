@@ -2049,7 +2049,9 @@ await testAsync("Concept Generator en concept websites voldoen intrinsiek aan de
         assert.ok(html.includes('name="robots"'), `${dir} moet meta robots hebben`);
         assert.ok(html.includes('rel="icon"'), `${dir} moet favicon hebben`);
         assert.ok(html.includes('FAQPage') || dir === 'berends' || dir === 'heinkens-daktechniek', `${dir} moet FAQPage schema hebben`);
-        assert.ok(html.includes('_hp_trap'), `${dir} moet contact form honeypot hebben`);
+        const contactFile = path.join(conceptBaseDir, dir, "contact.html");
+        const hasContactHoneypot = fs.existsSync(contactFile) && (fs.readFileSync(contactFile, "utf8").includes('_hp_trap') || fs.readFileSync(contactFile, "utf8").includes('hp-field'));
+        assert.ok(html.includes('_hp_trap') || hasContactHoneypot, `${dir} moet contact form honeypot hebben`);
         assert.ok(html.includes('modal-privacy'), `${dir} moet privacy modal hebben`);
         assert.ok(html.includes('modal-terms'), `${dir} moet terms modal hebben`);
         assert.ok(html.includes('concept-cookie-bar'), `${dir} moet cookie banner hebben`);

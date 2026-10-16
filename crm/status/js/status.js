@@ -1976,44 +1976,18 @@ function setupInvoiceDownload(data) {
     const invCard = document.getElementById('btn-download-factuur-card');
     if (!invCard) return;
 
-    const statusText = data.status || '';
-    const statusInfo = formatProjectStatus(statusText);
-    const isDeliveredOrMollie = Boolean(
-        statusInfo.phase === 5 ||
-        statusText.includes('Mollie') ||
-        statusText.includes('Opgeleverd') ||
-        statusText.includes('Live') ||
-        statusText.includes('Voldaan') ||
-        statusText === 'Afgerond' ||
-        data.invoicePdfUrl ||
-        data.invoiceNumber ||
-        data.factuurnummer
-    );
+    // Zoek de laatst geüploade officiële Factuur PDF (vanuit het Boekhoudsysteem)
+    let officialPdfUrl = data.invoicePdfUrl || null;
+    if (!officialPdfUrl && Array.isArray(data.invoices)) {
+        const withPdf = [...data.invoices].reverse().find(i => i && i.pdfUrl);
+        if (withPdf) officialPdfUrl = withPdf.pdfUrl;
+    }
 
-    if (isDeliveredOrMollie) {
+    if (officialPdfUrl) {
         invCard.classList.remove('hidden');
-        invCard.onclick = async () => {
-            if (data.invoicePdfUrl) {
-                const safeUrl = sanitizeUrl(data.invoicePdfUrl);
-                if (safeUrl !== '#') window.open(safeUrl, '_blank');
-                return;
-            }
-            const origHtml = invCard.innerHTML;
-            invCard.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: var(--color-accent);"></i> <div><h4>Factuur Genereren...</h4><p>Een ogenblik geduld alstublieft</p></div>';
-            try {
-                const projData = { 
-                    ...data, 
-                    id: currentProjectDocId,
-                    invoiceNumber: data.invoiceNumber || data.factuurnummer
-                };
-                const { doc: invDoc, filename } = await generateInvoicePDF(projData);
-                invDoc.save(filename);
-            } catch (err) {
-                console.error("Fout bij factuur download:", err);
-                alert("Kon factuur PDF niet genereren.");
-            } finally {
-                invCard.innerHTML = origHtml;
-            }
+        invCard.onclick = () => {
+            const safeUrl = sanitizeUrl(officialPdfUrl);
+            if (safeUrl !== '#') window.open(safeUrl, '_blank');
         };
     } else {
         invCard.classList.add('hidden');
@@ -2114,9 +2088,10 @@ function setupClientInvoicesArchive(data) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${invoices.map((inv, idx) => {
+                    ${invoices.map((inv) => {
                         const isPaid = isInvoicePaid(inv.invoiceNumber, inv.status);
                         const mollieUrl = !isPaid ? (inv.mollieCheckoutUrl || inv.mollieLink || data.mollieLink) : null;
+                        const pdfUrl = inv.pdfUrl || ((inv.invoiceNumber === (data.invoiceNumber || data.factuurnummer)) ? data.invoicePdfUrl : null);
                         const badgeStyle = isPaid 
                             ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
                             : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
@@ -2141,9 +2116,13 @@ function setupClientInvoicesArchive(data) {
                                             <i class="fas fa-credit-card"></i> <span>Betaal iDEAL</span>
                                         </a>
                                     ` : ''}
-                                    <button type="button" class="btn btn-secondary btn-sm btn-dl-hist-inv" data-idx="${idx}" style="padding: 3px 10px; font-size: 0.75rem; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent); cursor: pointer;">
-                                        <i class="fas fa-file-pdf"></i> PDF
-                                    </button>
+                                    ${pdfUrl ? `
+                                        <a href="${sanitizeUrl(pdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 3px 10px; font-size: 0.75rem; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-file-pdf"></i> <span>Download PDF</span>
+                                        </a>
+                                    ` : `
+                                        <span style="font-size: 0.72rem; color: #94a3b8; font-style: italic;">PDF volgt</span>
+                                    `}
                                 </td>
                             </tr>
                         `;
@@ -2152,50 +2131,6 @@ function setupClientInvoicesArchive(data) {
             </table>
         </div>
     `;
-
-    // Hook up download buttons for each invoice row
-    tableContainer.querySelectorAll('.btn-dl-hist-inv').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const idx = parseInt(btn.getAttribute('data-idx'), 10);
-            const inv = invoices[idx];
-            if (!inv) return;
-
-            if (inv.pdfUrl) {
-                const safeUrl = sanitizeUrl(inv.pdfUrl);
-                if (safeUrl !== '#') {
-                    window.open(safeUrl, '_blank');
-                    return;
-                }
-            }
-
-            const origHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-            try {
-                const invoiceProj = {
-                    ...data,
-                    id: currentProjectDocId,
-                    invoiceNumber: inv.invoiceNumber,
-                    invoiceDate: inv.invoiceDate,
-                    dueDate: inv.dueDate,
-                    invoiceDescription: inv.description,
-                    amountExcl: inv.amountExcl || (inv.amountIncl ? (inv.amountIncl / 1.21) : data.proposalPrice),
-                    amountVat: inv.amountVat,
-                    amountIncl: inv.amountIncl,
-                    mollieLink: inv.mollieCheckoutUrl || inv.mollieLink || data.mollieLink,
-                    proposalPrice: inv.amountExcl || (inv.amountIncl ? (inv.amountIncl / 1.21) : data.proposalPrice)
-                };
-                const { doc: invDoc, filename } = await generateInvoicePDF(invoiceProj);
-                invDoc.save(filename);
-            } catch (err) {
-                console.error("Fout bij downloaden historische factuur:", err);
-                alert("Kon factuur PDF niet downloaden.");
-            } finally {
-                btn.innerHTML = origHtml;
-                btn.disabled = false;
-            }
-        });
-    });
 }
 
 function isInvoicePaid(invNumber, status) {
@@ -2208,13 +2143,18 @@ function setupUnpaidInvoiceBanner(data) {
     const banner = document.getElementById('unpaid-invoice-banner');
     if (!banner) return;
 
-    const invNum = data.invoiceNumber || data.factuurnummer;
-    const isPaid = isInvoicePaid(invNum, data.status);
-    const hasInvoice = !!invNum;
-    const hasMollie = !!data.mollieLink;
+    // Zoek eerst een openstaande factuur met betaallink in data.invoices
+    let openInv = null;
+    if (Array.isArray(data.invoices)) {
+        openInv = [...data.invoices].reverse().find(i => i && !isInvoicePaid(i.invoiceNumber, i.status) && (i.mollieCheckoutUrl || i.mollieLink));
+    }
 
-    if (!isPaid && hasInvoice && hasMollie) {
-        const totalIncl = data.proposalPrice ? (data.proposalPrice * 1.21) : 0;
+    const invNum = openInv?.invoiceNumber || data.invoiceNumber || data.factuurnummer;
+    const mollieUrl = openInv?.mollieCheckoutUrl || openInv?.mollieLink || data.mollieLink;
+    const isPaid = openInv ? false : isInvoicePaid(invNum, data.status);
+
+    if (!isPaid && invNum && mollieUrl) {
+        const totalIncl = openInv?.amountIncl ? Number(openInv.amountIncl) : (data.proposalPrice ? (parseFloat(data.proposalPrice) * 1.21) : 0);
         const amountStr = totalIncl > 0 ? formatCurrency(totalIncl) : '—';
 
         const invNumEl = document.getElementById('banner-inv-num');
@@ -2224,7 +2164,7 @@ function setupUnpaidInvoiceBanner(data) {
         if (invNumEl) invNumEl.textContent = invNum;
         if (amountEl) amountEl.textContent = amountStr;
         if (mollieBtn) {
-            mollieBtn.href = data.mollieLink;
+            mollieBtn.href = sanitizeUrl(mollieUrl);
         }
 
         banner.classList.remove('hidden');
