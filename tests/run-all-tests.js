@@ -1741,7 +1741,8 @@ test("Multi-invoice management normalizes legacy projects and renders comprehens
     const billingHtml = renderBillingCardHtml(multiProject);
     assert.ok(billingHtml.includes("2026-010"));
     assert.ok(billingHtml.includes("2026-011"));
-    assert.ok(billingHtml.includes("Nieuwe Factuur Aanmaken"));
+    assert.ok(billingHtml.includes("Nieuwe Betaallink Aanmaken"));
+    assert.ok(billingHtml.includes("Upload Factuur PDF"));
     assert.ok(billingHtml.includes("Totaal Gefactureerd"));
     assert.ok(billingHtml.includes("Totaal Voldaan"));
     assert.ok(billingHtml.includes("Openstaand"));

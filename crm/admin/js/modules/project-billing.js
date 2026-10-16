@@ -355,7 +355,7 @@ export function renderBillingCardHtml(projectData) {
             <!-- Financiële Overzichtskaarten (KPIs) -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 14px;">
-                    <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 600;">Totaal Bedrag</div>
+                    <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 600;">Totaal Gefactureerd</div>
                     <div style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 3px;">${formatCurrency(totalInvoiced)}</div>
                 </div>
                 <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; padding: 10px 14px;">
