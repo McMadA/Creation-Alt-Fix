@@ -1776,9 +1776,29 @@ function setupFormHandlers() {
             const updatedInvoices = invoices.filter(inv => (inv.invoiceNumber || inv.number) !== invNumber);
             p.invoices = updatedInvoices;
 
+            const deletedSet = new Set(Array.isArray(p.deletedInvoices) ? p.deletedInvoices : []);
+            deletedSet.add(invNumber);
+            const updatedDeletedInvoices = Array.from(deletedSet);
+            p.deletedInvoices = updatedDeletedInvoices;
+
+            const latestRemaining = updatedInvoices.length > 0 ? updatedInvoices[updatedInvoices.length - 1] : null;
+            p.invoiceNumber = latestRemaining ? (latestRemaining.invoiceNumber || latestRemaining.number || '') : '';
+            p.factuurnummer = p.invoiceNumber;
+            p.mollieLink = latestRemaining ? (latestRemaining.mollieCheckoutUrl || latestRemaining.mollieLink || '') : '';
+            p.invoicePdfUrl = latestRemaining ? (latestRemaining.pdfUrl || '') : '';
+            p.invoicePdfName = latestRemaining ? (latestRemaining.pdfName || '') : '';
+
             if (db && currentProjectId) {
                 try {
-                    await updateDoc(doc(db, "projects", currentProjectId), { invoices: updatedInvoices });
+                    await updateDoc(doc(db, "projects", currentProjectId), {
+                        invoices: updatedInvoices,
+                        deletedInvoices: updatedDeletedInvoices,
+                        invoiceNumber: p.invoiceNumber,
+                        factuurnummer: p.factuurnummer,
+                        mollieLink: p.mollieLink,
+                        invoicePdfUrl: p.invoicePdfUrl,
+                        invoicePdfName: p.invoicePdfName
+                    });
                 } catch (err) {
                     console.error("Fout bij verwijderen factuur in Firestore:", err);
                 }
@@ -2132,7 +2152,10 @@ function setupFormHandlers() {
             };
 
             const p = currentProjectData || {};
-            const existingInvoices = normalizeProjectInvoices(p);
+            if (Array.isArray(p.deletedInvoices)) {
+                p.deletedInvoices = p.deletedInvoices.filter(d => d !== invNumber);
+            }
+            const existingInvoices = normalizeProjectInvoices(p).filter(inv => (inv.invoiceNumber || inv.number) !== invNumber);
             const updatedInvoices = [...existingInvoices, newInvoice];
             p.invoices = updatedInvoices;
             p.invoiceNumber = invNumber;
@@ -2148,6 +2171,7 @@ function setupFormHandlers() {
             if (db && currentProjectId) {
                 await updateDoc(doc(db, "projects", currentProjectId), {
                     invoices: updatedInvoices,
+                    deletedInvoices: Array.isArray(p.deletedInvoices) ? p.deletedInvoices : [],
                     invoiceNumber: invNumber,
                     factuurnummer: invNumber,
                     ...(checkoutUrl ? { mollieLink: checkoutUrl } : {}),

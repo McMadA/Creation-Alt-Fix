@@ -1729,6 +1729,18 @@ test("Multi-invoice management normalizes legacy projects and renders comprehens
     assert.equal(normalized[0].mollieCheckoutUrl, "https://mollie.com/pay/test123");
     assert.equal(normalized[0].amountExcl, 500);
 
+    // 1b. Deleted invoice regression guard: explicit empty invoices[] or deletedInvoices[] must never resurrect legacy invoiceNumber
+    const deletedProject = {
+        id: "proj_deleted",
+        client: "Test Klant",
+        invoiceNumber: "2026-013",
+        factuurnummer: "2026-013",
+        mollieLink: "https://payment-links.mollie.com/payment/test",
+        invoices: [],
+        deletedInvoices: ["2026-013"]
+    };
+    assert.strictEqual(normalizeProjectInvoices(deletedProject).length, 0, "Deleted invoice must not resurrect when invoices array is empty");
+
     // 2. Multi-invoice rendering
     const multiProject = {
         id: "proj_multi",

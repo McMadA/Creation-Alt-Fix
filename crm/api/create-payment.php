@@ -157,26 +157,25 @@ $cleanProjectId = preg_replace('/[^\w\-]/', '', $projectId);
 $cleanInvNumber = preg_replace('/[^\w\-\/]/', '', $invoiceNumber);
 $safeRedirectUrl = "https://portal.creationaltfix.nl/status/?id=" . urlencode($cleanProjectId) . "&paid=true&invoice=" . urlencode($cleanInvNumber);
 
-$payload = [
+if (stripos($description, $cleanInvNumber) === false) {
+    $description = substr($description . " (" . $cleanInvNumber . ")", 0, 128);
+}
+
+$paymentLinkPayload = [
     'amount' => [
         'currency' => 'EUR',
         'value' => number_format($amountIncl, 2, '.', '')
     ],
     'description' => $description,
     'redirectUrl' => $safeRedirectUrl,
-    'webhookUrl' => "https://portal.creationaltfix.nl/crm/api/mollie-webhook.php",
-    'metadata' => [
-        'projectId' => $cleanProjectId,
-        'invoiceNumber' => $cleanInvNumber,
-        'clientName' => $clientName
-    ]
+    'webhookUrl' => "https://portal.creationaltfix.nl/api/mollie-webhook.php"
 ];
 
-// 3. Verstuur POST request naar Mollie API v2
-$ch = curl_init('https://api.mollie.com/v2/payments');
+// 3. Verstuur POST request naar Mollie Payment Links API v2 (verloopt niet na 15 minuten, zichtbaar onder Betaalverzoeken)
+$ch = curl_init('https://api.mollie.com/v2/payment-links');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($paymentLinkPayload));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "Authorization: Bearer {$apiKey}",
     "Content-Type: application/json"
@@ -202,13 +201,14 @@ if ($curlErr) {
 }
 
 $mollieData = json_decode($response, true);
+$checkoutUrl = $mollieData['_links']['paymentLink']['href'] ?? ($mollieData['_links']['checkout']['href'] ?? null);
 
-if ($httpCode >= 200 && $httpCode < 300 && isset($mollieData['_links']['checkout']['href'])) {
+if ($httpCode >= 200 && $httpCode < 300 && !empty($checkoutUrl)) {
     http_response_code(200);
     echo json_encode([
         'success' => true,
         'payment_id' => $mollieData['id'],
-        'checkout_url' => $mollieData['_links']['checkout']['href'],
+        'checkout_url' => $checkoutUrl,
         'status' => $mollieData['status'] ?? 'open',
         'invoiceNumber' => $invoiceNumber
     ]);
@@ -219,3 +219,4 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($mollieData['_links']['checkout
         'error' => "Mollie API fout: {$detail}"
     ]);
 }
+

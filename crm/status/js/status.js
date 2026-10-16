@@ -2001,7 +2001,10 @@ function setupClientInvoicesArchive(data) {
     if (!archiveCard || !tableContainer) return;
 
     // Verzamel alle geregistreerde facturen van dit project
-    const invoices = Array.isArray(data.invoices) ? [...data.invoices] : [];
+    const deletedSet = new Set(Array.isArray(data.deletedInvoices) ? data.deletedInvoices : []);
+    const invoices = Array.isArray(data.invoices)
+        ? data.invoices.filter(inv => inv && !deletedSet.has(inv.invoiceNumber || inv.number))
+        : [];
 
     // Pi-Boekhouding historische facturen synchroniseren indien nog niet in Firestore
     try {
@@ -2010,7 +2013,7 @@ function setupClientInvoicesArchive(data) {
             if (Array.isArray(piInfo.invoices)) {
                 piInfo.invoices.forEach(piInv => {
                     const num = piInv.invoiceNumber || piInv.number;
-                    if (num && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                    if (num && !deletedSet.has(num) && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
                         invoices.push({
                             invoiceNumber: num,
                             description: piInv.description || (piInv.items?.[0]?.name ? `${piInv.items[0].name}${piInv.items[0].desc ? ' (' + piInv.items[0].desc + ')' : ''}` : 'Factuur Pi Boekhouding'),
@@ -2029,7 +2032,7 @@ function setupClientInvoicesArchive(data) {
                 });
             } else if (piInfo.latestInvoice && piInfo.latestInvoice.number) {
                 const num = piInfo.latestInvoice.number;
-                if (!invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                if (!deletedSet.has(num) && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
                     const totalExcl = Number(piInfo.latestInvoice.totalExcl || 0);
                     invoices.push({
                         invoiceNumber: num,
@@ -2047,11 +2050,11 @@ function setupClientInvoicesArchive(data) {
         console.warn("Pi-Boekhouding sync error in setupClientInvoicesArchive:", e);
     }
     
-    // Voeg standalone invoice toe indien niet aanwezig in array
-    if ((data.invoiceNumber || data.factuurnummer) && !invoices.some(i => i.invoiceNumber === (data.invoiceNumber || data.factuurnummer))) {
-        const invNum = data.invoiceNumber || data.factuurnummer;
+    // Voeg standalone invoice alleen toe bij legacy projecten zonder invoices-array
+    const standaloneNum = data.invoiceNumber || data.factuurnummer;
+    if (!Array.isArray(data.invoices) && standaloneNum && !deletedSet.has(standaloneNum) && !invoices.some(i => i.invoiceNumber === standaloneNum)) {
         invoices.push({
-            invoiceNumber: invNum,
+            invoiceNumber: standaloneNum,
             invoiceDate: data.invoiceDate || data.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
             amountIncl: data.proposalPrice ? (data.proposalPrice * 1.21) : 0,
             status: data.status?.toLowerCase().includes('voldaan') || data.status?.toLowerCase().includes('paid') ? 'paid' : 'open',
@@ -2144,14 +2147,15 @@ function setupUnpaidInvoiceBanner(data) {
     if (!banner) return;
 
     // Zoek eerst een openstaande factuur met betaallink in data.invoices
+    const deletedSet = new Set(Array.isArray(data.deletedInvoices) ? data.deletedInvoices : []);
     let openInv = null;
     if (Array.isArray(data.invoices)) {
-        openInv = [...data.invoices].reverse().find(i => i && !isInvoicePaid(i.invoiceNumber, i.status) && (i.mollieCheckoutUrl || i.mollieLink));
+        openInv = [...data.invoices].reverse().find(i => i && !deletedSet.has(i.invoiceNumber || i.number) && !isInvoicePaid(i.invoiceNumber, i.status) && (i.mollieCheckoutUrl || i.mollieLink));
     }
 
-    const invNum = openInv?.invoiceNumber || data.invoiceNumber || data.factuurnummer;
-    const mollieUrl = openInv?.mollieCheckoutUrl || openInv?.mollieLink || data.mollieLink;
-    const isPaid = openInv ? false : isInvoicePaid(invNum, data.status);
+    const invNum = openInv?.invoiceNumber || (!Array.isArray(data.invoices) ? (data.invoiceNumber || data.factuurnummer) : '');
+    const mollieUrl = openInv?.mollieCheckoutUrl || openInv?.mollieLink || (!Array.isArray(data.invoices) ? data.mollieLink : '');
+    const isPaid = openInv ? false : (deletedSet.has(invNum) ? true : isInvoicePaid(invNum, data.status));
 
     if (!isPaid && invNum && mollieUrl) {
         const totalIncl = openInv?.amountIncl ? Number(openInv.amountIncl) : (data.proposalPrice ? (parseFloat(data.proposalPrice) * 1.21) : 0);

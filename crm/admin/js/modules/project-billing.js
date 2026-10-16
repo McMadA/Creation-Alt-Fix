@@ -123,7 +123,10 @@ export function generateBillingWhatsAppUrl(phone, clientName, invoiceNumber, amo
  */
 export function normalizeProjectInvoices(projectData) {
     if (!projectData) return [];
-    let invoices = Array.isArray(projectData.invoices) ? [...projectData.invoices] : [];
+    const deletedSet = new Set(Array.isArray(projectData.deletedInvoices) ? projectData.deletedInvoices : []);
+    let invoices = Array.isArray(projectData.invoices)
+        ? projectData.invoices.filter(inv => inv && !deletedSet.has(inv.invoiceNumber || inv.number))
+        : [];
 
     // Fallback 1: Controleer gekoppelde Pi-Boekhouding facturen
     try {
@@ -132,7 +135,7 @@ export function normalizeProjectInvoices(projectData) {
             if (Array.isArray(piInfo.invoices)) {
                 piInfo.invoices.forEach(piInv => {
                     const num = piInv.invoiceNumber || piInv.number;
-                    if (num && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                    if (num && !deletedSet.has(num) && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
                         invoices.push({
                             invoiceNumber: num,
                             description: piInv.description || (piInv.items?.[0]?.name ? `${piInv.items[0].name}${piInv.items[0].desc ? ' (' + piInv.items[0].desc + ')' : ''}` : 'Factuur Pi Boekhouding'),
@@ -150,7 +153,7 @@ export function normalizeProjectInvoices(projectData) {
                 });
             } else if (piInfo.latestInvoice && piInfo.latestInvoice.number) {
                 const num = piInfo.latestInvoice.number;
-                if (!invoices.some(i => (i.invoiceNumber || i.number) === num)) {
+                if (!deletedSet.has(num) && !invoices.some(i => (i.invoiceNumber || i.number) === num)) {
                     const totalExcl = Number(piInfo.latestInvoice.totalExcl || 0);
                     invoices.push({
                         invoiceNumber: num,
@@ -172,9 +175,9 @@ export function normalizeProjectInvoices(projectData) {
         console.warn("Fout bij ophalen Pi-Boekhouding facturen in normalizeProjectInvoices:", err);
     }
 
-    // Fallback 2: Standalone historisch factuurnummer
-    if (invoices.length === 0 && (projectData.invoiceNumber || projectData.factuurnummer)) {
-        const legacyNum = projectData.invoiceNumber || projectData.factuurnummer;
+    // Fallback 2: Standalone historisch factuurnummer (alleen voor legacy projecten zonder invoices-array)
+    const legacyNum = projectData.invoiceNumber || projectData.factuurnummer;
+    if (!Array.isArray(projectData.invoices) && invoices.length === 0 && legacyNum && !deletedSet.has(legacyNum)) {
         const legacyAmountExcl = Number(projectData.proposalPrice || 0);
         const legacyAmountVat = legacyAmountExcl * 0.21;
         const legacyAmountIncl = legacyAmountExcl + legacyAmountVat;

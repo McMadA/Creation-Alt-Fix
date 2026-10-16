@@ -23,7 +23,7 @@ if (!$paymentId) {
     }
 }
 
-if (!$paymentId || !preg_match('/^tr_[a-zA-Z0-9]{5,32}$/', $paymentId)) {
+if (!$paymentId || !preg_match('/^(?:tr_[a-zA-Z0-9]{5,32}|pl_[a-zA-Z0-9]{5,32})$/', $paymentId)) {
     http_response_code(400);
     exit('Missing or invalid payment ID format');
 }
@@ -55,8 +55,9 @@ if (empty($apiKey)) {
     exit('Server Configuration Error: Missing MOLLIE_API_KEY');
 }
 
-// Vraag payment details op via cURL naar api.mollie.com
-$ch = curl_init("https://api.mollie.com/v2/payments/" . urlencode($paymentId));
+// Vraag payment of payment-link details op via cURL naar api.mollie.com
+$endpoint = (strpos($paymentId, 'pl_') === 0) ? 'payment-links' : 'payments';
+$ch = curl_init("https://api.mollie.com/v2/{$endpoint}/" . urlencode($paymentId));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "Authorization: Bearer {$apiKey}",
@@ -76,8 +77,12 @@ curl_close($ch);
 
 if ($httpCode === 200) {
     $payment = json_decode($response, true);
-    $status = $payment['status'] ?? 'unknown';
-    $invoiceNumber = preg_replace('/[^\w\-\/]/', '', $payment['metadata']['invoiceNumber'] ?? 'ONBEKEND');
+    $status = $payment['status'] ?? (!empty($payment['paidAt']) ? 'paid' : 'open');
+    $rawInv = $payment['metadata']['invoiceNumber'] ?? '';
+    if (empty($rawInv) && !empty($payment['description']) && preg_match('/(20\d{2}-\d{2,5})/', $payment['description'], $m)) {
+        $rawInv = $m[1];
+    }
+    $invoiceNumber = preg_replace('/[^\w\-\/]/', '', $rawInv ?: 'ONBEKEND');
     $clientName = substr(strip_tags(trim($payment['metadata']['clientName'] ?? 'Klant')), 0, 80);
 
     $record = [
@@ -88,7 +93,7 @@ if ($httpCode === 200) {
         'amount' => $payment['amount']['value'] ?? '0.00',
         'currency' => $payment['amount']['currency'] ?? 'EUR',
         'method' => $payment['method'] ?? 'ideal',
-        'paidAt' => ($status === 'paid') ? date('c') : null,
+        'paidAt' => ($status === 'paid') ? ($payment['paidAt'] ?? date('c')) : null,
         'updatedAt' => date('c')
     ];
 
