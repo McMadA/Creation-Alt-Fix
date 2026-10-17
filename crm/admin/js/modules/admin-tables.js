@@ -133,8 +133,9 @@ export function sortProjectsList(list, column, direction) {
             }
 
             case 'actions': {
-                const unreadA = (a.messages || []).filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
-                const unreadB = (b.messages || []).filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
+                const isClientMsg = (m) => m && (m.sender === 'client' || m.senderRole === 'client' || m.role === 'client');
+                const unreadA = (a.messages || []).filter(m => isClientMsg(m) && (m.status === 'open' || !m.readByAdmin)).length;
+                const unreadB = (b.messages || []).filter(m => isClientMsg(m) && (m.status === 'open' || !m.readByAdmin)).length;
                 const totalMsgsA = (a.messages || []).length;
                 const totalMsgsB = (b.messages || []).length;
 
@@ -228,7 +229,7 @@ export function renderTablesData(projectsToRender, handlers = {}) {
         let msgBadge = '';
         const msgs = p.messages || [];
         if (msgs.length > 0) {
-            const unreadCount = msgs.filter(m => m.sender === 'client' && (m.status === 'open' || !m.readByAdmin)).length;
+            const unreadCount = msgs.filter(m => m && (m.sender === 'client' || m.senderRole === 'client' || m.role === 'client') && (m.status === 'open' || !m.readByAdmin)).length;
             if (unreadCount > 0) {
                 msgBadge = `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.8rem; font-weight: 700; color: #f87171; white-space: nowrap;" title="${unreadCount} openstaande ticket(s)/bericht(en)">
                     <i class="fas fa-comment-dots"></i> ${unreadCount}

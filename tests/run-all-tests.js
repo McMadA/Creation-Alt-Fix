@@ -2380,6 +2380,229 @@ test("Anti-Break: ARCHITECTURE_AND_RULES.md memory aid and Definition of Done ex
     assert.ok(content.includes("Firestore Security Rules Synchronisatie"), "Must mandate Firestore rules synchronization");
 });
 
+await testAsync("Anti-Break: pi-invoices.json and PI_BOEKHOUDING_CLIENT_DATA maintain 100% invoice & Mollie link parity", async () => {
+    const { PI_BOEKHOUDING_CLIENT_DATA } = await import("../crm/admin/js/modules/bookkeeping-data.js");
+    const piJsonPath = path.join(ROOT_DIR, "crm/admin/data/pi-invoices.json");
+    assert.ok(fs.existsSync(piJsonPath), "crm/admin/data/pi-invoices.json must exist");
+    const piData = JSON.parse(fs.readFileSync(piJsonPath, "utf-8"));
+
+    assert.ok(Array.isArray(piData.invoices) && piData.invoices.length >= 13, "pi-invoices.json must contain all >=13 Pi invoices");
+    assert.notEqual(piData.syncedAt, "now", "pi-invoices.json syncedAt must be a real ISO timestamp, not 'now'");
+
+    const allModuleInvoices = new Map();
+    for (const clientObj of Object.values(PI_BOEKHOUDING_CLIENT_DATA)) {
+        for (const inv of (clientObj.invoices || [])) {
+            allModuleInvoices.set(inv.invoiceNumber, inv);
+        }
+    }
+
+    for (const piInv of piData.invoices) {
+        const modInv = allModuleInvoices.get(piInv.invoiceNumber);
+        assert.ok(modInv, `Invoice ${piInv.invoiceNumber} (${piInv.clientName}) in pi-invoices.json is missing from bookkeeping-data.js`);
+        assert.strictEqual(Number(modInv.amountExcl), Number(piInv.totalExcl), `Amount Excl mismatch on ${piInv.invoiceNumber}`);
+        if (piInv.mollieLink) {
+            assert.strictEqual(modInv.mollieCheckoutUrl || modInv.mollieLink, piInv.mollieLink, `Mollie link mismatch on ${piInv.invoiceNumber}`);
+        }
+    }
+});
+
+await testAsync("Anti-Break: project-billing.js and status.js exclude canceled invoices from KPI totals and unpaid actions", async () => {
+    const { renderBillingCardHtml } = await import("../crm/admin/js/modules/project-billing.js");
+    const ftruckHtml = renderBillingCardHtml({ client: "F-Truck Store", domainName: "ftruckstore.nl" });
+    // F-Truck has 2026-006 (€169.40 paid), 2026-007 (€72.60 canceled), 2026-008 (€369.05 paid).
+    // Total invoiced and paid must be €538,45 (excluding canceled €72,60)
+    assert.ok(ftruckHtml.includes("538,45"), "F-Truck Store totalInvoiced must exclude canceled invoice 2026-007 (€72,60) and equal €538,45");
+
+    const statusJs = fs.readFileSync(path.join(ROOT_DIR, "crm/status/js/status.js"), "utf-8");
+    assert.ok(statusJs.includes("function isInvoiceCanceled(status)"), "status.js must define isInvoiceCanceled helper");
+    assert.ok(statusJs.includes("🚫 Geannuleerd"), "status.js must render Geannuleerd badge for canceled invoices");
+    assert.ok(statusJs.includes("const isPrimaryProjectInvoice = inv.invoiceNumber === (data.invoiceNumber || data.factuurnummer);"), "status.js must not leak project-level data.mollieLink onto unrelated invoices");
+});
+
+test("Anti-Break: pdf-generator.js enforces authentic BRANDING KVK 99986191, BTW NL005423147B16, and IBAN NL92REVO3150395003", () => {
+    const pdfJs = fs.readFileSync(path.join(ROOT_DIR, "crm/js/pdf-generator.js"), "utf-8");
+    assert.ok(pdfJs.includes("99986191"), "pdf-generator.js must contain official KVK 99986191");
+    assert.ok(pdfJs.includes("NL005423147B16"), "pdf-generator.js must contain official BTW NL005423147B16");
+    assert.ok(pdfJs.includes("NL92REVO3150395003"), "pdf-generator.js must contain official IBAN NL92REVO3150395003");
+    assert.ok(!pdfJs.includes("94200632"), "pdf-generator.js must never contain stale KVK 94200632");
+    assert.ok(!pdfJs.includes("NL005072704B18"), "pdf-generator.js must never contain stale BTW NL005072704B18");
+    assert.ok(!pdfJs.includes("NLXX KNAB"), "pdf-generator.js must never contain placeholder IBAN NLXX KNAB");
+});
+
+await testAsync("Anti-Break: mollie-webhook.js, mollie-webhook.php, and project-billing.js support pl_ payment links and canonical webhook URL", async () => {
+    const logPath = path.join(ROOT_DIR, "crm/api/mollie-payments-log.json");
+    const hadLog = fs.existsSync(logPath);
+    const prevLog = hadLog ? fs.readFileSync(logPath, "utf-8") : null;
+    try {
+        const { updateInvoicePaymentStatus } = await import("../crm/api/mollie-webhook.js");
+        const rec = await updateInvoicePaymentStatus({
+            id: "pl_testLink12345",
+            paidAt: "2026-10-17T10:00:00Z",
+            description: "Factuur 2026-013 - Creation+Alt+Fix (Besseling)",
+            amount: { value: "1089.00", currency: "EUR" }
+        });
+        assert.strictEqual(rec.status, "paid", "Payment link with paidAt must resolve to status 'paid'");
+        assert.strictEqual(rec.invoiceNumber, "2026-013", "Must extract invoice number 2026-013 from description when metadata is absent");
+    } finally {
+        if (hadLog && prevLog !== null) {
+            fs.writeFileSync(logPath, prevLog, "utf-8");
+        } else if (!hadLog && fs.existsSync(logPath)) {
+            fs.unlinkSync(logPath);
+        }
+    }
+
+    const billingJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/modules/project-billing.js"), "utf-8");
+    assert.ok(billingJs.includes("https://portal.creationaltfix.nl/api/mollie-webhook.php"), "project-billing.js must use canonical webhook URL without /crm/ prefix");
+    assert.ok(!billingJs.includes("https://portal.creationaltfix.nl/crm/api/mollie-webhook.php"), "project-billing.js must not use legacy /crm/api/mollie-webhook.php URL");
+});
+
+test("Anti-Break: storage.rules protects /projects/{projectId}/facturen/** against non-admin write or delete", () => {
+    const storageRules = fs.readFileSync(path.join(ROOT_DIR, "storage.rules"), "utf-8");
+    assert.ok(storageRules.includes("!allPaths.matches('(?i)^facturen/.*')"), "storage.rules must block client write/delete on facturen/ subfolder");
+    assert.ok(storageRules.includes("firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))"), "storage.rules isAdmin() must mirror firestore.rules admins collection check");
+});
+
+test("Anti-Break: Boekhouding Jinja2 templates have balanced {% if %}/{% endif %} and {% for %}/{% endfor %} tags", () => {
+    const tplDir = path.resolve(ROOT_DIR, "../../Boekhoudings/Boekhouding/templates");
+    if (!fs.existsSync(tplDir)) return "SKIP";
+
+    const tplFiles = fs.readdirSync(tplDir).filter(f => f.endsWith(".html"));
+    assert.ok(tplFiles.length >= 15, "Boekhouding templates directory must contain HTML templates");
+
+    for (const file of tplFiles) {
+        const content = fs.readFileSync(path.join(tplDir, file), "utf-8");
+        const ifOpens = (content.match(/\{%-?\s*if\b/g) || []).length;
+        const ifCloses = (content.match(/\{%-?\s*endif\b/g) || []).length;
+        assert.strictEqual(ifOpens, ifCloses, `Unbalanced {% if %} (${ifOpens}) vs {% endif %} (${ifCloses}) in ${file}`);
+
+        const forOpens = (content.match(/\{%-?\s*for\b/g) || []).length;
+        const forCloses = (content.match(/\{%-?\s*endfor\b/g) || []).length;
+        assert.strictEqual(forOpens, forCloses, `Unbalanced {% for %} (${forOpens}) vs {% endfor %} (${forCloses}) in ${file}`);
+    }
+});
+
+test("Anti-Break: status.js imports formatCurrency, populates #offerte-price in State B, and normalizes multi-schema messages", () => {
+    const statusJs = fs.readFileSync(path.join(ROOT_DIR, "crm/status/js/status.js"), "utf-8");
+    // 1. Must import formatCurrency from firebase-config.js so setupClientInvoicesArchive and setupUnpaidInvoiceBanner never throw ReferenceError
+    assert.ok(
+        /import\s*\{[^}]*\bformatCurrency\b[^}]*\}\s*from\s*["']\.\.\/\.\.\/js\/firebase-config\.js["']/.test(statusJs),
+        "status.js must import formatCurrency from ../../js/firebase-config.js"
+    );
+
+    // 2. Must populate priceEl.innerText in State B (isReadyForAcceptance) so #offerte-price is never stuck on 'Wordt berekend...'
+    const stateBIdx = statusJs.indexOf("} else if (isReadyForAcceptance) {");
+    const stateCIdx = statusJs.indexOf("} else {", stateBIdx);
+    assert.ok(stateBIdx > -1 && stateCIdx > stateBIdx, "status.js must contain isReadyForAcceptance branch");
+    const stateBBlock = statusJs.slice(stateBIdx, stateCIdx);
+    assert.ok(stateBBlock.includes("if (priceEl)"), "isReadyForAcceptance branch must populate priceEl (#offerte-price)");
+
+    // 3. Must normalize message/text/content and sender/senderRole/role in renderMessagesSection
+    assert.ok(
+        statusJs.includes("const bodyText = msg.message || msg.text || msg.content || '';"),
+        "status.js renderMessagesSection must normalize msg.message || msg.text || msg.content"
+    );
+    assert.ok(
+        statusJs.includes("msg.category === 'subscription_2027'"),
+        "status.js renderMessagesSection must support subscription_2027 category badge"
+    );
+});
+
+test("Anti-Break: firestore.rules guards optional map keys, allows Fase 2/3 client approvals, and permits 2027 subscriptionPrice upgrades", () => {
+    const rules = fs.readFileSync(path.join(ROOT_DIR, "firestore.rules"), "utf-8");
+
+    // 1. Safe map key checks ('in' operator before property access)
+    assert.ok(rules.includes("'clientUid' in docData && docData.clientUid != null"), "isVerifiedClient must check 'clientUid' in docData before accessing docData.clientUid");
+    assert.ok(rules.includes("!('clientUid' in resource.data)"), "isValidClientUpdate must allow projects where clientUid is not yet set in resource.data");
+    assert.ok(rules.includes("!('subscriptionPlan2027Price' in resource.data)"), "isValidClientUpdate must allow setting subscriptionPlan2027Price when not previously present in resource.data");
+
+    // 2. Fase 2 & Fase 3 status transition support for client proposal/design acceptance
+    assert.ok(rules.includes("'Fase 2: Wacht op Akkoord (Offerte)'"), "firestore.rules must permit client proposal approval from 'Fase 2: Wacht op Akkoord (Offerte)'");
+    assert.ok(rules.includes("'Design Gereed voor Review'"), "firestore.rules must permit client design approval from 'Design Gereed voor Review'");
+    assert.ok(rules.includes("'Fase 4: In Ontwikkeling'"), "firestore.rules must permit client transition to 'Fase 4: In Ontwikkeling'");
+
+    // 3. Allow subscriptionPrice upgrade when confirming 2027 plan
+    assert.ok(
+        rules.includes("request.resource.data.subscriptionPrice == request.resource.data.subscriptionPlan2027Price"),
+        "firestore.rules must allow subscriptionPrice to update to subscriptionPlan2027Price upon client confirmation"
+    );
+});
+
+test("Anti-Break: admin.js defines logAuditEvent, refreshes subscriptions properly, and project.js passes onConfirmPlan to 2027 modal", () => {
+    const adminJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/admin.js"), "utf-8");
+    assert.ok(adminJs.includes("async function logAuditEvent("), "admin.js must define logAuditEvent to prevent ReferenceError during 2027 plan and lead actions");
+    assert.ok(!adminJs.includes("onRefresh: () => loadProjects()"), "admin.js must not call undefined loadProjects() in Subscriptions tab");
+
+    const projectJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/project.js"), "utf-8");
+    const subModalIdx = projectJs.indexOf("open2027SubscriptionModal({");
+    assert.ok(subModalIdx > -1, "project.js must invoke open2027SubscriptionModal");
+    const subModalSlice = projectJs.slice(subModalIdx, subModalIdx + 3200);
+    assert.ok(subModalSlice.includes("onConfirmPlan:"), "project.js open2027SubscriptionModal must pass onConfirmPlan callback");
+});
+
+await testAsync("Anti-Break: subscription-2027.js and admin-subscriptions.js render dynamic 2027 plan prices and project.html has all 2027 invoice presets", async () => {
+    const sub2027Js = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/modules/subscription-2027.js"), "utf-8");
+    const adminSubsJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/modules/admin-subscriptions.js"), "utf-8");
+    const projectHtml = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/project.html"), "utf-8");
+    const projectJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/project.js"), "utf-8");
+
+    assert.ok(!sub2027Js.includes("Akkoord Gemeld door Klant (€ 95,-)"), "subscription-2027.js must not hardcode € 95,- on the confirmation button");
+    assert.ok(!adminSubsJs.includes("Bevestigd (€ 95,-)"), "admin-subscriptions.js must not hardcode € 95,- on the confirmed badge");
+
+    for (const presetKey of ["hosting_2027", "hosting_nl", "hosting_com", "hosting_multi", "apk_annual", "allin_apk"]) {
+        assert.ok(projectHtml.includes(`value="${presetKey}"`), `crm/admin/project.html #modal-inv-preset must include option value="${presetKey}"`);
+        assert.ok(projectJs.includes(`preset === '${presetKey}'`), `crm/admin/js/project.js must handle preset '${presetKey}'`);
+    }
+});
+
+await testAsync("Anti-Break: schemas.js, admin-tables.js, and project.js normalize multi-schema messages across sender/senderRole/role and message/text/content", async () => {
+    const { Schemas } = await import("../crm/js/core/schemas.js");
+    const legacyMsg = Schemas.sanitizeMessage({
+        id: "msg_2027_test",
+        sender: "admin",
+        text: "Voorstel 2027 pakket",
+        createdAt: "2026-10-17T10:00:00.000Z",
+        category: "subscription_2027"
+    });
+    assert.strictEqual(legacyMsg.message, "Voorstel 2027 pakket", "sanitizeMessage must populate canonical message from text");
+    assert.strictEqual(legacyMsg.text, "Voorstel 2027 pakket", "sanitizeMessage must preserve text field");
+    assert.strictEqual(legacyMsg.senderRole, "admin", "sanitizeMessage must populate canonical senderRole from sender");
+    assert.strictEqual(legacyMsg.timestamp, "2026-10-17T10:00:00.000Z", "sanitizeMessage must populate timestamp from createdAt");
+
+    const tablesJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/modules/admin-tables.js"), "utf-8");
+    assert.ok(
+        tablesJs.includes("m.sender === 'client' || m.senderRole === 'client' || m.role === 'client'"),
+        "admin-tables.js unread badge counter must recognize client messages across sender, senderRole, and role"
+    );
+});
+
+test("Anti-Break: intake.js, status/index.html, and project.js use canonical production URLs without broken /crm/index.html, /terms.html, or /offerte/ links", () => {
+    const intakeJs = fs.readFileSync(path.join(ROOT_DIR, "crm/intake/js/intake.js"), "utf-8");
+    assert.ok(
+        intakeJs.includes("https://portal.creationaltfix.nl/index.html?resetSuccess=true"),
+        "intake.js password reset redirect must use https://portal.creationaltfix.nl/index.html?resetSuccess=true"
+    );
+    assert.ok(
+        !intakeJs.includes("https://portal.creationaltfix.nl/crm/index.html"),
+        "intake.js must never redirect to non-existent /crm/index.html on portal subdomain"
+    );
+
+    const statusHtml = fs.readFileSync(path.join(ROOT_DIR, "crm/status/index.html"), "utf-8");
+    assert.ok(
+        statusHtml.includes("https://creationaltfix.nl/algemene-voorwaarden.html"),
+        "status/index.html must link to https://creationaltfix.nl/algemene-voorwaarden.html"
+    );
+    assert.ok(
+        !statusHtml.includes("https://creationaltfix.nl/terms.html"),
+        "status/index.html must never link to non-existent https://creationaltfix.nl/terms.html"
+    );
+
+    const projectJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/project.js"), "utf-8");
+    assert.ok(
+        !projectJs.includes("/offerte/index.html?id="),
+        "project.js must not generate dead /offerte/index.html links"
+    );
+});
+
 // ========================================================
 // FINAL SUMMARY
 // ========================================================
@@ -2392,3 +2615,4 @@ if (failedCount > 0) {
 } else {
     process.exit(0);
 }
+

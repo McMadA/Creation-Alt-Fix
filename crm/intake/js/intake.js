@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let clientUid = null;
 
         const actionCodeSettings = {
-            url: 'https://portal.creationaltfix.nl/crm/index.html?resetSuccess=true',
+            url: 'https://portal.creationaltfix.nl/index.html?resetSuccess=true',
             handleCodeInApp: false
         };
 

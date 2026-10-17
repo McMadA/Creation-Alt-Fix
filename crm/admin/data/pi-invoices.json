@@ -1,9 +1,10 @@
 {
-  "syncedAt": "now",
-  "count": 12,
+  "syncedAt": "2026-10-17T08:47:55Z",
+  "count": 13,
   "invoices": [
     {
       "id": 1,
+      "relatieId": 1,
       "invoiceNumber": "2026-001",
       "date": "2026-03-24",
       "dueDate": "2026-04-07",
@@ -14,6 +15,7 @@
       "totalExcl": 50.0,
       "totalVat": 10.5,
       "totalIncl": 60.5,
+      "mollieLink": null,
       "items": [
         {
           "name": "Software",
@@ -25,6 +27,7 @@
     },
     {
       "id": 8,
+      "relatieId": 5,
       "invoiceNumber": "2026-002",
       "date": "2026-04-08",
       "dueDate": "2026-04-22",
@@ -35,6 +38,7 @@
       "totalExcl": 75.0,
       "totalVat": 15.75,
       "totalIncl": 90.75,
+      "mollieLink": null,
       "items": [
         {
           "name": "Website updaten",
@@ -46,6 +50,7 @@
     },
     {
       "id": 12,
+      "relatieId": 6,
       "invoiceNumber": "2026-003",
       "date": "2026-05-27",
       "dueDate": "2026-06-10",
@@ -56,6 +61,7 @@
       "totalExcl": 22.0,
       "totalVat": 4.62,
       "totalIncl": 26.62,
+      "mollieLink": null,
       "items": [
         {
           "name": "Domein verlengen",
@@ -73,6 +79,7 @@
     },
     {
       "id": 13,
+      "relatieId": 7,
       "invoiceNumber": "2026-004",
       "date": "2026-05-27",
       "dueDate": "2026-06-10",
@@ -83,6 +90,7 @@
       "totalExcl": 22.0,
       "totalVat": 4.62,
       "totalIncl": 26.62,
+      "mollieLink": null,
       "items": [
         {
           "name": "Domein verlengen",
@@ -100,6 +108,7 @@
     },
     {
       "id": 16,
+      "relatieId": 8,
       "invoiceNumber": "2026-005",
       "date": "2026-06-03",
       "dueDate": "2026-06-17",
@@ -110,6 +119,7 @@
       "totalExcl": 22.0,
       "totalVat": 4.62,
       "totalIncl": 26.62,
+      "mollieLink": null,
       "items": [
         {
           "name": "Domein verlengen",
@@ -127,6 +137,7 @@
     },
     {
       "id": 18,
+      "relatieId": 9,
       "invoiceNumber": "2026-006",
       "date": "2026-07-13",
       "dueDate": "2026-07-27",
@@ -137,6 +148,7 @@
       "totalExcl": 140.0,
       "totalVat": 29.4,
       "totalIncl": 169.4,
+      "mollieLink": null,
       "items": [
         {
           "name": "Reparatie website",
@@ -148,6 +160,7 @@
     },
     {
       "id": 22,
+      "relatieId": 9,
       "invoiceNumber": "2026-007",
       "date": "2026-07-22",
       "dueDate": "2026-08-05",
@@ -158,6 +171,7 @@
       "totalExcl": 60.0,
       "totalVat": 12.6,
       "totalIncl": 72.6,
+      "mollieLink": null,
       "items": [
         {
           "name": "hosting",
@@ -169,6 +183,7 @@
     },
     {
       "id": 23,
+      "relatieId": 9,
       "invoiceNumber": "2026-008",
       "date": "2026-07-22",
       "dueDate": "2026-08-05",
@@ -179,6 +194,7 @@
       "totalExcl": 305.0,
       "totalVat": 64.05,
       "totalIncl": 369.05,
+      "mollieLink": null,
       "items": [
         {
           "name": "Hosting",
@@ -208,6 +224,7 @@
     },
     {
       "id": 24,
+      "relatieId": 5,
       "invoiceNumber": "2026-009",
       "date": "2026-07-22",
       "dueDate": "2026-08-05",
@@ -218,6 +235,7 @@
       "totalExcl": 245.0,
       "totalVat": 51.45,
       "totalIncl": 296.45,
+      "mollieLink": null,
       "items": [
         {
           "name": "Nieuwe website",
@@ -229,6 +247,7 @@
     },
     {
       "id": 25,
+      "relatieId": 10,
       "invoiceNumber": "2026-010",
       "date": "2026-09-23",
       "dueDate": "2026-10-07",
@@ -239,6 +258,7 @@
       "totalExcl": 22.0,
       "totalVat": 4.62,
       "totalIncl": 26.62,
+      "mollieLink": null,
       "items": [
         {
           "name": "Domein verlengen",
@@ -256,6 +276,7 @@
     },
     {
       "id": 26,
+      "relatieId": 11,
       "invoiceNumber": "2026-011",
       "date": "2026-09-23",
       "dueDate": "2026-10-07",
@@ -266,6 +287,7 @@
       "totalExcl": 22.0,
       "totalVat": 4.62,
       "totalIncl": 26.62,
+      "mollieLink": null,
       "items": [
         {
           "name": "Domein verlengen",
@@ -283,6 +305,7 @@
     },
     {
       "id": 27,
+      "relatieId": 5,
       "invoiceNumber": "2026-012",
       "date": "2026-10-08",
       "dueDate": "2026-10-22",
@@ -293,12 +316,36 @@
       "totalExcl": 315.0,
       "totalVat": 66.15,
       "totalIncl": 381.15,
+      "mollieLink": null,
       "items": [
         {
           "name": "Website aanpassingen Q2 2026",
           "desc": "per uur",
           "qty": 9.0,
           "price": 35.0
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "relatieId": 13,
+      "invoiceNumber": "2026-013",
+      "date": "2026-10-16",
+      "dueDate": "2026-10-30",
+      "status": "Verzonden",
+      "clientName": "Besseling Installatie Techniek (BIT)",
+      "email": "info@besselinginstallatietechniek.nl",
+      "kvk": "95510591",
+      "totalExcl": 900.0,
+      "totalVat": 189.0,
+      "totalIncl": 1089.0,
+      "mollieLink": "https://payment-links.mollie.com/payment/pVXYQtJWZsGXCL4zfQK2b",
+      "items": [
+        {
+          "name": "Besseling Installatie Techniek (BIT) Website",
+          "desc": "eenmalig",
+          "qty": 1.0,
+          "price": 900.0
         }
       ]
     }

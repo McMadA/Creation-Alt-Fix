@@ -17,6 +17,7 @@ export const BRANDING = {
     phone: "+31 6 19135453",
     kvk: "99986191",
     vat: "NL005423147B16",
+    iban: "NL92REVO3150395003",
     address: "Hoofdstraat 60B, 9601 EK Hoogezand",
     website: "https://creationaltfix.nl",
     portalTitle: "Klantenportaal & Project Workspace",

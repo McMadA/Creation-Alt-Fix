@@ -24,16 +24,20 @@ export async function fetchMolliePaymentStatus(paymentId, apiKey = MOLLIE_API_KE
     throw new Error('Missing MOLLIE_API_KEY in environment. Fail-closed security enforced.');
   }
 
-  const MOLLIE_ID_REGEX = /^tr_[a-zA-Z0-9]{5,32}$/;
+  const MOLLIE_ID_REGEX = /^(tr_[a-zA-Z0-9]{5,32}|pl_[a-zA-Z0-9]{5,32})$/;
   if (!paymentId || !MOLLIE_ID_REGEX.test(paymentId)) {
-    throw new Error('Ongeldig Mollie payment id formaat (verwacht: tr_xxx).');
+    throw new Error('Ongeldig Mollie payment id formaat (verwacht: tr_xxx of pl_xxx).');
   }
+
+  const endpointPath = paymentId.startsWith('pl_')
+    ? `/v2/payment-links/${paymentId}`
+    : `/v2/payments/${paymentId}`;
 
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'api.mollie.com',
       port: 443,
-      path: `/v2/payments/${paymentId}`,
+      path: endpointPath,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -68,8 +72,14 @@ export async function fetchMolliePaymentStatus(paymentId, apiKey = MOLLIE_API_KE
  * Muteert de status van de transactie/factuur in het CRM & Boekhouding
  */
 export async function updateInvoicePaymentStatus(paymentDetails) {
-  const { id: paymentId, status, metadata, paidAt } = paymentDetails;
-  const rawInvoice = metadata?.invoiceNumber || metadata?.factuurnummer || 'ONBEKEND';
+  const { id: paymentId, status: rawStatus, metadata, paidAt, description } = paymentDetails;
+  const status = (!rawStatus && paidAt) ? 'paid' : (rawStatus || 'open');
+  let rawInvoice = metadata?.invoiceNumber || metadata?.factuurnummer || '';
+  if (!rawInvoice && typeof description === 'string') {
+    const match = description.match(/Factuur\s+(20\d{2}-\d{3})/i);
+    if (match) rawInvoice = match[1];
+  }
+  if (!rawInvoice) rawInvoice = 'ONBEKEND';
   const rawClient = metadata?.clientName || metadata?.klant_naam || 'Klant';
   const invoiceNumber = String(rawInvoice).replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 50);
   const clientName = String(rawClient).replace(/[\r\n\x00-\x1F\x7F]/g, '').trim().substring(0, 100);
@@ -147,7 +157,7 @@ export function handleWebhookRequest(req, res) {
 
   req.on('end', async () => {
     try {
-      // Mollie stuurt `id=tr_xxx` via `application/x-www-form-urlencoded` of JSON payload
+      // Mollie stuurt `id=tr_xxx` of `id=pl_xxx` via `application/x-www-form-urlencoded` of JSON payload
       let paymentId = '';
       try {
         const jsonBody = JSON.parse(body);
@@ -161,7 +171,7 @@ export function handleWebhookRequest(req, res) {
         paymentId = params.get('id') || '';
       }
 
-      const MOLLIE_ID_REGEX = /^tr_[a-zA-Z0-9]{5,32}$/;
+      const MOLLIE_ID_REGEX = /^(tr_[a-zA-Z0-9]{5,32}|pl_[a-zA-Z0-9]{5,32})$/;
       if (!paymentId || !MOLLIE_ID_REGEX.test(paymentId)) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         return res.end('Ongeldige aanroep: Ongeldig Mollie payment id formaat.');

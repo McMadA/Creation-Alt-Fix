@@ -8,8 +8,13 @@ service firebase.storage {
     // ============================================================
     function isAdmin() {
       return request.auth != null && (
-        request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']
-        && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com')
+        (
+          request.auth.token.email != null
+          && request.auth.token.email is string
+          && request.auth.token.email in ['allardv03@gmail.com', 'info@creationaltfix.nl']
+          && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com')
+        )
+        || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
       );
     }
 
@@ -34,7 +39,8 @@ service firebase.storage {
     // Path: projects/{projectId}/{fileName}
     // 
     // - Only admins or verified project owner can READ files
-    // - Only admins or verified project owner can UPLOAD files
+    // - Official invoices in projects/{projectId}/facturen/** are WRITE/DELETE restricted to admins
+    // - Only admins or verified project owner can UPLOAD client files
     //   (max 10 MB per file, safe non-executable MIME types)
     // ============================================================
     match /projects/{projectId}/{allPaths=**} {
@@ -42,6 +48,7 @@ service firebase.storage {
 
       allow create, update: if isAdmin()
                    || (isProjectOwner(projectId)
+                       && !allPaths.matches('(?i)^facturen/.*')
                        && request.resource.size > 0
                        && request.resource.size < 10 * 1024 * 1024
                        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)|application/pdf|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*')
@@ -49,7 +56,7 @@ service firebase.storage {
                        && allPaths.matches('(?i).*\\.(jpg|jpeg|png|webp|gif|pdf|txt|doc|docx|xls|xlsx|csv)$')
                        && !allPaths.matches('(?i).*\\.(php|phtml|phar|html|htm|js|jsx|ts|tsx|exe|dll|sh|bat|cmd|vbs|jar|svg|asp|aspx|py|pl|cgi|ps1|com|scr|msi|hta|cpl|wsf|jsp|jspx|xhtml|shtml|env|config|htaccess|ini)$'));
 
-      allow delete: if isAdmin() || isProjectOwner(projectId);
+      allow delete: if isAdmin() || (isProjectOwner(projectId) && !allPaths.matches('(?i)^facturen/.*'));
     }
 
     // ============================================================

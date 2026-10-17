@@ -289,16 +289,49 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
     },
     "besselinginstallatietechniek.nl": {
         clientName: "Besseling Installatietechniek",
-        aliases: ["besseling", "besseling installatietechniek", "besselinginstallatietechniek.nl"],
+        relatieId: 13,
+        kvk: "95510591",
+        aliases: ["besseling", "besseling installatietechniek", "besseling installatie techniek (bit)", "besselinginstallatietechniek.nl"],
         currentPlanName: "In Ontwikkeling (Fase 4)",
         currentPlanId: "managed_nl",
         recommendedPlanId: "managed_nl",
         recommendedReason: "Bedrijfswebsite: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr) bij oplevering. Incl. NVMe hosting, SSL & 30 min. service.",
-        invoices: [],
-        latestInvoice: null
+        invoices: [
+            {
+                invoiceNumber: "2026-013",
+                description: "Maken van een nieuwe website, Hosting en domein .nl & Onderhouds contract",
+                invoiceDate: "2026-10-16",
+                dueDate: "2026-10-30",
+                amountExcl: 900.00,
+                amountVat: 189.00,
+                amountIncl: 1089.00,
+                status: "open",
+                mollieCheckoutUrl: "https://payment-links.mollie.com/payment/pVXYQtJWZsGXCL4zfQK2b",
+                mollieLink: "https://payment-links.mollie.com/payment/pVXYQtJWZsGXCL4zfQK2b",
+                items: [
+                    { name: "Maken van een nieuwe website", desc: "per uur", qty: 10, price: 40.00 },
+                    { name: "Hosting en domein .nl", desc: "per jaar", qty: 1, price: 150.00 },
+                    { name: "Onderhouds contract", desc: "per jaar", qty: 1, price: 350.00 }
+                ]
+            }
+        ],
+        latestInvoice: {
+            number: "2026-013",
+            date: "16-10-2026",
+            status: "Verzonden",
+            totalExcl: 900.00,
+            mollieLink: "https://payment-links.mollie.com/payment/pVXYQtJWZsGXCL4zfQK2b",
+            items: [
+                { name: "Maken van een nieuwe website", desc: "per uur", qty: 10, price: 40.00 },
+                { name: "Hosting en domein .nl", desc: "per jaar", qty: 1, price: 150.00 },
+                { name: "Onderhouds contract", desc: "per jaar", qty: 1, price: 350.00 }
+            ]
+        }
     },
     "arnolddesign.nl": {
         clientName: "Arnold Design (Arnold Doornbos)",
+        relatieId: 11,
+        kvk: "94811318",
         aliases: ["arnold design", "arnold", "arnold doornbos", "arnolddesign.nl"],
         currentPlanName: "Design & AI Scrape Shield (Fase 3)",
         currentPlanId: "transition_2027_loyalty",
@@ -353,6 +386,8 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
     },
     "naaiatelier-willa.nl": {
         clientName: "Naaiatelier Willa (Willeke)",
+        relatieId: 10,
+        kvk: "95130659",
         aliases: ["naaiatelier willa", "willa", "willeke", "naaiatelier-willa.nl"],
         currentPlanName: "MKB Portfolio & Atelier",
         currentPlanId: "transition_2027_loyalty",
@@ -407,7 +442,9 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
     },
     "justin.nl": {
         clientName: "Justin Web Projects",
-        aliases: ["justin", "justin.nl"],
+        relatieId: 12,
+        kvk: "42132388",
+        aliases: ["justin", "jboersmamusic", "justin.nl"],
         currentPlanName: "Nieuwe Lead (Fase 1)",
         currentPlanId: "none",
         recommendedPlanId: "managed_nl",

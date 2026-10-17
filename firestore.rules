@@ -21,8 +21,8 @@ service cloud.firestore {
     // ============================================================
     function isVerifiedClient(docData) {
       return request.auth != null && (
-        (docData.clientUid != null && docData.clientUid is string && request.auth.uid is string && docData.clientUid == request.auth.uid) ||
-        (docData.email != null && docData.email is string && request.auth.token.email != null && request.auth.token.email is string 
+        ('clientUid' in docData && docData.clientUid != null && docData.clientUid is string && request.auth.uid is string && docData.clientUid == request.auth.uid) ||
+        ('email' in docData && docData.email != null && docData.email is string && request.auth.token.email != null && request.auth.token.email is string 
          && docData.email == request.auth.token.email 
          && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com'))
       );
@@ -52,28 +52,31 @@ service cloud.firestore {
         'subscriptionPlan2027Id', 'subscriptionPlan2027Name', 'subscriptionPlan2027Price', 'subscriptionPlan2027ProposedAt',
         'subscriptionPlanId', 'subscriptionPlanName', 'subscriptionPrice', 'subscriptionCycle'
       ])
-      // 1. Status tamper protection: clients can only transition to phase 3/4 milestone states from valid quote phase
+      // 1. Status tamper protection: clients can only transition to phase 3/4 milestone states from valid quote/design phases
       && (!('status' in affected)
           || request.resource.data.status == resource.data.status
-          || (resource.data.status in ['Wacht op Akkoord (Offerte)', 'Fase 2: Wacht op Akkoord (Offerte)']
-              && request.resource.data.status in ['Wacht op Design & Ontwerp', 'In Ontwikkeling']))
+          || (resource.data.status in ['Wacht op Akkoord', 'Wacht op Akkoord (Offerte)', 'Fase 2: Wacht op Akkoord (Offerte)', 'Wacht op Design & Ontwerp', 'Design Gereed voor Review', 'Fase 3: Design & Ontwerp']
+              && request.resource.data.status in ['Wacht op Design & Ontwerp', 'In Ontwikkeling', 'Fase 4: In Ontwikkeling']))
       // 2. Client UID protection: cannot overwrite or rebind existing UID
       && (!('clientUid' in affected)
-          || resource.data.clientUid == request.resource.data.clientUid
-          || (resource.data.clientUid == null && request.resource.data.clientUid == request.auth.uid))
+          || (!('clientUid' in resource.data) || resource.data.clientUid == null
+              ? request.resource.data.clientUid == request.auth.uid
+              : resource.data.clientUid == request.resource.data.clientUid))
       // 3. Stored XSS & Phishing protection: proposal URL must use trusted Google/Creation storage endpoints
       && (!('proposalPdfUrl' in affected)
           || request.resource.data.proposalPdfUrl == null
           || request.resource.data.proposalPdfUrl.matches('^https://(firebasestorage\\.googleapis\\.com/v0/b/mythical-cider-475118-e5\\.firebasestorage\\.app|mythical-cider-475118-e5\\.firebasestorage\\.app|portal\\.creationaltfix\\.nl)/.*'))
       // 4. Price tamper protection: cannot forge arbitrary subscription prices or zero-rate contracts
       && (!('subscriptionPlan2027Price' in affected)
-          || (resource.data.subscriptionPlan2027Price == null
+          || (!('subscriptionPlan2027Price' in resource.data) || resource.data.subscriptionPlan2027Price == null
               ? request.resource.data.subscriptionPlan2027Price in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00']
               : request.resource.data.subscriptionPlan2027Price == resource.data.subscriptionPlan2027Price))
       && (!('subscriptionPrice' in affected)
-          || (resource.data.subscriptionPrice == null
+          || (!('subscriptionPrice' in resource.data) || resource.data.subscriptionPrice == null
               ? request.resource.data.subscriptionPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00']
-              : request.resource.data.subscriptionPrice == resource.data.subscriptionPrice))
+              : (request.resource.data.subscriptionPrice == resource.data.subscriptionPrice
+                 || (request.resource.data.subscriptionPrice == request.resource.data.subscriptionPlan2027Price
+                     && request.resource.data.subscriptionPrice in ['95,00', '150,00', '165,00', '175,00', '350,00', '500,00', '22,00']))))
       && (!('subscriptionPlan2027Id' in affected)
           || request.resource.data.subscriptionPlan2027Id in ['managed_nl', 'transition_2027_loyalty', 'managed_com', 'managed_multi', 'managed_custom', 'security_apk', 'allin_apk', 'legacy_22'])
       && (!('subscriptionPlanId' in affected)

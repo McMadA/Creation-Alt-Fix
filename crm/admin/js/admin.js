@@ -440,6 +440,20 @@ function setupSearchAndFilters() {
 
 window.exportProjectsToCSV = () => exportProjectsToCSV(cachedProjects);
 
+async function logAuditEvent(actionType, description) {
+    if (!db) return;
+    try {
+        await addDoc(collection(db, "audit_logs"), {
+            projectId: "global_admin",
+            actionType,
+            description,
+            actor: auth?.currentUser?.email || "admin",
+            timestamp: new Date().toISOString()
+        });
+    } catch (e) {
+        console.warn("[CRM Audit] Kon audit event niet opslaan:", e);
+    }
+}
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -494,7 +508,10 @@ function setupNavigation() {
             }
             if (targetView === 'subscriptions') {
                 initSubscriptionsTab(cachedProjects, {
-                    onRefresh: () => loadProjects(),
+                    onRefresh: async () => {
+                        await loadDashboardData();
+                        initSubscriptionsTab(cachedProjects);
+                    },
                     onSavePlan: async (proj, plan) => {
                         const updatedFields = {
                             subscriptionPlan2027Id: plan.id,
@@ -530,20 +547,27 @@ function setupNavigation() {
                         await logAuditEvent('2027_plan_confirmed', `2027 Abonnementsplan bevestigd: ${plan.name} (€ ${plan.price}/${plan.cycle}) voor ${proj.client || 'klant'}.`);
                     },
                     onSendPortalTicket: async (proj, plan, messageText) => {
+                        const nowIso = new Date().toISOString();
                         const updatedFields = {
                             subscriptionPlan2027Id: plan.id,
                             subscriptionPlan2027Name: plan.name,
                             subscriptionPlan2027Price: plan.price,
                             subscriptionPlan2027Status: 'voorgesteld',
-                            subscriptionPlan2027ProposedAt: new Date().toISOString()
+                            subscriptionPlan2027ProposedAt: nowIso
                         };
                         const msgObj = {
                             id: 'msg_2027_' + Date.now(),
                             sender: 'admin',
+                            senderRole: 'admin',
+                            senderName: 'Allard Veldman (Creation+Alt+Fix)',
+                            category: 'subscription_2027',
+                            message: messageText,
                             text: messageText,
-                            createdAt: new Date().toISOString(),
+                            createdAt: nowIso,
+                            timestamp: nowIso,
                             status: 'open',
-                            readByClient: false
+                            readByClient: false,
+                            readByAdmin: true
                         };
                         if (db && proj.id && String(proj.id).length > 5) {
                             const currentMsgs = proj.messages || [];

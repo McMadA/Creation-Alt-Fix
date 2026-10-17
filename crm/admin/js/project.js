@@ -584,7 +584,7 @@ function renderProjectWorkspace(p) {
     // Populate Proposal Box if already generated
     if (proposalPrice || p.proposalGeneratedAt) {
         const baseUrl = window.location.origin;
-        const link = `${baseUrl}/offerte/index.html?id=${p.id}`;
+        const link = `${baseUrl}/status/index.html?id=${p.id}`;
         const propLinkInput = document.getElementById('proposal-link-input');
         if (propLinkInput) propLinkInput.value = link;
         const propVisitBtn = document.getElementById('proposal-visit-btn');
@@ -1157,20 +1157,21 @@ function renderAdminMessages(messages) {
 
     threadElem.innerHTML = '';
     filteredMessages.forEach(msg => {
-        const isAdmin = msg.sender === 'admin';
+        const isAdmin = msg.sender === 'admin' || msg.senderRole === 'admin' || msg.role === 'admin';
         const card = document.createElement('div');
         card.className = `admin-msg-card ${isAdmin ? 'from-admin' : 'from-client'}`;
 
         const senderLabel = isAdmin 
             ? 'Allard (Creation+Alt+Fix)' 
-            : (escapeHtml(msg.senderName) || 'Klant');
+            : (escapeHtml(msg.senderName || msg.author) || 'Klant');
         
         const senderBadge = isAdmin 
             ? '<span class="sender-badge admin"><i class="fas fa-shield-alt"></i> Beheerder</span>' 
             : '<span class="sender-badge client"><i class="fas fa-user"></i> Klant</span>';
 
-        const dateStr = msg.createdAt 
-            ? new Date(msg.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
+        const rawTimestamp = msg.createdAt || msg.timestamp;
+        const dateStr = rawTimestamp 
+            ? new Date(rawTimestamp).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
             : 'Zojuist';
 
         // Category Tag
@@ -1179,6 +1180,7 @@ function renderAdminMessages(messages) {
         else if (msg.category === 'urgent') catLabel = '⚡ Spoed';
         else if (msg.category === 'question') catLabel = '💬 Vraag';
         else if (msg.category === 'content') catLabel = '📄 Bestanden & Teksten';
+        else if (msg.category === 'subscription_2027' || msg.category === 'Abonnement 2027') catLabel = '📅 Abonnement 2027';
 
         // Status
         const currentStatus = msg.status || 'open';
@@ -1192,6 +1194,8 @@ function renderAdminMessages(messages) {
             statusBtnLabel = '<i class="fas fa-check-circle"></i> Opgelost';
         }
 
+        const bodyText = msg.message || msg.text || msg.content || '';
+
         card.innerHTML = `
             <div class="admin-msg-header">
                 <div class="admin-msg-sender">
@@ -1203,7 +1207,7 @@ function renderAdminMessages(messages) {
                     <span style="font-size: 0.75rem; color: var(--color-text-secondary);">${dateStr}</span>
                 </div>
             </div>
-            <div class="admin-msg-body">${escapeHtml(msg.message)}</div>
+            <div class="admin-msg-body">${escapeHtml(bodyText)}</div>
             <div class="admin-msg-footer">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.72rem; color: var(--color-text-secondary);">Ticket Status:</span>
@@ -1238,14 +1242,19 @@ function renderAdminMessages(messages) {
 async function sendAdminMessage(category, messageText, ticketStatus) {
     if (!messageText || !messageText.trim() || !currentProjectId) return;
 
+    const cleanBody = messageText.trim();
+    const nowIso = new Date().toISOString();
     const newMsg = {
         id: 'msg_' + Date.now(),
         sender: 'admin',
+        senderRole: 'admin',
         senderName: 'Allard (Creation+Alt+Fix)',
         senderEmail: auth?.currentUser?.email || 'info@creationaltfix.nl',
         category: category || 'general',
-        message: messageText.trim(),
-        createdAt: new Date().toISOString(),
+        message: cleanBody,
+        text: cleanBody,
+        createdAt: nowIso,
+        timestamp: nowIso,
         status: ticketStatus || 'resolved',
         readByAdmin: true,
         readByClient: false
@@ -1253,7 +1262,8 @@ async function sendAdminMessage(category, messageText, ticketStatus) {
 
     // If marked resolved, update matching client tickets to resolved as well
     let updatedMessages = (currentProjectData.messages || []).map(m => {
-        if (m.sender === 'client' && (m.category === category || category === 'general') && ticketStatus === 'resolved') {
+        const isClientMsg = m && (m.sender === 'client' || m.senderRole === 'client' || m.role === 'client');
+        if (isClientMsg && (m.category === category || category === 'general') && ticketStatus === 'resolved') {
             return { ...m, status: 'resolved' };
         }
         return m;
@@ -2033,12 +2043,21 @@ function setupFormHandlers() {
         } else if (preset === 'hosting_nl' || preset === 'hosting_annual') {
             descEl.value = `Managed Cloud Hosting & .nl Domein (Jaarfactuur) - ${clientTitle}`;
             amountEl.value = '150.00';
+        } else if (preset === 'hosting_com') {
+            descEl.value = `Managed Cloud Hosting & .com / .eu Domein (Jaarfactuur) - ${clientTitle}`;
+            amountEl.value = '165.00';
+        } else if (preset === 'hosting_multi') {
+            descEl.value = `Managed Cloud Hosting + Extra Domein (Jaarfactuur) - ${clientTitle}`;
+            amountEl.value = '175.00';
         } else if (preset === 'hosting_2027') {
             descEl.value = `Trouwe Klant Overgangstarief 2027 (Jaarfactuur) - ${clientTitle}`;
             amountEl.value = '95.00';
         } else if (preset === 'apk_annual' || preset === 'maintenance_apk') {
             descEl.value = `Periodieke Website APK & Beveiligingsupdate - ${clientTitle}`;
             amountEl.value = '350.00';
+        } else if (preset === 'allin_apk') {
+            descEl.value = `All-in Managed Hosting (.nl) + Jaarlijkse Website APK (Jaarfactuur) - ${clientTitle}`;
+            amountEl.value = '500.00';
         } else if (preset === 'extra_work') {
             descEl.value = `Meerwerk & Aanvullende Optimalisaties - ${clientTitle}`;
             if (!amountEl.value || amountEl.value === '0.00') amountEl.value = '75.00';
@@ -2991,20 +3010,30 @@ function setupFormHandlers() {
                 await logAuditEvent('2027_plan_proposed', `2027 Abonnementsplan voorgesteld: ${plan.name} (€ ${plan.price}/${plan.cycle}).`);
             },
             onSendPortalTicket: async (proj, plan, messageText) => {
+                const nowIso = new Date().toISOString();
                 const updatedFields = {
                     subscriptionPlan2027Id: plan.id,
                     subscriptionPlan2027Name: plan.name,
                     subscriptionPlan2027Price: plan.price,
                     subscriptionPlan2027Status: 'voorgesteld',
-                    subscriptionPlan2027ProposedAt: new Date().toISOString()
+                    subscriptionPlan2027ProposedAt: nowIso
                 };
                 const msgObj = {
                     id: 'msg_2027_' + Date.now(),
                     sender: 'admin',
+                    senderRole: 'admin',
+                    role: 'admin',
+                    senderName: 'Allard Veldman (Creation+Alt+Fix)',
+                    author: 'Allard Veldman (Creation+Alt+Fix)',
+                    category: 'subscription_2027',
+                    message: messageText,
                     text: messageText,
-                    createdAt: new Date().toISOString(),
+                    content: messageText,
+                    createdAt: nowIso,
+                    timestamp: nowIso,
                     status: 'open',
-                    readByClient: false
+                    readByClient: false,
+                    readByAdmin: true
                 };
                 if (!currentProjectData.messages) currentProjectData.messages = [];
                 const updatedMsgs = [...currentProjectData.messages, msgObj];
@@ -3021,6 +3050,22 @@ function setupFormHandlers() {
                     renderAdminMessages(currentProjectData.messages);
                 }
                 await logAuditEvent('2027_plan_ticket_sent', `2027 Abonnementsvoorstel als ticket in klantenportaal geplaatst voor ${proj.client || 'klant'}.`);
+            },
+            onConfirmPlan: async (proj, plan) => {
+                const nowIso = new Date().toISOString();
+                const updatedFields = {
+                    subscriptionPlan2027Id: plan.id,
+                    subscriptionPlan2027Name: plan.name,
+                    subscriptionPlan2027Price: plan.price,
+                    subscriptionPlan2027Status: 'bevestigd',
+                    subscriptionPlan2027ConfirmedAt: nowIso
+                };
+                if (db && currentProjectId) {
+                    await updateDoc(doc(db, "projects", currentProjectId), updatedFields);
+                }
+                currentProjectData = { ...(currentProjectData || {}), ...updatedFields };
+                renderSubscriptionAndInvoiceCard(currentProjectData);
+                await logAuditEvent('2027_plan_confirmed', `2027 Abonnementsplan bevestigd voor ${proj.client || 'klant'} (€ ${plan.price}/${plan.cycle}).`);
             }
         });
     });

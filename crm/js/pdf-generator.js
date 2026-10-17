@@ -7,7 +7,7 @@
  * Features:
  * - 3-color brand gradient top bar (Indigo #6366f1 -> Purple #a855f7 -> Cyan #22d3ee)
  * - Space Grotesk / Inter typography & matching corporate layout
- * - Official legal sender block (Hoofdstraat 60B Hoogezand, KVK 94200632, BTW NL005072704B18)
+ * - Official legal sender block (Hoofdstraat 60B Hoogezand, KVK 99986191, BTW NL005423147B16)
  * - 3-column details grid (#f8fafc)
  * - Dark table header (#0a0e1a) & structured itemized deliverables
  * - Right-aligned totals summary box (#f8fafc) with 21% VAT calculation
@@ -279,8 +279,8 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.text("Hoofdstraat 60B", pageWidth - margin, y + 11, { align: "right" });
     doc.text("9601 EK Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
     doc.text("0619135453  |  info@creationaltfix.nl", pageWidth - margin, y + 20, { align: "right" });
-    doc.text("creationaltfix.nl  |  BTW: NL005072704B18", pageWidth - margin, y + 24.5, { align: "right" });
-    doc.text("KVK: 94200632", pageWidth - margin, y + 29, { align: "right" });
+    doc.text("creationaltfix.nl  |  BTW: NL005423147B16", pageWidth - margin, y + 24.5, { align: "right" });
+    doc.text("KVK: 99986191", pageWidth - margin, y + 29, { align: "right" });
 
     // ==========================================
     // 4. DETAILS GRID (3-Column Grey Box #f8fafc)
@@ -705,7 +705,7 @@ export async function generateProposalPDF(p, isSigned = false) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text(`Officiële bijlage behorende bij offerte #${quoteNumber} • creationaltfix.nl • KVK 94200632`, margin, footerY + 18);
+    doc.text(`Officiële bijlage behorende bij offerte #${quoteNumber} • creationaltfix.nl • KVK 99986191`, margin, footerY + 18);
 
     const safeClient = (clientName || 'Klant').replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').slice(0, 30);
     const filename = `Offerte-CreationAltFix-${safeClient}-${quoteNumber}.pdf`;
@@ -873,8 +873,8 @@ export async function generateInvoicePDF(p) {
     doc.text("Hoofdstraat 60B", pageWidth - margin, y + 11, { align: "right" });
     doc.text("9601 EK Hoogezand", pageWidth - margin, y + 15.5, { align: "right" });
     doc.text("0619135453  |  info@creationaltfix.nl", pageWidth - margin, y + 20, { align: "right" });
-    doc.text("creationaltfix.nl  |  BTW: NL005072704B18", pageWidth - margin, y + 24.5, { align: "right" });
-    doc.text("KVK: 94200632", pageWidth - margin, y + 29, { align: "right" });
+    doc.text("creationaltfix.nl  |  BTW: NL005423147B16", pageWidth - margin, y + 24.5, { align: "right" });
+    doc.text("KVK: 99986191", pageWidth - margin, y + 29, { align: "right" });
 
     // ==========================================
     // 4. DETAILS GRID (3-Column Box #f8fafc)
@@ -1043,7 +1043,7 @@ export async function generateInvoicePDF(p) {
 
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text(`IBAN: NLXX KNAB XXXXXXXX  |  T.n.v: Creation+Alt+Fix  |  O.v.v: Factuur ${invoiceNumber}`, margin, footerY + 22);
+    doc.text(`IBAN: NL92REVO3150395003  |  T.n.v: Creation+Alt+Fix  |  O.v.v: Factuur ${invoiceNumber}`, margin, footerY + 22);
 
     const mollieUrl = p.mollieLink || p.mollieCheckoutUrl || '';
     if (mollieUrl) {

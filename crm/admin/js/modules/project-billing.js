@@ -32,7 +32,7 @@ export async function createMolliePaymentLink({
 }) {
     const desc = description || `Factuur ${invoiceNumber} - Creation+Alt+Fix (${clientName})`;
     const redirectUrl = `https://portal.creationaltfix.nl/status/?id=${encodeURIComponent(projectId)}&paid=true&invoice=${encodeURIComponent(invoiceNumber)}`;
-    const webhookUrl = `https://portal.creationaltfix.nl/crm/api/mollie-webhook.php`;
+    const webhookUrl = `https://portal.creationaltfix.nl/api/mollie-webhook.php`;
 
     // Haal eventueel actueel Firebase ID token op voor server-side authorisatie
     let idToken = authToken;
@@ -50,6 +50,7 @@ export async function createMolliePaymentLink({
     // 1. Probeer native PHP endpoint op Vimexx DirectAdmin server
     const endpointsToTry = [
         '../api/create-payment.php',
+        '/api/create-payment.php',
         '/crm/api/create-payment.php',
         '/api/mollie/create'
     ];
@@ -165,7 +166,7 @@ export function normalizeProjectInvoices(projectData) {
                         amountIncl: totalExcl * 1.21,
                         status: (piInfo.latestInvoice.status || '').toLowerCase().includes('betaald') ? 'paid' : 'open',
                         molliePaymentId: '',
-                        mollieCheckoutUrl: '',
+                        mollieCheckoutUrl: piInfo.latestInvoice.mollieLink || '',
                         pdfUrl: ''
                     });
                 }
@@ -217,17 +218,20 @@ export function renderBillingCardHtml(projectData) {
     const p = Schemas.sanitizeProject(projectData);
     const invoices = normalizeProjectInvoices(projectData);
 
-    // Bereken KPI totalen
+    // Bereken KPI totalen (exclusief geannuleerde facturen)
     let totalInvoiced = 0;
     let totalPaid = 0;
     let totalOpen = 0;
 
     invoices.forEach(inv => {
         const incl = Number(inv.amountIncl || 0);
-        totalInvoiced += incl;
+        const isCanceled = inv.status === 'canceled' || inv.status === 'geannuleerd';
+        if (!isCanceled) {
+            totalInvoiced += incl;
+        }
         if (inv.status === 'paid') {
             totalPaid += incl;
-        } else if (inv.status !== 'canceled' && inv.status !== 'geannuleerd') {
+        } else if (!isCanceled) {
             totalOpen += incl;
         }
     });

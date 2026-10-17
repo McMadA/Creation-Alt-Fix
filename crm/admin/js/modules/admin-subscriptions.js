@@ -200,7 +200,8 @@ export function renderSubscriptionsTable(projects = [], handlers = {}) {
         } else if (isOneOff) {
             statusHtml = `<span class="badge" style="background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid #475569; font-size: 0.75rem;">Rustend</span>`;
         } else if (isConfirmed) {
-            statusHtml = `<span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Bevestigd (€ 95,-)</span>`;
+            const confirmedPriceLabel = String(p.subscriptionPlan2027Price || recPlan.price || '95,00').replace(',00', ',-');
+            statusHtml = `<span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Bevestigd (€ ${escapeHtml(confirmedPriceLabel)})</span>`;
         } else if (isProposed) {
             statusHtml = `<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border: 1px solid #818cf8; font-size: 0.75rem;"><i class="fas fa-paper-plane"></i> Voorstel Verzonden</span>`;
         } else if (isLegacy) {

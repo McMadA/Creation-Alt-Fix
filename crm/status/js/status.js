@@ -9,7 +9,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig, escapeHtml, sanitizeUrl, formatProjectStatus, isAdminEmail, SUBSCRIPTION_PLANS } from "../../js/firebase-config.js";
+import { firebaseConfig, escapeHtml, sanitizeUrl, formatProjectStatus, isAdminEmail, SUBSCRIPTION_PLANS, formatCurrency } from "../../js/firebase-config.js";
 import { getPiBoekhoudingInfo } from "../../admin/js/modules/bookkeeping-data.js";
 import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../../js/pdf-generator.js";
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
@@ -562,6 +562,14 @@ async function checkPaymentSuccessModal(data) {
 
         // Alleen wanneer de backend status daadwerkelijk 'betaald' / 'voldaan' bevestigt, tonen we het succes-scherm
         if (isVerifiedPaid) {
+            if (data && Array.isArray(data.invoices) && invNum) {
+                data.invoices.forEach(inv => {
+                    if ((inv.invoiceNumber || inv.factuurnummer || inv.number) === invNum) {
+                        inv.status = 'paid';
+                    }
+                });
+                setupClientInvoicesArchive(data);
+            }
             const banner = document.getElementById('unpaid-invoice-banner');
             if (banner) banner.classList.add('hidden');
             const mollieCard = document.getElementById('mollie-link');
@@ -882,15 +890,26 @@ function renderSubscriptionSection(data) {
 
                 try {
                     const existingMessages = (data && data.messages && Array.isArray(data.messages)) ? [...data.messages] : [];
+                    const senderAuthor = data.contactName || data.client || data.companyName || (currentLang === 'en' ? 'Client' : 'Klant');
+                    const msgText = currentLang === 'en'
+                        ? `✅ Digital Agreement: I agree with the 2027 service plan: ${plan2027.name} (€ ${plan2027.price}/yr excl. VAT).`
+                        : `✅ Digitaal Akkoord: Ik ga akkoord met het serviceplan voor 2027: ${plan2027.name} (€ ${plan2027.price}/jr excl. BTW).`;
+                    const nowIso = new Date().toISOString();
                     const confirmMsg = {
                         id: 'sub2027_' + Date.now(),
                         sender: 'client',
-                        author: data.client || data.companyName || (currentLang === 'en' ? 'Client' : 'Klant'),
+                        senderRole: 'client',
+                        role: 'client',
+                        senderName: senderAuthor,
+                        author: senderAuthor,
                         category: 'Abonnement 2027',
-                        content: currentLang === 'en'
-                            ? `✅ Digital Agreement: I agree with the 2027 service plan: ${plan2027.name} (€ ${plan2027.price}/yr excl. VAT).`
-                            : `✅ Digitaal Akkoord: Ik ga akkoord met het serviceplan voor 2027: ${plan2027.name} (€ ${plan2027.price}/jr excl. BTW).`,
-                        timestamp: new Date().toISOString(),
+                        message: msgText,
+                        text: msgText,
+                        content: msgText,
+                        createdAt: nowIso,
+                        timestamp: nowIso,
+                        readByAdmin: false,
+                        readByClient: true,
                         status: 'resolved'
                     };
                     existingMessages.push(confirmMsg);
@@ -1029,6 +1048,11 @@ function renderProposalSection(data) {
         // STATE B: Offerte Gereed voor Akkoord
         statusPill.className = "offerte-status-pill action-required";
         statusPill.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${currentLang === 'en' ? 'Action Required: Digital Acceptance' : 'Actie Vereist: Digitaal Akkoord'}`;
+        if (priceEl) {
+            priceEl.innerText = data.proposalPrice
+                ? `€ ${data.proposalPrice} ${currentLang === 'en' ? 'excl. VAT' : 'excl. BTW'}`
+                : (currentLang === 'en' ? 'On request' : 'Op aanvraag');
+        }
 
         let scopeHtml = '';
         if (data.proposalTitle) {
@@ -1588,13 +1612,13 @@ function renderMessagesSection(data) {
         const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
         
         threadContainer.innerHTML = filteredMessages.map(msg => {
-            const isAdmin = msg.sender === 'admin';
+            const isAdmin = msg.sender === 'admin' || msg.senderRole === 'admin' || msg.role === 'admin';
             const isClient = !isAdmin;
             const bubbleClass = isAdmin ? 'admin' : 'client';
             
             const senderDisplayName = isAdmin 
                 ? 'Allard (Creation+Alt+Fix)' 
-                : (escapeHtml(msg.senderName) || t.statusChatFromYou);
+                : (escapeHtml(msg.senderName || msg.author) || t.statusChatFromYou);
             
             const senderIcon = isAdmin 
                 ? '<i class="fas fa-shield-alt" style="color: var(--color-accent);"></i>' 
@@ -1604,8 +1628,9 @@ function renderMessagesSection(data) {
                 ? `<span class="chat-badge-team">${t.statusChatFromTeam}</span>` 
                 : '';
 
-            const dateStr = msg.createdAt 
-                ? new Date(msg.createdAt).toLocaleString(localeStr, { 
+            const rawTimestamp = msg.createdAt || msg.timestamp;
+            const dateStr = rawTimestamp 
+                ? new Date(rawTimestamp).toLocaleString(localeStr, { 
                     day: 'numeric', 
                     month: 'short', 
                     hour: '2-digit', 
@@ -1628,6 +1653,9 @@ function renderMessagesSection(data) {
             } else if (msg.category === 'content') {
                 catLabel = '📄 Bestanden';
                 catClass = 'content';
+            } else if (msg.category === 'subscription_2027' || msg.category === 'Abonnement 2027') {
+                catLabel = '📅 Abonnement 2027';
+                catClass = 'content';
             }
 
             // Ticket Status formatting
@@ -1640,6 +1668,8 @@ function renderMessagesSection(data) {
                 statusHtml = `<span class="chat-ticket-status resolved"><i class="fas fa-check" style="font-size: 0.55rem;"></i> ${t.statusChatStatusResolved}</span>`;
             }
 
+            const bodyText = msg.message || msg.text || msg.content || '';
+
             return `
                 <div class="chat-bubble ${bubbleClass}">
                     <div class="chat-bubble-header">
@@ -1650,7 +1680,7 @@ function renderMessagesSection(data) {
                         </div>
                         <span class="chat-timestamp">${dateStr}</span>
                     </div>
-                    <div class="chat-bubble-body">${escapeHtml(msg.message)}</div>
+                    <div class="chat-bubble-body">${escapeHtml(bodyText)}</div>
                     <div class="chat-bubble-footer">
                         <span class="chat-cat-tag ${catClass}">${catLabel}</span>
                         ${statusHtml}
@@ -1720,10 +1750,12 @@ function setupChatListeners() {
                     id: 'msg_' + Date.now(),
                     ticketId: 'tkt_' + Date.now(),
                     sender: 'client',
+                    senderRole: 'client',
                     senderName: clientName,
                     senderEmail: clientEmail,
                     category: category,
                     message: messageText,
+                    text: messageText,
                     createdAt: new Date().toISOString(),
                     readByAdmin: false,
                     readByClient: true,
@@ -2093,12 +2125,16 @@ function setupClientInvoicesArchive(data) {
                 <tbody>
                     ${invoices.map((inv) => {
                         const isPaid = isInvoicePaid(inv.invoiceNumber, inv.status);
-                        const mollieUrl = !isPaid ? (inv.mollieCheckoutUrl || inv.mollieLink || data.mollieLink) : null;
-                        const pdfUrl = inv.pdfUrl || ((inv.invoiceNumber === (data.invoiceNumber || data.factuurnummer)) ? data.invoicePdfUrl : null);
+                        const isCanceled = isInvoiceCanceled(inv.status);
+                        const isPrimaryProjectInvoice = inv.invoiceNumber === (data.invoiceNumber || data.factuurnummer);
+                        const mollieUrl = (!isPaid && !isCanceled) ? (inv.mollieCheckoutUrl || inv.mollieLink || (isPrimaryProjectInvoice ? data.mollieLink : null)) : null;
+                        const pdfUrl = inv.pdfUrl || (isPrimaryProjectInvoice ? data.invoicePdfUrl : null);
                         const badgeStyle = isPaid 
                             ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);'
-                            : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
-                        const badgeText = isPaid ? '✅ Voldaan' : '⏳ Openstaand';
+                            : (isCanceled
+                                ? 'background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3);'
+                                : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);');
+                        const badgeText = isPaid ? '✅ Voldaan' : (isCanceled ? '🚫 Geannuleerd' : '⏳ Openstaand');
                         const safeNum = escapeHtml(inv.invoiceNumber || 'Factuur');
                         const safeDate = escapeHtml(inv.invoiceDate || '—');
                         const amountStr = inv.amountIncl ? formatCurrency(inv.amountIncl) : '—';
@@ -2107,7 +2143,7 @@ function setupClientInvoicesArchive(data) {
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td style="padding: 10px; font-weight: 700; color: #fff;">${safeNum}</td>
                                 <td style="padding: 10px; opacity: 0.8;">${safeDate}</td>
-                                <td style="padding: 10px; font-weight: 600; color: #34d399;">${amountStr}</td>
+                                <td style="padding: 10px; font-weight: 600; color: ${isCanceled ? '#94a3b8; text-decoration: line-through' : '#34d399'};">${amountStr}</td>
                                 <td style="padding: 10px;">
                                     <span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.72rem; font-weight: 600; ${badgeStyle}">
                                         ${badgeText}
@@ -2123,9 +2159,11 @@ function setupClientInvoicesArchive(data) {
                                         <a href="${sanitizeUrl(pdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 3px 10px; font-size: 0.75rem; border-color: rgba(34, 211, 238, 0.4); color: var(--color-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
                                             <i class="fas fa-file-pdf"></i> <span>Download PDF</span>
                                         </a>
+                                    ` : (isCanceled ? `
+                                        <span style="font-size: 0.72rem; color: #64748b; font-style: italic;">Geannuleerd</span>
                                     ` : `
                                         <span style="font-size: 0.72rem; color: #94a3b8; font-style: italic;">PDF volgt</span>
-                                    `}
+                                    `)}
                                 </td>
                             </tr>
                         `;
@@ -2142,20 +2180,26 @@ function isInvoicePaid(invNumber, status) {
     return s === 'voldaan' || s === 'betaald' || s === 'paid' || s.includes('voldaan') || s.includes('betaald') || s.includes('paid');
 }
 
+function isInvoiceCanceled(status) {
+    if (!status) return false;
+    const s = String(status).toLowerCase().trim();
+    return s === 'canceled' || s === 'cancelled' || s === 'geannuleerd' || s.includes('geannuleerd') || s.includes('canceled');
+}
+
 function setupUnpaidInvoiceBanner(data) {
     const banner = document.getElementById('unpaid-invoice-banner');
     if (!banner) return;
 
-    // Zoek eerst een openstaande factuur met betaallink in data.invoices
+    // Zoek eerst een openstaande (niet-geannuleerde) factuur met betaallink in data.invoices
     const deletedSet = new Set(Array.isArray(data.deletedInvoices) ? data.deletedInvoices : []);
     let openInv = null;
     if (Array.isArray(data.invoices)) {
-        openInv = [...data.invoices].reverse().find(i => i && !deletedSet.has(i.invoiceNumber || i.number) && !isInvoicePaid(i.invoiceNumber, i.status) && (i.mollieCheckoutUrl || i.mollieLink));
+        openInv = [...data.invoices].reverse().find(i => i && !deletedSet.has(i.invoiceNumber || i.number) && !isInvoicePaid(i.invoiceNumber, i.status) && !isInvoiceCanceled(i.status) && (i.mollieCheckoutUrl || i.mollieLink));
     }
 
     const invNum = openInv?.invoiceNumber || (!Array.isArray(data.invoices) ? (data.invoiceNumber || data.factuurnummer) : '');
     const mollieUrl = openInv?.mollieCheckoutUrl || openInv?.mollieLink || (!Array.isArray(data.invoices) ? data.mollieLink : '');
-    const isPaid = openInv ? false : (deletedSet.has(invNum) ? true : isInvoicePaid(invNum, data.status));
+    const isPaid = openInv ? false : (deletedSet.has(invNum) || isInvoiceCanceled(data.status) ? true : isInvoicePaid(invNum, data.status));
 
     if (!isPaid && invNum && mollieUrl) {
         const totalIncl = openInv?.amountIncl ? Number(openInv.amountIncl) : (data.proposalPrice ? (parseFloat(data.proposalPrice) * 1.21) : 0);

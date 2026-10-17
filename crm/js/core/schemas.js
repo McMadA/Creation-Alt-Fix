@@ -205,12 +205,21 @@ export const Schemas = {
      */
     sanitizeMessage(rawMsg = {}) {
         if (!rawMsg || typeof rawMsg !== 'object') rawMsg = {};
+        const cleanText = String(rawMsg.text || rawMsg.message || rawMsg.content || '').trim();
+        const role = rawMsg.sender || rawMsg.senderRole || rawMsg.role;
+        const cleanSender = ['admin', 'client', 'system'].includes(role) ? role : 'client';
+        const cleanTime = rawMsg.timestamp || rawMsg.createdAt || new Date().toISOString();
         return {
             id: String(rawMsg.id || `msg_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`),
-            text: String(rawMsg.text || '').trim(),
-            sender: ['admin', 'client', 'system'].includes(rawMsg.sender) ? rawMsg.sender : 'client',
-            timestamp: rawMsg.timestamp || new Date().toISOString(),
-            status: rawMsg.status === 'resolved' ? 'resolved' : 'open'
+            text: cleanText,
+            message: cleanText,
+            sender: cleanSender,
+            senderRole: cleanSender,
+            senderName: String(rawMsg.senderName || rawMsg.author || (cleanSender === 'admin' ? 'Allard (Creation+Alt+Fix)' : 'Klant')).trim(),
+            category: String(rawMsg.category || 'general').trim(),
+            timestamp: cleanTime,
+            createdAt: cleanTime,
+            status: rawMsg.status === 'resolved' ? 'resolved' : (rawMsg.status === 'in_progress' ? 'in_progress' : 'open')
         };
     },
 

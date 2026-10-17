@@ -235,7 +235,7 @@ export function open2027SubscriptionModal({ project, onSavePlan, onSendPortalTic
                                     <i class="fas fa-save"></i> Plan Opslaan
                                 </button>
                                 <button type="button" id="btn-2027-confirm-plan" class="btn btn-sm" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; font-weight: 700; font-size: 0.78rem; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                    <i class="fas fa-check-circle"></i> ${isConfirmed ? 'Akkoord Reeds Vastgelegd' : 'Akkoord Klant Bevestigen (€ 95,-)'}
+                                    <i class="fas fa-check-circle"></i> ${isConfirmed ? 'Akkoord Reeds Vastgelegd' : `Akkoord Klant Bevestigen (€ ${escapeHtml(String(plan.price || '95,00').replace(',00', ',-'))})`}
                                 </button>
                             </div>
                         </div>
