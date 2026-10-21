@@ -46,13 +46,15 @@
     - Chroot-folder isolatie en sterke wachtwoorden (min. 32 tekens in DPAPI kluis) verifiëren via `scripts/verify-ftp-security.mjs`.
 
 #### 🤝 Klantdossiers, Opleveringen & Verlengingen
-- [ ] `[TASK-839]` `[P2-HIGH]` `[STATUS: BACKLOG]` **VAN DER PLAATS: Livegang Afstemming & DNS Cutover**
-  - **Scope**: Gerard Klusser (`+31 6 12104850`, `vanderplaats2@gmail.com`), `vanderplaats.nl`
+- [ ] `[TASK-839]` `[P2-HIGH]` `[STATUS: IN_PROGRESS]` **VAN DER PLAATS: Livegang Afstemming & Domein Cutover (aannemer-vanderplaats.nl)**
+  - **Scope**: Gerard Klusser (`+31 6 12104850`, `vanderplaats2@gmail.com`), `aannemer-vanderplaats.nl`
   - **Bron & Uitleg**: [docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md#L23-L53)
-  - **Details**:
-    - Gerard Klusser contacteren (WhatsApp/bellen) om de laatste details van het contactformulier en werkregio door te spreken.
-    - Bij definitief akkoord: DNS A-record van `vanderplaats.nl` laten verwijzen naar de Vimexx DirectAdmin server (`185.104.29.x`).
-    - Let's Encrypt SSL activeren in DirectAdmin en jaarlijks Managed Cloud Hosting abonnement (€ 150,-/jr) verwerken in Pi-Boekhouding.
+  - **Status Update (21-10-2026)**:
+    - ✅ Feedback van Gerard verwerkt: website omgezet naar minimalistische 'Aannemer in Techniek' hub (uitsluitend logo, badge 'Aannemer in Techniek' en directe contactknoppen voor telefoon, WhatsApp, e-mail en adres; overbodige diensten/montage/sanitair verwijderd).
+    - ✅ Nieuw domein `aannemer-vanderplaats.nl` aangekocht door klant/opdrachtgever.
+    - ✅ GitHub Actions FTPS deployment workflow en alle SEO/canonieke links overgezet naar `domains/aannemer-vanderplaats.nl/public_html/`.
+    - ⏳ Let's Encrypt SSL & DNS cutover controleren op Vimexx DirectAdmin zodra DNS actief is.
+    - ⏳ Managed Cloud Hosting abonnement (€ 150,-/jr) definitief verwerken in Pi-Boekhouding.
 
 - [ ] `[TASK-907]` `[P3-MEDIUM]` `[STATUS: IN_PROGRESS]` **2027 Tarieven Doorvoeren naar Overige Klanten (Scholte, Willa, Pomppop)**
   - **Scope**: Gerjo Scholte (`scholte-elektrotechniek.nl`), Naaiatelier Willa (`naaiatelier-willa.nl`), Stichting PompPop (`pomppop.nl`)

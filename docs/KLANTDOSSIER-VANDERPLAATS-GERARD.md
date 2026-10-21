@@ -5,7 +5,7 @@
 > • E-mail: `vanderplaats2@gmail.com`  
 > • Telefoon: `+31 6 12104850`  
 > • KvK: 98527339  
-> • Doeldomein: `vanderplaats.nl`  
+> • Doeldomein: `aannemer-vanderplaats.nl`  
 > **Status**: Gereed voor Productie Livegang (Wachten op definitief startsein van Gerard)  
 > **Beheerder**: Allard Veldman — Creation+Alt+Fix  
 
@@ -27,7 +27,7 @@
 2. **Definitieve Controle**:
    - Samen met Gerard de contactgegevens, werkregio en getoonde klusdiensten nalopen.
 3. **DNS Verhuizing / Omschakeling**:
-   - A-record van `vanderplaats.nl` laten verwijzen naar de Vimexx DirectAdmin server (`185.104.29.x`).
+   - A-record van `aannemer-vanderplaats.nl` laten verwijzen naar de Vimexx DirectAdmin server (`185.104.29.x`).
    - DirectAdmin Let's Encrypt SSL certificaat forceren met HTTPS redirect.
 4. **Facturatie & Jaarlijks Onderhoud**:
    - Offerte afronden en registreren in Pi-Boekhouding conform het 2027 Managed Cloud Hosting tarief (€ 150,-/jr excl. BTW).
@@ -43,7 +43,7 @@ Allard van Creation+Alt+Fix hier! 👋
 
 De nieuwe website en het contactformulier voor Van der Plaats staan technisch helemaal klaar op de server. Klanten die een aanvraag doen komen direct netjes binnen op vanderplaats2@gmail.com.
 
-Zullen we even kort bellen om de laatste puntjes op de i te zetten, zodat we de website definitief live kunnen zetten op vanderplaats.nl?
+Zullen we even kort bellen om de laatste puntjes op de i te zetten, zodat we de website definitief live kunnen zetten op aannemer-vanderplaats.nl?
 
 Laat maar weten wanneer het jou uitkomt!
 

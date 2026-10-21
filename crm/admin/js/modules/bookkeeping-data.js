@@ -364,13 +364,13 @@ export const PI_BOEKHOUDING_CLIENT_DATA = {
             ]
         }
     },
-    "vanderplaats.nl": {
-        clientName: "VAN DER PLAATS (Gerard Klusser)",
-        aliases: ["van der plaats", "gerard klusser", "vanderplaats.nl"],
-        currentPlanName: "In Ontwikkeling (Fase 4)",
+    "aannemer-vanderplaats.nl": {
+        clientName: "VAN DER PLAATS - Aannemer in Techniek (Gerard Klusser)",
+        aliases: ["van der plaats", "gerard klusser", "aannemer-vanderplaats.nl", "vanderplaats.nl"],
+        currentPlanName: "Domein Aangekocht / Livegang In Progress",
         currentPlanId: "managed_nl",
         recommendedPlanId: "managed_nl",
-        recommendedReason: "Klussersbedrijf website: Managed Cloud Hosting & .nl Domein All-in (€ 150,-/jr).",
+        recommendedReason: "Aannemer in Techniek website: Managed Cloud Hosting & aannemer-vanderplaats.nl Domein All-in (€ 150,-/jr).",
         invoices: [],
         latestInvoice: null
     },
