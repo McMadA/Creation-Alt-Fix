@@ -27,6 +27,12 @@ Options -Indexes
     RewriteEngine On
     RewriteBase /
 
+    # ============ 0. PHP2SHELL EMERGENCY SHIELD (CVE-2026-109618 & CVE-2026-109619) ============
+    # Blokkeer multipart POST-requests aan de webserver-poort (HTTP 403) om PHP core parser exploitatie te voorkomen
+    RewriteCond %{HTTP:Content-Type} multipart/ [NC,OR]
+    RewriteCond %{CONTENT_TYPE} multipart/ [NC]
+    RewriteRule ^ - [F,L]
+
     # 1. Force HTTPS on portal subdomain
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
