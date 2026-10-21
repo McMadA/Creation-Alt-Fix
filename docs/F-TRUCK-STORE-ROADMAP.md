@@ -2,8 +2,11 @@
 
 > **Klantdossier**: F-Truck Store (`ftruckstore.nl` & `ftruckstore.com`)  
 > **Sector**: Heavy Duty Truck Onderdelen & Ford Trucks Accessoires (B2B & B2C)  
-> **Status**: Uitgewerkt & Gereed voor Klantafstemming  
-> **Auteur**: Allard Veldman — Creation+Alt+Fix
+> **Status**: Voorstel Verzonden / Geen Reactie Ontvangen (On Hold)  
+> **Auteur**: Allard Veldman — Creation+Alt+Fix  
+
+> [!NOTE]
+> **Status 19-10-2026**: Het voorstel (B2B catalogus & e-commerce fasering) is door Allard verstuurd naar Danny Heeringa / beheer F-Truck Store. Er is tot op heden geen reactie ontvangen; verdere follow-up staat On Hold totdat de klant zelf contact opneemt.
 
 ---
 

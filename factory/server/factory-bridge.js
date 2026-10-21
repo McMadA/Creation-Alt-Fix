@@ -91,6 +91,7 @@ const server = http.createServer(async (req, res) => {
 
   // CWE-400: Begrens inkomende HTTP payloads tot 1MB tegen DoS en geheugenuitputting
   let receivedBytes = 0;
+  const bodyChunks = [];
   req.on('data', chunk => {
     receivedBytes += chunk.length;
     if (receivedBytes > 1024 * 1024) {
@@ -99,7 +100,30 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Payload Too Large: Maximaal 1MB toegestaan" }));
       }
       req.destroy();
+      return;
     }
+    bodyChunks.push(chunk);
+  });
+
+  const readJsonBody = () => new Promise((resolve) => {
+    if (req.readableEnded) {
+      try {
+        const raw = Buffer.concat(bodyChunks).toString('utf-8').trim();
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        resolve({});
+      }
+      return;
+    }
+    req.on('end', () => {
+      try {
+        const raw = Buffer.concat(bodyChunks).toString('utf-8').trim();
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        resolve({});
+      }
+    });
+    req.on('error', () => resolve({}));
   });
 
   // Valideer Host header tegen DNS rebinding
@@ -232,7 +256,52 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 4. POST /api/trigger (Start 1 scan cyclus vanuit CRM)
+  // 3c. POST /api/leads/update (Synchroniseert CRM status-, e-mail- en archief-wijzigingen direct naar leads.json)
+  if (req.method === 'POST' && pathname === '/api/leads/update') {
+    const body = await readJsonBody();
+    const targetSlug = String(body.slug || body.id || '').trim();
+    if (!targetSlug) {
+      res.writeHead(400);
+      res.end(JSON.stringify({ error: "Verplicht veld 'slug' ontbreekt" }));
+      return;
+    }
+
+    const db = engine.loadDatabase();
+    const idx = (db.leads || []).findIndex(l => l.slug === targetSlug || l.id === targetSlug || l.name === targetSlug);
+    if (idx === -1) {
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: `Lead '${targetSlug}' niet gevonden in database` }));
+      return;
+    }
+
+    const lead = db.leads[idx];
+    const allowedStatuses = ['concept_ready', 'sent', 'sent_email', 'email_sent', 'sent_whatsapp', 'whatsapp_sent', 'skipped', 'converted', 'archived', 'rejected'];
+    if (body.status && allowedStatuses.includes(body.status)) {
+      lead.status = body.status;
+    }
+    if (body.email !== undefined) {
+      const cleanEmail = body.email ? String(body.email).trim() : null;
+      if (!cleanEmail || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail) && !cleanEmail.toLowerCase().includes('creationaltfix'))) {
+        lead.email = cleanEmail;
+      }
+    }
+    if (body.sentAt !== undefined) lead.sentAt = body.sentAt ? String(body.sentAt) : null;
+    if (body.lastSentAt) lead.lastSentAt = String(body.lastSentAt);
+    if (body.followUpAt) lead.followUpAt = String(body.followUpAt);
+    if (body.archivedAt) lead.archivedAt = String(body.archivedAt);
+    if (body.convertedProjectId) lead.convertedProjectId = String(body.convertedProjectId);
+    lead.updatedAt = new Date().toISOString();
+
+    db.totalSent = (db.leads || []).filter(l => ['sent', 'sent_email', 'email_sent', 'sent_whatsapp', 'whatsapp_sent', 'converted'].includes(l.status)).length;
+    engine.saveDatabase(db);
+    addLog(`💾 Lead '${lead.name}' bijgewerkt naar status: ${lead.status}`, 'info');
+
+    res.writeHead(200);
+    res.end(JSON.stringify({ ok: true, lead }));
+    return;
+  }
+
+  // 4. POST /api/trigger (Start 1 scan cyclus vanuit CRM, met optionele zoekopdracht/regio)
   if (req.method === 'POST' && pathname === '/api/trigger') {
     if (isCycleRunning) {
       res.writeHead(409);
@@ -240,13 +309,17 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    const body = await readJsonBody();
+    const customQuery = body.query && typeof body.query === 'string' ? body.query.trim().slice(0, 120) : undefined;
+    const customLimit = body.limit ? Math.min(Math.max(Number(body.limit) || 1, 1), 5) : 1;
+
     isCycleRunning = true;
-    addLog("⚡ Handmatige scan gestart vanuit CRM Dashboard...", "action");
+    addLog(`⚡ Handmatige scan gestart vanuit CRM Dashboard${customQuery ? ` (Zoekopdracht: "${customQuery}")` : ''}...`, "action");
 
     // Start cyclus asynchroon
     (async () => {
       try {
-        const result = await engine.runCycle({ limit: 1 });
+        const result = await engine.runCycle({ query: customQuery, limit: customLimit });
         addLog(`✅ Cyclus succesvol afgerond! Gereed in wachtrij: ${result ? result.totalInQueue : 0}`, "success");
       } catch (err) {
         addLog(`❌ Fout tijdens scan cyclus: ${err.message}`, "error");
@@ -258,6 +331,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(202);
     res.end(JSON.stringify({
       message: "Scan cyclus succesvol gestart",
+      query: customQuery || null,
       isCycleRunning: true
     }));
     return;

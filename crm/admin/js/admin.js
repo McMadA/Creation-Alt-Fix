@@ -46,7 +46,7 @@ import {
 } from "../../js/uptime-monitor.js";
 import { open2027SubscriptionModal } from "./modules/subscription-2027.js";
 import { initSubscriptionsTab } from "./modules/admin-subscriptions.js";
-import { initLeadFactoryModule, sanitizeAndDeduplicateLeads } from "./modules/admin-lead-factory.js";
+import { initLeadFactoryModule, sanitizeAndDeduplicateLeads, syncLeadUpdateToBridge } from "./modules/admin-lead-factory.js";
 
 import { 
     renderKanbanBoard as renderKanbanBoardModule, 
@@ -771,6 +771,48 @@ async function setupAndRenderLeadFactory() {
         leads = defaultLeads;
     }
 
+    // 4b. Merge eerder opgeslagen statussen/e-mails uit localStorage en Firestore zodat statussen niet terugspringen bij refresh
+    const savedStateMap = new Map();
+    try {
+        const localArr = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
+        if (Array.isArray(localArr)) {
+            for (const item of localArr) {
+                const key = item.id || item.slug;
+                if (key) savedStateMap.set(key, item);
+            }
+        }
+    } catch (_) {}
+
+    if (db) {
+        try {
+            const fsSnap = await getDocs(collection(db, "leads_factory"));
+            fsSnap.forEach(docSnap => {
+                const data = docSnap.data();
+                const key = docSnap.id || data.id || data.slug;
+                if (key) {
+                    const prev = savedStateMap.get(key) || {};
+                    savedStateMap.set(key, { ...prev, ...data, id: docSnap.id });
+                }
+            });
+        } catch (_) {}
+    }
+
+    leads = leads.map(lead => {
+        const saved = savedStateMap.get(lead.id) || savedStateMap.get(lead.slug);
+        if (!saved) return lead;
+        const merged = { ...lead };
+        if (saved.status && (saved.status !== 'concept_ready' || saved.updatedAt)) {
+            merged.status = saved.status;
+        }
+        if (saved.sentAt) merged.sentAt = saved.sentAt;
+        if (saved.updatedAt) merged.updatedAt = saved.updatedAt;
+        if (saved.convertedProjectId) merged.convertedProjectId = saved.convertedProjectId;
+        if (saved.email && !String(saved.email).toLowerCase().includes('creationaltfix') && !merged.email) {
+            merged.email = saved.email;
+        }
+        return merged;
+    });
+
     // 5. Voer ALTIJD de strikte automatische sanitizer en deduplicatie uit
     leads = sanitizeAndDeduplicateLeads(leads);
     localStorage.setItem('caf_leads_factory', JSON.stringify(leads));
@@ -814,11 +856,19 @@ async function setupAndRenderLeadFactory() {
 
             lead.status = 'sent_email';
             lead.sentAt = new Date().toISOString();
+            lead.updatedAt = lead.sentAt;
             if (db) {
                 try {
                     await setDoc(doc(db, "leads_factory", lead.id), lead, { merge: true });
                 } catch (e) { console.warn(e); }
             }
+            await syncLeadUpdateToBridge({
+                id: lead.id,
+                slug: lead.slug,
+                status: lead.status,
+                email: lead.email,
+                sentAt: lead.sentAt
+            });
             const stored = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
             const idx = stored.findIndex(s => s.id === lead.id);
             if (idx >= 0) stored[idx] = lead; else stored.push(lead);
@@ -838,12 +888,74 @@ async function setupAndRenderLeadFactory() {
                     await setDoc(doc(db, "leads_factory", lead.id), lead, { merge: true });
                 } catch (e) { console.warn(e); }
             }
+            await syncLeadUpdateToBridge({
+                id: lead.id,
+                slug: lead.slug,
+                status: lead.status,
+                email: lead.email,
+                sentAt: lead.sentAt
+            });
             const stored = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
             const idx = stored.findIndex(s => s.id === lead.id);
             if (idx >= 0) stored[idx] = lead; else stored.push(lead);
             localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
             initLeadFactoryModule(stored, factoryHandlers);
             await logAuditEvent('lead_status_updated', `Lead status voor ${lead.name} gewijzigd naar '${newStatus}'.`);
+        },
+        onConvertToProject: async (lead) => {
+            if (!confirm(`Wil je "${lead.name}" met 1 klik promoveren naar een actief CRM Project (€ 199,- eenmalig + € 150,-/jr hosting)?`)) {
+                return;
+            }
+            try {
+                let newProjectId = null;
+                if (db) {
+                    const projectDoc = await addDoc(collection(db, "projects"), {
+                        companyName: lead.name,
+                        contactName: lead.name,
+                        email: lead.email || '',
+                        phone: lead.phone || '',
+                        address: lead.address || '',
+                        packageSelection: 'Pakket: Zakelijke Website (€ 199,- eenmalig)',
+                        estimatedPrice: 199,
+                        subscriptionPlan2027: 'managed_500',
+                        subscriptionPlan2027Price: 150,
+                        subscriptionPrice: 150,
+                        status: 'Nieuwe Aanvraag',
+                        stagingUrl: lead.liveUrl || `https://creationaltfix.nl/concept/${lead.slug}/`,
+                        domainName: lead.website || '',
+                        source: 'Lead Factory 2.0',
+                        leadId: lead.id || lead.slug,
+                        createdAt: new Date().toISOString()
+                    });
+                    newProjectId = projectDoc.id;
+                }
+                lead.status = 'converted';
+                lead.convertedProjectId = newProjectId;
+                lead.updatedAt = new Date().toISOString();
+
+                if (db && lead.id) {
+                    await setDoc(doc(db, "leads_factory", lead.id), lead, { merge: true });
+                }
+                await syncLeadUpdateToBridge({
+                    id: lead.id,
+                    slug: lead.slug,
+                    status: 'converted',
+                    convertedProjectId: newProjectId
+                });
+                const stored = JSON.parse(localStorage.getItem('caf_leads_factory') || '[]');
+                const idx = stored.findIndex(s => s.id === lead.id);
+                if (idx >= 0) stored[idx] = lead; else stored.push(lead);
+                localStorage.setItem('caf_leads_factory', JSON.stringify(stored));
+                initLeadFactoryModule(stored, factoryHandlers);
+                await logAuditEvent('lead_converted_to_project', `Lead ${lead.name} gepromoveerd naar CRM Project (${newProjectId || 'lokaal'}).`);
+                await loadDashboardData();
+                if (newProjectId && confirm(`✅ "${lead.name}" is aangemaakt als CRM Project!\n\nWil je de projectkaart nu direct openen?`)) {
+                    window.location.href = `project.html?id=${encodeURIComponent(newProjectId)}`;
+                }
+            } catch (err) {
+                console.error("Fout bij promoveren van lead naar project:", err);
+                alert("Kon lead niet omzetten naar project: " + (err.message || err));
+            }
         },
         onTriggerCycle: () => {
             alert("Autonome Engine Instructie:\n\nDe engine draait continu op jouw eigen Windows machine en gebruikt de 'agy' CLI (uit jouw AI abonnement).\n\nOm direct handmatig 1 extra concept te genereren, open een terminal en typ:\nnpm run factory:run\n\nOf start de 24/7 achtergrondservice via:\nnpm run factory:daemon");

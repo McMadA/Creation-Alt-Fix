@@ -2603,6 +2603,86 @@ test("Anti-Break: intake.js, status/index.html, and project.js use canonical pro
     );
 });
 
+await testAsync("Anti-Break: deep-intelligence.js distinguishes Dutch mobile (06/316) vs landline numbers and generates sector-specific services & reviews", async () => {
+    const { isDutchMobilePhone, extractCityFromAddress, deriveServicesFromCategory, deriveReviewsFromCategory } = await import("../factory/enrichment/deep-intelligence.js");
+
+    assert.strictEqual(isDutchMobilePhone("06 19135453"), true, "06 number must be recognized as mobile WhatsApp capable");
+    assert.strictEqual(isDutchMobilePhone("+31 6 27319414"), true, "+31 6 number must be recognized as mobile WhatsApp capable");
+    assert.strictEqual(isDutchMobilePhone("0598 717 952"), false, "0598 landline must NOT be marked as mobile WhatsApp capable");
+    assert.strictEqual(isDutchMobilePhone("050 314 3981"), false, "050 landline must NOT be marked as mobile WhatsApp capable");
+
+    assert.strictEqual(extractCityFromAddress("Kerkstraat 42, 9601 AB Hoogezand"), "Hoogezand", "extractCityFromAddress must extract Hoogezand");
+    assert.strictEqual(extractCityFromAddress("Noorderstraat 18, 9611 AS Sappemeer"), "Sappemeer", "extractCityFromAddress must extract Sappemeer");
+
+    const services = deriveServicesFromCategory("Dakdekker", "Heinkens Daktechniek");
+    assert.strictEqual(services.length, 4, "deriveServicesFromCategory must return 4 tailored service cards");
+    const reviews = deriveReviewsFromCategory("Dakdekker", "Heinkens Daktechniek", "Hoogezand");
+    assert.strictEqual(reviews.length, 3, "deriveReviewsFromCategory must return 3 localized testimonials");
+});
+
+await testAsync("Anti-Break: agy-generator.js resolveArchetypeFaqs matches all resolveDesignArchetype keys and has no duplicate if(isInstaller) block", async () => {
+    const { resolveDesignArchetype, resolveArchetypeFaqs } = await import("../factory/generator/agy-generator.js");
+    const agyGenSrc = fs.readFileSync(path.join(ROOT_DIR, "factory/generator/agy-generator.js"), "utf-8");
+
+    const installerMatches = agyGenSrc.match(/if\s*\(\s*isInstaller\s*\)/g) || [];
+    assert.strictEqual(installerMatches.length, 1, "resolveDesignArchetype must have exactly 1 if (isInstaller) branch");
+    assert.ok(!agyGenSrc.includes("&display=swap&display=swap"), "agy-generator.js must not contain duplicate &display=swap&display=swap");
+
+    const rooferTheme = resolveDesignArchetype({ name: "Dakdekker Noord", category: "Dakdekker" });
+    assert.strictEqual(rooferTheme.key, "ROOFER_SLATE");
+    const rooferFaqs = resolveArchetypeFaqs(rooferTheme.key, { name: "Dakdekker Noord", category: "Dakdekker", city: "Hoogezand" });
+    assert.strictEqual(rooferFaqs.length, 4);
+    assert.ok(rooferFaqs[0].question.toLowerCase().includes("lekkage") || rooferFaqs[0].question.toLowerCase().includes("dak"), "ROOFER_SLATE FAQs must be roof-specific, not generic fallback");
+});
+
+test("Anti-Break: factory/data/leads.json and crm/admin/data/leads.json are 100% synchronized, mobile-WA accurate, and free of agency self-email pollution", () => {
+    const fData = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, "factory/data/leads.json"), "utf-8"));
+    const cData = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, "crm/admin/data/leads.json"), "utf-8"));
+
+    assert.strictEqual(fData.leads.length, cData.leads.length, "factory and CRM leads.json must have identical lead count");
+    for (const lead of fData.leads) {
+        if (lead.email) {
+            assert.ok(!lead.email.toLowerCase().includes("creationaltfix"), `Lead ${lead.slug} must not have agency email (${lead.email})`);
+        }
+        const digits = String(lead.phone || "").replace(/\D/g, "");
+        const isMob = /^(06\d{8}|316\d{8})$/.test(digits);
+        assert.strictEqual(Boolean(lead.hasWhatsApp), isMob, `Lead ${lead.slug} (${lead.phone}) hasWhatsApp must match mobile check`);
+        if (!isMob) {
+            assert.strictEqual(lead.whatsAppNumber, null, `Landline lead ${lead.slug} must have whatsAppNumber: null`);
+        }
+        assert.ok(Array.isArray(lead.suggestedServices) && lead.suggestedServices.length >= 4, `Lead ${lead.slug} must have >= 4 suggestedServices`);
+        assert.ok(Array.isArray(lead.reviews) && lead.reviews.length >= 3, `Lead ${lead.slug} must have >= 3 reviews`);
+    }
+});
+
+test("Anti-Break: all concept HTML files in website/concept/* have escaped DRM script tags, valid tel: links, and FAQPage schema", () => {
+    const conceptDir = path.join(ROOT_DIR, "website/concept");
+    const slugs = fs.readdirSync(conceptDir).filter(f => fs.statSync(path.join(conceptDir, f)).isDirectory());
+    assert.ok(slugs.length >= 20, "website/concept must contain at least 20 concept folders");
+
+    for (const slug of slugs) {
+        const htmlPath = path.join(conceptDir, slug, "index.html");
+        if (!fs.existsSync(htmlPath)) continue;
+        const html = fs.readFileSync(htmlPath, "utf-8");
+        const scriptMatch = html.match(/<script id="caf-security-guard">([\s\S]*?)<\/script>/);
+        assert.ok(scriptMatch, `${slug}/index.html must contain caf-security-guard script`);
+        assert.ok(!scriptMatch[1].includes("<div"), `${slug}/index.html caf-security-guard must use \\x3Cdiv instead of raw <div`);
+        assert.ok(html.includes('"FAQPage"'), `${slug}/index.html must contain FAQPage JSON-LD schema`);
+    }
+});
+
+test("Anti-Break: admin-lead-factory.js, admin.js, and factory-bridge.js support bidirectional status sync, custom scan query, and correct #factory-status-filter DOM ID", () => {
+    const lfJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/modules/admin-lead-factory.js"), "utf-8");
+    const adminJs = fs.readFileSync(path.join(ROOT_DIR, "crm/admin/js/admin.js"), "utf-8");
+    const bridgeJs = fs.readFileSync(path.join(ROOT_DIR, "factory/server/factory-bridge.js"), "utf-8");
+
+    assert.ok(!lfJs.includes("getElementById('factory-filter-status')"), "admin-lead-factory.js must use #factory-status-filter instead of non-existent #factory-filter-status");
+    assert.ok(lfJs.includes("export async function syncLeadUpdateToBridge"), "admin-lead-factory.js must export syncLeadUpdateToBridge");
+    assert.ok(adminJs.includes("syncLeadUpdateToBridge"), "admin.js must sync lead status updates back to Factory Bridge");
+    assert.ok(adminJs.includes("onConvertToProject"), "admin.js must implement 1-click onConvertToProject");
+    assert.ok(bridgeJs.includes("pathname === '/api/leads/update'"), "factory-bridge.js must expose POST /api/leads/update");
+});
+
 // ========================================================
 // FINAL SUMMARY
 // ========================================================

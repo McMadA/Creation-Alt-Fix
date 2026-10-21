@@ -4,16 +4,47 @@
  * KVK context en conversie-inzichten.
  */
 
+export function isDutchMobilePhone(phone) {
+  if (!phone) return false;
+  const digits = String(phone).replace(/\D/g, '');
+  return digits.startsWith('06') || digits.startsWith('316') || digits.startsWith('00316');
+}
+
+export function extractCityFromAddress(address = '') {
+  if (!address || typeof address !== 'string') return 'Hoogezand';
+  const pcMatch = address.match(/\b\d{4}\s*[A-Za-z]{2}\s+([^,]+)/);
+  if (pcMatch && pcMatch[1]) {
+    const city = pcMatch[1].trim();
+    if (city && city.toLowerCase() !== 'nederland') return city;
+  }
+  const knownCities = [
+    'Hoogezand', 'Sappemeer', 'Veendam', 'Zuidlaren', 'Slochteren',
+    'Muntendam', 'Kolham', 'Kropswolde', 'Foxhol', 'Harkstede',
+    'Siddeburen', 'Zuidbroek', 'Noordbroek', 'Scheemda', 'Winschoten',
+    'Stadskanaal', 'Assen', 'Haren', 'Delfzijl', 'Appingedam', 'Groningen'
+  ];
+  const lower = address.toLowerCase();
+  for (const c of knownCities) {
+    if (lower.includes(c.toLowerCase())) return c;
+  }
+  return 'Hoogezand';
+}
+
 export async function enrichBusinessProfile(business) {
   const profile = { ...business };
 
-  // 1. Telefoon & WhatsApp normalisatie (Nederlands formaat)
+  // 1. Telefoon, Stad & WhatsApp normalisatie (Nederlands formaat - strikt alleen 06-nummers op WhatsApp)
+  profile.city = extractCityFromAddress(profile.address);
   profile.normalizedPhone = normalizeDutchPhone(profile.phone);
-  profile.whatsAppNumber = profile.normalizedPhone ? profile.normalizedPhone.replace(/\D/g, '') : null;
-  if (profile.whatsAppNumber && profile.whatsAppNumber.startsWith('06')) {
-    profile.whatsAppNumber = '31' + profile.whatsAppNumber.substring(1);
+  const rawDigits = profile.normalizedPhone ? profile.normalizedPhone.replace(/\D/g, '') : '';
+  if (rawDigits.startsWith('06') && rawDigits.length >= 10) {
+    profile.whatsAppNumber = '31' + rawDigits.substring(1);
+    profile.hasWhatsApp = true;
+  } else if (rawDigits.startsWith('316') && rawDigits.length >= 11) {
+    profile.whatsAppNumber = rawDigits;
     profile.hasWhatsApp = true;
   } else {
+    profile.whatsAppNumber = null;
     profile.hasWhatsApp = false;
   }
 
@@ -40,16 +71,21 @@ export async function enrichBusinessProfile(business) {
   profile.strengths = potentialAnalysis.strengths;
   profile.recommendedDomain = `${profile.slug}.nl`;
 
-  // 4. Fallback e-mail mining
-  // Indien het bedrijf nog geen direct e-mailadres heeft, genereren we geschikte contact-opties
+  // 5. Fallback e-mail mining (blokkeer eigen/agency domeinen)
+  if (profile.email && String(profile.email).toLowerCase().includes('creationaltfix')) {
+    profile.email = null;
+  }
   if (!profile.email) {
     if (profile.website && probe.type !== 'SITE_OFFLINE') {
       profile.email = await mineEmailFromWebsite(probe.finalUrl || profile.website).catch(() => null);
     }
   }
 
-  // 5. Default services afleiden uit categorie
+  // 6. Default services en reviews afleiden uit categorie
   profile.suggestedServices = deriveServicesFromCategory(profile.category, profile.name);
+  if (!Array.isArray(profile.reviews) || profile.reviews.length === 0) {
+    profile.reviews = deriveReviewsFromCategory(profile.category, profile.name, profile.address);
+  }
 
   return profile;
 }
@@ -268,6 +304,7 @@ async function mineEmailFromWebsite(url) {
 
         return clean.length <= 100 && 
                isDomainMatch &&
+               !clean.includes('creationaltfix') &&
                !clean.includes('example') && 
                !clean.includes('.png') && 
                !clean.includes('.jpg') && 
@@ -299,6 +336,7 @@ export function isWebsiteMatchingBusiness(businessName, websiteUrl) {
   try {
     const parsed = new URL(websiteUrl.startsWith('http') ? websiteUrl : 'http://' + websiteUrl);
     const domain = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    if (domain.includes('creationaltfix')) return false;
     const domainBase = domain.split('.')[0].replace(/[^a-z0-9]/g, '');
 
     const stopWords = new Set([
@@ -350,52 +388,240 @@ export function isWebsiteMatchingBusiness(businessName, websiteUrl) {
 }
 
 /**
- * Biedt branche-specifieke diensten als de crawler er geen heeft kunnen uitlezen
+ * Biedt branche-specifieke diensten (4 maatwerk kaarten per sector) voor elk MKB/ZZP segment
  */
-function deriveServicesFromCategory(category = '', name = '') {
-  const cat = (category + ' ' + name).toLowerCase();
+export function deriveServicesFromCategory(category = '', name = '') {
+  const cat = ((category || '') + ' ' + (name || '')).toLowerCase();
 
-  if (cat.includes('schilder')) {
+  if (cat.includes('dak') || cat.includes('zink') || cat.includes('bitumen') || cat.includes('epdm')) {
     return [
-      { title: "Binnenschilderwerk", desc: "Strakke afwerking van muren, plafonds, deuren en kozijnen met hoogwaardige verf." },
-      { title: "Buitenschilderwerk", desc: "Duurzame bescherming tegen weer en wind voor een representatieve uitstraling." },
-      { title: "Houtrot herstel", desc: "Vakkundige inspectie en renovatie van aangetast houtwerk rondom jouw woning." },
-      { title: "Kleur- & Materiaaladvies", desc: "Persoonlijk advies over passende tinten en slijtvaste verfsystemen." }
+      { title: "Dakrenovatie & Onderhoud", desc: "Volledige vernieuwing en preventief onderhoud van platte en hellende daken met 10 jaar garantie." },
+      { title: "Bitumen, EPDM & Dakpannen", desc: "Waterdichte dakbedekking met A-merk bitumen, duurzame EPDM-folie of keramische dakpannen." },
+      { title: "Daklekkage & Spoedherstel", desc: "Snelle lekdetectie en directe noodreparatie bij stormschade of acute lekkages." },
+      { title: "Dakcoating, Isolatie & Zinkwerk", desc: "Energiebesparende dakisolatie, beschermende dakcoating en strak zink- en loodwerk." }
     ];
   }
 
-  if (cat.includes('hovenier') || cat.includes('tuin')) {
+  if (cat.includes('ontstop') || cat.includes('riool') || cat.includes('afvoer')) {
     return [
-      { title: "Tuinaanleg & Ontwerp", desc: "Complete metamorfose van jouw tuin van schets tot oplevering." },
-      { title: "Sierbestrating & Terrassen", desc: "Strak gelegde klinkers, keramische tegels en stabiele opritten." },
-      { title: "Periodiek Tuinonderhoud", desc: "Vakkundig snoeiwerk, bemesting en onkruidbeheer in elk seizoen." },
-      { title: "Schuttingen & Houtbouw", desc: "Duurzame erfafscheidingen, overkappingen en pergola's op maat." }
+      { title: "Riool & Afvoer Ontstoppen", desc: "Directe verhelping van verstoppingen in wc, keukenafvoer, doucheputje of hoofdriool." },
+      { title: "Camera-Inspectie & Stankdetectie", desc: "Nauwkeurige lokalisatie van breuken, wortelgroei en verzakkingen zonder onnodig breekwerk." },
+      { title: "Hogedruk Rioolreiniging", desc: "Grondige reiniging van leidingen om terugkerende verstoppingen en borrelende afvoeren te voorkomen." },
+      { title: "Rioolrenovatie & Vervanging", desc: "Duurzaam herstel en aanleg van binnen- en buitenriolering volgens moderne normen." }
     ];
   }
 
-  if (cat.includes('timmerman') || cat.includes('klus')) {
+  if (cat.includes('loodgieter') || cat.includes('installat') || cat.includes('cv') || cat.includes('warmtepomp') || cat.includes('sanitair')) {
     return [
-      { title: "Renovatie & Verbouw", desc: "Vakkundige aanpak voor grote en kleine klussen in en rond het huis." },
-      { title: "Maatwerk Houtbewerking", desc: "Op maat gemaakte inbouwkasten, trappen, deuren en meubels." },
-      { title: "Onderhoud & Reparatie", desc: "Snelle en degelijke oplossing voor knellende deuren, lekkages en herstel." },
-      { title: "Dak & Gevelafwerking", desc: "Degelijke afdichting en vernieuwing van boeidelen en gevelbekleding." }
+      { title: "CV-Ketel & Warmtepomp Service", desc: "Vakkundige installatie, periodiek onderhoud en storingsdienst voor verwarming en hybride warmtepompen." },
+      { title: "Loodgieterswerk & Leidingen", desc: "Aanleg, verleggen en reparatie van water-, gas- en afvoerleidingen bij nieuwbouw of verbouw." },
+      { title: "Badkamer & Sanitair Montage", desc: "Strakke plaatsing van kranen, toiletten, inloopdouches en complete badkamerrenovaties." },
+      { title: "Lekkage & Storingsdienst", desc: "Snelle opsporing en vakkundig herstel van water- en verwarmingslekkages in de regio." }
     ];
   }
 
-  if (cat.includes('kapper') || cat.includes('salon')) {
+  if (cat.includes('stratenmaker') || cat.includes('bestrat') || cat.includes('grondwerk') || cat.includes('sierbestrating')) {
     return [
-      { title: "Knippen & Stylen", desc: "Trendy en tijdloze kapsels perfect afgestemd op jouw gezichtsvorm." },
-      { title: "Kleuren & Highlights", desc: "Professionele balayage, folietechnieken en dekkende kleuringen." },
-      { title: "Bruidskapsels & Feeststyling", desc: "Stralend voor de dag op jouw speciale gelegenheid met langdurige hold." },
-      { title: "Verzorgende Haarmaskers", desc: "Diepgaande hydratatie en herstel voor beschadigd of droog haar." }
+      { title: "Sierbestrating & Terrassen", desc: "Strak gelegde terrassen met keramische tegels, gebakken waaltjes of natuursteen op stabiele ondergrond." },
+      { title: "Opritten & Parkeervakken", desc: "Zwaar belastbare bestrating en professionele fundering die verzakkingen en spoorvorming voorkomt." },
+      { title: "Grondwerk & Afwatering", desc: "Vakkundig uitgraven, aanvullen met straatzand, verdichten en aanleg van lijngoten en hemelwaterafvoer." },
+      { title: "Herbestrating & Kantopsluiting", desc: "Ophogen van verzakte tuininritten, tuinpaden en het plaatsen van duurzame opsluitbanden." }
     ];
   }
 
-  // Algemene default diensten voor ZZP'er
+  if (cat.includes('hovenier') || cat.includes('tuin') || cat.includes('groen') || cat.includes('boom')) {
+    return [
+      { title: "Tuinaanleg & Tuinontwerp", desc: "Complete metamorfose van jouw buitenruimte: van doordacht beplantingsplan tot oplevering." },
+      { title: "Sierbestrating & Vlonders", desc: "Strak gelegde terrassen, tuinpaden, keramische tegels en hardhouten vlonders op maat." },
+      { title: "Periodiek Tuinonderhoud", desc: "Vakkundig snoeiwerk, gazononderhoud, bemesting en onkruidbeheer in elk seizoen." },
+      { title: "Schuttingen & Houtbouw", desc: "Duurzame hout-beton erfafscheidingen, douglas overkappingen en pergola's op maat." }
+    ];
+  }
+
+  if (cat.includes('stukadoor') || cat.includes('stuc') || cat.includes('afbouw') || cat.includes('spack')) {
+    return [
+      { title: "Glad Pleisterwerk (Sausklaar)", desc: "Spiegelgladde wanden en plafonds, direct klaar om streeploos te sauzen of behangen." },
+      { title: "Sierpleister & Spachtelputz", desc: "Slijtvaste, stootvaste en decoratieve wandafwerking met fijne korrelstructuur in elke gewenste tint." },
+      { title: "Plafondafwerking & Schuurwerk", desc: "Strakke plafonds met fijn schuurwerk, lijstwerk of naadloze afwerking van gipsplaten." },
+      { title: "Latex Spuiten & Buitenstucwerk", desc: "Streeploos airless latex spuitwerk en weerbestendig gevelstucwerk voor nieuwbouw en renovatie." }
+    ];
+  }
+
+  if (cat.includes('schilder') || cat.includes('glaszet') || cat.includes('lakwerk')) {
+    return [
+      { title: "Binnenschilderwerk", desc: "Strakke afwerking van muren, plafonds, trappen, deuren en kozijnen met krasvaste A-merk lakken." },
+      { title: "Buitenschilderwerk", desc: "Duurzame bescherming tegen weer en wind met Sigma of Sikkens verfsystemen voor jarenlang behoud." },
+      { title: "Houtrotreparatie & Deelvervanging", desc: "Vakkundige inspectie en duurzaam herstel van aangetast houtwerk met 2-componenten epoxy." },
+      { title: "Kleuradvies & Glaszetten", desc: "Persoonlijk kleur- en materiaaladvies en het plaatsen van isolerend HR++ beglazing." }
+    ];
+  }
+
+  if (cat.includes('elektr') || cat.includes('groepenkast') || cat.includes('laadpaal')) {
+    return [
+      { title: "Groepenkast Vervangen & Uitbreiden", desc: "Veilige NEN1010/3140 installatie met moderne aardlekschakelaars en uitbreiding voor inductie of krachtstroom." },
+      { title: "Elektra Aanleg & Renovatie", desc: "Compleet leidingwerk, schakelmateriaal en sfeerverlichting voor keuken, aanbouw of woningrenovatie." },
+      { title: "Laadpalen & Verduurzaming", desc: "Vakkundige montage en aansluiting van slimme thuislaadpalen en zonnepaneel-groepen." },
+      { title: "Storingsdienst & Keuringen", desc: "Snelle diagnose en veilige oplossing bij kortsluiting, stroomuitval of oude bedrading." }
+    ];
+  }
+
+  if (cat.includes('fiets') || cat.includes('tweewieler') || cat.includes('e-bike') || cat.includes('fatbike')) {
+    return [
+      { title: "E-Bike & Stadsfiets Reparatie", desc: "Vakkundig herstel van elektrische fietsen, stadsfietsen, kinderfietsen en bakfietsen van alle merken." },
+      { title: "Accu, Motor & Display Diagnose", desc: "Uitlezen van e-bike systemen, sensorvervanging en herstel van elektrische storingen." },
+      { title: "Banden, Remmen & Aandrijving", desc: "Directe vervanging van lekke banden, kettingen, tandwielen, versnellingsnaven en hydraulische remmen." },
+      { title: "Onderhoudsbeurt & Rijklaar Service", desc: "Volledige veiligheidscheck, spaken spannen en smering zodat jouw fiets weer als nieuw rijdt." }
+    ];
+  }
+
+  if (cat.includes('auto') || cat.includes('garage') || cat.includes('apk') || cat.includes('carrosserie') || cat.includes('banden')) {
+    return [
+      { title: "APK Keuring & Onderhoudsbeurt", desc: "Kleine en grote onderhoudsbeurten en eerlijke APK-keuring voor alle automerken zonder verrassingen." },
+      { title: "Diagnose, Remmen & Distributie", desc: "Uitlezen van motormanagement, vervanging van remschijven, koppelingen en distributieriemen." },
+      { title: "Bandenwissel, Uitlijnen & Airco", desc: "Zomer- en winterbandenservice, nauwkeurig balanceren en airco-onderhoud voor optimaal rijcomfort." },
+      { title: "Schadeherstel & Spoedreparatie", desc: "Vakkundig carrosserieherstel en snelle hulp bij autopech zodat je direct weer veilig op weg kunt." }
+    ];
+  }
+
+  if (cat.includes('personal') || cat.includes('fitness') || cat.includes('gym') || cat.includes('sport') || cat.includes('bootcamp')) {
+    return [
+      { title: "1-op-1 Personal Training", desc: "Persoonlijke kracht- en conditietraining volledig afgestemd op jouw lichaam, niveau en doelstellingen." },
+      { title: "Duo & Small Group Training", desc: "Samen gemotiveerd trainen in kleine groepen met professionele techniekcoaching en maximale energie." },
+      { title: "Voedings- & Leefstijlplan op Maat", desc: "Praktische, haalbare voedingsrichtlijnen voor duurzame vetverbranding, spieropbouw en meer energie." },
+      { title: "Fysieke Metingen & Progressie", desc: "Periodieke lichaamscompositiemetingen en bijsturing zodat je gegarandeerd resultaat behaalt." }
+    ];
+  }
+
+  if (cat.includes('gewicht') || cat.includes('voeding') || cat.includes('afvallen') || cat.includes('leefstijl') || cat.includes('weight') || cat.includes('vital')) {
+    return [
+      { title: "Gezond & Blijvend Afvallen", desc: "Persoonlijke begeleiding naar een gezond gewicht met gewone supermarktproducten, zonder crashdiëten." },
+      { title: "Voedingsanalyse & Dagmenu's", desc: "Praktische weekmenu's en lekkere recepten die naadloos passen in een druk gezins- of werkleven." },
+      { title: "Leefstijl- & Gedragscoaching", desc: "Doorbreken van vaste gewoontes en emotie-eten met positieve, stok-achter-de-deur begeleiding." },
+      { title: "Vergoeding via Aanvullende Polis", desc: "Veel trajecten bij een erkende gewichtsconsulent worden (deels) vergoed zonder aanspraak op eigen risico." }
+    ];
+  }
+
+  if (cat.includes('koerier') || cat.includes('delivery') || cat.includes('transport') || cat.includes('bezorg') || cat.includes('logistiek')) {
+    return [
+      { title: "Directe Spoedkoerier (Sneltransport)", desc: "Zonder tussenstop van A naar B in heel Nederland en Europa: binnen 30-45 minuten onderweg." },
+      { title: "Zakelijke & Medische Zendingen", desc: "Betrouwbaar en discreet vervoer van vertrouwelijke documenten, onderdelen en tijdkritische pakketten." },
+      { title: "Vaste Routes & Distributie", desc: "Flexibele dagelijkse of wekelijkse ritten voor webshops, groothandels en productiebedrijven." },
+      { title: "24/7 Bereikbaar & Track-Update", desc: "Direct contact met de chauffeur en onmiddellijke afleverbevestiging zodra de zending is bezorgd." }
+    ];
+  }
+
+  if (cat.includes('webdesign') || cat.includes('webontwikkeling') || cat.includes('software') || cat.includes('marketing') || cat.includes('studio')) {
+    return [
+      { title: "Maatwerk Webdesign & Development", desc: "Supersnelle, conversiegerichte websites en webapplicaties die perfect presteren op mobiel en desktop." },
+      { title: "Lokale SEO & Google Vindbaarheid", desc: "Technische optimalisatie en gestructureerde data zodat jouw bedrijf bovenaan scoort in de regio." },
+      { title: "Huisstijl, UX & Merkidentiteit", desc: "Onderscheidend digitaal ontwerp dat direct vertrouwen wekt bij jouw ideale doelgroep." },
+      { title: "Beheer, Beveiliging & Snelheid", desc: "Zorgeloze hosting, SSL-beveiliging en proactief technisch onderhoud voor 99,9% uptime." }
+    ];
+  }
+
+  if (cat.includes('schoonmaak') || cat.includes('glazenwas') || cat.includes('reinig')) {
+    return [
+      { title: "Glazenwasserij & Kozijnreiniging", desc: "Streeploos schone ramen en grondig gereinigde kozijnen met osmose-water of traditioneel vakmanschap." },
+      { title: "Zakelijke & Particuliere Schoonmaak", desc: "Periodiek interieuronderhoud voor kantoren, praktijkruimtes, VvE-trappenhuizen en woningen." },
+      { title: "Gevel-, Dakgoot- & Zonnepaneelreiniging", desc: "Veilige verwijdering van groene aanslag, mos en vuil voor optimaal rendement en behoud." },
+      { title: "Opleveringsschoonmaak", desc: "Grondige dieptereiniging na verbouwing, renovatie of verhuizing." }
+    ];
+  }
+
+  if (cat.includes('kapper') || cat.includes('salon') || cat.includes('beauty') || cat.includes('nagel') || cat.includes('pedicure') || cat.includes('massage')) {
+    return [
+      { title: "Behandeling & Styling op Maat", desc: "Persoonlijk advies en vakkundige uitvoering met hoogwaardige, verzorgende salonproducten." },
+      { title: "Specialistische Verzorging", desc: "Aandacht voor elk detail zodat jij ontspannen en stralend de salon verlaat." },
+      { title: "Hygiëne & Kwaliteitsproducten", desc: "Wij werken uitsluitend volgens de hoogste hygiënerichtlijnen en met huidvriendelijke A-merken." },
+      { title: "Flexibele Afspraakmogelijkheden", desc: "Snel en eenvoudig een afspraak inplannen op een moment dat jou het beste uitkomt." }
+    ];
+  }
+
+  if (cat.includes('timmer') || cat.includes('klus') || cat.includes('vakman') || cat.includes('onderhoud') || cat.includes('renovatie') || cat.includes('bouw') || cat.includes('aannem')) {
+    return [
+      { title: "Renovatie, Verbouw & Afbouw", desc: "Vakkundige totaaluitvoering voor grote en kleine verbouwingen in en rondom jouw woning." },
+      { title: "Maatwerk Timmerwerk & Kozijnen", desc: "Op maat gemaakte kastenwanden, deuren, boeidelen, overkappingen en kozijnvervanging." },
+      { title: "Woningonderhoud & Reparatie", desc: "Snelle en duurzame oplossing voor houtrot, klemmende deuren, gevelbekleding en herstelwerk." },
+      { title: "Keuken, Badkamer & Zolder", desc: "Complete aftimmering, isolatie en strakke oplevering met één vast aanspreekpunt." }
+    ];
+  }
+
+  // Algemene default diensten voor ZZP'er / Vakman
   return [
-    { title: "Vakmanschap op Maat", desc: "Persoonlijke aandacht en professionele uitvoering volgens afspraak." },
-    { title: "Snelle & Duidelijke Communicatie", desc: "Binnen 24 uur reactie en transparante prijsopgaven zonder verrassingen." },
-    { title: "Regionale Service in Groningen", desc: "Lokale betrokkenheid en flexibele service in en rondom Hoogezand." },
-    { title: "Garantie op Kwaliteit", desc: "Wij gaan pas naar huis wanneer jij 100% tevreden bent met het resultaat." }
+    { title: "Vakmanschap op Maat", desc: "Persoonlijke aandacht en professionele uitvoering volgens afspraak door een ervaren specialist." },
+    { title: "Transparante Offerte Vooraf", desc: "Binnen 24 uur een heldere prijsopgave zodat je vooraf exact weet waar je aan toe bent." },
+    { title: "Regionale Service in Groningen", desc: "Snel ter plaatse, korte lijnen en lokale betrokkenheid in de regio." },
+    { title: "Garantie op Kwaliteit", desc: "Wij leveren pas op wanneer elk detail klopt en jij 100% tevreden bent met het resultaat." }
   ];
 }
+
+/**
+ * Genereert 3 branche-specifieke klantbeoordelingen indien Google Maps alleen de sterrenscore teruggeeft
+ */
+export function deriveReviewsFromCategory(category = '', name = '', address = '') {
+  const cat = ((category || '') + ' ' + (name || '')).toLowerCase();
+  const city = extractCityFromAddress(address);
+
+  if (cat.includes('dak') || cat.includes('zink') || cat.includes('bitumen')) {
+    return [
+      { text: `Na stormschade direct geholpen door ${name}. Binnen een dag geïnspecteerd en het dak weer 100% waterdicht opgeleverd. Eerlijke prijs en topvakwerk!`, author: `Familie Bos • ${city}` },
+      { text: `Ons platte dak laten vernieuwen met nieuwe dakbedekking en isolatie. Strakke afwerking van de dakranden en alles keurig schoon achtergelaten.`, author: `M. Dijkhuizen • Regio ${city}` },
+      { text: `Duidelijke offerte vooraf met foto's van het dak. Zeer betrouwbare dakspecialist die zijn afspraken stipt nakomt.`, author: `J. van der Laan • ${city}` }
+    ];
+  }
+
+  if (cat.includes('ontstop') || cat.includes('riool') || cat.includes('loodgieter') || cat.includes('installat')) {
+    return [
+      { text: `Supersnel ter plaatse in ${city} toen onze afvoer verstopt zat. Met professionele apparatuur binnen een half uur opgelost en heldere tarieven vooraf.`, author: `R. Meijer • ${city}` },
+      { text: `Erg tevreden over de kundige service van ${name}. Denkt echt mee, werkt netjes en laat alles keurig achter na de klus.`, author: `S. Hoekstra • Regio ${city}` },
+      { text: `Vriendelijke vakman die direct de oorzaak wist te vinden. Geen voorrijkosten-verrassingen achteraf, gewoon eerlijk werk.`, author: `H. Brouwer • ${city}` }
+    ];
+  }
+
+  if (cat.includes('stratenmaker') || cat.includes('bestrat') || cat.includes('hovenier') || cat.includes('tuin')) {
+    return [
+      { text: `Onze oprit en achtertuin zijn compleet nieuw aangelegd door ${name}. Ligt er strak bij, perfecte afwatering en prettig overleg tijdens het werk.`, author: `Familie de Vries • ${city}` },
+      { text: `Hardwerkende vakmensen met oog voor detail. Goed advies gekregen over de tegels en indeling, het resultaat overtreft onze verwachtingen.`, author: `P. Bakker • Regio ${city}` },
+      { text: `Komen afspraken keurig na en leveren topkwaliteit. Onze tuin in ${city} kan er weer jaren tegenaan!`, author: `L. Koster • ${city}` }
+    ];
+  }
+
+  if (cat.includes('stukadoor') || cat.includes('stuc') || cat.includes('schilder')) {
+    return [
+      { text: `Onze hele benedenverdieping is strak afgewerkt door ${name}. Spiegelglad resultaat, netjes afgeplakt en precies volgens planning opgeleverd.`, author: `Familie Jansen • ${city}` },
+      { text: `Echt vakwerk geleverd! Je ziet direct het verschil in kwaliteit en afwerking. Duidelijke offerte en fijne communicatie.`, author: `E. Smit • Regio ${city}` },
+      { text: `Zeer secuur gewerkt en aan het einde van elke dag alles netjes opgeruimd. Wij raden ${name} aan iedereen in ${city} aan.`, author: `K. Mulder • ${city}` }
+    ];
+  }
+
+  if (cat.includes('fiets') || cat.includes('auto') || cat.includes('garage')) {
+    return [
+      { text: `Mijn e-bike dezelfde dag nog vakkundig gerepareerd voor een hele nette prijs. Eerlijk advies en je merkt meteen de ervaring van ${name}.`, author: `A. Boer • ${city}` },
+      { text: `Altijd snelle service en vriendelijk geholpen. Geen onnodige onderdelen vervangen maar gewoon direct een goede oplossing.`, author: `W. Drenth • Regio ${city}` },
+      { text: `Hét vaste adres in ${city} voor onderhoud en reparatie. Betrouwbaar, vakkundig en altijd bereikbaar.`, author: `T. Venema • ${city}` }
+    ];
+  }
+
+  if (cat.includes('personal') || cat.includes('fitness') || cat.includes('gewicht') || cat.includes('voeding') || cat.includes('weight') || cat.includes('coach')) {
+    return [
+      { text: `Dankzij de persoonlijke begeleiding bij ${name} voel ik me fitter en energieker dan ooit. Geen standaardschema, maar echt maatwerk dat vol te houden is!`, author: `M. Wolters • ${city}` },
+      { text: `Fijne, motiverende sfeer en deskundige coaching. Eindelijk resultaat behaald zonder hongergevoel of blessures.`, author: `N. Veenstra • Regio ${city}` },
+      { text: `Persoonlijke aandacht staat hier echt op één. Elke week merk ik vooruitgang, een absolute aanrader in ${city}!`, author: `D. Koning • ${city}` }
+    ];
+  }
+
+  if (cat.includes('koerier') || cat.includes('delivery') || cat.includes('transport')) {
+    return [
+      { text: `Tijdkritische zending vanuit ${city} moest direct geleverd worden. Binnen een half uur opgehaald en exact op tijd afgeleverd met bevestiging.`, author: `Zakelijke klant • ${city}` },
+      { text: `Zeer betrouwbare koeriersdienst. Representatief, zorgvuldig met kwetsbare goederen en korte communicatielijnen.`, author: `B. Hendriks • Regio ${city}` },
+      { text: `Al meerdere spoedritten laten verzorgen door ${name}. Altijd bereikbaar en 100% afspraak is afspraak.`, author: `J. Kuipers • ${city}` }
+    ];
+  }
+
+  return [
+    { text: `Uitstekende ervaring met ${name}! Snelle reactie, heldere prijsafspraak vooraf en super strak vakwerk afgeleverd.`, author: `Familie de Boer • ${city}` },
+    { text: `Een vakman die echt meedenkt en pas stopt als elk detail klopt. Alles keurig volgens planning uitgevoerd en netjes achtergelaten.`, author: `R. van Dijk • Regio ${city}` },
+    { text: `Fijne, nuchtere communicatie en topkwaliteit resultaat. Wij schakelen ${name} bij een volgende klus direct weer in!`, author: `M. Schouten • ${city}` }
+  ];
+}
+

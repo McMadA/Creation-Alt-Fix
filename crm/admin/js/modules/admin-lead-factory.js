@@ -469,12 +469,48 @@ export async function checkBridgeStatus(handlers = {}) {
 }
 
 /**
- * Start een live scan via de lokale bridge
+ * Synchroniseert status- of e-mailwijzigingen vanuit het CRM direct terug naar leads.json via de Bridge
+ */
+export async function syncLeadUpdateToBridge(payload = {}) {
+    if (!payload || (!payload.slug && !payload.id)) return false;
+    try {
+        let token = await getBridgeAuthToken();
+        if (!token) return false;
+        const host = _activeBridgeHost || 'http://127.0.0.1:3847';
+        let resp = await fetch(`${host}/api/leads/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-caf-auth': token
+            },
+            body: JSON.stringify(payload)
+        });
+        if (resp.status === 401) {
+            token = await getBridgeAuthToken(true);
+            resp = await fetch(`${host}/api/leads/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-caf-auth': token
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+        return resp.ok;
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Start een live scan via de lokale bridge (ondersteunt optionele eigen zoekopdracht/branche)
  */
 async function handleTriggerBridgeScan(handlers = {}) {
     const triggerBtn = document.getElementById('btn-trigger-factory-cycle');
     const spinIcon = document.getElementById('factory-spin-icon');
     const triggerText = document.getElementById('factory-trigger-btn-text');
+    const customQueryInput = document.getElementById('factory-custom-query');
+    const customQuery = customQueryInput ? customQueryInput.value.trim() : '';
 
     if (!_isBridgeOnline) {
         alert("De lokale Factory Bridge server is momenteel niet bereikbaar.\n\nControles:\n1. Zorg dat de bridge draait: npm run bridge:start\n2. Open je het dashboard via HTTPS (portal.creationaltfix.nl)? In browsers zoals Firefox kan Mixed Content een verbinding naar 127.0.0.1 blokkeren.\n\nTip: Open het CRM lokaal via: http://127.0.0.1:3847/admin/");
@@ -486,13 +522,18 @@ async function handleTriggerBridgeScan(handlers = {}) {
         if (triggerText) triggerText.textContent = 'Scan gestart...';
 
         let token = await getBridgeAuthToken();
+        const reqBody = JSON.stringify({
+            query: customQuery || undefined,
+            limit: 1
+        });
 
         let resp = await fetch(`${_activeBridgeHost}/api/trigger`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'x-caf-auth': token
-            }
+            },
+            body: reqBody
         });
 
         // Automatische token herstelpoging indien sessie herstart is (401)
@@ -503,7 +544,8 @@ async function handleTriggerBridgeScan(handlers = {}) {
                 headers: {
                     'Content-Type': 'application/json',
                     'x-caf-auth': token
-                }
+                },
+                body: reqBody
             });
         }
 
@@ -696,18 +738,18 @@ export function renderLeadCards(leads = [], handlers = {}) {
 
     const effectiveHandlers = (handlers && Object.keys(handlers).length > 0) ? handlers : _factoryHandlers;
     const readyCount = leads.filter(l => l.status === 'concept_ready').length;
-    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
+    const sentCount = leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp' || l.status === 'converted').length;
 
     // Filteren op status en zoekterm
     let filtered = leads.filter(lead => {
         if (_activeFilter !== 'all') {
             if (_activeFilter === 'concept_ready' && lead.status !== 'concept_ready') return false;
-            if (_activeFilter === 'sent' && lead.status !== 'sent' && lead.status !== 'email_sent' && lead.status !== 'sent_email' && lead.status !== 'whatsapp_sent' && lead.status !== 'sent_whatsapp') return false;
+            if (_activeFilter === 'sent' && lead.status !== 'sent' && lead.status !== 'email_sent' && lead.status !== 'sent_email' && lead.status !== 'whatsapp_sent' && lead.status !== 'sent_whatsapp' && lead.status !== 'converted') return false;
             if (_activeFilter === 'skipped' && lead.status !== 'skipped' && lead.status !== 'skipped_has_website') return false;
         }
 
         if (_searchTerm) {
-            const str = `${lead.name} ${lead.category || ''} ${lead.address || ''} ${lead.phone || ''}`.toLowerCase();
+            const str = `${lead.name} ${lead.category || ''} ${lead.city || ''} ${lead.address || ''} ${lead.phone || ''}`.toLowerCase();
             if (!str.includes(_searchTerm)) return false;
         }
 
@@ -737,7 +779,7 @@ export function renderLeadCards(leads = [], handlers = {}) {
             if (btnSwitchSent) {
                 btnSwitchSent.addEventListener('click', () => {
                     _activeFilter = 'sent';
-                    const sf = document.getElementById('factory-filter-status');
+                    const sf = document.getElementById('factory-status-filter');
                     if (sf) sf.value = 'sent';
                     updateFilterPillsUI();
                     renderLeadCards(leads, effectiveHandlers);
@@ -747,7 +789,7 @@ export function renderLeadCards(leads = [], handlers = {}) {
             if (btnSwitchAll) {
                 btnSwitchAll.addEventListener('click', () => {
                     _activeFilter = 'all';
-                    const sf = document.getElementById('factory-filter-status');
+                    const sf = document.getElementById('factory-status-filter');
                     if (sf) sf.value = 'all';
                     updateFilterPillsUI();
                     renderLeadCards(leads, effectiveHandlers);
@@ -772,7 +814,7 @@ export function renderLeadCards(leads = [], handlers = {}) {
         if (btnSwitchAll) {
             btnSwitchAll.addEventListener('click', () => {
                 _activeFilter = 'all';
-                const sf = document.getElementById('factory-filter-status');
+                const sf = document.getElementById('factory-status-filter');
                 if (sf) sf.value = 'all';
                 updateFilterPillsUI();
                 renderLeadCards(leads, effectiveHandlers);
@@ -792,12 +834,18 @@ export function renderLeadCards(leads = [], handlers = {}) {
  */
 function renderSingleLeadCard(lead) {
     const isReady = lead.status === 'concept_ready';
+    const isConverted = lead.status === 'converted';
     const isSent = lead.status === 'sent' || lead.status === 'email_sent' || lead.status === 'sent_email';
     const isWhatsApp = lead.status === 'whatsapp_sent' || lead.status === 'sent_whatsapp';
     const isArchived = lead.status?.includes('skipped');
 
+    const cleanWaDigits = (lead.whatsAppNumber || '').replace(/[^0-9]/g, '');
+    const isMobileWa = Boolean(lead.hasWhatsApp && /^316\d{7,9}$/.test(cleanWaDigits));
+
     let statusBadge = `<span class="badge" style="background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4);"><i class="fas fa-sparkles"></i> Klaar voor Review</span>`;
-    if (isSent) {
+    if (isConverted) {
+        statusBadge = `<span class="badge" style="background: rgba(168,85,247,0.2); color: #c084fc; border: 1px solid rgba(168,85,247,0.45);"><i class="fas fa-rocket"></i> Klant / Project</span>`;
+    } else if (isSent) {
         statusBadge = `<span class="badge" style="background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.4);"><i class="fas fa-check-circle"></i> E-mail Verzonden</span>`;
     } else if (isWhatsApp) {
         statusBadge = `<span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.4);"><i class="fab fa-whatsapp"></i> WhatsApp Contact</span>`;
@@ -810,9 +858,10 @@ function renderSingleLeadCard(lead) {
     const ratingStars = lead.rating ? `⭐ ${safeRating} (${safeReviews} reviews)` : '⭐ 5.0 (Nieuw)';
     const cleanUrl = lead.liveUrl || `https://creationaltfix.nl/concept/${lead.slug}/`;
     const safeLiveUrl = sanitizeUrl(cleanUrl);
+    const cleanTel = (lead.phone || '').replace(/[^0-9+]/g, '');
 
     return `
-        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid ${isSent ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.12)'}; padding: 22px; transition: transform 0.2s, border-color 0.2s;">
+        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid ${isConverted ? 'rgba(168,85,247,0.4)' : (isSent || isWhatsApp) ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.12)'}; padding: 22px; transition: transform 0.2s, border-color 0.2s;">
             <div>
                 <!-- Top Header -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
@@ -824,6 +873,7 @@ function renderSingleLeadCard(lead) {
                             <span style="font-size: 0.78rem; color: #38bdf8; font-weight: 600;">${escapeHtml(lead.category || 'ZZP Vakman')}</span>
                             <span style="font-size: 0.78rem; color: #94a3b8;">•</span>
                             <span style="font-size: 0.78rem; color: #fbbf24;">${ratingStars}</span>
+                            ${lead.city ? `<span style="font-size: 0.78rem; color: #94a3b8;">• 📍 ${escapeHtml(lead.city)}</span>` : ''}
                         </div>
                     </div>
                     <div>
@@ -844,7 +894,7 @@ function renderSingleLeadCard(lead) {
                 <!-- Contact & Adres details -->
                 <div style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                     ${lead.address ? `<div><i class="fas fa-map-marker-alt" style="color: #ef4444; width: 16px;"></i> ${escapeHtml(lead.address)}</div>` : ''}
-                    ${lead.phone ? `<div><i class="fas fa-phone-alt" style="color: #38bdf8; width: 16px;"></i> <a href="tel:${escapeHtml(lead.phone)}" style="color: #cbd5e1;">${escapeHtml(lead.phone)}</a></div>` : ''}
+                    ${lead.phone ? `<div><i class="fas fa-phone-alt" style="color: #38bdf8; width: 16px;"></i> <a href="tel:${escapeHtml(cleanTel)}" style="color: #cbd5e1;">${escapeHtml(lead.phone)}</a> ${isMobileWa ? '<span style="color:#10b981;font-size:0.74rem;margin-left:4px;">(Mobiel/WA)</span>' : '<span style="color:#94a3b8;font-size:0.74rem;margin-left:4px;">(Vast nr.)</span>'}</div>` : ''}
                     ${lead.email ? `<div><i class="fas fa-envelope" style="color: #a78bfa; width: 16px;"></i> <a href="mailto:${escapeHtml(lead.email)}" style="color: #cbd5e1;">${escapeHtml(lead.email)}</a></div>` : ''}
                     <div><i class="fas fa-globe" style="color: #fbbf24; width: 16px;"></i> ${lead.hasWebsite ? escapeHtml(lead.website) : '<strong style="color: #f87171;">Geen website op Google Maps</strong>'}</div>
                 </div>
@@ -862,19 +912,32 @@ function renderSingleLeadCard(lead) {
                     <button class="btn btn-secondary btn-sm btn-preview-concept" data-url="${safeLiveUrl}" data-name="${escapeHtml(lead.name)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" title="Open live responsive preview van het concept">
                         <i class="fas fa-eye text-accent"></i> <span>Live Preview</span>
                     </button>
+                    <button class="btn btn-secondary btn-sm btn-copy-concept-url" data-url="${safeLiveUrl}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px;" title="Kopieer concept URL direct naar klembord">
+                        <i class="fas fa-link" style="color: #38bdf8;"></i>
+                    </button>
                     <button class="btn btn-secondary btn-sm btn-view-pitch" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" title="Bekijk volledige acquisitie pitch en e-mailtekst">
                         <i class="fas fa-envelope-open-text" style="color: #fbbf24;"></i> <span>Bekijk Pitch</span>
                     </button>
                 </div>
 
                 <!-- Rij 2: Acties op basis van status -->
-                <div style="display: flex; gap: 8px;">
-                    ${isSent ? `
-                        <button class="btn btn-secondary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #38bdf8; border-color: rgba(56,189,248,0.3);" title="E-mail opnieuw openen in Outlook / Mail Client">
-                            <i class="fas fa-redo"></i> <span>Mail Heropenen</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${isConverted ? `
+                        <button class="btn btn-secondary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #c084fc; border-color: rgba(168,85,247,0.35);">
+                            <i class="fas fa-check-double"></i> <span>Geconverteerd naar Project</span>
                         </button>
                         <button class="btn btn-secondary btn-sm btn-revert-review-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #f59e0b; border-color: rgba(245,158,11,0.3);" title="Herstel status naar 'Klaar voor Review'">
-                            <i class="fas fa-undo"></i> <span>Terug naar Review</span>
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    ` : (isSent || isWhatsApp) ? `
+                        <button class="btn btn-secondary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #38bdf8; border-color: rgba(56,189,248,0.3);" title="E-mail opnieuw openen in Outlook / Mail Client">
+                            <i class="fas fa-redo"></i> <span>Mail</span>
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-convert-lead" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #c084fc; border-color: rgba(168,85,247,0.4);" title="Zet deze lead met 1 klik om naar een actief CRM Project (€199)">
+                            <i class="fas fa-rocket"></i> <span>Naar Project</span>
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-revert-review-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #f59e0b; border-color: rgba(245,158,11,0.3);" title="Herstel status naar 'Klaar voor Review'">
+                            <i class="fas fa-undo"></i>
                         </button>
                     ` : isArchived ? `
                         <button class="btn btn-secondary btn-sm btn-revert-review-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #38bdf8; border-color: rgba(56,189,248,0.3);" title="Herstel lead naar 'Klaar voor Review'">
@@ -884,11 +947,14 @@ function renderSingleLeadCard(lead) {
                         <button class="btn btn-primary btn-sm btn-send-email-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #2563eb;" title="Open e-mail direct in Outlook / Mail Client">
                             <i class="fas fa-paper-plane"></i> <span>1-Klik Mail</span>
                         </button>
-                        ${lead.hasWhatsApp ? `
+                        ${isMobileWa ? `
                             <button class="btn btn-secondary btn-sm btn-send-whatsapp-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #10b981; border-color: rgba(16,185,129,0.3);" title="Verstuur via WhatsApp">
                                 <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
                             </button>
                         ` : ''}
+                        <button class="btn btn-secondary btn-sm btn-convert-lead" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #c084fc; border-color: rgba(168,85,247,0.35);" title="Zet direct om naar actief CRM Project (€199)">
+                            <i class="fas fa-rocket"></i>
+                        </button>
                         <button class="btn btn-secondary btn-sm btn-reject-action" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="color: #ef4444; border-color: rgba(239,68,68,0.25);" title="Afwijzen / Archiveren">
                             <i class="fas fa-trash-alt"></i>
                         </button>
@@ -911,6 +977,22 @@ function attachCardActionListeners(container, leads, handlers) {
             const url = btn.getAttribute('data-url');
             const name = btn.getAttribute('data-name');
             openConceptPreviewModal(url, name);
+        });
+    });
+
+    // 1b. Kopieer Concept URL Knop
+    container.querySelectorAll('.btn-copy-concept-url').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const url = btn.getAttribute('data-url');
+            if (!url) return;
+            try {
+                await navigator.clipboard.writeText(url);
+                const origHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check" style="color: #10b981;"></i>';
+                setTimeout(() => { btn.innerHTML = origHtml; }, 1800);
+            } catch (e) {
+                prompt('Kopieer de concept link:', url);
+            }
         });
     });
 
@@ -938,14 +1020,14 @@ function attachCardActionListeners(container, leads, handlers) {
         });
     });
 
-    // 4. WhatsApp Versturen
+    // 4. WhatsApp Versturen (alleen voor gevalideerde 06-nummers)
     container.querySelectorAll('.btn-send-whatsapp-action').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.getAttribute('data-lead-id');
             const lead = leads.find(l => (l.id || l.slug) === id);
             if (lead) {
-                const cleanWaNumber = (lead.whatsAppNumber || lead.phone || '').replace(/[^0-9]/g, '');
-                if (cleanWaNumber) {
+                const cleanWaNumber = (lead.whatsAppNumber || '').replace(/[^0-9]/g, '');
+                if (/^316\d{7,9}$/.test(cleanWaNumber)) {
                     const text = encodeURIComponent(lead.pitch?.whatsAppText || `Hallo ${lead.name}, ik heb een website concept voor je klaarstaan: ${lead.liveUrl}`);
                     const waUrl = `https://wa.me/${cleanWaNumber}?text=${text}`;
                     window.open(waUrl, '_blank', 'noopener,noreferrer');
@@ -964,6 +1046,20 @@ function attachCardActionListeners(container, leads, handlers) {
             const lead = leads.find(l => (l.id || l.slug) === id);
             if (lead && effectiveHandlers.onUpdateStatus) {
                 await effectiveHandlers.onUpdateStatus(lead, 'concept_ready');
+            }
+        });
+    });
+
+    // 5b. 1-Klik Promoveren naar CRM Project
+    container.querySelectorAll('.btn-convert-lead').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-lead-id');
+            const lead = leads.find(l => (l.id || l.slug) === id);
+            if (!lead) return;
+            if (effectiveHandlers.onConvertToProject) {
+                await effectiveHandlers.onConvertToProject(lead);
+            } else if (effectiveHandlers.onUpdateStatus) {
+                await effectiveHandlers.onUpdateStatus(lead, 'converted');
             }
         });
     });
@@ -1076,8 +1172,9 @@ function openPitchModal(lead, handlers) {
     const htmlBody = pitch.bodyHtml ? sanitizePitchHtml(pitch.bodyHtml) : `<p>${escapeHtml(plainText)}</p>`;
     const whatsAppText = pitch.whatsAppText || '';
     const archetypeLabel = pitch.archetypeLabel || lead.archetypeLabel || 'Vakmanschap (Archetype A)';
-    const isSent = lead.status === 'sent' || lead.status === 'email_sent';
-    const cleanPitchWa = (lead.whatsAppNumber || lead.phone || '').replace(/[^0-9]/g, '');
+    const isSent = lead.status === 'sent' || lead.status === 'email_sent' || lead.status === 'sent_email';
+    const cleanPitchWa = (lead.whatsAppNumber || '').replace(/[^0-9]/g, '');
+    const isMobilePitchWa = Boolean(lead.hasWhatsApp && /^316\d{7,9}$/.test(cleanPitchWa));
 
     const modalHtml = `
         <div id="factory-pitch-detail-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;">
@@ -1144,12 +1241,12 @@ ${escapeHtml(plainText)}
                 <div id="content-pitch-wa" style="padding: 24px; overflow-y: auto; flex: 1; background: #0f172a; display: none;">
                     <div style="max-width: 480px; margin: 0 auto; background: #075e54; border-radius: 12px; padding: 16px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="background: #054d44; color: #99f6e4; font-size: 0.78rem; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; display: inline-block;">
-                            <i class="fab fa-whatsapp"></i> WhatsApp naar: ${escapeHtml(lead.phone || 'Onbekend')}
+                            <i class="fab fa-whatsapp"></i> ${isMobilePitchWa ? `WhatsApp naar: ${escapeHtml(lead.phone || 'Onbekend')}` : `Let op: ${escapeHtml(lead.phone || 'Geen 06-nummer')} is een vast nummer (geen directe wa.me link)`}
                         </div>
                         <div style="background: #ffffff; color: #1e293b; padding: 14px 16px; border-radius: 8px 8px 0 8px; font-size: 0.9rem; line-height: 1.5; word-break: break-word;">
                             ${escapeHtml(whatsAppText)}
                         </div>
-                        ${cleanPitchWa ? `
+                        ${isMobilePitchWa ? `
                             <div style="margin-top: 16px; text-align: center;">
                                 <a href="https://wa.me/${cleanPitchWa}?text=${encodeURIComponent(whatsAppText)}" id="btn-pitch-modal-wa-link" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="background: #25d366; color: #000; font-weight: 700;">
                                     <i class="fab fa-whatsapp"></i> Nu Openen in WhatsApp Web

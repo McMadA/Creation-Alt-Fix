@@ -9,38 +9,31 @@
 
 | Metric                             | Status         | Count                                     |
 | :--------------------------------- | :------------- | :---------------------------------------- |
-| **Total Features / Backlog Tasks** | 🔢 Tracked     | **80 Active Epics & Taken (1 Canceled)**  |
-| **Completed Work Items**           | ✅ Done        | **59 Tasks (74%)**                        |
-| **In Progress / Actieve Taken**    | ⚡ In Progress | **1 Tasks (1%)**                          |
-| **Backlog Items in Queue**         | ⏳ In Queue    | **20 Tasks (25%)**                        |
+| **Total Features / Backlog Tasks** | 🔢 Tracked     | **83 Active Epics & Taken (3 Canceled)**  |
+| **Completed Work Items**           | ✅ Done        | **61 Tasks (73%)**                        |
+| **In Progress / Gepauzeerd**       | ⚡ On Hold     | **2 Tasks (2%)**                          |
+| **Backlog Items in Queue**         | ⏳ In Queue    | **17 Tasks (20%)**                        |
 | **CI/CD Pipeline Status**          | 🚀 Automated   | **GitHub Actions FTP (`main.yml`)**       |
 
 **Sprint Completion Progress:**
-`[██████████████████░░░░░░] 74% Complete (1 In Progress, 20 in Queue)`
+`[██████████████████░░░░░░] 73% Complete (61 Done, 2 On Hold, 17 in Queue)`
 
 ---
 
 ## 🎯 Openstaande Taken & Actieve Backlog
 
-### 🔥 1. Actief & In Behandeling (In Progress)
+### 🔥 1. Actief & In Behandeling (In Progress / On Hold)
 
 - [ ] `[TASK-501]` `[P3-MEDIUM]` `[STATUS: ON_HOLD]` **Google Ads Campaign Activation (€400 Credit)**
   - **Scope**: Google Ads Campaign leading to `website/landing.html`
   - **Status Note**: Gepauzeerd ten gunste van directe organische acquisitie en Lead Factory.
 
-### ⏳ 2. Wachtrij & Backlog (Next Up)
+- [ ] `[TASK-840]` `[P2-HIGH]` `[STATUS: ON_HOLD]` **F-Truck Store: B2B E-Commerce Pitch & Follow-Up (Wachten op Klantreactie)**
+  - **Scope**: F-Truck Store (`ftruckstore.nl` & `ftruckstore.com`), Ford Trucks onderdelen
+  - **Status Note**: Voorstel is door Allard verstuurd naar het F-Truck Store beheer. Er is nog geen reactie ontvangen; follow-up staat On Hold totdat de klant zelf contact opneemt.
+  - **Bron & Uitleg**: [docs/F-TRUCK-STORE-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/F-TRUCK-STORE-ROADMAP.md)
 
-#### 💳 Financiën & Betaalsystemen
-- [ ] `[TASK-202]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Mollie Zakelijk Account Registratie, KvK Verificatie & Live API-Key Configuratie**
-  - **Scope**: Mollie Dashboard (`mollie.com`), DirectAdmin PHP Environment (`MOLLIE_API_KEY`), KvK 99986191 & Zakelijke Bankrekening
-  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L84-L88)
-  - **Details**:
-    - Zakelijk account registreren op [mollie.com](https://www.mollie.com) voor Creation+Alt+Fix (KvK: 99986191, BTW: NL005423147B16).
-    - Bedrijfs- en identiteitsverificatie doorlopen (Allard Veldman ID-check & zakelijke bankrekening/IBAN koppeling voor automatische uitbetalingen).
-    - Gewenste betaalmethodes activeren in het Mollie Dashboard (iDEAL, SEPA Overboeking, eventueel Bancontact / Apple Pay).
-    - Live API-sleutel (`live_...`) en Test API-sleutel (`test_...`) kopiëren.
-    - Live `MOLLIE_API_KEY` toevoegen aan de Vimexx DirectAdmin PHP omgevingsvariabelen / `.env` zodat `crm/api/mollie-webhook.php` en `/status` live iDEAL betalingen automatisch verifiëren en de factuur- en offertestatus op 'Betaald' zet.
-    - End-to-end verificatietest uitvoeren met een testbetaling (€ 0,01 of test-ID) om de automatische webhook en logboekregistratie te valideren.
+### ⏳ 2. Wachtrij & Backlog (Next Up)
 
 #### 🔒 Webserver Beveiliging & DirectAdmin Hardening
 - [ ] `[TASK-837]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Webserver Beveiliging: DirectAdmin FTP Hardening & TLS Forceren**
@@ -53,13 +46,6 @@
     - Chroot-folder isolatie en sterke wachtwoorden (min. 32 tekens in DPAPI kluis) verifiëren via `scripts/verify-ftp-security.mjs`.
 
 #### 🤝 Klantdossiers, Opleveringen & Verlengingen
-- [ ] `[TASK-838]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Besseling Installatietechniek: WhatsApp 2027 Verlengingsvoorstel Versturen**
-  - **Scope**: Tim Besseling (`+31 6 36246473`, `besselingelektrotechniek@gmail.com`), `besselinginstallatietechniek.nl`
-  - **Bron & Uitleg**: [docs/KLANTDOSSIER-BESSELING-INSTALLATIE.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/KLANTDOSSIER-BESSELING-INSTALLATIE.md#L33-L50)
-  - **Details**:
-    - WhatsApp/SMS versturen naar Tim Besseling conform het kant-en-klare sjabloon uit het dossier over de 2027 abonnementsverlenging (€ 95,- overgangstarief of € 150,- standaard) en inventariseren of er gewenste aanpassingen of nieuwe diensten zijn.
-    - Status in CRM actualiseren en verlengingsfactuur gereedmaken in Pi-Boekhouding.
-
 - [ ] `[TASK-839]` `[P2-HIGH]` `[STATUS: BACKLOG]` **VAN DER PLAATS: Livegang Afstemming & DNS Cutover**
   - **Scope**: Gerard Klusser (`+31 6 12104850`, `vanderplaats2@gmail.com`), `vanderplaats.nl`
   - **Bron & Uitleg**: [docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/KLANTDOSSIER-VANDERPLAATS-GERARD.md#L23-L53)
@@ -68,19 +54,10 @@
     - Bij definitief akkoord: DNS A-record van `vanderplaats.nl` laten verwijzen naar de Vimexx DirectAdmin server (`185.104.29.x`).
     - Let's Encrypt SSL activeren in DirectAdmin en jaarlijks Managed Cloud Hosting abonnement (€ 150,-/jr) verwerken in Pi-Boekhouding.
 
-- [ ] `[TASK-840]` `[P2-HIGH]` `[STATUS: BACKLOG]` **F-Truck Store: B2B E-Commerce Pitch & Follow-Up Versturen**
-  - **Scope**: F-Truck Store (`ftruckstore.nl` & `ftruckstore.com`), Ford Trucks onderdelen
-  - **Bron & Uitleg**: [docs/F-TRUCK-STORE-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/F-TRUCK-STORE-ROADMAP.md#L49-L96)
-  - **Details**:
-    - Follow-up bericht (WhatsApp of formele e-mail uit het roadmap-dossier) versturen naar het F-Truck Store beheer.
-    - Faseringsvoorstel presenteren: Fase 1 B2B onderdelencatalogus met VIN-nummer filter en VIES BTW-verlegging (€ 850,-) + Fase 2 directe webshop checkout (€ 650,-) + Managed Cloud Hosting (€ 350,-/jr).
-
-- [ ] `[TASK-907]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **2027 Tarieven Doorvoeren naar Overige Klanten (Scholte, Willa, Pomppop)**
-  - **Scope**: Scholte Elektrotechniek (`scholte-elektrotechniek.nl`), Naaiatelier Willa (`naaiatelier-willa.nl`), Stichting PompPop (`pomppop.nl`)
-  - **Bron & Uitleg**: [docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/07-90-DAYS-EXECUTION-ROADMAP.md#L44-L46) & [advies_hosting_tarieven_task816.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/advies_hosting_tarieven_task816.md)
-  - **Details**:
-    - Na de goedgekeurde overgangstarieven voor Angela Stenekes en Jozua Stenekes (€ 95,-), het 2027 abonnementsvoorstel (€ 95,- / € 150,-) voorleggen aan Frank Scholte, Willa en bestuur PompPop.
-    - Akkoorden registreren in het CRM en doorvoeren in de abonnementsadministratie van Pi-Boekhouding.
+- [ ] `[TASK-907]` `[P3-MEDIUM]` `[STATUS: IN_PROGRESS]` **2027 Tarieven Doorvoeren naar Overige Klanten (Scholte, Willa, Pomppop)**
+  - **Scope**: Gerjo Scholte (`scholte-elektrotechniek.nl`), Naaiatelier Willa (`naaiatelier-willa.nl`), Stichting PompPop (`pomppop.nl`)
+  - **Status Note**: Naaiatelier Willa en Stichting PompPop blijven behouden conform hun huidige afspraken (geen tariefswijziging nodig). Gerjo Scholte (Scholte Elektrotechniek) is benaderd met het 2027 voorstel en heeft nog niet gereageerd; in afwachting van reactie.
+  - **Bron & Uitleg**: [advies_hosting_tarieven_task816.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/advies_hosting_tarieven_task816.md)
 
 #### ⚡ Serverless & Cloud Functions v2 Migratie
 - [ ] `[TASK-841]` `[P3-LOW]` `[STATUS: ON_HOLD]` **PompPop Festival: Cloud Functions v2 Migratie & Deployment**
@@ -120,21 +97,15 @@
     - Na succesvolle migratie en SSL-uitgifte het Vimexx hostingpakket (€ 143,88/jr) formeel opzeggen.
 
 #### 🏛️ RVO Subsidies & WBSO Innovatie
-- [ ] `[TASK-903]` `[P1-HIGH]` `[STATUS: BACKLOG]` **WBSO Subsidieaanvraag 2027 Indienen bij RVO.nl**
+- [ ] `[TASK-903]` `[P1-HIGH]` `[STATUS: CANCELED]` **WBSO Subsidieaanvraag 2027 Indienen bij RVO.nl**
   - **Scope**: `mijn.rvo.nl`, Zelfstandige S&O-aftrek 2027, Project `AWS-DCA` (520 uren, € 15.545,- belastingaftrek)
-  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md#L109-L118)
-  - **Details**:
-    - Inloggen op `mijn.rvo.nl` met eHerkenning of DigiD.
-    - Aanvraag aanmaken onder regeling *Zelfstandige S&O-aftrek* voor project *"Autonome Web-Synthese & Dynamische Code-Archetypen voor het MKB"* (Projectcode `AWS-DCA`).
-    - Teksten voor Aanleiding, Doelstelling en de 3 Technische Knelpunten (AST synthese, archetype categorieweging, client-side DRM) 1-op-1 overnemen uit Paragraaf 2 en 3 van het dossier.
-    - 520 begrote uren opvoeren en aanvraag formeel versturen vóór de sluitingsdeadline.
+  - **Status Note**: 🚫 **Geannuleerd / Vervallen (19-10-2026)**. Het wettelijke RVO-urencriterium van minimaal 500 uren zuivere S&O-ontwikkeling op jaarbasis wordt dit jaar en volgend jaar niet gehaald conform tijdallocatie. Aanvraag wordt niet ingediend; dossier blijft behouden als software-architectuur documentatie.
+  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md)
 
-- [ ] `[TASK-904]` `[P2-HIGH]` `[STATUS: BACKLOG]` **S&O Urenadministratie & Verantwoording Inrichten in Pi-Boekhouding**
+- [ ] `[TASK-904]` `[P2-HIGH]` `[STATUS: CANCELED]` **S&O Urenadministratie & Verantwoording Inrichten in Pi-Boekhouding**
   - **Scope**: `Pi-Boekhouding`, `boekhouding.db`, Git commit logs, Projectcode `AWS-DCA`
-  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md#L101-L107)
-  - **Details**:
-    - Wekelijks S&O urenregistratiespoor activeren in de Pi-Boekhouding administratie gekoppeld aan projectcode `AWS-DCA`.
-    - Wekelijkse uren verifiëren aan de hand van git commits in `factory/` en `tests/` ter voorbereiding op steekproeven van RVO-inspecteurs.
+  - **Status Note**: 🚫 **Geannuleerd / Vervallen (19-10-2026)**. Vervalt tezamen met TASK-903 (geen WBSO aanvraag = geen S&O urenadministratie verplicht).
+  - **Bron & Uitleg**: [docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md](file:///c:/Users/Admin/Documents/GitHub/Websites/Creation-Alt-Fix/docs/startup-bible/06-WBSO-RVO-INNOVATION-DOSSIER.md)
 
 #### 🚀 Lead Factory Regionale Uitrol & Acquisitie
 
@@ -151,6 +122,27 @@
   - **Details**:
     - Uitbreiden van de geografische actieradius naar Groningen-Stad, Assen en Drachten.
     - Batch-grootte verhogen naar 20 concepten per week en conversieratio's analyseren per branche.
+
+- [ ] `[TASK-914]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Lead Factory: Automatische 15s WhatsApp Video-Preview Generator per Lead**
+  - **Scope**: `factory/video/build-motion-video.js`, `factory/server/factory-bridge.js`, `crm/admin/js/modules/admin-lead-factory.js`
+  - **Waarde & Doel**: Een *"🎬 Genereer 15s WhatsApp Reel"* knop toevoegen op elke leadkaart in het CRM die via Playwright + FFmpeg automatisch een gepersonaliseerde 15-seconden MP4 video-preview rendert van het gegenereerde concept om direct als blikvanger mee te sturen op WhatsApp.
+  - **Details**:
+    - Endpoint `POST /api/leads/video` toevoegen aan `factory-bridge.js` die de bestaande Playwright + FFmpeg video-engine aanroept voor een specifieke `slug`.
+    - 1-klik knop en voortgangsindicator toevoegen op de leadkaart in `admin-lead-factory.js` met directe download/share van de MP4 reel.
+
+- [ ] `[TASK-915]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Lead Factory: "Concept Bekeken" Notificatie & View-Counter (Zero-Cookie Ping)**
+  - **Scope**: `crm/api/leads.php`, `factory/generator/agy-generator.js`, `crm/admin/js/modules/admin-lead-factory.js`
+  - **Waarde & Doel**: Een 100% AVG-proof (zero-cookie, IP-vrije) view-ping inbouwen wanneer een ondernemer zijn `/concept/<slug>/` link opent, zodat in het CRM direct zichtbaar is: *"👀 2x bekeken door klant (laatst: 10 min geleden)"* — het ideale signaal om direct na te bellen.
+  - **Details**:
+    - Lichtgewicht beacon/POST actie toevoegen aan `crm/api/leads.php?action=ping&slug=<slug>` die `viewsCount` en `lastViewedAt` bijwerkt (met filter voor eigen admin-previews).
+    - Live badge `👀 X keer bekeken` en tijdstip tonen op de leadkaart in het CRM werkstation.
+
+- [ ] `[TASK-916]` `[P3-MEDIUM]` `[STATUS: BACKLOG]` **Lead Factory: Automatische ".nl Domein Vrij" DNS-Check & Badge in Concept Topbar**
+  - **Scope**: `factory/enrichment/deep-intelligence.js`, `factory/generator/agy-generator.js`
+  - **Waarde & Doel**: Tijdens de verrijking van een lead zonder website automatisch controleren of `<bedrijfsnaam>.nl` nog vrij is via DNS/RDAP en dit direct in de concept-topbar en overname-modal tonen (*"🟢 `<bedrijfsnaam>.nl` is op dit moment nog vrij om te registreren!"*), wat urgentie en conversie bij de vakman verhoogt.
+  - **Details**:
+    - DNS/NS lookup integreren in `enrichBusinessProfile` voor het voorgestelde `.nl` domein van leads zonder website (`suggestedDomain`, `isDomainAvailable`).
+    - Groene beschikbaarheidsbadge tonen in `.concept-bar`, `#modal-proposal` en de acquisitie-pitch.
 
 #### 🎯 Klantportaal & Opleverings-Automatisering 2027
 - [ ] `[TASK-909]` `[P2-HIGH]` `[STATUS: BACKLOG]` **Geautomatiseerde WhatsApp & E-mail Milestone Triggers (Server-Side)**
@@ -236,6 +228,14 @@
 ---
 
 ## ✅ Voltooide Taken & Roadmap Historie
+
+- [x] `[TASK-202]` `[P2-HIGH]` `[STATUS: DONE]` **Mollie Zakelijk Account Registratie & Live API-Key Configuratie**
+  - **Scope**: Mollie Dashboard, DirectAdmin PHP Environment (`MOLLIE_API_KEY`), `crm/api/mollie-webhook.php`, `/status`
+  - **Details**: Zakelijke Mollie API-sleutel is live geïnstalleerd in de Vimexx DirectAdmin PHP omgevingsvariabelen / `.env`. Webhook en statusportaal verwerken live betalingen en werken offertes en facturen direct automatisch bij.
+
+- [x] `[TASK-838]` `[P2-HIGH]` `[STATUS: DONE]` **Besseling Installatietechniek (Maico Besseling): Eenmalig Project Afgerond**
+  - **Scope**: Maico Besseling (`+31 6 36246473`, `besselingelektrotechniek@gmail.com`), `besselinginstallatietechniek.nl`, factuur `2026-013`
+  - **Details**: Klantnaam gecorrigeerd van Tim naar Maico Besseling. Betreft een afgerond eenmalig project (geen doorlopend 2027 abonnement). Website is opgeleverd en draait stabiel; factuur 2026-013 is verwerkt in Pi-Boekhouding en gesynchroniseerd naar het CRM.
 
 - [x] `[TASK-901]` `[P1-CRITICAL]` `[STATUS: DONE]` **Oplevering Strategische Startup Bijbel & Formele Bedrijfsdocumentatie (`docs/startup-bible/`)**
   - **Scope**: `Creation-Alt-Fix/docs/startup-bible/`, Strategisch Groeiplan 2026-2030, WBSO Subsidie, B2B SaaS Juridisch & Investor Pitch Deck

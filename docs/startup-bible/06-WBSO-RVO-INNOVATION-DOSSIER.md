@@ -5,8 +5,12 @@
 > **Aanvrager:** Creation+Alt+Fix (Allard Veldman, Hoogezand)  
 > **Subsidieverstrekker:** Rijksdienst voor Ondernemend Nederland (RVO)  
 > **Regeling:** WBSO voor Zelfstandigen (Fiscale S&O-aftrek)  
-> **Fiscaal Voordeel:** Vaste aftrekpost van **€ 15.545,-** (voor starters tot **€ 23.323,-**) op het belastbaar inkomen in Box 1  
-> **S&O Urenbegroting:** 520 uur op jaarbasis (eis RVO: minimaal 500 uur)  
+> **Status:** 🚫 **Geannuleerd / Gearchiveerd** (Urencriterium van 500 uur S&O op jaarbasis wordt niet gehaald)  
+> **Fiscaal Voordeel (Theoretisch):** Vaste aftrekpost van € 15.545,- in Box 1  
+> **S&O Urenbegroting:** Begroot op 520 uur, maar in praktijk niet haalbaar conform tijdallocatie ondernemer  
+
+> [!NOTE]
+> **Besluit Allard (19-10-2026)**: De WBSO-aanvraag 2027 wordt niet ingediend. Het wettelijke RVO-urencriterium van minimaal 500 uren zuivere S&O-ontwikkeling op jaarbasis wordt dit jaar en volgend jaar niet gehaald. Dit dossier blijft behouden als technisch naslagwerk voor de software-architectuur van Creation+Alt+Fix.
 
 ---
 
