@@ -154,6 +154,27 @@ const API = {
                 }
             }
 
+            // Auto-provision VAN DER PLAATS if missing from Firestore
+            const hasVanderplaats = projectsList.some(p => String(p.id) === '15' || (p.client && p.client.toLowerCase().includes('vanderplaats')));
+            if (!hasVanderplaats && PROJECT_PROFILES?.VANDERPLAATS) {
+                const vp = {
+                    ...PROJECT_PROFILES.VANDERPLAATS,
+                    tasks: [
+                        { id: "TASK-839", title: "VAN DER PLAATS: Livegang Afstemming & Domein Cutover (aannemer-vanderplaats.nl)", status: "inprogress", priority: "high", completed: false },
+                        { id: "TASK-808", title: "VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)", status: "done", priority: "high", completed: true }
+                    ],
+                    updatedAt: new Date().toISOString()
+                };
+                projectsList.push(vp);
+                
+                // If user has admin rights, persist to Firestore in background
+                if (db && typeof setDoc === 'function' && typeof doc === 'function') {
+                    setDoc(doc(db, "projects", "15"), vp, { merge: true }).catch(err => {
+                        console.warn('[CRM] Auto-save Vanderplaats to Firestore notice:', err);
+                    });
+                }
+            }
+
             return projectsList;
         } catch (e) {
             console.error('[CRM] Fout bij laden projecten uit Firestore:', e);

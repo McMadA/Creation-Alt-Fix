@@ -304,6 +304,39 @@ async function loadProjectData(projectId) {
             }
         }
 
+        // Profile Fallback voor VAN DER PLAATS
+        if (!projectFound && (String(projectId) === '15' || String(projectId).toLowerCase().includes('vanderplaats'))) {
+            currentProjectId = '15';
+            currentProjectData = {
+                id: '15',
+                client: 'VAN DER PLAATS (Aannemer in Techniek)',
+                companyName: 'VAN DER PLAATS - Aannemer in Techniek',
+                contactName: 'Gerard van der Plaats',
+                email: 'vanderplaats2@gmail.com',
+                phone: '06 12104850',
+                domainName: 'aannemer-vanderplaats.nl',
+                domain: 'aannemer-vanderplaats.nl',
+                service: 'Aannemer in Techniek Website',
+                goals: "Ultra-minimalistische website met logo, badge 'Aannemer in Techniek', directe contactknoppen (telefoon 06 12104850, WhatsApp, e-mail vanderplaats2@gmail.com, adres Kollumerpomp) en Managed Cloud Hosting.",
+                design: 'Ultra-minimalistisch craftsmen thema met dark glass, amber-gouden accenten en instant contact hub.',
+                status: 'In Ontwikkeling (Livegang)',
+                statusClass: 'active',
+                date: '21-10-2026',
+                proposalPrice: '650,00',
+                subscriptionPlanId: 'managed_nl',
+                subscriptionPlanName: 'Managed Cloud Hosting & .nl Domein',
+                subscriptionPrice: '150,00',
+                tasks: [
+                    { id: 'TASK-839', title: 'VAN DER PLAATS: Livegang Afstemming & Domein Cutover (aannemer-vanderplaats.nl)', status: 'inprogress', priority: 'high', completed: false },
+                    { id: 'TASK-808', title: 'VAN DER PLAATS Website & Formulier Backend (vanderplaats2@gmail.com)', status: 'done', priority: 'high', completed: true }
+                ]
+            };
+            projectFound = true;
+            if (db) {
+                setDoc(doc(db, "projects", "15"), currentProjectData, { merge: true }).catch(console.warn);
+            }
+        }
+
         if (projectFound && currentProjectData) {
             // Filter out canceled TASK-501 if present in Firestore
             if (currentProjectData.tasks && Array.isArray(currentProjectData.tasks)) {
@@ -3283,4 +3316,4 @@ function setupFormHandlers() {
         }
     });
 }
-
+

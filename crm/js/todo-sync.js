@@ -198,20 +198,24 @@ export const PROJECT_PROFILES = {
     },
     VANDERPLAATS: {
         id: "15",
-        matchKeys: ["vanderplaats", "van der plaats", "gerard", "task-808", "task-839"],
-        client: "VAN DER PLAATS (Gerard Klusser)",
-        companyName: "VAN DER PLAATS Bouw & Klusbedrijf",
-        contactName: "Gerard",
+        matchKeys: ["vanderplaats", "van der plaats", "gerard", "task-808", "task-839", "aannemer-vanderplaats"],
+        client: "VAN DER PLAATS (Aannemer in Techniek)",
+        companyName: "VAN DER PLAATS - Aannemer in Techniek",
+        contactName: "Gerard van der Plaats",
         email: "vanderplaats2@gmail.com",
-        domainName: "vanderplaats.nl",
-        domain: "vanderplaats.nl",
-        service: "Bouw & Klusbedrijf Website",
-        goals: "Klussersbedrijf website met contactformulier gekoppeld aan vanderplaats2@gmail.com en Managed Cloud Hosting.",
-        design: "Dark AI accenten, hyper-lokaal vindbaar, betrouwbaar vakmanschap.",
-        status: "In Ontwikkeling",
+        phone: "06 12104850",
+        domainName: "aannemer-vanderplaats.nl",
+        domain: "aannemer-vanderplaats.nl",
+        service: "Aannemer in Techniek Website",
+        goals: "Ultra-minimalistische website met logo, badge 'Aannemer in Techniek', directe contactknoppen (telefoon 06 12104850, WhatsApp, e-mail vanderplaats2@gmail.com, adres Kollumerpomp) en Managed Cloud Hosting.",
+        design: "Ultra-minimalistisch craftsmen thema met dark glass, amber-gouden accenten en instant contact hub.",
+        status: "In Ontwikkeling (Livegang)",
         statusClass: "active",
-        date: "25-08-2026",
-        proposalPrice: "650,00"
+        date: "21-10-2026",
+        proposalPrice: "650,00",
+        subscriptionPlanId: "managed_nl",
+        subscriptionPlanName: "Managed Cloud Hosting & .nl Domein",
+        subscriptionPrice: "150,00"
     }
 };
 
