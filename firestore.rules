@@ -42,6 +42,8 @@ service cloud.firestore {
         'proposalPdfUrl', 'proposalPdfName', 'designAcceptedAt', 
         // Client uploads & communication
         'files', 'messages', 'tickets', 'annotations',
+        // Interactive Onboarding & Delivery Checklist (TASK-910)
+        'onboarding', 'domainTransferToken', 'eppCode',
         // Profile & billing self-service
         'client', 'companyName', 'contactName', 'phone', 
         'streetAndNumber', 'address', 'postalCode', 'city', 
@@ -94,7 +96,11 @@ service cloud.firestore {
       && (!('tickets' in affected) || (request.resource.data.tickets is list && request.resource.data.tickets.size() <= 200))
       && (!('client' in affected) || (request.resource.data.client is string && request.resource.data.client.size() <= 120))
       && (!('companyName' in affected) || (request.resource.data.companyName is string && request.resource.data.companyName.size() <= 120))
-      && (!('contactName' in affected) || (request.resource.data.contactName is string && request.resource.data.contactName.size() <= 120));
+      && (!('contactName' in affected) || (request.resource.data.contactName is string && request.resource.data.contactName.size() <= 120))
+      // 6. Interactive Onboarding limits (TASK-910)
+      && (!('onboarding' in affected) || (request.resource.data.onboarding is map))
+      && (!('domainTransferToken' in affected) || (request.resource.data.domainTransferToken is string && request.resource.data.domainTransferToken.size() <= 200))
+      && (!('eppCode' in affected) || (request.resource.data.eppCode is string && request.resource.data.eppCode.size() <= 200));
     }
 
     // ============================================================

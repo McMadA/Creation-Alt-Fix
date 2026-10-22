@@ -15,6 +15,46 @@ import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../
 import { getDomainStatusWithFallback, runDomainHealthCheck } from "../../js/uptime-monitor.js";
 import { notifyAdminNewMessage } from "../../js/email-notifications.js";
 import { translations } from "./modules/translations.js";
+import { initOnboardingChecklist } from "./modules/onboarding-checklist.js";
+import {
+    initPortalChatNotifications,
+    PortalChatNotifier,
+    detectNewIncomingMessages,
+    playChimeSound,
+    toggleChatSound,
+    isChatSoundEnabled,
+    formatTabTitle,
+    startTitleFlashing,
+    stopTitleFlashing,
+    updateFaviconBadge,
+    showChatNotificationToast
+} from "./modules/chat-notifications.js";
+import {
+    VAULT_CATEGORIES,
+    resolveFileCategory,
+    computeFileVersions,
+    filterVaultFiles,
+    getVaultStats,
+    prepareFileRecord,
+    renderVaultCategoryTabsHtml,
+    renderVaultFilesGridHtml,
+    renderPreviewModalHtml,
+    initDocumentVaultEvents,
+    openVaultPreview,
+    closeVaultPreview
+} from "./modules/document-vault.js";
+import {
+    DOMAIN_SETUP_SCENARIOS,
+    RECOMMENDED_DNS_TARGETS,
+    sanitizeDomainName,
+    sanitizeEppToken,
+    generateRecommendedDnsRecords,
+    getEmailClientSettings,
+    evaluateDnsStatus,
+    runLiveDnsDiagnostic,
+    renderDomainSetupWizardHtml,
+    initDomainSetupWizard
+} from "./modules/domain-setup-wizard.js";
 
 
 let app, auth, db, storage;
@@ -28,6 +68,15 @@ try {
 }
 
 let currentProjectDocId = null;
+let chatNotifier = null;
+try {
+    chatNotifier = initPortalChatNotifications({
+        currentUserRole: 'client',
+        originalTitle: 'Projectstatus & Klantenportaal | Creation+Alt+Fix'
+    });
+} catch (e) {
+    console.warn("Kon chat notifications niet initialiseren:", e);
+}
 let clientProjectsList = [];
 let currentLang = localStorage.getItem('preferredLanguage') || ((navigator.language || 'nl').split('-')[0] === 'en' ? 'en' : 'nl');
 
@@ -101,7 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const found = clientProjectsList.find(p => p.id === selectedId);
         if (found) {
             currentProjectDocId = found.id;
+            if (chatNotifier) {
+                chatNotifier.setCurrentProject(found.id, found.data?.messages || []);
+            }
             renderDashboard(found.data);
+            subscribeToProjectDoc(found.id);
         }
     });
 
@@ -197,6 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }).join('');
                             }
                             
+                            if (chatNotifier) {
+                                chatNotifier.setCurrentProject(firstProj.id, firstProj.data?.messages || []);
+                            }
                             renderAdminPreviewBanner(firstProj.id, firstProj.data);
                             renderDashboard(firstProj.data);
                             subscribeToProjectDoc(firstProj.id);
@@ -237,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let uploadCount = 0;
         
         try {
+            const selectedCat = document.getElementById('vault-upload-category')?.value || 'auto';
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
@@ -246,11 +303,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
                 
-                existingFiles.push({
-                    name: file.name,
-                    url: downloadURL,
-                    uploadedAt: new Date().toISOString()
+                const fileRecord = prepareFileRecord({
+                    file: {
+                        name: file.name,
+                        url: downloadURL,
+                        size: file.size,
+                        type: file.type
+                    },
+                    category: selectedCat === 'auto' ? undefined : selectedCat,
+                    uploadedBy: 'client',
+                    existingFiles
                 });
+                
+                existingFiles.push(fileRecord);
                 uploadCount++;
             }
             
@@ -330,6 +395,12 @@ function subscribeToProjectDoc(docId) {
                     clientProjectsList[idx].data = updatedData;
                 }
                 if (currentProjectDocId === docId) {
+                    if (chatNotifier) {
+                        chatNotifier.onMessagesUpdated(updatedData.messages || [], {
+                            lang: currentLang,
+                            t: translations[currentLang] || translations.nl
+                        });
+                    }
                     renderDashboard(updatedData);
                 }
             }
@@ -405,11 +476,17 @@ async function loadClientProjects(email, uid) {
             }).join('');
 
             currentProjectDocId = activeProject.id;
+            if (chatNotifier && activeProject) {
+                chatNotifier.setCurrentProject(activeProject.id, activeProject.data?.messages || []);
+            }
             subscribeToProjectDoc(activeProject.id);
             renderDashboard(activeProject.data);
         } else {
             multiSelector.classList.add('hidden');
             currentProjectDocId = activeProject.id;
+            if (chatNotifier && activeProject) {
+                chatNotifier.setCurrentProject(activeProject.id, activeProject.data?.messages || []);
+            }
             subscribeToProjectDoc(activeProject.id);
             renderDashboard(activeProject.data);
         }
@@ -520,6 +597,39 @@ function renderDashboard(data) {
 
     // Render Subscription & Hosting Transparency Card (TASK-816)
     renderSubscriptionSection(data);
+
+    // Render Self-Service Domain & Email Setup Wizard (TASK-911)
+    try {
+        initDomainSetupWizard({
+            containerId: 'domain-setup-wizard-card',
+            projectData: data,
+            onUpdateProject: async (updates) => {
+                if (!currentProjectDocId || !db) return;
+                await updateDoc(doc(db, "projects", currentProjectDocId), updates);
+            },
+            lang: currentLang,
+            onStatusChange: (dnsResult) => {
+                console.log("[TASK-911] Live DNS Diagnostic result:", dnsResult);
+            }
+        });
+    } catch (wizardErr) {
+        console.warn("[TASK-911] Error initializing Domain Setup Wizard:", wizardErr);
+    }
+
+    // Render Interactive Client Onboarding & Delivery Checklist (TASK-910)
+    try {
+        initOnboardingChecklist({
+            containerId: 'onboarding-checklist-card',
+            projectData: data,
+            onUpdateProject: async (updates) => {
+                if (!currentProjectDocId || !db) return;
+                await updateDoc(doc(db, "projects", currentProjectDocId), updates);
+            },
+            lang: currentLang
+        });
+    } catch (onboardingErr) {
+        console.warn("[TASK-910] Error initializing Onboarding Checklist:", onboardingErr);
+    }
 
     // Render Realtime Website & Systeem Uptime Monitoring (TASK-827)
     renderClientUptimeSection(data);
@@ -1541,38 +1651,81 @@ function setupDesignAcceptButton() {
     };
 }
 
+let activeVaultCategory = 'all';
+let vaultSearchQuery = '';
+let isVaultEventsInitialized = false;
+
 function renderFilesSection(data) {
     const t = translations[currentLang] || translations.nl;
     const filesListContainer = document.getElementById('uploaded-files-list');
+    const tabsContainer = document.getElementById('vault-category-tabs');
+    const statsContainer = document.getElementById('vault-stats-display');
+    const searchInput = document.getElementById('vault-search-input');
+    
     if (!filesListContainer) return;
 
     const files = data.files || [];
-    
-    if (files.length === 0) {
-        filesListContainer.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">${t.statusNoFilesYet}</p>`;
-        return;
+    const stats = getVaultStats(files);
+
+    if (statsContainer) {
+        statsContainer.innerHTML = `${stats.total} ${stats.total === 1 ? (currentLang === 'en' ? 'file' : 'bestand') : (currentLang === 'en' ? 'files' : 'bestanden')} (${stats.formattedTotalSize})`;
     }
 
-    const localeStr = currentLang === 'en' ? 'en-US' : 'nl-NL';
-    filesListContainer.innerHTML = files.map(f => {
-        const dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString(localeStr) : (currentLang === 'en' ? 'earlier' : 'eerder');
-        const safeUrl = escapeHtml(sanitizeUrl(f.url));
-        const safeName = escapeHtml(f.name);
-        return `
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 8px;">
-                <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
-                    <i class="fas fa-file-alt" style="color: #6366f1; font-size: 1.2rem;"></i>
-                    <div style="overflow: hidden;">
-                        <div style="font-size: 0.9rem; font-weight: 500; color: #f8fafc; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${safeName}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${t.statusAddedOn} ${dateStr}</div>
-                    </div>
-                </div>
-                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color: #22d3ee; background: rgba(34, 211, 238, 0.1); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; flex-shrink: 0; transition: all 0.2s;">
-                    <i class="fas fa-download"></i> ${t.statusViewFile}
-                </a>
-            </div>
-        `;
-    }).join('');
+    if (tabsContainer) {
+        tabsContainer.innerHTML = renderVaultCategoryTabsHtml({
+            activeCategory: activeVaultCategory,
+            stats,
+            lang: currentLang
+        });
+    }
+
+    filesListContainer.innerHTML = renderVaultFilesGridHtml({
+        files,
+        activeCategory: activeVaultCategory,
+        searchQuery: vaultSearchQuery,
+        lang: currentLang,
+        isAdmin: false
+    });
+
+    if (!isVaultEventsInitialized) {
+        isVaultEventsInitialized = true;
+        initDocumentVaultEvents(document, {
+            onCategoryChange: (newCategory) => {
+                activeVaultCategory = newCategory;
+                const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+                if (activeProject) renderFilesSection(activeProject.data);
+            }
+        });
+
+        searchInput?.addEventListener('input', (e) => {
+            vaultSearchQuery = e.target.value;
+            const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+            if (activeProject) {
+                filesListContainer.innerHTML = renderVaultFilesGridHtml({
+                    files: activeProject.data.files || [],
+                    activeCategory: activeVaultCategory,
+                    searchQuery: vaultSearchQuery,
+                    lang: currentLang,
+                    isAdmin: false
+                });
+            }
+        });
+
+        document.getElementById('btn-download-vault-files')?.addEventListener('click', () => {
+            const activeProject = clientProjectsList.find(p => p.id === currentProjectDocId);
+            if (!activeProject || !activeProject.data.files) return;
+            const matching = filterVaultFiles(activeProject.data.files, {
+                category: activeVaultCategory,
+                searchQuery: vaultSearchQuery
+            });
+            matching.forEach((f, idx) => {
+                setTimeout(() => {
+                    const safe = sanitizeUrl(f.url);
+                    if (safe !== '#') window.open(safe, '_blank');
+                }, idx * 250);
+            });
+        });
+    }
 }
 
 // ===========================================
@@ -1697,6 +1850,26 @@ function renderMessagesSection(data) {
 }
 
 function setupChatListeners() {
+    if (chatNotifier) {
+        chatNotifier.syncSoundToggleButton();
+    }
+
+    const inputArea = document.getElementById('chat-message-input');
+    if (inputArea && !inputArea.dataset.boundFocus) {
+        inputArea.dataset.boundFocus = "true";
+        inputArea.addEventListener('focus', () => {
+            if (chatNotifier) chatNotifier.markAllAsRead();
+        });
+    }
+
+    const threadContainer = document.getElementById('messages-thread');
+    if (threadContainer && !threadContainer.dataset.boundClick) {
+        threadContainer.dataset.boundClick = "true";
+        threadContainer.addEventListener('click', () => {
+            if (chatNotifier) chatNotifier.markAllAsRead();
+        });
+    }
+
     // Filter buttons
     document.querySelectorAll('.chat-filter-btn').forEach(btn => {
         btn.onclick = () => {

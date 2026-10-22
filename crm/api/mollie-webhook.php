@@ -6,6 +6,8 @@
  */
 
 header('Content-Type: text/plain; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

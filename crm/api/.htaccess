@@ -1,0 +1,33 @@
+# Creation+Alt+Fix - CRM API Shielding
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{SERVER_PORT} 80
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# Security Headers for API Endpoints
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set Content-Security-Policy "default-src 'none'; frame-ancestors 'none'; sandbox"
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+</IfModule>
+
+# ============ SECURITY & SENSITIVE FILES BLOCK ============
+# Deny direct access to all log, JSON, env, and database files
+<FilesMatch "\.(clixml|db|sqlite|env|json|sql|yml|yaml|md|log|ps1|sh|bak|backup|swp|conf|ini)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

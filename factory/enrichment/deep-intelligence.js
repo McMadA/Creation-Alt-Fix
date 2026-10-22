@@ -5,24 +5,35 @@
  */
 
 export function isDutchMobilePhone(phone) {
-  if (!phone) return false;
-  const digits = String(phone).replace(/\D/g, '');
-  return digits.startsWith('06') || digits.startsWith('316') || digits.startsWith('00316');
+  if (!phone || typeof phone !== 'string') return false;
+  let digits = String(phone).replace(/\D/g, '');
+  if (digits.startsWith('3106')) digits = '316' + digits.slice(4);
+  if (digits.startsWith('003106')) digits = '00316' + digits.slice(6);
+
+  if (digits.startsWith('06') && digits.length === 10) return true;
+  if (digits.startsWith('316') && digits.length === 11) return true;
+  if (digits.startsWith('00316') && digits.length === 13) return true;
+  return false;
 }
 
 export function extractCityFromAddress(address = '') {
   if (!address || typeof address !== 'string') return 'Hoogezand';
-  const pcMatch = address.match(/\b\d{4}\s*[A-Za-z]{2}\s+([^,]+)/);
-  if (pcMatch && pcMatch[1]) {
-    const city = pcMatch[1].trim();
-    if (city && city.toLowerCase() !== 'nederland') return city;
-  }
   const knownCities = [
     'Hoogezand', 'Sappemeer', 'Veendam', 'Zuidlaren', 'Slochteren',
     'Muntendam', 'Kolham', 'Kropswolde', 'Foxhol', 'Harkstede',
     'Siddeburen', 'Zuidbroek', 'Noordbroek', 'Scheemda', 'Winschoten',
-    'Stadskanaal', 'Assen', 'Haren', 'Delfzijl', 'Appingedam', 'Groningen'
+    'Stadskanaal', 'Assen', 'Haren', 'Delfzijl', 'Appingedam', 'Groningen',
+    'Drachten', 'Emmen', 'Hoogeveen', 'Roden', 'Leek', 'Meppel', 'Coevorden'
   ];
+  const pcMatch = address.match(/\b\d{4}\s*[A-Za-z]{2}\s+([^,]+)/);
+  if (pcMatch && pcMatch[1]) {
+    const rawCity = pcMatch[1].trim().slice(0, 80);
+    if (rawCity && rawCity.toLowerCase() !== 'nederland') {
+      const match = knownCities.find(c => c.toLowerCase() === rawCity.toLowerCase());
+      if (match) return match;
+      return rawCity.charAt(0).toUpperCase() + rawCity.slice(1);
+    }
+  }
   const lower = address.toLowerCase();
   for (const c of knownCities) {
     if (lower.includes(c.toLowerCase())) return c;
@@ -30,7 +41,90 @@ export function extractCityFromAddress(address = '') {
   return 'Hoogezand';
 }
 
-export async function enrichBusinessProfile(business) {
+/**
+ * Normaliseert bedrijfsnaam of slug naar een RFC- en SIDN-conforme .nl domeinnaam (TASK-916)
+ * @param {string} slugOrName 
+ * @returns {string}
+ */
+export function formatSuggestedDomain(slugOrName) {
+  if (!slugOrName || typeof slugOrName !== 'string') return 'zzp-concept.nl';
+  let clean = slugOrName
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '')
+    .replace(/^www\./, '')
+    .replace(/\.nl$/, '')
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (!clean) clean = 'zzp-concept';
+  if (clean.length > 63) clean = clean.slice(0, 63).replace(/-+$/, '');
+  return `${clean}.nl`;
+}
+
+/**
+ * Controleert via DNS NS-records en officiële SIDN RDAP of een .nl domeinnaam nog vrij is voor registratie (TASK-916)
+ * @param {string} domain 
+ * @param {Object} [options]
+ * @param {Object} [options.dnsResolver] - Optionele mock DNS resolver voor unittests
+ * @param {Function} [options.fetcher] - Optionele mock fetcher voor RDAP
+ * @param {boolean} [options.skipRdap] - Indien waar, sla RDAP over
+ * @param {number} [options.timeoutMs] - Timeout in milliseconden
+ * @returns {Promise<{ domain: string, isAvailable: boolean, checked: boolean, source: string, error?: string }>}
+ */
+export async function checkDomainAvailability(domain, options = {}) {
+  const targetDomain = formatSuggestedDomain(domain);
+  if (!targetDomain || !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.nl$/.test(targetDomain)) {
+    return { domain: targetDomain, isAvailable: false, checked: false, source: 'invalid-syntax' };
+  }
+
+  let dnsError = null;
+  // 1. Snelle DNS NS-record check (Node.js native)
+  try {
+    const dns = options.dnsResolver || await import('node:dns/promises');
+    const ns = await dns.resolveNs(targetDomain);
+    if (Array.isArray(ns) && ns.length > 0) {
+      return { domain: targetDomain, isAvailable: false, checked: true, source: 'dns-ns' };
+    }
+  } catch (err) {
+    dnsError = err;
+    if (err && err.code === 'ENODATA') {
+      return { domain: targetDomain, isAvailable: false, checked: true, source: 'dns-enodata' };
+    }
+  }
+
+  const isDnsNotFound = dnsError && (dnsError.code === 'ENOTFOUND' || dnsError.code === 'NXDOMAIN');
+
+  // 2. Officiële SIDN RDAP query (autoritatief register voor alle .nl domeinen)
+  if (options.skipRdap !== true) {
+    try {
+      const fetchFn = options.fetcher || globalThis.fetch;
+      const res = await fetchFn(`https://rdap.sidn.nl/domain/${encodeURIComponent(targetDomain)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/rdap+json, application/json' },
+        signal: AbortSignal.timeout(options.timeoutMs || 3000)
+      });
+      if (res.status === 404) {
+        return { domain: targetDomain, isAvailable: true, checked: true, source: 'sidn-rdap' };
+      }
+      if (res.status === 200) {
+        return { domain: targetDomain, isAvailable: false, checked: true, source: 'sidn-rdap' };
+      }
+    } catch {
+      // RDAP netwerkfout / offline
+    }
+  }
+
+  // 3. Fallback: Als DNS ENOTFOUND gaf en RDAP niet bereikbaar was
+  if (isDnsNotFound) {
+    return { domain: targetDomain, isAvailable: true, checked: true, source: 'dns-nxdomain' };
+  }
+
+  return { domain: targetDomain, isAvailable: false, checked: false, source: 'network-unavailable' };
+}
+
+export async function enrichBusinessProfile(business, options = {}) {
   const profile = { ...business };
 
   // 1. Telefoon, Stad & WhatsApp normalisatie (Nederlands formaat - strikt alleen 06-nummers op WhatsApp)
@@ -69,7 +163,37 @@ export async function enrichBusinessProfile(business) {
   profile.archetypeLabel = potentialAnalysis.archetypeLabel;
   profile.pitchHook = potentialAnalysis.pitchHook;
   profile.strengths = potentialAnalysis.strengths;
-  profile.recommendedDomain = `${profile.slug}.nl`;
+  profile.suggestedDomain = formatSuggestedDomain(profile.slug || profile.name);
+  profile.recommendedDomain = profile.suggestedDomain;
+
+  // 4b. TASK-916: Automatische .nl domein beschikbaarheidscheck voor leads zonder website
+  if (profile.isDomainAvailable !== undefined && profile.isDomainAvailable !== null) {
+    profile.isDomainAvailable = Boolean(profile.isDomainAvailable);
+    profile.domainCheck = { domain: profile.suggestedDomain, isAvailable: profile.isDomainAvailable, checked: true, source: 'predefined' };
+    if (profile.isDomainAvailable && !profile.strengths.some(s => s.includes(profile.suggestedDomain))) {
+      profile.strengths.push(`Domeinnaam ${profile.suggestedDomain} is nu nog vrij om direct vast te leggen`);
+    }
+  } else if (!profile.website || profile.hasWebsite === false || probe.type === 'NO_WEBSITE') {
+    if (options.skipDomainCheck === true) {
+      profile.isDomainAvailable = false;
+      profile.domainCheck = { domain: profile.suggestedDomain, isAvailable: false, checked: false, source: 'skipped' };
+    } else {
+      try {
+        const domainCheck = await checkDomainAvailability(profile.suggestedDomain, options);
+        profile.domainCheck = domainCheck;
+        profile.isDomainAvailable = Boolean(domainCheck && domainCheck.isAvailable);
+        if (profile.isDomainAvailable) {
+          profile.strengths.push(`Domeinnaam ${profile.suggestedDomain} is nu nog vrij om direct vast te leggen`);
+        }
+      } catch {
+        profile.domainCheck = { domain: profile.suggestedDomain, isAvailable: false, checked: false };
+        profile.isDomainAvailable = false;
+      }
+    }
+  } else {
+    profile.isDomainAvailable = false;
+    profile.domainCheck = { domain: profile.suggestedDomain, isAvailable: false, checked: true, source: 'existing-website' };
+  }
 
   // 5. Fallback e-mail mining (blokkeer eigen/agency domeinen)
   if (profile.email && String(profile.email).toLowerCase().includes('creationaltfix')) {
@@ -108,7 +232,9 @@ export function isSafeExternalUrl(urlStr) {
     if (!host) return false;
 
     // Direct loopback / localhost
-    if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0') return false;
+    const cleanHost = host.replace(/^\[|\]$/g, '');
+    if (cleanHost === 'localhost' || cleanHost === '127.0.0.1' || cleanHost === '::1' || cleanHost === '0.0.0.0' || cleanHost === '::') return false;
+    if (cleanHost.startsWith('fc') || cleanHost.startsWith('fd') || cleanHost.startsWith('fe80') || cleanHost.includes('::ffff:')) return false;
     if (host.endsWith('.local') || host.endsWith('.internal') || host.endsWith('.lan') || host.endsWith('.arpa')) return false;
 
     // IPv4 checks (Private RFC 1918, CGNAT RFC 6598, Link-local/Metadata)
@@ -191,9 +317,13 @@ export async function probeWebsite(urlStr) {
 /**
  * Normaliseert Nederlands telefoonnummer naar leesbaar formaat
  */
-function normalizeDutchPhone(phone) {
+export function normalizeDutchPhone(phone) {
   if (!phone) return null;
-  const clean = phone.replace(/[^0-9+]/g, '');
+  let clean = String(phone).replace(/\(0\)/g, '').replace(/[^0-9+]/g, '');
+  if (clean.startsWith('003106')) clean = '00316' + clean.slice(6);
+  if (clean.startsWith('3106')) clean = '316' + clean.slice(4);
+  if (clean.startsWith('+3106')) clean = '+316' + clean.slice(5);
+  if (clean.startsWith('0031')) return '0' + clean.substring(4);
   if (clean.startsWith('31')) return '0' + clean.substring(2);
   if (clean.startsWith('+31')) return '0' + clean.substring(3);
   return clean;

@@ -42,21 +42,33 @@
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Creation+Alt+Fix Interactive Tech Lab",
-      "operatingSystem": "All modern web browsers",
-      "applicationCategory": "DeveloperApplication",
-      "description": "Interactieve live demo en code studio die demonstraties toont van web development, AI Scrape Shields, realtime CRM staging annotaties en software architecturen.",
-      "url": "https://www.creationaltfix.nl/live-demo.html",
-      "author": {
-        "@type": "Organization",
-        "name": "Creation+Alt+Fix",
-        "url": "https://www.creationaltfix.nl/"
-      }
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Creation+Alt+Fix Interactive Tech Lab",
+    "operatingSystem": "All modern web browsers",
+    "applicationCategory": "DeveloperApplication",
+    "description": "Interactieve live demo en code studio die demonstraties toont van web development, AI Scrape Shields, realtime CRM staging annotaties en software architecturen.",
+    "url": "https://www.creationaltfix.nl/live-demo.html",
+    "author": {
+      "@type": "ProfessionalService",
+      "@id": "https://www.creationaltfix.nl/#organization",
+      "name": "Creation+Alt+Fix",
+      "telephone": "+31619135453",
+      "email": "info@creationaltfix.nl",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Hoofdstraat 60B",
+        "postalCode": "9601 EK",
+        "addressLocality": "Hoogezand",
+        "addressRegion": "Groningen",
+        "addressCountry": "NL"
+      },
+      "openingHours": "Mo-Fr 09:00-18:00",
+      "url": "https://www.creationaltfix.nl/"
     }
-    </script>
+  }
+  </script>
 </head>
 <body class="theme-dark">
     <a href="#main-content" class="skip-link" data-translate-key="skipToContent">Skip to content</a>
@@ -200,10 +212,10 @@
                                     <div class="control-row">
                                         <span class="control-label"><i class="fas fa-palette"></i> <span data-translate-key="ctrlColor">Accent Thema:</span></span>
                                         <div class="color-pills">
-                                            <button type="button" class="color-pill active" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></button>
-                                            <button type="button" class="color-pill" data-color="#22d3ee" style="background:#22d3ee;" title="Cyan"></button>
-                                            <button type="button" class="color-pill" data-color="#a855f7" style="background:#a855f7;" title="Purple"></button>
-                                            <button type="button" class="color-pill" data-color="#10b981" style="background:#10b981;" title="Emerald"></button>
+                                            <button type="button" class="color-pill active" data-color="#6366f1" style="background:#6366f1;" title="Indigo" aria-label="Accentkleur Indigo"></button>
+                                            <button type="button" class="color-pill" data-color="#22d3ee" style="background:#22d3ee;" title="Cyan" aria-label="Accentkleur Cyan"></button>
+                                            <button type="button" class="color-pill" data-color="#a855f7" style="background:#a855f7;" title="Purple" aria-label="Accentkleur Purple"></button>
+                                            <button type="button" class="color-pill" data-color="#10b981" style="background:#10b981;" title="Emerald" aria-label="Accentkleur Emerald"></button>
                                         </div>
                                     </div>
                                     <div class="control-row">
@@ -277,7 +289,7 @@
                     <!-- Left: Interactive Artwork Visualizer -->
                     <div class="shield-demo-container">
                         <div class="shield-artwork-frame" id="shield-canvas-frame">
-                            <img src="/images/arnolddesign.webp" alt="Arnold Design Kunstwerk Beveiliging Demo" id="shield-target-img">
+                            <img src="/images/arnolddesign.webp" alt="Arnold Design Kunstwerk Beveiliging Demo" id="shield-target-img" loading="lazy" decoding="async">
                             <div class="shield-noise-overlay active" id="shield-noise-layer"></div>
                             <div class="shield-watermark-overlay" id="shield-watermark-layer">
                                 <i class="fas fa-lock"></i><br>
@@ -408,7 +420,7 @@
                                     <strong>Koptekst aanscherpen</strong>
                                     <span>Positie: (38%, 24%) • Status: Open</span>
                                 </div>
-                                <button type="button" class="note-delete-btn" title="Verwijder"><i class="fas fa-times"></i></button>
+                                <button type="button" class="note-delete-btn" title="Verwijder" aria-label="Verwijder notitie"><i class="fas fa-times"></i></button>
                             </div>
                             <!-- Preset Pin 2 -->
                             <div class="staging-note-item" data-pin-id="2">
@@ -417,7 +429,7 @@
                                     <strong>Knopkleur afstemmen op huisstijl</strong>
                                     <span>Positie: (50%, 65%) • Status: In Behandeling</span>
                                 </div>
-                                <button type="button" class="note-delete-btn" title="Verwijder"><i class="fas fa-times"></i></button>
+                                <button type="button" class="note-delete-btn" title="Verwijder" aria-label="Verwijder notitie"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
 

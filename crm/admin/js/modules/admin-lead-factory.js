@@ -4,6 +4,13 @@
  */
 
 import { escapeHtml, sanitizeUrl } from "../../../js/crm-config.js";
+import {
+    calculateOutreachCampaignMetrics,
+    buildOutreachQueue,
+    synthesizeRegionalPitch,
+    generateWhatsAppDispatchUrl,
+    generatePortalProposalLink
+} from "./regional-outreach-manager.js";
 
 /**
  * Sanitizes preview HTML of generated outreach pitches.
@@ -116,8 +123,32 @@ export function sanitizeAndDeduplicateLeads(rawLeads = []) {
 
 let _leads = [];
 let _activeFilter = 'concept_ready';
+let _activeRegionFilter = 'all'; // 'all' | 'Groningen' | 'Assen' | 'Drachten' | 'Emmen' | etc. (TASK-908)
 let _searchTerm = '';
 let _factoryHandlers = {};
+
+/**
+ * Formatteert de laatste bezoektijd van een concept naar een mensvriendelijke relatieve string
+ */
+export function formatLeadViewTime(isoString) {
+    if (!isoString) return '';
+    try {
+        const d = new Date(isoString);
+        if (isNaN(d.getTime())) return '';
+        const now = new Date();
+        const diffMs = now - d;
+        const diffMin = Math.round(diffMs / 60000);
+        if (diffMin < 1) return 'Zojuist';
+        if (diffMin < 60) return `${diffMin}m geleden`;
+        const diffHours = Math.round(diffMin / 60);
+        if (diffHours < 24) return `${diffHours}u geleden`;
+        const diffDays = Math.round(diffHours / 24);
+        if (diffDays < 7) return `${diffDays}d geleden`;
+        return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    } catch {
+        return '';
+    }
+}
 
 /**
  * Werkt de tellers en styling van de snelle filterknoppen (pills) bij
@@ -125,17 +156,23 @@ let _factoryHandlers = {};
 function updateFilterPillsUI() {
     const readyCount = _leads.filter(l => l.status === 'concept_ready').length;
     const sentCount = _leads.filter(l => l.status === 'sent' || l.status === 'email_sent' || l.status === 'sent_email' || l.status === 'whatsapp_sent' || l.status === 'sent_whatsapp').length;
+    const viewedCount = _leads.filter(l => (parseInt(l.viewsCount, 10) || 0) > 0).length;
     const skippedCount = _leads.filter(l => l.status === 'skipped' || l.status === 'skipped_has_website').length;
+    const videoCount = _leads.filter(l => Boolean(l.videoPreview && l.videoPreview.generated)).length;
     const totalCount = _leads.length;
 
     const elReady = document.getElementById('pill-count-ready');
     const elSent = document.getElementById('pill-count-sent');
+    const elViewed = document.getElementById('pill-count-viewed');
     const elSkipped = document.getElementById('pill-count-skipped');
+    const elVideo = document.getElementById('pill-count-video');
     const elAll = document.getElementById('pill-count-all');
 
     if (elReady) elReady.textContent = readyCount;
     if (elSent) elSent.textContent = sentCount;
+    if (elViewed) elViewed.textContent = viewedCount;
     if (elSkipped) elSkipped.textContent = skippedCount;
+    if (elVideo) elVideo.textContent = videoCount;
     if (elAll) elAll.textContent = totalCount;
 
     document.querySelectorAll('.factory-filter-pill').forEach(btn => {
@@ -195,6 +232,34 @@ export function initLeadFactoryModule(leads = [], handlers = {}) {
             renderLeadCards(_leads, _factoryHandlers);
         });
         statusFilter._hasListener = true;
+    }
+
+    // 4b. Setup regiofilter select listener (TASK-908)
+    const regionFilter = document.getElementById('factory-region-filter');
+    if (regionFilter && !regionFilter._hasListener) {
+        regionFilter.addEventListener('change', (e) => {
+            _activeRegionFilter = e.target.value;
+            renderLeadCards(_leads, _factoryHandlers);
+        });
+        regionFilter._hasListener = true;
+    }
+
+    // 4c. Setup Provinciale Batch 2 & Sector Conversie knop (TASK-908)
+    const analyticsBtn = document.getElementById('btn-factory-analytics');
+    if (analyticsBtn && !analyticsBtn._hasListener) {
+        analyticsBtn.addEventListener('click', () => {
+            openSectorAnalyticsModal(_leads);
+        });
+        analyticsBtn._hasListener = true;
+    }
+
+    // 4d. Setup Regionale Outreach Campagne knop (TASK-906)
+    const outreachBtn = document.getElementById('btn-open-outreach-campaign');
+    if (outreachBtn && !outreachBtn._hasListener) {
+        outreachBtn.addEventListener('click', () => {
+            openRegionalOutreachModal(_leads);
+        });
+        outreachBtn._hasListener = true;
     }
 
     // 5. Setup Filter Pill knoppen
@@ -745,12 +810,19 @@ export function renderLeadCards(leads = [], handlers = {}) {
         if (_activeFilter !== 'all') {
             if (_activeFilter === 'concept_ready' && lead.status !== 'concept_ready') return false;
             if (_activeFilter === 'sent' && lead.status !== 'sent' && lead.status !== 'email_sent' && lead.status !== 'sent_email' && lead.status !== 'whatsapp_sent' && lead.status !== 'sent_whatsapp' && lead.status !== 'converted') return false;
+            if (_activeFilter === 'viewed' && (!lead.viewsCount || parseInt(lead.viewsCount, 10) <= 0)) return false;
+            if (_activeFilter === 'video' && (!lead.videoPreview || !lead.videoPreview.generated)) return false;
             if (_activeFilter === 'skipped' && lead.status !== 'skipped' && lead.status !== 'skipped_has_website') return false;
         }
 
         if (_searchTerm) {
             const str = `${lead.name} ${lead.category || ''} ${lead.city || ''} ${lead.address || ''} ${lead.phone || ''}`.toLowerCase();
             if (!str.includes(_searchTerm)) return false;
+        }
+
+        if (_activeRegionFilter && _activeRegionFilter !== 'all') {
+            const regStr = `${lead.region || ''} ${lead.city || ''} ${lead.address || ''}`.toLowerCase();
+            if (!regStr.includes(_activeRegionFilter.toLowerCase())) return false;
         }
 
         return true;
@@ -839,6 +911,29 @@ function renderSingleLeadCard(lead) {
     const isWhatsApp = lead.status === 'whatsapp_sent' || lead.status === 'sent_whatsapp';
     const isArchived = lead.status?.includes('skipped');
 
+    const views = parseInt(lead.viewsCount, 10) || 0;
+    const hasViewed = views > 0;
+    const viewTimeStr = hasViewed && lead.lastViewedAt ? formatLeadViewTime(lead.lastViewedAt) : '';
+
+    const viewsBadge = hasViewed ? `
+        <span class="badge badge-views" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Klant heeft dit concept bekeken! Laatst: ${escapeHtml(lead.lastViewedAt || 'onbekend')}">
+            <i class="fas fa-eye" style="color: #fbbf24;"></i> ${views}x bekeken${viewTimeStr ? ` (${viewTimeStr})` : ''}
+        </span>
+    ` : '';
+
+    const hasVideo = Boolean(lead.videoPreview && lead.videoPreview.generated);
+    const videoBadge = hasVideo ? `
+        <span class="badge badge-video-ready" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.45); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="15s WhatsApp Reel gegenereerd! (${lead.videoPreview.durationSeconds || 15}s)">
+            <i class="fas fa-play-circle" style="color: #c084fc;"></i> 15s Reel
+        </span>
+    ` : '';
+
+    const domainFreeBadge = lead.isDomainAvailable ? `
+        <span class="badge badge-domain-free" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Domein ${escapeHtml(lead.suggestedDomain || lead.recommendedDomain || (lead.slug + '.nl'))} is nog vrij om te registreren!">
+            <i class="fas fa-check-circle" style="color: #10b981;"></i> .nl Vrij
+        </span>
+    ` : '';
+
     const cleanWaDigits = (lead.whatsAppNumber || '').replace(/[^0-9]/g, '');
     const isMobileWa = Boolean(lead.hasWhatsApp && /^316\d{7,9}$/.test(cleanWaDigits));
 
@@ -861,7 +956,7 @@ function renderSingleLeadCard(lead) {
     const cleanTel = (lead.phone || '').replace(/[^0-9+]/g, '');
 
     return `
-        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid ${isConverted ? 'rgba(168,85,247,0.4)' : (isSent || isWhatsApp) ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.12)'}; padding: 22px; transition: transform 0.2s, border-color 0.2s;">
+        <div class="admin-card lead-card" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid ${hasViewed ? 'rgba(245, 158, 11, 0.55)' : isConverted ? 'rgba(168,85,247,0.4)' : (isSent || isWhatsApp) ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.12)'}; padding: 22px; transition: transform 0.2s, border-color 0.2s;">
             <div>
                 <!-- Top Header -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
@@ -876,7 +971,10 @@ function renderSingleLeadCard(lead) {
                             ${lead.city ? `<span style="font-size: 0.78rem; color: #94a3b8;">• 📍 ${escapeHtml(lead.city)}</span>` : ''}
                         </div>
                     </div>
-                    <div>
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+                        ${viewsBadge}
+                        ${videoBadge}
+                        ${domainFreeBadge}
                         ${statusBadge}
                     </div>
                 </div>
@@ -897,6 +995,7 @@ function renderSingleLeadCard(lead) {
                     ${lead.phone ? `<div><i class="fas fa-phone-alt" style="color: #38bdf8; width: 16px;"></i> <a href="tel:${escapeHtml(cleanTel)}" style="color: #cbd5e1;">${escapeHtml(lead.phone)}</a> ${isMobileWa ? '<span style="color:#10b981;font-size:0.74rem;margin-left:4px;">(Mobiel/WA)</span>' : '<span style="color:#94a3b8;font-size:0.74rem;margin-left:4px;">(Vast nr.)</span>'}</div>` : ''}
                     ${lead.email ? `<div><i class="fas fa-envelope" style="color: #a78bfa; width: 16px;"></i> <a href="mailto:${escapeHtml(lead.email)}" style="color: #cbd5e1;">${escapeHtml(lead.email)}</a></div>` : ''}
                     <div><i class="fas fa-globe" style="color: #fbbf24; width: 16px;"></i> ${lead.hasWebsite ? escapeHtml(lead.website) : '<strong style="color: #f87171;">Geen website op Google Maps</strong>'}</div>
+                    ${lead.isDomainAvailable ? `<div style="margin-top: 4px;"><span style="color: #34d399; font-size: 0.78rem; font-weight: 600;"><i class="fas fa-check-circle" style="color: #10b981; margin-right: 4px;"></i>🟢 <strong>${escapeHtml(lead.suggestedDomain || lead.recommendedDomain || (lead.slug + '.nl'))}</strong> is nog vrij!</span></div>` : ''}
                 </div>
 
                 <!-- Pitch Hook preview -->
@@ -915,6 +1014,15 @@ function renderSingleLeadCard(lead) {
                     <button class="btn btn-secondary btn-sm btn-copy-concept-url" data-url="${safeLiveUrl}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px;" title="Kopieer concept URL direct naar klembord">
                         <i class="fas fa-link" style="color: #38bdf8;"></i>
                     </button>
+                    ${hasVideo ? `
+                        <button class="btn btn-secondary btn-sm btn-play-video-reel" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #c084fc; border-color: rgba(168,85,247,0.35); padding: 0 10px;" title="Bekijk en deel 15s WhatsApp Reel">
+                            <i class="fas fa-play" style="color: #c084fc;"></i> <span>Reel</span>
+                        </button>
+                    ` : `
+                        <button class="btn btn-secondary btn-sm btn-generate-video-reel" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #a855f7; border-color: rgba(168,85,247,0.3); padding: 0 10px;" title="Genereer 15s WhatsApp Video Reel via Playwright + FFmpeg">
+                            <i class="fas fa-video" style="color: #a855f7;"></i>
+                        </button>
+                    `}
                     <button class="btn btn-secondary btn-sm btn-view-pitch" data-lead-id="${escapeHtml(lead.id || lead.slug)}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" title="Bekijk volledige acquisitie pitch en e-mailtekst">
                         <i class="fas fa-envelope-open-text" style="color: #fbbf24;"></i> <span>Bekijk Pitch</span>
                     </button>
@@ -1369,4 +1477,626 @@ ${escapeHtml(plainText)}
             }
         };
     }
+}
+
+
+/**
+ * Genereert de geoptimaliseerde WhatsApp outreach pitch inclusief 15s videolink en conceptlink.
+ */
+export function generateWhatsAppVideoPitch(lead) {
+    if (!lead) return '';
+    const leadName = lead.name || 'Vakman';
+    const city = lead.city || 'de regio';
+    const cleanUrl = lead.liveUrl || `https://creationaltfix.nl/concept/${lead.slug}/`;
+    const videoUrl = lead.videoPreview?.absoluteUrl || (lead.videoPreview?.relativeUrl ? `https://creationaltfix.nl${lead.videoPreview.relativeUrl}` : `${cleanUrl}video-preview.mp4`);
+
+    return `Hoi ${leadName}! Allard hier van Creation+Alt+Fix. Ik zag jullie vermelding op Google Maps in ${city} en heb alvast een snel mobiel concept klaargezet:
+👉 ${cleanUrl}
+
+Ik heb ook een korte 15s video-preview gemaakt van hoe jullie website eruit ziet op mobiel:
+🎬 ${videoUrl}
+
+Kijk er gerust even naar op je telefoon!`;
+}
+
+/**
+ * Genereert een 15-seconden MP4 video reel via de lokale Bridge Server (Playwright + FFmpeg).
+ */
+export async function generateLeadVideoReel(lead, leads = _leads, handlers = _factoryHandlers) {
+    if (!lead) throw new Error("Lead ontbreekt");
+    const token = sessionStorage.getItem('caf_bridge_token') || localStorage.getItem('caf_bridge_token') || '';
+    const bridgeUrl = 'http://127.0.0.1:3847/api/leads/video';
+
+    const res = await fetch(bridgeUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-caf-auth': token
+        },
+        body: JSON.stringify({ slug: lead.slug, durationMs: 15000 })
+    });
+
+    if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || `Server antwoordde met status ${res.status}`);
+    }
+
+    const data = await res.json();
+    lead.videoPreview = data.lead?.videoPreview || {
+        generated: true,
+        generatedAt: new Date().toISOString(),
+        fileName: 'video-preview.mp4',
+        relativeUrl: data.videoUrl,
+        absoluteUrl: data.absoluteUrl,
+        durationSeconds: data.durationSeconds || 15,
+        sizeBytes: data.sizeBytes
+    };
+
+    const idx = leads.findIndex(l => (l.id || l.slug) === (lead.id || lead.slug));
+    if (idx !== -1) {
+        leads[idx] = lead;
+    }
+
+    updateFilterPillsUI();
+    renderLeadCards(leads, handlers);
+    openLeadVideoModal(lead, handlers);
+    return data;
+}
+
+/**
+ * Opent de Dark AI 15s WhatsApp Video Reel modal.
+ */
+export function openLeadVideoModal(lead, handlers = _factoryHandlers) {
+    if (!lead) return;
+    const modal = document.getElementById('factory-video-modal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('video-modal-title');
+    const playerEl = document.getElementById('factory-video-player');
+    const msgEl = document.getElementById('video-modal-message');
+    const filesizeEl = document.getElementById('video-modal-filesize');
+    const btnWa = document.getElementById('btn-video-modal-whatsapp');
+    const btnCopy = document.getElementById('btn-video-modal-copy');
+    const btnDownload = document.getElementById('btn-video-modal-download');
+    const btnRegen = document.getElementById('btn-video-modal-regenerate');
+
+    const cleanUrl = lead.liveUrl || `https://creationaltfix.nl/concept/${lead.slug}/`;
+    const videoRelUrl = lead.videoPreview?.relativeUrl || `/concept/${lead.slug}/video-preview.mp4`;
+    const videoAbsUrl = lead.videoPreview?.absoluteUrl || `https://creationaltfix.nl${videoRelUrl}`;
+    
+    // Bij lokaal dashboard gebruik maken van loopback bridge
+    const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+    const videoSrc = isLocal ? `http://127.0.0.1:3847${videoRelUrl}` : videoAbsUrl;
+
+    if (titleEl) titleEl.textContent = `🎬 15s WhatsApp Reel • ${lead.name}`;
+    if (playerEl) {
+        playerEl.src = videoSrc;
+        playerEl.load();
+        playerEl.play().catch(() => {});
+    }
+
+    const pitchText = generateWhatsAppVideoPitch(lead);
+    if (msgEl) msgEl.value = pitchText;
+
+    if (filesizeEl) {
+        const sizeMb = lead.videoPreview?.sizeBytes ? (lead.videoPreview.sizeBytes / 1024 / 1024).toFixed(1) + ' MB' : '15s MP4';
+        filesizeEl.textContent = `${sizeMb} • H.264/AAC (9:16)`;
+    }
+
+    const cleanWaDigits = (lead.whatsAppNumber || lead.phone || '').replace(/[^0-9]/g, '');
+    const isMobileWa = /^316\d{7,9}$/.test(cleanWaDigits);
+    if (btnWa) {
+        if (isMobileWa) {
+            btnWa.href = `https://wa.me/${cleanWaDigits}?text=${encodeURIComponent(pitchText)}`;
+            btnWa.style.display = 'inline-flex';
+        } else {
+            btnWa.href = `https://wa.me/?text=${encodeURIComponent(pitchText)}`;
+            btnWa.title = "Deel via WhatsApp Web / App";
+        }
+    }
+
+    if (btnDownload) {
+        btnDownload.href = videoSrc;
+        btnDownload.download = `${lead.slug}-whatsapp-reel.mp4`;
+    }
+
+    if (btnCopy) {
+        btnCopy.onclick = async () => {
+            try {
+                await navigator.clipboard.writeText(pitchText);
+                const origText = btnCopy.innerHTML;
+                btnCopy.innerHTML = '<i class="fas fa-check" style="color: #10b981;"></i> <span>Gekopieerd!</span>';
+                setTimeout(() => { btnCopy.innerHTML = origText; }, 2000);
+            } catch (e) {
+                prompt("Kopieer WhatsApp bericht:", pitchText);
+            }
+        };
+    }
+
+    if (btnRegen) {
+        btnRegen.onclick = async () => {
+            btnRegen.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Renderen...</span>';
+            btnRegen.disabled = true;
+            try {
+                await generateLeadVideoReel(lead, _leads, handlers);
+                openLeadVideoModal(lead, handlers);
+            } catch (err) {
+                alert("Fout bij renderen video: " + err.message);
+            } finally {
+                btnRegen.innerHTML = '<i class="fas fa-redo"></i> <span>Opnieuw Renderen</span>';
+                btnRegen.disabled = false;
+            }
+        };
+    }
+
+    modal.classList.remove('hidden');
+
+    const closeBtn = document.getElementById('btn-close-video-modal');
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            if (playerEl) playerEl.pause();
+            modal.classList.add('hidden');
+        };
+    }
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            if (playerEl) playerEl.pause();
+            modal.classList.add('hidden');
+        }
+    };
+}
+
+/**
+ * Classificeert een lead naar een vaksector
+ */
+export function classifyLeadSector(lead = {}) {
+    const combined = `${lead.category || ''} ${lead.name || ''} ${lead.slug || ''}`.toLowerCase();
+    if (combined.includes('dak') || combined.includes('zink') || combined.includes('bitumen')) return 'dakdekker';
+    if (combined.includes('ontstop') || combined.includes('riool') || combined.includes('loodgieter') || combined.includes('installat') || combined.includes('cv') || combined.includes('warmtepomp')) return 'loodgieter';
+    if (combined.includes('schilder') || combined.includes('glaszet') || combined.includes('lakwerk')) return 'schilder';
+    if (combined.includes('stukadoor') || combined.includes('stuc') || combined.includes('spack') || combined.includes('afbouw')) return 'stukadoor';
+    if (combined.includes('hovenier') || combined.includes('tuin') || combined.includes('stratenmaker') || combined.includes('bestrat')) return 'hovenier';
+    if (combined.includes('elektr') || combined.includes('groepenkast') || combined.includes('laadpaal')) return 'elektricien';
+    if (combined.includes('timmer') || combined.includes('klus') || combined.includes('aannem') || combined.includes('bouw')) return 'klusbedrijf';
+    return 'overig';
+}
+
+/**
+ * Berekent diepgaande conversieratio's per sector en regionale dekkingsstatistieken (TASK-908)
+ */
+export function calculateSectorConversionMetrics(leads = []) {
+    const safeLeads = Array.isArray(leads) ? leads.filter(l => l && typeof l === 'object') : [];
+    const sectorMap = {
+        dakdekker: { id: 'dakdekker', label: 'Dakdekkers & Zinkwerk', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        loodgieter: { id: 'loodgieter', label: 'Loodgieters & Installatietechniek', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        schilder: { id: 'schilder', label: 'Schilders & Glaszetters', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        stukadoor: { id: 'stukadoor', label: 'Stukadoors & Afbouw', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        hovenier: { id: 'hovenier', label: 'Hoveniers & Stratenmakers', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        elektricien: { id: 'elektricien', label: 'Elektriciens & Verduurzaming', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        klusbedrijf: { id: 'klusbedrijf', label: 'Klus- & Timmerbedrijven', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 },
+        overig: { id: 'overig', label: 'Overige Vaklieden & Diensten', totalLeads: 0, withWebsite: 0, noWebsite: 0, viewsCount: 0, viewedLeadsCount: 0, sentCount: 0, convertedCount: 0 }
+    };
+
+    const regionalMap = new Map();
+
+    for (const lead of safeLeads) {
+        const sectorKey = classifyLeadSector(lead);
+        const sec = sectorMap[sectorKey] || sectorMap.overig;
+
+        sec.totalLeads++;
+        if (lead.hasWebsite || (lead.website && String(lead.website).startsWith('http'))) {
+            sec.withWebsite++;
+        } else {
+            sec.noWebsite++;
+        }
+
+        const views = Math.max(0, parseInt(lead.viewsCount || 0, 10) || 0);
+        sec.viewsCount += views;
+        if (views > 0 || lead.lastViewedAt) sec.viewedLeadsCount++;
+
+        const st = String(lead.status || '').toLowerCase();
+        const isSent = st === 'sent' || st.includes('sent_') || st.includes('_sent') || Boolean(lead.sentAt);
+        if (isSent) sec.sentCount++;
+
+        const isConverted = st === 'deal_closed' || st === 'accepted' || st === 'won' || st === 'client' || lead.isConverted === true;
+        if (isConverted) sec.convertedCount++;
+
+        const city = String(lead.city || lead.region || 'Onbekend').trim() || 'Onbekend';
+        if (!regionalMap.has(city)) regionalMap.set(city, { city, totalLeads: 0, viewsCount: 0, convertedCount: 0 });
+        const regStat = regionalMap.get(city);
+        regStat.totalLeads++;
+        regStat.viewsCount += views;
+        if (isConverted) regStat.convertedCount++;
+    }
+
+    const sectorsArray = Object.values(sectorMap).map(sec => {
+        const viewRate = sec.totalLeads > 0 ? Math.round((sec.viewedLeadsCount / sec.totalLeads) * 1000) / 10 : 0;
+        const conversionRate = sec.totalLeads > 0 ? Math.round((sec.convertedCount / sec.totalLeads) * 1000) / 10 : 0;
+        return {
+            ...sec,
+            viewRate,
+            conversionRate
+        };
+    });
+
+    sectorsArray.sort((a, b) => {
+        if (b.conversionRate !== a.conversionRate) return b.conversionRate - a.conversionRate;
+        if (b.viewsCount !== a.viewsCount) return b.viewsCount - a.viewsCount;
+        return b.totalLeads - a.totalLeads;
+    });
+
+    const activeWithLeads = sectorsArray.filter(s => s.totalLeads > 0);
+    const topConvertingSector = activeWithLeads.length > 0 ? activeWithLeads[0] : null;
+
+    const coreHubs = ['groningen', 'assen', 'drachten', 'emmen', 'hoogezand', 'veendam'];
+    const coveredHubs = coreHubs.filter(hub => {
+        for (const [cityName] of regionalMap.entries()) {
+            if (cityName.toLowerCase().includes(hub)) return true;
+        }
+        return false;
+    });
+    const provincialCoverageScore = Math.round((coveredHubs.length / coreHubs.length) * 100);
+
+    return {
+        summary: {
+            totalLeads: safeLeads.length,
+            totalViews: sectorsArray.reduce((acc, s) => acc + s.viewsCount, 0),
+            totalSent: sectorsArray.reduce((acc, s) => acc + s.sentCount, 0),
+            totalConverted: sectorsArray.reduce((acc, s) => acc + s.convertedCount, 0),
+            overallConversionRate: safeLeads.length > 0
+                ? Math.round((sectorsArray.reduce((acc, s) => acc + s.convertedCount, 0) / safeLeads.length) * 1000) / 10
+                : 0,
+            provincialCoverageScore,
+            coveredHubs,
+            targetHubs: coreHubs
+        },
+        sectors: sectorsArray,
+        topConvertingSector,
+        regionalBreakdown: Array.from(regionalMap.values()).sort((a, b) => b.totalLeads - a.totalLeads),
+        generatedAt: new Date().toISOString()
+    };
+}
+
+/**
+ * Opent de interactieve Provinciale Batch 2 & Sector Conversie modal (TASK-908)
+ */
+export function openSectorAnalyticsModal(leads = _leads) {
+    const modal = document.getElementById('factory-analytics-modal');
+    const content = document.getElementById('factory-analytics-content');
+    if (!modal || !content) return;
+
+    const metrics = calculateSectorConversionMetrics(leads);
+    const topSec = metrics.topConvertingSector;
+
+    content.innerHTML = `
+        <!-- KPI Strip -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Totaal Leads</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">${metrics.summary.totalLeads}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">In actieve database</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Zero-Cookie Views</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #fbbf24; margin: 4px 0;">${metrics.summary.totalViews}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">Bekeken door klanten</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Geconverteerde Deals</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #34d399; margin: 4px 0;">${metrics.summary.totalConverted}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">${metrics.summary.overallConversionRate}% totale conversie</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Provinciale Dekking</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #c084fc; margin: 4px 0;">${metrics.summary.provincialCoverageScore}%</div>
+                <div style="font-size: 0.75rem; color: #64748b;">${metrics.summary.coveredHubs.length} van ${metrics.summary.targetHubs.length} provinciecentra</div>
+            </div>
+        </div>
+
+        <!-- Top Converterende Branche Spotlight -->
+        <div style="background: linear-gradient(135deg, rgba(88,28,135,0.3) 0%, rgba(30,27,75,0.4) 100%); border: 1px solid rgba(168,85,247,0.4); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+                <span class="badge" style="background: rgba(168,85,247,0.25); color: #c084fc; border: 1px solid rgba(168,85,247,0.5); font-size: 0.72rem; margin-bottom: 6px;">
+                    🏆 BEST PRESTERENDE BRANCHE (WEEK 11)
+                </span>
+                <h4 style="margin: 4px 0; color: #fff; font-size: 1.15rem;">${topSec ? escapeHtml(topSec.label) : 'Onvoldoende data'}</h4>
+                <div style="font-size: 0.82rem; color: #cbd5e1;">
+                    ${topSec ? `${topSec.totalLeads} leads • ${topSec.viewsCount} views • ${topSec.convertedCount} deals (${topSec.conversionRate}% conversie)` : 'Start een provinciale scan om conversie te meten.'}
+                </div>
+            </div>
+            <button id="btn-modal-generate-batch2" class="btn btn-primary" style="background: #a855f7; border-color: #9333ea; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-magic"></i> <span>🚀 Genereer 20 Batch 2 Queries</span>
+            </button>
+        </div>
+
+        <!-- Sector Matrix Table -->
+        <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+            <div style="padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); font-weight: 700; color: #f1f5f9; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Vakbranche Conversie Ranking</span>
+                <span style="font-size: 0.75rem; color: #94a3b8;">Sorteert op conversieratio &amp; prospect engagement</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="admin-table" style="margin: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px 16px;">Vakbranche</th>
+                            <th style="padding: 10px 14px; text-align: center;">Leads</th>
+                            <th style="padding: 10px 14px; text-align: center;">Zonder Website</th>
+                            <th style="padding: 10px 14px; text-align: center;">Views</th>
+                            <th style="padding: 10px 14px; text-align: center;">Uitgestuurd</th>
+                            <th style="padding: 10px 14px; text-align: center;">Deals</th>
+                            <th style="padding: 10px 16px; text-align: right;">Conversie %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${metrics.sectors.map(sec => {
+                            const isTop = topSec && topSec.id === sec.id && sec.totalLeads > 0;
+                            return `
+                                <tr style="${isTop ? 'background: rgba(168,85,247,0.1);' : ''}">
+                                    <td style="padding: 10px 16px; font-weight: 600; color: #fff;">
+                                        ${isTop ? '<i class="fas fa-crown" style="color: #fbbf24; margin-right: 6px;"></i>' : ''}
+                                        ${escapeHtml(sec.label)}
+                                    </td>
+                                    <td style="padding: 10px 14px; text-align: center; color: #cbd5e1;">${sec.totalLeads}</td>
+                                    <td style="padding: 10px 14px; text-align: center; color: #38bdf8;">${sec.noWebsite}</td>
+                                    <td style="padding: 10px 14px; text-align: center; color: #fbbf24;">${sec.viewsCount}</td>
+                                    <td style="padding: 10px 14px; text-align: center; color: #94a3b8;">${sec.sentCount}</td>
+                                    <td style="padding: 10px 14px; text-align: center; color: #34d399; font-weight: 700;">${sec.convertedCount}</td>
+                                    <td style="padding: 10px 16px; text-align: right;">
+                                        <span class="badge" style="background: ${sec.conversionRate > 0 ? 'rgba(52,211,153,0.2)' : 'rgba(255,255,255,0.06)'}; color: ${sec.conversionRate > 0 ? '#34d399' : '#94a3b8'}; border: 1px solid rgba(255,255,255,0.1); font-weight: 700;">
+                                            ${sec.conversionRate}%
+                                        </span>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Regionale Dekking Strip -->
+        <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #f1f5f9; margin-bottom: 8px;">
+                Regionale Spreiding over Noord-Nederland
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                ${metrics.regionalBreakdown.map(reg => `
+                    <span class="badge" style="background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); padding: 5px 10px; font-size: 0.78rem;">
+                        📍 ${escapeHtml(reg.city)}: <strong>${reg.totalLeads}</strong> (${reg.viewsCount} views)
+                    </span>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    // Setup Batch 2 generator knop
+    const batch2Btn = document.getElementById('btn-modal-generate-batch2');
+    if (batch2Btn) {
+        batch2Btn.onclick = async () => {
+            batch2Btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Wachtrij laden...</span>';
+            batch2Btn.disabled = true;
+            try {
+                const token = await getBridgeAuthToken();
+                const res = await fetch(`${_activeBridgeHost}/api/leads/batch2/queue`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-caf-auth': token },
+                    body: JSON.stringify({ count: 20 })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    alert(`✅ 20 Provinciale Batch 2 zoekopdrachten klaargezet!\n\nEerste 3 queries:\n1. ${data.queries[0]}\n2. ${data.queries[1]}\n3. ${data.queries[2]}`);
+                } else {
+                    alert("Bridge niet online of vereist authenticatie.");
+                }
+            } catch (err) {
+                alert("Kon geen verbinding maken met de lokale Lead Factory bridge.");
+            } finally {
+                batch2Btn.innerHTML = '<i class="fas fa-magic"></i> <span>🚀 Genereer 20 Batch 2 Queries</span>';
+                batch2Btn.disabled = false;
+            }
+        };
+    }
+
+    modal.classList.remove('hidden');
+
+    const closeBtn = document.getElementById('btn-close-analytics-modal');
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.classList.add('hidden');
+    }
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+    };
+}
+
+/**
+ * Opent het interactieve Regionale MKB Outreach Campagne modal (TASK-906)
+ */
+export function openRegionalOutreachModal(leads = _leads) {
+    const modal = document.getElementById('outreach-campaign-modal');
+    const content = document.getElementById('outreach-campaign-content');
+    if (!modal || !content) return;
+
+    const queueData = buildOutreachQueue(leads);
+    const metrics = calculateOutreachCampaignMetrics(leads);
+    const cohort = queueData.queue;
+
+    content.innerHTML = `
+        <!-- KPI Metrics Strip -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Target Cohort</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">${cohort.length} <span style="font-size: 0.9rem; color: #64748b;">/ 30</span></div>
+                <div style="font-size: 0.72rem; color: #64748b;">${queueData.validMobileCount} met 06-mobiel</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Verstuurd</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #a78bfa; margin: 4px 0;">${metrics.funnel.totalSent}</div>
+                <div style="font-size: 0.72rem; color: #64748b;">WhatsApp &amp; E-mail</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Concept Bekeken</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #fbbf24; margin: 4px 0;">${metrics.funnel.totalEngaged} <span style="font-size: 0.9rem; color: #fbbf24;">(${metrics.funnel.viewRatePercentage}%)</span></div>
+                <div style="font-size: 0.72rem; color: #64748b;">Zero-cookie view pings</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">In Gesprek</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">${metrics.pipeline.inNegotiation}</div>
+                <div style="font-size: 0.72rem; color: #64748b;">Statusportaal / offerte</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Deals Gesloten</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #34d399; margin: 4px 0;">${metrics.pipeline.dealsClosed}</div>
+                <div style="font-size: 0.72rem; color: #64748b;">${metrics.financial.targetGoalAchieved ? '🏆 Doel behaald!' : 'Doel: min. 3 deals'}</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Pipeline Waarde</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin: 4px 0;">€ ${metrics.financial.totalExpectedRevenueEur},-</div>
+                <div style="font-size: 0.72rem; color: #64748b;">€ ${metrics.financial.closedRevenueEur},- gerealiseerd</div>
+            </div>
+        </div>
+
+        <!-- Routine Banner -->
+        <div style="background: linear-gradient(135deg, rgba(6,78,59,0.35) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(16,185,129,0.4); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+                <span class="badge" style="background: rgba(16,185,129,0.25); color: #34d399; border: 1px solid rgba(16,185,129,0.5); font-size: 0.72rem; margin-bottom: 6px;">
+                    ⚡ DE HOOGEZAND SUCCESS-ROUTINE (10:00 - 11:30)
+                </span>
+                <h4 style="margin: 4px 0; color: #fff; font-size: 1.15rem;">Blok 2: Regionale MKB Verovering (Week 4 &amp; 5)</h4>
+                <div style="font-size: 0.82rem; color: #cbd5e1;">
+                    Verstuur maximaal 5-10 WhatsApp pitches per ochtendblok en stuur direct een 15s spraakberichtje na voor 100% lokale gunfactor.
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button id="btn-export-outreach-dossier" class="btn btn-secondary" style="border-color: rgba(16,185,129,0.4); padding: 8px 14px; font-size: 0.82rem;">
+                    <i class="fas fa-file-download" style="color: #34d399;"></i> <span>Download Dossier</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Cohort Queue Table -->
+        <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+            <div style="padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); font-weight: 700; color: #f1f5f9; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Prioritair Cohort (${cohort.length} Vaklieden)</span>
+                <span style="font-size: 0.75rem; color: #94a3b8;">Gerangschikt op conversiepotentieel &amp; 06-WhatsApp bereikbaarheid</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="admin-table" style="margin: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px 14px;">Vakman / Bedrijf</th>
+                            <th style="padding: 10px 14px;">Regio</th>
+                            <th style="padding: 10px 14px;">Telefoon (06)</th>
+                            <th style="padding: 10px 12px; text-align: center;">Status</th>
+                            <th style="padding: 10px 12px; text-align: center;">Views</th>
+                            <th style="padding: 10px 16px; text-align: right;">Snelacties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${cohort.map((lead, idx) => {
+                            const isMobile = lead.phoneValidation?.valid;
+                            const pitch = lead.synthesizedPitch || synthesizeRegionalPitch(lead);
+                            const views = Number(lead.viewsCount || 0);
+                            const st = lead.outreachStage || lead.status || 'queued';
+
+                            return `
+                                <tr>
+                                    <td style="padding: 10px 14px; font-weight: 600; color: #fff;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="color: #64748b; font-size: 0.75rem;">${idx + 1}.</span>
+                                            <div>
+                                                <div>${escapeHtml(lead.name || 'Vakman')}</div>
+                                                <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 400;">${escapeHtml((lead.category || 'Vakman').split('&')[0].trim())}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 10px 14px; color: #cbd5e1; font-size: 0.85rem;">
+                                        📍 ${escapeHtml(lead.city || 'Regio')}
+                                    </td>
+                                    <td style="padding: 10px 14px; font-size: 0.85rem;">
+                                        <span class="badge" style="background: ${isMobile ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)'}; color: ${isMobile ? '#34d399' : '#f87171'}; border: 1px solid ${isMobile ? 'rgba(52,211,153,0.3)' : 'rgba(239,68,68,0.3)'};">
+                                            ${escapeHtml(lead.phone || 'Geen nummer')}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 10px 12px; text-align: center;">
+                                        <span class="badge" style="background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); font-size: 0.72rem;">
+                                            ${escapeHtml(st)}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 10px 12px; text-align: center;">
+                                        ${views > 0
+                                            ? `<span class="badge" style="background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); font-weight: 700;">👀 ${views}x</span>`
+                                            : `<span style="color: #64748b; font-size: 0.75rem;">-</span>`
+                                        }
+                                    </td>
+                                    <td style="padding: 10px 16px; text-align: right;">
+                                        <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                            ${pitch.whatsAppDispatchUrl ? `
+                                                <a href="${pitch.whatsAppDispatchUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary" style="background: #10b981; border-color: #059669; padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">
+                                                    <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                                                </a>
+                                            ` : ''}
+                                            <button class="btn btn-sm btn-secondary btn-copy-pitch" data-slug="${escapeHtml(lead.slug || '')}" style="padding: 4px 8px; font-size: 0.78rem;" title="Kopieer Pitch Tekst">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary btn-copy-voicenote" data-slug="${escapeHtml(lead.slug || '')}" style="padding: 4px 8px; font-size: 0.78rem;" title="Spraakbericht Script">
+                                                <i class="fas fa-microphone"></i>
+                                            </button>
+                                            <a href="https://creationaltfix.nl/concept/${escapeHtml(lead.slug || '')}/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 0.78rem;" title="Open Live Concept">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    // Hook up copy buttons
+    content.querySelectorAll('.btn-copy-pitch').forEach(btn => {
+        btn.onclick = () => {
+            const slug = btn.getAttribute('data-slug');
+            const targetLead = cohort.find(l => l.slug === slug);
+            if (targetLead) {
+                const pitch = targetLead.synthesizedPitch || synthesizeRegionalPitch(targetLead);
+                navigator.clipboard.writeText(pitch.text);
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check" style="color: #34d399;"></i>';
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+            }
+        };
+    });
+
+    content.querySelectorAll('.btn-copy-voicenote').forEach(btn => {
+        btn.onclick = () => {
+            const slug = btn.getAttribute('data-slug');
+            const targetLead = cohort.find(l => l.slug === slug);
+            if (targetLead) {
+                const pitch = targetLead.synthesizedPitch || synthesizeRegionalPitch(targetLead);
+                navigator.clipboard.writeText(pitch.voicenoteTip || pitch.text);
+                alert(`🎙️ GRONINGSE SPRAAKBERICHT TROEFKAART (15-20s):\n\n${pitch.voicenoteTip}\n\n(Gekopieerd naar klembord!)`);
+            }
+        };
+    });
+
+    const exportBtn = document.getElementById('btn-export-outreach-dossier');
+    if (exportBtn) {
+        exportBtn.onclick = () => {
+            window.open('https://portal.creationaltfix.nl/crm/api/leads.php?action=outreach', '_blank');
+        };
+    }
+
+    modal.classList.remove('hidden');
+
+    const closeBtn = document.getElementById('btn-close-outreach-modal');
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.classList.add('hidden');
+    }
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+    };
 }

@@ -103,6 +103,9 @@
                             <option value="5-complete">Fase 5: Volledig Live &amp; Voldaan</option>
                         </select>
                     </div>
+                    <button type="button" id="btn-open-milestone-modal" class="btn btn-secondary btn-sm" style="border-color: rgba(0, 242, 254, 0.4); color: var(--color-accent); font-weight: 600;" title="Verstuur geautomatiseerde WhatsApp &amp; E-mail milestone trigger">
+                        <i class="fas fa-paper-plane"></i> 🚀 Milestone Trigger
+                    </button>
                     <button type="button" id="btn-open-gemini-modal" class="btn btn-secondary btn-sm" title="Configureer Gemini AI API Sleutel">
                         <i class="fas fa-brain" style="color: var(--color-accent);"></i> Gemini AI
                     </button>
@@ -651,8 +654,38 @@
                     <div id="tab-files" class="tab-pane">
                         <div class="workspace-card">
                             <div class="workspace-card-header">
-                                <h3><i class="fas fa-folder-open text-accent"></i> Geüploade Project Bestanden</h3>
+                                <h3 style="margin: 0;"><i class="fas fa-folder-open text-accent"></i> Project Bestanden & Document Vault</h3>
+                                <button type="button" id="btn-download-all-files" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); color: var(--color-accent); border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" title="Download alle bestanden in huidige selectie">
+                                    <i class="fas fa-download"></i> Download Alle
+                                </button>
                             </div>
+
+                            <!-- Admin Quick Upload Bar -->
+                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(34, 211, 238, 0.25); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <span style="font-size: 0.82rem; color: #cbd5e1; font-weight: 600;"><i class="fas fa-cloud-upload-alt text-accent"></i> Bestand Toevoegen:</span>
+                                    <select id="admin-vault-upload-category" class="admin-input" style="padding: 5px 10px; font-size: 0.8rem; width: auto;">
+                                        <option value="auto">✨ Automatisch Detecteren</option>
+                                        <option value="brand">🎨 Huisstijl & Logo's</option>
+                                        <option value="content">📸 Fotografie & Teksten</option>
+                                        <option value="financial">📄 Offertes & Facturen</option>
+                                        <option value="technical">⚙️ Technisch & Overig</option>
+                                    </select>
+                                    <input type="file" id="admin-vault-file-input" style="display: none;">
+                                    <label for="admin-vault-file-input" class="btn btn-secondary btn-sm" style="cursor: pointer; margin: 0;">
+                                        <i class="fas fa-paperclip"></i> Selecteer Bestand
+                                    </label>
+                                    <span id="admin-vault-upload-status" style="font-size: 0.8rem; color: #34d399; font-weight: 600;"></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-search" style="color: var(--color-text-secondary); font-size: 0.85rem;"></i>
+                                    <input type="text" id="admin-vault-search-input" placeholder="Zoek op naam..." class="admin-input" style="padding: 5px 10px; font-size: 0.8rem; width: 180px;">
+                                </div>
+                            </div>
+
+                            <!-- Category Filter Tabs -->
+                            <div id="admin-vault-category-tabs" style="margin-bottom: 14px;"></div>
+
                             <div id="project-files-list">
                                 <!-- Rendered dynamically -->
                             </div>
@@ -743,6 +776,19 @@
                             <button id="btn-delete-project" class="btn btn-sm" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); width: 100%; justify-content: center;">
                                 <i class="fas fa-trash"></i> Project Verwijderen
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- CARD: Klant Onboarding & Opleverstatus (TASK-910) -->
+                    <div class="workspace-card" id="card-admin-onboarding-status" style="padding: 20px; margin-top: 16px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(15, 23, 42, 0.85);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                            <span style="font-size: 0.95rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-list-check" style="color: #818cf8;"></i> Klant Onboarding
+                            </span>
+                            <span id="admin-onboarding-percent-badge" style="font-weight: 700; font-size: 0.72rem; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.3);">0%</span>
+                        </div>
+                        <div id="admin-onboarding-summary-container">
+                            <div style="font-size: 0.82rem; color: #94a3b8;">Laden...</div>
                         </div>
                     </div>
 
@@ -1061,6 +1107,96 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Milestone Dispatcher Modal (TASK-909) -->
+    <div id="milestone-dispatch-modal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">
+        <div class="workspace-card" style="max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; background: #0c1020; border: 1px solid rgba(0, 242, 254, 0.4); box-shadow: 0 25px 60px rgba(0,0,0,0.9); padding: 26px; border-radius: 14px;">
+            
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 18px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-paper-plane text-accent"></i> 🚀 Milestone Notificatie Dispatcher
+                    </h3>
+                    <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">
+                        Verstuur branded WhatsApp &amp; e-mail updates met een beveiligde 1-klik magic-link naar het klantenportaal.
+                    </p>
+                </div>
+                <button type="button" id="btn-close-milestone-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer; padding: 0 8px;">&times;</button>
+            </div>
+
+            <!-- Milestone Selector -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">Selecteer Project Mijlpaal:</label>
+                <select id="milestone-select" class="admin-input" style="width: 100%; background: #0f172a; color: #fff; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem;">
+                    <option value="proposal_ready">📄 Fase 2: Offerte &amp; Voorstel Gereed</option>
+                    <option value="design_ready">🎨 Fase 3: Design Concept &amp; Staging Live</option>
+                    <option value="development_started">💻 Fase 4: Technische Ontwikkeling Gestart</option>
+                    <option value="payment_waiting">💳 Fase 5: Oplevering Gereed &amp; Wacht op Betaling</option>
+                    <option value="project_completed">🎉 Fase 5: Project Volledig Live &amp; Voldaan</option>
+                    <option value="custom">📢 Aangepaste Mijlpaal / Mededeling</option>
+                </select>
+            </div>
+
+            <!-- Magic Link Box -->
+            <div style="background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 10px; padding: 14px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: var(--color-accent); letter-spacing: 0.05em;">
+                        🔒 Beveiligde 1-Klik Klantenportaal Magic Link
+                    </span>
+                    <button type="button" id="btn-copy-magic-link" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
+                        <i class="fas fa-copy"></i> Link Kopiëren
+                    </button>
+                </div>
+                <input type="text" id="milestone-magic-link-input" readonly class="admin-input" style="width: 100%; background: rgba(0,0,0,0.5); font-family: monospace; font-size: 0.8rem; color: #38bdf8; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 6px;">
+            </div>
+
+            <!-- Custom Note Input -->
+            <div id="milestone-custom-note-group" style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">Persoonlijke Notitie of Toelichting (Optioneel):</label>
+                <textarea id="milestone-custom-note" class="admin-input" rows="2" placeholder="Bijv. Staging demo staat op https://concept.creationaltfix.nl/..." style="width: 100%; background: #0f172a; color: #fff; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; font-size: 0.85rem; resize: vertical;"></textarea>
+            </div>
+
+            <!-- Channels Grid (WhatsApp & Email) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+                
+                <!-- WhatsApp Dispatch Card -->
+                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fab fa-whatsapp"></i> WhatsApp Bericht
+                        </div>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin: 0 0 10px 0;">
+                            Opent direct in WhatsApp Web/App met gepersonaliseerde tekst en magic link.
+                        </p>
+                    </div>
+                    <button type="button" id="btn-dispatch-whatsapp" class="btn btn-sm" style="background: #10b981; color: #042f2e; font-weight: 700; width: 100%; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">
+                        <i class="fab fa-whatsapp"></i> Open in WhatsApp
+                    </button>
+                </div>
+
+                <!-- Server-Side Email Dispatch Card -->
+                <div style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-envelope"></i> Server-Side E-mail
+                        </div>
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin: 0 0 10px 0;">
+                            Verstuurt Dark AI HTML e-mail direct via de Creation+Alt+Fix server.
+                        </p>
+                    </div>
+                    <button type="button" id="btn-dispatch-email" class="btn btn-sm" style="background: #0284c7; color: #fff; font-weight: 700; width: 100%; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i> Verzend E-mail
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Status Indicator -->
+            <div id="milestone-dispatch-status" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-top: 10px;"></div>
+
         </div>
     </div>
 

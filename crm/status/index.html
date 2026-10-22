@@ -217,6 +217,11 @@
                 </div>
             </section>
 
+            <!-- Interactieve Klant Onboarding & Oplever-Checklist (TASK-910) -->
+            <section id="onboarding-checklist-card" class="card" style="border: 1px solid rgba(99, 102, 241, 0.35); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.3)); box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);">
+                <!-- Dynamisch gevuld door onboarding-checklist.js -->
+            </section>
+
             <!-- Offerte & Digitaal Akkoord Sectie -->
             <section id="offerte-card" class="card">
                 <h2 class="section-title"><i class="fas fa-file-contract"></i> <span data-translate-key="statusOfferteTitle">Offerte & Projectscope</span></h2>
@@ -480,17 +485,50 @@
 
             <!-- Project Bestanden & Uploads -->
             <section class="card" id="files-card">
-                <h2 class="section-title"><i class="fas fa-folder-open"></i> <span data-translate-key="statusFilesTitle">Project Bestanden</span></h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;">
+                    <h2 class="section-title" style="margin-bottom: 0;">
+                        <i class="fas fa-folder-open text-accent"></i> <span data-translate-key="statusFilesTitle">Project Bestanden & Media Vault</span>
+                    </h2>
+                    <span id="vault-stats-display" class="badge badge-concept" style="margin-top: 0; font-size: 0.8rem; background: rgba(34, 211, 238, 0.1); color: var(--color-accent); border: 1px solid rgba(34, 211, 238, 0.25);">—</span>
+                </div>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;" data-translate-key="statusFilesDesc">
-                    Upload hier je logo's, teksten of andere benodigde bestanden voor dit project.
+                    Gestructureerde kluis voor al je aangeleverde materialen, huisstijl, teksten en facturen.
                 </p>
 
                 <div class="file-upload-box" style="border: 2px dashed rgba(99, 102, 241, 0.3); background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px;">
+                        <div style="display: inline-flex; align-items: center; gap: 6px;">
+                            <label for="vault-upload-category" style="font-size: 0.82rem; color: #cbd5e1; font-weight: 600;" data-translate-key="statusVaultCategorySelectLabel">Doelmap:</label>
+                            <select id="vault-upload-category" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #f8fafc; padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; cursor: pointer;">
+                                <option value="auto" data-translate-key="statusVaultCategoryAuto">✨ Automatisch Detecteren</option>
+                                <option value="brand">🎨 Huisstijl & Logo's</option>
+                                <option value="content">📸 Fotografie & Teksten</option>
+                                <option value="financial">📄 Offertes & Facturen</option>
+                                <option value="technical">⚙️ Technisch & Overig</option>
+                            </select>
+                        </div>
+                    </div>
                     <input type="file" id="file-upload-input" multiple style="display: none;">
                     <label for="file-upload-input" class="btn-akkoord" style="display: inline-block; cursor: pointer; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; width: auto; padding: 10px 20px;">
                         <i class="fas fa-cloud-upload-alt"></i> <span data-translate-key="statusSelectFilesBtn">Selecteer Bestanden...</span>
                     </label>
                     <div id="upload-status" style="margin-top: 10px; font-size: 0.85rem; color: #34d399; font-weight: 600;"></div>
+                </div>
+
+                <!-- Vault Category Tabs Bar -->
+                <div id="vault-category-tabs">
+                    <!-- Populated dynamically by JS -->
+                </div>
+
+                <!-- Vault Search & Toolbar -->
+                <div class="vault-toolbar" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding: 10px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 320px;">
+                        <i class="fas fa-search" style="color: var(--color-accent); font-size: 0.85rem;"></i>
+                        <input type="text" id="vault-search-input" placeholder="Zoek op bestandsnaam..." style="background: transparent; border: none; color: #fff; font-size: 0.85rem; width: 100%; outline: none;" data-translate-placeholder="statusVaultSearchPlaceholder">
+                    </div>
+                    <button type="button" id="btn-download-vault-files" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); color: var(--color-accent); border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" title="Download alle bestanden in huidige selectie">
+                        <i class="fas fa-download"></i> <span data-translate-key="statusVaultDownloadAllBtn">Download Alle</span>
+                    </button>
                 </div>
 
                 <div id="uploaded-files-list" style="display: flex; flex-direction: column; gap: 10px;">
@@ -504,7 +542,12 @@
                     <h2 class="section-title" style="margin-bottom: 0;">
                         <i class="fas fa-comments"></i> <span data-translate-key="statusMessagesTitle">Berichten & Revisieverzoeken</span>
                     </h2>
-                    <span id="messages-count-badge" class="badge badge-concept" style="margin-top: 0; font-size: 0.8rem;">—</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="btn-toggle-chat-sound" class="btn-chat-sound" title="Notificatiegeluid in-/uitschakelen" aria-label="Notificatiegeluid in-/uitschakelen" data-translate-title="statusChatSoundTitleToggle">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <span id="messages-count-badge" class="badge badge-concept" style="margin-top: 0; font-size: 0.8rem;">—</span>
+                    </div>
                 </div>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" data-translate-key="statusMessagesDesc">
                     Heb je een vraag, wens of revisieverzoek voor je project? Wissel hier direct berichten uit met Allard.
@@ -581,6 +624,11 @@
 
                 <!-- 2027 Service- & Abonnementsplan Bevestiging Banner -->
                 <div id="client-2027-subscription-banner" style="margin-top: 16px; display: none;"></div>
+            </section>
+
+            <!-- Zelfbediening Domein- & E-mail Setup Wizard (TASK-911) -->
+            <section id="domain-setup-wizard-card" class="card" style="border: 1px solid rgba(0, 242, 254, 0.35); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(99, 102, 241, 0.05)); margin-bottom: 24px; padding: 22px 24px; border-radius: 14px; box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);">
+                <!-- Dynamisch gevuld door domain-setup-wizard.js -->
             </section>
 
             <!-- Realtime Website & Systeem Uptime Monitoring (TASK-827) -->

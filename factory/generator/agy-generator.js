@@ -832,7 +832,7 @@ Belangrijke Ontwerp- & Improvisatie-eisen:
    - Footer met copyright en LocalBusiness Schema (JSON-LD).
 6. Plaats helemaal bovenaan een subtiele, professionele concept-banner:
    <div style="background: linear-gradient(90deg, #1E1B4B, #0F172A); color: #E0E7FF; padding: 10px 20px; font-size: 0.85rem; text-align: center; border-bottom: 1px solid rgba(99,102,241,0.3); font-family: sans-serif;">
-     ✨ <strong>Concept Demonstratie</strong> gemaakt door Creation+Alt+Fix voor ${b.name} • <a href="https://creationaltfix.nl" target="_blank" style="color: #38BDF8; text-decoration: underline; margin-left: 6px;">Website overnemen of aanpassen?</a>
+     ${b.isDomainAvailable ? `✨ <strong>Concept Demonstratie</strong> gemaakt door Creation+Alt+Fix voor ${b.name} • 🟢 <strong>${b.suggestedDomain || b.recommendedDomain || `${b.slug}.nl`}</strong> is nog vrij! • <a href="https://creationaltfix.nl" target="_blank" style="color: #38BDF8; text-decoration: underline; margin-left: 6px;">Website overnemen of aanpassen?</a>` : `✨ <strong>Concept Demonstratie</strong> gemaakt door Creation+Alt+Fix voor ${b.name} • <a href="https://creationaltfix.nl" target="_blank" style="color: #38BDF8; text-decoration: underline; margin-left: 6px;">Website overnemen of aanpassen?</a>`}
    </div>
 
 GEEF ALLEEN DE COMPLETE, VALIDE HTML CODE TERUG. GEEN UITLEG, GEEN MARKDOWN BLOKKEN.
@@ -859,8 +859,10 @@ function cleanAgyOutput(raw) {
  * Genereert de persoonlijke acquisitie e-mail en WhatsApp pitch
  */
 export function buildOutreachPitch(b) {
+  const safeName = escapeHtml(b.name || 'Ondernemer');
   const conceptUrl = `${FACTORY_CONFIG.conceptBaseUrl}/${b.slug}/`;
-  const domain = b.recommendedDomain || `${b.slug}.nl`;
+  const isDomainFree = Boolean(b.isDomainAvailable === true);
+  const domain = b.suggestedDomain || b.recommendedDomain || `${b.slug}.nl`;
   const archetype = b.archetype || 'A_TRADE_DIRECT';
   const archetypeLabel = b.archetypeLabel || 'Nuchter & Direct Bellen (Vakman)';
   const city = b.city || extractCityFromAddress(b.address);
@@ -928,19 +930,19 @@ export function buildOutreachPitch(b) {
   } else {
     // Archetype A (Geen Website op Google Maps)
     bulletsHtml = `
+    ${isDomainFree ? `<li><strong>🟢 Vrije domeinnaam (${escapeHtml(domain)}):</strong> Nu nog direct vrij om te registreren en vast te leggen voor ${safeName}</li>` : ''}
     <li><strong>Direct bellen & WhatsApp:</strong> Zodat particulieren bij een klus niet verder zoeken naar een ander</li>
     <li><strong>Supersnel & mobiel-eerst:</strong> Laadt in minder dan een seconde op smartphones</li>
     <li><strong>Jouw Google vakwerk reviews:</strong> (${b.rating ? b.rating + ' sterren' : 'hoge beoordeling'}) betrouwbaar in beeld</li>
     <li><strong>Lokale vindbaarheid (SEO):</strong> Hoger scoren op Google in regio ${escapeHtml(city)} / Groningen</li>`;
     bulletsPlain = `
-- Direct bellen & WhatsApp knop: Zodat particulieren met een klus je direct bereiken
+${isDomainFree ? `- 🟢 Vrije domeinnaam (${domain}): Nu nog direct vrij om te registreren en vast te leggen voor ${b.name}\n` : ''}- Direct bellen & WhatsApp knop: Zodat particulieren met een klus je direct bereiken
 - Supersnel ladend op smartphones
 - Jouw Google vakwerk reviews (${b.rating ? b.rating + ' sterren' : 'hoge score'}) betrouwbaar in beeld
 - Lokale vindbaarheid in regio ${city} / Groningen`;
   }
 
   // 3. HTML E-mail Body (Uitgebreide, persoonlijke acquisitie-e-mail)
-  const safeName = escapeHtml(b.name || 'Ondernemer');
   const safeCategory = escapeHtml(b.category || 'diensten');
   const safeHook = escapeHtml(b.pitchHook || '');
   const ratingStars = b.rating ? '★'.repeat(Math.round(b.rating)) + ` ${b.rating}/5` : '★★★★★ 5/5';
@@ -975,6 +977,10 @@ export function buildOutreachPitch(b) {
       </a>
       <p style="font-size: 12px; color: #64748b; margin: 10px 0 0;">Werkt direct op je telefoon of laptop • Geen login nodig</p>
     </div>
+    ${isDomainFree ? `
+    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid #10B981; border-radius: 8px; padding: 12px 16px; margin: 18px 0; color: #065F46; font-size: 0.92rem;">
+      🟢 <strong>Goed nieuws:</strong> Domeinnaam <strong>${escapeHtml(domain)}</strong> is op dit moment nog vrij om te registreren! Wij leggen dit domein bij overname direct kosteloos voor je vast.
+    </div>` : ''}
 
     <!-- Wat zit erin -->
     <p style="margin-bottom: 10px;"><strong>Wat zit er al in dit concept voor ${safeName}:</strong></p>
@@ -1062,6 +1068,7 @@ Ik heb gratis en vrijblijvend een compleet concept gebouwd speciaal voor ${b.nam
 ${conceptUrl}
 
 (Werkt direct op je telefoon — geen login nodig)
+${isDomainFree ? `\n🟢 Goed nieuws: domeinnaam ${domain} is op dit moment nog vrij om te registreren! Wij leggen dit domein bij overname direct voor je vast.\n` : ''}
 
 
 Wat zit er al in dit concept:
@@ -1121,13 +1128,17 @@ Geen interesse of liever geen berichten meer? Reageer even met 'geen interesse' 
   } else if (archetype === 'B_PRESENTATION_REVIEWS') {
     whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie reviews op Google, maar zag dat je nog geen directe website had voor je behandelingen en sfeer. Ik heb alvast een werkend concept voor je gemaakt: ${conceptUrl} - Veel plezier met bekijken!`;
   } else {
-    whatsAppText = `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie vermelding op Google Maps, maar zag dat er nog geen mobiele website aan gekoppeld was. Omdat particulieren snel willen bellen, heb ik alvast een vrijblijvend concept voor je klaargezet: ${conceptUrl} - Kijk er gerust naar als je tijd hebt!`;
+    whatsAppText = isDomainFree
+      ? `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie vermelding op Google Maps, maar zag dat er nog geen mobiele website aan gekoppeld was. Goed nieuws: domeinnaam ${domain} is nu nog vrij! Ik heb alvast een vrijblijvend concept voor je klaargezet: ${conceptUrl} - Kijk er gerust naar als je tijd hebt!`
+      : `Hoi ${b.name}! Allard hier van Creation+Alt+Fix uit Hoogezand. Ik zag jullie mooie vermelding op Google Maps, maar zag dat er nog geen mobiele website aan gekoppeld was. Omdat particulieren snel willen bellen, heb ik alvast een vrijblijvend concept voor je klaargezet: ${conceptUrl} - Kijk er gerust naar als je tijd hebt!`;
   }
 
   return {
     subject,
     bodyHtml,
     bodyPlain,
+    bulletsHtml,
+    bulletsPlain,
     whatsAppText,
     conceptUrl,
     archetype,
@@ -1404,7 +1415,9 @@ export function buildFallbackTemplate(b) {
   const safeCategory = escapeHtml(b.category || 'Vakmanschap');
   const safeSlug = (b.slug || '').replace(/[^a-z0-9_-]/g, '');
   const safeWhatsApp = (b.whatsAppNumber || '').replace(/[^0-9]/g, '');
-  const safeDomain = escapeHtml(b.recommendedDomain || `${safeSlug}.nl`);
+  const isDomainFree = Boolean(b.isDomainAvailable === true);
+  const rawDomain = b.suggestedDomain || b.recommendedDomain || `${safeSlug}.nl`;
+  const safeDomain = escapeHtml(rawDomain);
   const isMobileWhatsApp = Boolean(
     b.hasWhatsApp &&
     safeWhatsApp &&
@@ -1601,9 +1614,11 @@ export function buildFallbackTemplate(b) {
   <meta property="og:url" content="https://creationaltfix.nl/concept/${safeSlug}/">
   <meta property="og:site_name" content="${safeName}">
   <meta property="og:locale" content="nl_NL">
+  <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${safeName} | ${safeCategory} in ${safeCity}">
   <meta name="twitter:description" content="Professionele ${safeCategory} door ${safeName} in ${safeCity} en omstreken. Bekijk diensten, beoordelingen en vraag vrijblijvend een offerte aan.">
+  <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1669,6 +1684,34 @@ ${JSON.stringify(schemaGraph, null, 2)}
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+    }
+    .concept-domain-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(52, 211, 153, 0.5);
+      color: #6ee7b7;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-left: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+    .domain-free-notice {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #a7f3d0;
+      font-size: 0.88rem;
+      line-height: 1.45;
     }
     .concept-bar button.concept-claim-btn {
       background: linear-gradient(135deg, #38bdf8, #2563eb);
@@ -2230,6 +2273,7 @@ ${JSON.stringify(schemaGraph, null, 2)}
         <span class="concept-bar-avatar">AV</span>
         <span>
           <strong>Persoonlijk concept van Allard Veldman</strong> (Creation+Alt+Fix, Hoogezand) • Vrijblijvend voorbeeld voor <strong>${safeName}</strong>
+          ${isDomainFree ? `<span class="concept-domain-pill">🟢 <strong>${safeDomain}</strong> is nog vrij!</span>` : ''}
         </span>
       </div>
       <div class="concept-bar-actions">
@@ -2390,6 +2434,13 @@ ${JSON.stringify(schemaGraph, null, 2)}
       </div>
       <div class="concept-modal-body">
         <p>Dit complete ontwerp is door <strong>Allard Veldman (Creation+Alt+Fix, Hoogezand)</strong> speciaal op maat voorbereid voor <strong>${safeName}</strong>. Geen verplichte wurgcontracten, maar direct een razendsnelle website die klanten oplevert.</p>
+        ${isDomainFree ? `
+        <div class="domain-free-notice">
+          <span style="font-size: 1.25rem;">🟢</span>
+          <div>
+            <strong style="color: #6ee7b7;">${safeDomain}</strong> is op dit moment nog vrij om te registreren! Creation+Alt+Fix legt dit domein direct kosteloos voor u vast bij overname.
+          </div>
+        </div>` : ''}
         <div class="proposal-price-box">
           <div class="proposal-price-row">
             <div>
@@ -2401,7 +2452,7 @@ ${JSON.stringify(schemaGraph, null, 2)}
           <div class="proposal-price-row">
             <div>
               <strong>Managed Hosting &amp; Domein (${safeDomain})</strong><br>
-              <span style="font-size:0.82rem; color:var(--text-muted);">SSL-slotje, 5 mailboxen, dagelijkse back-ups &amp; 30 min service/jaar</span>
+              <span style="font-size:0.82rem; color:var(--text-muted);">${isDomainFree ? 'Inclusief live registratie van uw vrije .nl domeinnaam, SSL-slotje' : 'SSL-slotje'}, 5 mailboxen, dagelijkse back-ups &amp; 30 min service/jaar</span>
             </div>
             <strong style="font-size:1.05rem; color:#38bdf8;">€ 150,- / jr</strong>
           </div>

@@ -8,3 +8,10 @@
     Deny from all
 </IfModule>
 
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set Referrer-Policy "no-referrer"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set Content-Security-Policy "default-src 'none'; frame-ancestors 'none'; sandbox"
+</IfModule>

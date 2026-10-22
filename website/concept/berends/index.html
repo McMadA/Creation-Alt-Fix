@@ -13,7 +13,9 @@
   <meta property="og:url" content="https://creationaltfix.nl/concept/berends/">
   <meta property="og:site_name" content="Berends Bestrating & Grondwerk">
   <meta property="og:locale" content="nl_NL">
+  <meta property="og:image" content="https://www.creationaltfix.nl/images/logo.webp">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.creationaltfix.nl/images/logo.webp">
   <meta name="twitter:title" content="Berends Bestrating & Grondwerk | Bestrating & Grondwerk in Hoogezand">
   <meta name="twitter:description" content="Professionele diensten door Berends Bestrating & Grondwerk. Bekijk ons werk, recensies en vraag direct een offerte aan.">
   <meta name="description" content="Berends Bestrating Hoogezand. Specialist in vakkundige sierbestrating, oprit aanleg, grondwerk en tuinaanleg in Hoogezand en omstreken. Vraag direct een vrijblijvende offerte aan.">
@@ -964,6 +966,46 @@
     clearTimeout(t._timer);
     t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);
   }
+
+  // 4. ZERO-COOKIE VIEW-PING BEACON (100% AVG / GDPR-proof)
+  // Registreert een anonieme view-ping zodra een potentiële klant het concept opent
+  (function() {
+    try {
+      var isPreview = false;
+      var search = window.location.search || '';
+      if (search.indexOf('preview=admin') !== -1 || search.indexOf('admin=1') !== -1 || search.indexOf('caf_admin=1') !== -1) {
+        isPreview = true;
+      }
+      try {
+        if (localStorage.getItem('caf_bridge_token') || localStorage.getItem('caf_admin') || sessionStorage.getItem('caf_admin_preview')) {
+          isPreview = true;
+        }
+      } catch (e) {}
+
+      var conceptSlug = "berends";
+      var sessionKey = 'caf_viewed_' + conceptSlug;
+      if (!isPreview && conceptSlug && !sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, '1');
+        var payload = JSON.stringify({ action: 'ping', slug: conceptSlug });
+        var pingUrl = '/crm/api/leads.php?action=ping&slug=' + encodeURIComponent(conceptSlug);
+        var host = window.location.hostname;
+        if (window.location.port === '3847' || host === 'localhost' || host === '127.0.0.1') {
+          pingUrl = 'http://127.0.0.1:3847/api/leads/ping';
+        }
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(pingUrl, new Blob([payload], { type: 'application/json' }));
+        } else if (window.fetch) {
+          fetch(pingUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+            mode: 'no-cors'
+          }).catch(function() {});
+        }
+      }
+    } catch (err) {}
+  })();
 })();
 </script>
 </head>
@@ -1241,6 +1283,47 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Veelgestelde Vragen Section -->
+  <section id="faq" style="padding: 80px 0; background: var(--bg-surface, #111827);">
+    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 20px;">
+      <div style="text-align: center; margin-bottom: 48px;">
+        <span class="section-subtitle" style="display: inline-block; color: var(--primary, #06B6D4); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Duidelijkheid &amp; Vragen</span>
+        <h2 style="font-size: 2.2rem; color: #F9FAFB; font-weight: 800; margin-bottom: 12px;">Veelgestelde Vragen</h2>
+        <p style="color: #9CA3AF; font-size: 1.05rem;">Antwoorden op veelgestelde vragen over onze werkwijze, inmeten en garantie</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <details style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 24px; color: #F9FAFB;">
+          <summary style="font-weight: 600; font-size: 1.05rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>Komt Berends Bestrating &amp; Grondwerk vooraf vrijblijvend de situatie inmeten?</span>
+            <span style="color: var(--primary, #06B6D4); font-size: 1.3rem; margin-left: 12px;">+</span>
+          </summary>
+          <p style="margin-top: 14px; color: #9CA3AF; line-height: 1.6; font-size: 0.95rem;">Ja, we komen graag bij u langs in regio Hoogezand / Groningen om de maten op te nemen, de ondergrond te beoordelen en uw wensen persoonlijk door te spreken.</p>
+        </details>
+        <details style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 24px; color: #F9FAFB;">
+          <summary style="font-weight: 600; font-size: 1.05rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>Verzorgen jullie ook het grondwerk en de afvoer van oud materiaal?</span>
+            <span style="color: var(--primary, #06B6D4); font-size: 1.3rem; margin-left: 12px;">+</span>
+          </summary>
+          <p style="margin-top: 14px; color: #9CA3AF; line-height: 1.6; font-size: 0.95rem;">Jazeker, wij verzorgen het complete traject: van het afgraven en afvoeren van oude grond/klinkers tot het leveren van zand, opsluitbanden en bestrating.</p>
+        </details>
+        <details style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 24px; color: #F9FAFB;">
+          <summary style="font-weight: 600; font-size: 1.05rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>Hoe voorkomen jullie verzakkingen van het straatwerk?</span>
+            <span style="color: var(--primary, #06B6D4); font-size: 1.3rem; margin-left: 12px;">+</span>
+          </summary>
+          <p style="margin-top: 14px; color: #9CA3AF; line-height: 1.6; font-size: 0.95rem;">Door te werken met een professioneel verdicht zandbed (mechanisch getrild), betonnen opsluiting en vakkundig afschot blijft uw bestrating jarenlang strak liggen.</p>
+        </details>
+        <details style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 24px; color: #F9FAFB;">
+          <summary style="font-weight: 600; font-size: 1.05rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>Kunnen jullie meedenken over het ontwerp en waterafvoer?</span>
+            <span style="color: var(--primary, #06B6D4); font-size: 1.3rem; margin-left: 12px;">+</span>
+          </summary>
+          <p style="margin-top: 14px; color: #9CA3AF; line-height: 1.6; font-size: 0.95rem;">Zeker. We adviseren over legpatronen, terrastegels, lijngoten en drainage om plasvorming bij zware regenval te voorkomen.</p>
+        </details>
       </div>
     </div>
   </section>

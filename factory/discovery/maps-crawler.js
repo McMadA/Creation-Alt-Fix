@@ -1,15 +1,51 @@
 import { FACTORY_CONFIG } from '../config/factory-config.js';
 
 /**
+ * Provinciale coördinaten- en centrummapping voor Noord-Nederland (TASK-908)
+ */
+export const REGIONAL_CENTERS = {
+  groningen: { lat: 53.2194, lng: 6.5665, zoom: 13, name: 'Groningen', province: 'Groningen' },
+  assen: { lat: 52.9925, lng: 6.5625, zoom: 13, name: 'Assen', province: 'Drenthe' },
+  drachten: { lat: 53.1060, lng: 6.1000, zoom: 13, name: 'Drachten', province: 'Friesland' },
+  emmen: { lat: 52.7792, lng: 6.9069, zoom: 13, name: 'Emmen', province: 'Drenthe' },
+  hoogeveen: { lat: 52.7289, lng: 6.4764, zoom: 13, name: 'Hoogeveen', province: 'Drenthe' },
+  winschoten: { lat: 53.1436, lng: 7.0347, zoom: 13, name: 'Winschoten', province: 'Groningen' },
+  veendam: { lat: 53.1000, lng: 6.8750, zoom: 13, name: 'Veendam', province: 'Groningen' },
+  sappemeer: { lat: 53.1642, lng: 6.7869, zoom: 14, name: 'Sappemeer', province: 'Groningen' },
+  roden: { lat: 53.1367, lng: 6.4319, zoom: 14, name: 'Roden', province: 'Drenthe' },
+  leek: { lat: 53.1625, lng: 6.3889, zoom: 14, name: 'Leek', province: 'Groningen' },
+  hoogezand: { lat: 53.1616, lng: 6.7583, zoom: 13, name: 'Hoogezand', province: 'Groningen' }
+};
+
+/**
+ * Bepaalt de geografische coördinaten voor een zoekterm of regio
+ * @param {string} queryOrRegion
+ * @returns {Object} { lat, lng, zoom, name, province }
+ */
+export function resolveRegionCoordinates(queryOrRegion = '') {
+  if (!queryOrRegion || typeof queryOrRegion !== 'string') {
+    return { ...REGIONAL_CENTERS.hoogezand };
+  }
+  const str = queryOrRegion.toLowerCase();
+  for (const [key, center] of Object.entries(REGIONAL_CENTERS)) {
+    if (str.includes(key)) {
+      return { ...center };
+    }
+  }
+  return { ...REGIONAL_CENTERS.hoogezand };
+}
+
+/**
  * Creation+Alt+Fix - Google Maps Crawler Engine
- * Scant Google Maps lokaal op ZZP bedrijven in Hoogezand & omstreken
+ * Scant Google Maps lokaal op ZZP bedrijven in Hoogezand, Groningen, Assen, Drachten, Emmen en omstreken
  */
 export async function searchGoogleMaps(query, options = {}) {
   const limit = options.limit || FACTORY_CONFIG.scraper.maxResultsPerQuery || 10;
   const headless = options.headless !== undefined ? options.headless : true;
   const existingLeads = Array.isArray(options.existingLeads) ? options.existingLeads : [];
+  const coords = options.coordinates || resolveRegionCoordinates(options.region || query);
 
-  console.log(`🔍 [Crawler] Start zoekopdracht op Google Maps: "${query}" (Doellimiet: ${limit})...`);
+  console.log(`🔍 [Crawler] Start zoekopdracht op Google Maps: "${query}" in ${coords.name} (Doellimiet: ${limit})...`);
 
   const results = [];
   let browser = null;
@@ -30,12 +66,12 @@ export async function searchGoogleMaps(query, options = {}) {
       userAgent: FACTORY_CONFIG.scraper.userAgents[0],
       viewport: { width: 1366, height: 768 },
       locale: 'nl-NL',
-      geolocation: { latitude: 53.1616, longitude: 6.7583 }, // Hoogezand coördinaten
+      geolocation: { latitude: coords.lat, longitude: coords.lng }, // Dynamische regionale coördinaten (TASK-908)
       permissions: ['geolocation']
     });
 
     const page = await context.newPage();
-    const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@53.1616,6.7583,13z`;
+    const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${coords.lat},${coords.lng},${coords.zoom || 13}z`;
     await page.goto(mapsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     // Handle Google Consent Dialog indien getoond
@@ -81,16 +117,16 @@ export async function searchGoogleMaps(query, options = {}) {
           await page.waitForTimeout(1800);
 
           // Extraheer bedrijfsdetails uit het rechter/zijpaneel
-          const details = await extractPlaceDetails(page, rawAria, href);
+          const details = await extractPlaceDetails(page, rawAria, href, coords.name);
           if (details && details.name) {
-            const sanitized = sanitizeLeadData(details);
+            const sanitized = sanitizeLeadData(details, coords.name);
             if (sanitized) {
               if (isDuplicateLead(sanitized, results) || isDuplicateLead(sanitized, existingLeads)) {
                 console.log(`   ⏭️ [Crawler] Duplicaat overgeslagen tijdens crawl: ${sanitized.name} (match op website/telefoon)`);
                 continue;
               }
               results.push(sanitized);
-              console.log(`   ✔️ Gevonden: ${sanitized.name} | Tel: ${sanitized.phone || 'Geen'} | Website: ${sanitized.website || '❌ GEEN (Hoge potentie!)'}`);
+              console.log(`   ✔️ Gevonden: ${sanitized.name} (${sanitized.region}) | Tel: ${sanitized.phone || 'Geen'} | Website: ${sanitized.website || '❌ GEEN (Hoge potentie!)'}`);
             }
           }
         } catch (err) {
@@ -102,9 +138,9 @@ export async function searchGoogleMaps(query, options = {}) {
       const titleEl = await page.locator('h1').first();
       if (await titleEl.isVisible({ timeout: 3000 })) {
         const name = await titleEl.innerText();
-        const singleDetails = await extractPlaceDetails(page, name, page.url());
+        const singleDetails = await extractPlaceDetails(page, name, page.url(), coords.name);
         if (singleDetails) {
-          const sanitized = sanitizeLeadData(singleDetails);
+          const sanitized = sanitizeLeadData(singleDetails, coords.name);
           if (sanitized && !isDuplicateLead(sanitized, results) && !isDuplicateLead(sanitized, existingLeads)) {
             results.push(sanitized);
           }
@@ -127,8 +163,8 @@ export async function searchGoogleMaps(query, options = {}) {
 /**
  * Extraheert adres, telefoon, website, reviews en openingstijden uit het detailvenster
  */
-async function extractPlaceDetails(page, fallbackName, mapsUrl) {
-  return await page.evaluate(({ fallbackName, mapsUrl }) => {
+async function extractPlaceDetails(page, fallbackName, mapsUrl, targetRegion = 'Hoogezand') {
+  return await page.evaluate(({ fallbackName, mapsUrl, targetRegion }) => {
     // 1. Bedrijfsnaam (voorkom de algemene 'Resultaten' kop van Google Maps)
     let name = fallbackName || '';
     const placeH1 = document.querySelector('h1.DUwDvf, div[role="main"] h1');
@@ -209,7 +245,6 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       }
     }
 
-
     // 5. Haal top reviews op (indien zichtbaar)
     const reviews = [];
     const reviewCards = document.querySelectorAll('div[class*="jftiEf"], div[data-review-id]');
@@ -248,9 +283,10 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
       reviews,
       googleMapsUrl: mapsUrl,
       hasWebsite: Boolean(cleanWeb),
+      region: targetRegion || 'Hoogezand',
       scannedAt: new Date().toISOString()
     };
-  }, { fallbackName, mapsUrl });
+  }, { fallbackName, mapsUrl, targetRegion });
 }
 
 /**
@@ -260,7 +296,12 @@ async function extractPlaceDetails(page, fallbackName, mapsUrl) {
  */
 export function normalizeDomain(url) {
   if (!url || typeof url !== 'string') return null;
-  return url.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').trim() || null;
+  return url.trim().toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/[\/?#].*$/, '')
+    .replace(/:(?:80|443)$/, '')
+    .trim() || null;
 }
 
 /**
@@ -305,10 +346,11 @@ export function isDuplicateLead(candidate, existingList = []) {
 /**
  * Saniteert en normaliseert gescrapete lead gegevens (CWE-79 URI injectie & Windows Path Bounds)
  * @param {Object} data 
+ * @param {string} [defaultRegion='Hoogezand']
  * @returns {Object|null}
  */
-export function sanitizeLeadData(data) {
-  if (!data || typeof data !== 'object') return null;
+export function sanitizeLeadData(data, defaultRegion = 'Hoogezand') {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
   const name = typeof data.name === 'string' ? data.name.trim().slice(0, 150) : 'Lokale Ondernemer';
   let slug = (typeof data.slug === 'string' ? data.slug : name)
     .toLowerCase()
@@ -321,11 +363,13 @@ export function sanitizeLeadData(data) {
   if (!/^https?:\/\//i.test(website)) {
     website = null;
   }
+  const region = typeof data.region === 'string' && data.region.trim() ? data.region.trim() : defaultRegion;
   return {
     ...data,
     name,
     slug,
     website,
-    hasWebsite: Boolean(website)
+    hasWebsite: Boolean(website),
+    region
   };
 }

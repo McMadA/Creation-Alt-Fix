@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /cgi-bin/
+Disallow: /crm/
 
 # AI Web Scraper & Crawler Directives (EU TDM Directive 2019/790)
 User-agent: GPTBot

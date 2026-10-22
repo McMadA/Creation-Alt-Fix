@@ -5,6 +5,8 @@
  */
 
 header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -18,12 +20,13 @@ if (!empty($_POST['website'])) {
     exit;
 }
 
-// 2. Sanitize and validate inputs
-$naam = trim($_POST['naam'] ?? '');
-$email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
-$telefoon = trim($_POST['telefoon'] ?? '');
-$voertuig = trim($_POST['voertuig'] ?? 'Stalling aanvraag');
-$bericht = trim($_POST['bericht'] ?? '');
+// 2. Sanitize and validate inputs (CRLF Injection & XSS Mitigations - CWE-93)
+$naam = substr(preg_replace('/[\r\n\x00-\x1F\x7F]/', '', strip_tags(trim($_POST['naam'] ?? ''))), 0, 100);
+$rawEmail = preg_replace('/[\r\n\x00-\x1F\x7F,; ]/', '', trim($_POST['email'] ?? ''));
+$email = filter_var($rawEmail, FILTER_VALIDATE_EMAIL);
+$telefoon = substr(preg_replace('/[\r\n\x00-\x1F\x7F]/', '', strip_tags(trim($_POST['telefoon'] ?? ''))), 0, 30);
+$voertuig = substr(preg_replace('/[\r\n\x00-\x1F\x7F]/', '', strip_tags(trim($_POST['voertuig'] ?? 'Stalling aanvraag'))), 0, 100);
+$bericht = substr(strip_tags(trim($_POST['bericht'] ?? '')), 0, 5000);
 
 if (empty($naam)) {
     http_response_code(400);
@@ -63,7 +66,7 @@ $headers[] = 'From: Remtheerd Website <no-reply@remtheerd.nl>';
 $headers[] = 'Reply-To: ' . $naam . ' <' . $email . '>';
 $headers[] = 'MIME-Version: 1.0';
 $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-$headers[] = 'X-Mailer: PHP/' . phpversion();
+$headers[] = 'X-Mailer: ConceptMailer/2.0';
 
 $sent = @mail($to, $emailSubject, $body, implode("\r\n", $headers));
 $isLocal = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1']) || strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false;

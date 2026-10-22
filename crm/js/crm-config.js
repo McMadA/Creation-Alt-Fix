@@ -331,7 +331,7 @@ export function formatProjectStatus(rawStatus, fallbackStatusClass = '') {
 export function formatCurrency(amount) {
     if (amount === null || amount === undefined || amount === '') return `${BRANDING.currencySymbol} 0,00`;
     let num = typeof amount === 'number' ? amount : parseFloat(String(amount).replace(',', '.'));
-    if (isNaN(num)) num = 0;
+    if (!isFinite(num)) num = 0;
     return `${BRANDING.currencySymbol} ${num.toFixed(2).replace('.', ',')}`;
 }
 
@@ -345,6 +345,7 @@ export function normalizeDomain(domain) {
     return domain.trim().toLowerCase()
         .replace(/^https?:\/\//, '')
         .replace(/^www\./, '')
-        .split('/')[0]
+        .split(/[/?#]/)[0]
+        .replace(/:(?:80|443)$/, '')
         .trim();
 }

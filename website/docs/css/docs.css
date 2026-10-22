@@ -301,7 +301,7 @@ body {
 
 .video-walkthrough-preview {
     height: 260px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.15)), url('/images/ChatGPT%20Image.webp') center/cover no-repeat;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.15)), url('/images/chatgpt-image.webp') center/cover no-repeat;
     display: flex;
     flex-direction: column;
     align-items: center;

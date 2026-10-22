@@ -831,6 +831,15 @@ async function setupAndRenderLeadFactory() {
         if (saved.email && !String(saved.email).toLowerCase().includes('creationaltfix') && !merged.email) {
             merged.email = saved.email;
         }
+        if (saved.viewsCount !== undefined) {
+            merged.viewsCount = Math.max(merged.viewsCount || 0, parseInt(saved.viewsCount, 10) || 0);
+        }
+        if (saved.lastViewedAt) {
+            merged.lastViewedAt = saved.lastViewedAt;
+        }
+        if (saved.firstViewedAt) {
+            merged.firstViewedAt = saved.firstViewedAt;
+        }
         return merged;
     });
 

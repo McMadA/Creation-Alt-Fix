@@ -18,6 +18,27 @@ import { generateProposalPDF, generateInvoicePDF, uploadPdfToStorage } from "../
 import { getGeminiApiKey, setGeminiApiKey, hasGeminiApiKey, getGeminiModel, setGeminiModel, generateProposalScope, generateAftercareEmail, generateVisualDesignConcept } from "../../js/ai-engine.js";
 import { syncDomainChangeToMonitoring, normalizeDomain, getDomainStatusWithFallback } from "../../js/uptime-monitor.js";
 import { notifyClientAdminReply, notifyClientPhaseChange } from "../../js/email-notifications.js";
+import { calculateOnboardingProgress } from "../../status/js/modules/onboarding-checklist.js";
+import {
+    MILESTONE_DEFINITIONS,
+    generatePortalMagicLinkSync,
+    normalizeDutchPhone,
+    generateMilestoneWhatsAppUrl,
+    dispatchMilestoneServerSide,
+    createMilestoneAuditRecord
+} from "./modules/milestone-dispatcher.js";
+import {
+    VAULT_CATEGORIES,
+    resolveFileCategory,
+    computeFileVersions,
+    filterVaultFiles,
+    getVaultStats,
+    prepareFileRecord,
+    renderVaultCategoryTabsHtml,
+    renderVaultFilesGridHtml,
+    initDocumentVaultEvents,
+    openVaultPreview
+} from "../../status/js/modules/document-vault.js";
 
 let app, auth, db, storage, secondaryAuth;
 try {
@@ -657,6 +678,7 @@ function renderProjectWorkspace(p) {
     renderTimelineAndNotes(p.internalNotes || [], p.auditLog || []);
     renderFilesList(p.files || []);
     renderSubscriptionAndInvoiceCard(p);
+    renderAdminOnboardingCard(p);
 
     // Update Klantview Preview links & state
     const clientviewUrl = `../status/index.html?preview=true&id=${encodeURIComponent(currentProjectId)}`;
@@ -1071,95 +1093,137 @@ async function logAuditEvent(type, description) {
     }
 }
 
-// --- [TASK-832] Enhanced Project Files List with Download Manager ---
+// --- [TASK-912] Gestructureerde Document & Media Vault met Categorieën en Versiebeheer ---
+let activeAdminVaultCategory = 'all';
+let adminVaultSearchQuery = '';
+let isAdminVaultEventsInitialized = false;
+
 function renderFilesList(files) {
     const container = document.getElementById('project-files-list');
     const filesCountElem = document.getElementById('tab-files-count');
+    const tabsContainer = document.getElementById('admin-vault-category-tabs');
+    const searchInput = document.getElementById('admin-vault-search-input');
+    const uploadInput = document.getElementById('admin-vault-file-input');
+    const uploadStatus = document.getElementById('admin-vault-upload-status');
+    const categorySelect = document.getElementById('admin-vault-upload-category');
 
-    filesCountElem.innerText = files.length;
+    const filesArray = Array.isArray(files) ? files : [];
+    if (filesCountElem) filesCountElem.innerText = filesArray.length;
+    if (!container) return;
 
-    if (files.length === 0) {
-        container.innerHTML = `<p style="color: var(--color-text-secondary); font-style: italic; font-size: 0.9rem;">Er zijn nog geen bestanden geüpload voor dit project door de klant.</p>`;
-        return;
-    }
+    const stats = getVaultStats(filesArray);
 
-    // File type icon resolver
-    function getFileIcon(filename) {
-        const ext = (filename || '').split('.').pop().toLowerCase();
-        const iconMap = {
-            'pdf': 'fa-file-pdf', 'doc': 'fa-file-word', 'docx': 'fa-file-word',
-            'xls': 'fa-file-excel', 'xlsx': 'fa-file-excel', 'csv': 'fa-file-csv',
-            'png': 'fa-file-image', 'jpg': 'fa-file-image', 'jpeg': 'fa-file-image',
-            'gif': 'fa-file-image', 'svg': 'fa-file-image', 'webp': 'fa-file-image',
-            'zip': 'fa-file-archive', 'rar': 'fa-file-archive', '7z': 'fa-file-archive',
-            'txt': 'fa-file-alt', 'rtf': 'fa-file-alt', 'md': 'fa-file-alt',
-            'mp4': 'fa-file-video', 'mov': 'fa-file-video', 'avi': 'fa-file-video',
-            'psd': 'fa-palette', 'ai': 'fa-palette', 'fig': 'fa-palette'
-        };
-        return iconMap[ext] || 'fa-file';
-    }
-
-    function getFileColor(filename) {
-        const ext = (filename || '').split('.').pop().toLowerCase();
-        if (['pdf'].includes(ext)) return '#ef4444';
-        if (['doc', 'docx'].includes(ext)) return '#3b82f6';
-        if (['xls', 'xlsx', 'csv'].includes(ext)) return '#22c55e';
-        if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) return '#a855f7';
-        if (['zip', 'rar', '7z'].includes(ext)) return '#f59e0b';
-        if (['psd', 'ai', 'fig'].includes(ext)) return '#ec4899';
-        return 'var(--color-primary-light)';
-    }
-
-    // Summary header with download-all button
-    let html = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-folder-open" style="color: var(--color-accent); font-size: 1.1rem;"></i>
-                <span style="color: #f8fafc; font-weight: 600; font-size: 0.95rem;">Aangeleverde Klantbestanden</span>
-                <span style="background: rgba(34,211,238,0.15); color: var(--color-accent); padding: 2px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">${files.length}</span>
-            </div>
-            <button type="button" id="btn-download-all-files" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); color: var(--color-accent); border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" title="Open alle bestanden in nieuw tabblad">
-                <i class="fas fa-download"></i> Download Alle
-            </button>
-        </div>
-    `;
-
-    // File rows
-    html += files.map(f => {
-        const icon = getFileIcon(f.name);
-        const color = getFileColor(f.name);
-        const dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'onbekend';
-        const sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : '';
-
-        return `
-        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; transition: border-color 0.2s;" onmouseover="this.style.borderColor='rgba(34,211,238,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
-            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1;">
-                <i class="fas ${icon}" style="color: ${color}; font-size: 1.3rem; width: 24px; text-align: center;"></i>
-                <div style="overflow: hidden; flex: 1;">
-                    <div style="font-size: 0.92rem; color: #fff; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${escapeHtml(f.name)}</div>
-                    <div style="font-size: 0.75rem; color: var(--color-text-secondary); display: flex; gap: 12px; flex-wrap: wrap;">
-                        <span><i class="far fa-clock" style="margin-right: 3px;"></i>${dateStr}</span>
-                        ${sizeStr ? `<span><i class="fas fa-weight-hanging" style="margin-right: 3px;"></i>${sizeStr}</span>` : ''}
-                    </div>
-                </div>
-            </div>
-            <a href="${escapeHtml(sanitizeUrl(f.url))}" target="_blank" class="btn btn-secondary btn-sm" style="color: var(--color-accent); border-color: rgba(34, 211, 238, 0.3); white-space: nowrap; margin-left: 10px;">
-                <i class="fas fa-download"></i> Downloaden
-            </a>
-        </div>`;
-    }).join('');
-
-    container.innerHTML = html;
-
-    // Download All handler — opens each file in a new tab
-    document.getElementById('btn-download-all-files')?.addEventListener('click', () => {
-        files.forEach((f, i) => {
-            setTimeout(() => {
-                const safeUrl = sanitizeUrl(f.url);
-                if (safeUrl !== '#') window.open(safeUrl, '_blank');
-            }, i * 300); // stagger to prevent popup blocker
+    if (tabsContainer) {
+        tabsContainer.innerHTML = renderVaultCategoryTabsHtml({
+            activeCategory: activeAdminVaultCategory,
+            stats,
+            lang: 'nl'
         });
+    }
+
+    container.innerHTML = renderVaultFilesGridHtml({
+        files: filesArray,
+        activeCategory: activeAdminVaultCategory,
+        searchQuery: adminVaultSearchQuery,
+        lang: 'nl',
+        isAdmin: true
     });
+
+    if (!isAdminVaultEventsInitialized) {
+        isAdminVaultEventsInitialized = true;
+
+        initDocumentVaultEvents(document, {
+            onCategoryChange: (newCat) => {
+                activeAdminVaultCategory = newCat;
+                if (currentProjectData) renderFilesList(currentProjectData.files || []);
+            }
+        });
+
+        searchInput?.addEventListener('input', (e) => {
+            adminVaultSearchQuery = e.target.value;
+            if (currentProjectData) {
+                container.innerHTML = renderVaultFilesGridHtml({
+                    files: currentProjectData.files || [],
+                    activeCategory: activeAdminVaultCategory,
+                    searchQuery: adminVaultSearchQuery,
+                    lang: 'nl',
+                    isAdmin: true
+                });
+            }
+        });
+
+        document.getElementById('btn-download-all-files')?.addEventListener('click', () => {
+            if (!currentProjectData || !currentProjectData.files) return;
+            const matching = filterVaultFiles(currentProjectData.files, {
+                category: activeAdminVaultCategory,
+                searchQuery: adminVaultSearchQuery
+            });
+            matching.forEach((f, idx) => {
+                setTimeout(() => {
+                    const safe = sanitizeUrl(f.url);
+                    if (safe !== '#') window.open(safe, '_blank');
+                }, idx * 250);
+            });
+        });
+
+        uploadInput?.addEventListener('change', async (e) => {
+            const uploadedFiles = e.target.files;
+            if (!uploadedFiles || uploadedFiles.length === 0 || !currentProjectId || !storage || !db) return;
+
+            if (uploadStatus) {
+                uploadStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploaden...';
+                uploadStatus.style.color = '#38bdf8';
+            }
+
+            try {
+                let existingFiles = Array.isArray(currentProjectData?.files) ? [...currentProjectData.files] : [];
+                const targetCat = categorySelect?.value || 'auto';
+
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const f = uploadedFiles[i];
+                    const safeName = f.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+                    const filePath = `projects/${currentProjectId}/${Date.now()}_${safeName}`;
+                    const storageRef = ref(storage, filePath);
+
+                    await uploadBytes(storageRef, f);
+                    const downloadUrl = await getDownloadURL(storageRef);
+
+                    const fileRecord = prepareFileRecord({
+                        file: {
+                            name: f.name,
+                            url: downloadUrl,
+                            size: f.size,
+                            type: f.type
+                        },
+                        category: targetCat === 'auto' ? undefined : targetCat,
+                        uploadedBy: 'admin',
+                        existingFiles
+                    });
+
+                    existingFiles.push(fileRecord);
+                }
+
+                await updateDoc(doc(db, "projects", currentProjectId), { files: existingFiles });
+                if (currentProjectData) currentProjectData.files = existingFiles;
+
+                if (uploadStatus) {
+                    uploadStatus.innerHTML = '<i class="fas fa-check-circle"></i> Geüpload!';
+                    uploadStatus.style.color = '#34d399';
+                    setTimeout(() => { uploadStatus.innerText = ''; }, 3500);
+                }
+
+                renderFilesList(existingFiles);
+            } catch (err) {
+                console.error("Admin upload error:", err);
+                if (uploadStatus) {
+                    uploadStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fout bij uploaden';
+                    uploadStatus.style.color = '#f87171';
+                }
+            }
+
+            e.target.value = '';
+        });
+    }
 }
 
 // --- [TASK-604] Admin Messages & Tickets Management ---
@@ -1704,6 +1768,154 @@ async function changeProjectPhase(phaseKey) {
 
 // --- Setup Form Handlers & Workflow Buttons ---
 function setupFormHandlers() {
+    // [TASK-909] Milestone Dispatcher Modal & Triggers
+    const milestoneModal = document.getElementById('milestone-dispatch-modal');
+    const milestoneSelect = document.getElementById('milestone-select');
+    const magicLinkInput = document.getElementById('milestone-magic-link-input');
+    const customNoteInput = document.getElementById('milestone-custom-note');
+    const statusMsgEl = document.getElementById('milestone-dispatch-status');
+
+    function updateMilestoneModalState() {
+        if (!currentProjectData || !milestoneModal) return;
+        const p = currentProjectData;
+        const key = milestoneSelect ? milestoneSelect.value : 'proposal_ready';
+        const clientEmail = p.email || '';
+        const clientPhone = p.phone || p.telefoon || '';
+        const clientName = p.contactName || p.client || 'Klant';
+        const projectName = p.companyName || p.client || 'Project';
+        const domain = p.domain || '';
+        const customNote = customNoteInput ? customNoteInput.value.trim() : '';
+
+        // Generate deterministic magic link
+        const magicLink = generatePortalMagicLinkSync({
+            projectId: currentProjectId,
+            clientEmail: clientEmail,
+            action: (MILESTONE_DEFINITIONS[key] && MILESTONE_DEFINITIONS[key].actionType) || 'view'
+        });
+
+        if (magicLinkInput) magicLinkInput.value = magicLink;
+
+        // WhatsApp button handler
+        const btnWa = document.getElementById('btn-dispatch-whatsapp');
+        if (btnWa) {
+            btnWa.onclick = () => {
+                const waUrl = generateMilestoneWhatsAppUrl({
+                    clientPhone,
+                    clientName,
+                    projectName,
+                    milestoneKey: key,
+                    portalLink: magicLink,
+                    customNote,
+                    domain
+                });
+                window.open(waUrl, '_blank');
+                logAuditEvent('milestone_whatsapp', `WhatsApp milestone geopend [${(MILESTONE_DEFINITIONS[key] && MILESTONE_DEFINITIONS[key].title) || key}] naar ${clientPhone || 'klant'}`);
+                if (statusMsgEl) {
+                    statusMsgEl.style.display = 'block';
+                    statusMsgEl.style.background = 'rgba(16, 185, 129, 0.15)';
+                    statusMsgEl.style.border = '1px solid #10b981';
+                    statusMsgEl.style.color = '#34d399';
+                    statusMsgEl.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp geopend in een nieuw venster!';
+                }
+            };
+        }
+
+        // Email button handler
+        const btnMail = document.getElementById('btn-dispatch-email');
+        if (btnMail) {
+            btnMail.onclick = async () => {
+                if (!clientEmail) {
+                    alert('Geen klant e-mailadres ingesteld voor dit project.');
+                    return;
+                }
+                btnMail.disabled = true;
+                btnMail.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verzenden...';
+                if (statusMsgEl) statusMsgEl.style.display = 'none';
+
+                const res = await dispatchMilestoneServerSide({
+                    projectId: currentProjectId,
+                    clientEmail,
+                    clientName,
+                    clientPhone,
+                    milestoneKey: key,
+                    portalLink: magicLink,
+                    customNote,
+                    deliverables: p.deliverables || p.scopeItems || []
+                });
+
+                btnMail.disabled = false;
+                btnMail.innerHTML = '<i class="fas fa-paper-plane"></i> Verzend E-mail';
+
+                if (res.success) {
+                    await logAuditEvent('milestone_email', `Server-side e-mail milestone verstuurd [${(MILESTONE_DEFINITIONS[key] && MILESTONE_DEFINITIONS[key].title) || key}] naar ${clientEmail}`);
+                    if (statusMsgEl) {
+                        statusMsgEl.style.display = 'block';
+                        statusMsgEl.style.background = 'rgba(56, 189, 248, 0.15)';
+                        statusMsgEl.style.border = '1px solid #38bdf8';
+                        statusMsgEl.style.color = '#38bdf8';
+                        statusMsgEl.innerHTML = '<i class="fas fa-check-circle"></i> E-mail succesvol verzonden via de server!';
+                    }
+                    alert('✓ Milestone e-mail succesvol verzonden naar ' + clientEmail + '!');
+                } else {
+                    if (statusMsgEl) {
+                        statusMsgEl.style.display = 'block';
+                        statusMsgEl.style.background = 'rgba(239, 68, 68, 0.15)';
+                        statusMsgEl.style.border = '1px solid #ef4444';
+                        statusMsgEl.style.color = '#f87171';
+                        statusMsgEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (res.error || 'Fout bij verzenden');
+                    }
+                    alert('Waarschuwing bij server-side verzending: ' + (res.error || 'onbekende fout'));
+                }
+            };
+        }
+    }
+
+    document.getElementById('btn-open-milestone-modal')?.addEventListener('click', () => {
+        if (!milestoneModal) return;
+        const cur = formatProjectStatus(currentProjectData?.status || '');
+        if (cur.isWaitAgreement || cur.phase === 2) {
+            if (milestoneSelect) milestoneSelect.value = 'proposal_ready';
+        } else if (cur.phase === 3) {
+            if (milestoneSelect) milestoneSelect.value = 'design_ready';
+        } else if (cur.phase === 4) {
+            if (milestoneSelect) milestoneSelect.value = 'development_started';
+        } else if (cur.isPaymentWaiting) {
+            if (milestoneSelect) milestoneSelect.value = 'payment_waiting';
+        } else if (cur.isLiveCompleted || cur.phase === 5) {
+            if (milestoneSelect) milestoneSelect.value = 'project_completed';
+        }
+        updateMilestoneModalState();
+        milestoneModal.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-milestone-modal')?.addEventListener('click', () => {
+        milestoneModal?.classList.add('hidden');
+    });
+
+    milestoneSelect?.addEventListener('change', () => {
+        updateMilestoneModalState();
+    });
+
+    customNoteInput?.addEventListener('input', () => {
+        updateMilestoneModalState();
+    });
+
+    document.getElementById('btn-copy-magic-link')?.addEventListener('click', async () => {
+        if (!magicLinkInput || !magicLinkInput.value) return;
+        try {
+            await navigator.clipboard.writeText(magicLinkInput.value);
+            const btn = document.getElementById('btn-copy-magic-link');
+            if (btn) {
+                const prev = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Gekopieerd!';
+                setTimeout(() => { btn.innerHTML = prev; }, 2000);
+            }
+        } catch (e) {
+            magicLinkInput.select();
+            document.execCommand('copy');
+        }
+    });
+
     // 0. Quick Phase Selector & Interactive Pipeline Tracker
     document.getElementById('quick-phase-changer')?.addEventListener('change', (e) => {
         const val = e.target.value;
@@ -3317,3 +3529,42 @@ function setupFormHandlers() {
     });
 }
 
+
+// ========================================================
+// [TASK-910] Klant Onboarding & Opleverstatus Card
+// ========================================================
+function renderAdminOnboardingCard(p) {
+    const badge = document.getElementById('admin-onboarding-percent-badge');
+    const container = document.getElementById('admin-onboarding-summary-container');
+    if (!container) return;
+
+    const progress = calculateOnboardingProgress(p);
+    if (badge) {
+        badge.innerText = `${progress.completed}/${progress.total} (${progress.percent}%)`;
+        badge.style.color = progress.isAllDone ? '#34d399' : (progress.actionRequired > 0 ? '#fbbf24' : '#38bdf8');
+    }
+
+    const eppToken = p.domainTransferToken || p.eppCode || p.onboarding?.domainToken || '';
+    const noLogo = p.onboarding?.noLogoNeeded || p.onboarding?.tasks?.logo?.noLogoNeeded;
+
+    container.innerHTML = `
+        <div style="font-size: 0.84rem; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">Status Voortgang</span>
+                <span style="font-weight: 700; color: ${progress.isAllDone ? '#34d399' : '#fbbf24'};">${progress.isAllDone ? 'Alles Compleet' : `${progress.actionRequired} Open Acties`}</span>
+            </div>
+            <div>
+                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">EPP Verhuiscode</span>
+                <div style="font-family: monospace; font-size: 0.85rem; color: #fff; margin-top: 2px;">
+                    ${eppToken ? `<strong style="color: #38bdf8;">${escapeHtml(eppToken)}</strong>` : '<span style="color: var(--color-text-secondary);">Nog niet ingevuld door klant</span>'}
+                </div>
+            </div>
+            <div>
+                <span style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase;">Logo Voorkeur</span>
+                <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 2px;">
+                    ${noLogo ? '? Creation+Alt+Fix ontwerpt beeldmerk' : (Array.isArray(p.files) && p.files.length > 0 ? '? Logo aangeleverd in bestanden' : '?? Wachten op aanlevering')}
+                </div>
+            </div>
+        </div>
+    `;
+}

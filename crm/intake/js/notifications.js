@@ -106,8 +106,10 @@ export function isSafeWebhookUrl(url) {
     try {
         const parsed = new URL(url);
         if (parsed.protocol !== 'https:') return false;
-        const host = parsed.hostname.toLowerCase();
-        if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0') return false;
+        const rawHost = parsed.hostname.toLowerCase();
+        const host = rawHost.replace(/^\[|\]$/g, '');
+        if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0' || host === '::') return false;
+        if (host.startsWith('fc') || host.startsWith('fd') || host.startsWith('fe80') || host.includes('::ffff:')) return false;
         if (host.endsWith('.local') || host.endsWith('.internal') || host.endsWith('.lan')) return false;
         const ipv4Match = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
         if (ipv4Match) {

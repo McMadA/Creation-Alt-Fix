@@ -5,6 +5,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { LeadFactoryEngine } from '../run-engine.js';
 import { FACTORY_CONFIG } from '../config/factory-config.js';
+import { renderLeadVideoPreview, sanitizeVideoSlug } from '../video/build-motion-video.js';
+import { calculateSectorConversionMetrics, generateProvincialBatchQueries, exportProvincialReport } from '../batch/batch-engine.js';
+import { calculateOutreachCampaignMetrics, buildOutreachQueue } from '../../crm/admin/js/modules/regional-outreach-manager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -167,6 +170,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': safeCorsOrigin,
+        'Accept-Ranges': 'bytes',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, x-caf-auth, Access-Control-Request-Private-Network',
       'Access-Control-Allow-Private-Network': 'true',
@@ -187,8 +191,11 @@ const server = http.createServer(async (req, res) => {
   const clientToken = req.headers['x-caf-auth'] || url.searchParams.get('token');
   const isTokenValid = Boolean(clientToken && clientToken === AUTH_TOKEN);
 
-  // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken: strikt token verplicht (Zero-Trust)
-  if (req.method === 'POST') {
+  const isPublicPingEndpoint = pathname === '/api/leads/ping' || (pathname === '/api/leads' && url.searchParams.get('action') === 'ping');
+  const isPublicEndpoint = pathname === '/api/session-token' || isPublicPingEndpoint;
+
+  // Beveiligingscontrole op token voor alle POST (mutatie) verzoeken: strikt token verplicht (Zero-Trust), tenzij publiek ping endpoint
+  if (req.method === 'POST' && !isPublicEndpoint) {
     if (!isTokenValid) {
       res.writeHead(401);
       res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
@@ -256,6 +263,59 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // 3bb. GET /api/leads/analytics & /api/leads/batch2/status (Provinciale Batch 2 & Sector Conversie analyse - TASK-908)
+  if (req.method === 'GET' && (pathname === '/api/leads/analytics' || pathname === '/api/leads/batch2/status')) {
+    if (!isTokenValid) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
+      return;
+    }
+    const db = engine.loadDatabase();
+    const metrics = calculateSectorConversionMetrics(db.leads || []);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      metrics,
+      report: exportProvincialReport(db.leads || [])
+    }));
+    return;
+  }
+
+  // 3bc. POST /api/leads/batch2/queue (Genereert 20 gerichte provinciale zoekopdrachten voor Batch 2 - TASK-908)
+  if (req.method === 'POST' && pathname === '/api/leads/batch2/queue') {
+    const body = await readJsonBody();
+    const count = body.count ? Math.max(1, Math.min(50, Number(body.count))) : 20;
+    const queries = generateProvincialBatchQueries({ count, regions: body.regions, keywords: body.keywords });
+    addLog(`📋 Provinciale Batch 2 wachtrij gegenereerd (${queries.length} gerichte queries)`, 'action');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      queries,
+      totalQueries: queries.length
+    }));
+    return;
+  }
+
+  // 3bd. GET /api/leads/outreach (Regionale MKB Outreach Campagne telemetrie & cohort - TASK-906)
+  if (req.method === 'GET' && pathname === '/api/leads/outreach') {
+    if (!isTokenValid) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: "Niet geautoriseerd: Ongeldig of ontbrekend x-caf-auth token" }));
+      return;
+    }
+    const db = engine.loadDatabase();
+    const leads = db.leads || [];
+    const queueData = buildOutreachQueue(leads);
+    const metrics = calculateOutreachCampaignMetrics(leads);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      campaign: queueData,
+      metrics
+    }));
+    return;
+  }
+
   // 3c. POST /api/leads/update (Synchroniseert CRM status-, e-mail- en archief-wijzigingen direct naar leads.json)
   if (req.method === 'POST' && pathname === '/api/leads/update') {
     const body = await readJsonBody();
@@ -298,6 +358,135 @@ const server = http.createServer(async (req, res) => {
 
     res.writeHead(200);
     res.end(JSON.stringify({ ok: true, lead }));
+    return;
+  }
+
+  // 3d. POST /api/leads/ping of GET /api/leads/ping (Zero-cookie concept view tracking - 100% AVG proof)
+  if ((req.method === 'POST' || req.method === 'GET') && isPublicPingEndpoint) {
+    const body = (req.method === 'POST') ? await readJsonBody() : {};
+    const targetSlug = String(body.slug || url.searchParams.get('slug') || '').trim();
+    const isAdmin = Boolean(body.admin || url.searchParams.get('admin') === '1' || url.searchParams.get('preview') === 'admin' || req.headers['x-caf-admin']);
+
+    if (!targetSlug) {
+      res.writeHead(400);
+      res.end(JSON.stringify({ error: "Verplicht veld 'slug' ontbreekt" }));
+      return;
+    }
+
+    if (isAdmin) {
+      res.writeHead(200);
+      res.end(JSON.stringify({ ok: true, slug: targetSlug, skipped: 'admin_preview' }));
+      return;
+    }
+
+    const db = engine.loadDatabase();
+    const idx = (db.leads || []).findIndex(l => l.slug === targetSlug || l.id === targetSlug || l.name === targetSlug);
+    if (idx === -1) {
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: `Lead '${targetSlug}' niet gevonden in database` }));
+      return;
+    }
+
+    const lead = db.leads[idx];
+    const now = new Date().toISOString();
+    let shouldIncrement = true;
+    if (lead.lastViewedAt) {
+      const diffSec = (Date.now() - new Date(lead.lastViewedAt).getTime()) / 1000;
+      if (diffSec < 10) {
+        shouldIncrement = false;
+      }
+    }
+
+    if (shouldIncrement) {
+      lead.viewsCount = (parseInt(lead.viewsCount, 10) || 0) + 1;
+      if (!lead.firstViewedAt) lead.firstViewedAt = now;
+      addLog(`👀 Lead '${lead.name}' bekeken door bezoeker! (Totaal: ${lead.viewsCount}x)`, 'action');
+    }
+    lead.lastViewedAt = now;
+    lead.updatedAt = now;
+
+    engine.saveDatabase(db);
+
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      ok: true,
+      slug: lead.slug,
+      viewsCount: lead.viewsCount || 1,
+      lastViewedAt: lead.lastViewedAt,
+      debounced: !shouldIncrement
+    }));
+    return;
+  }
+
+  // 3e. POST /api/leads/video (Automatische 15s WhatsApp Reel video generator per lead)
+  if (req.method === 'POST' && pathname === '/api/leads/video') {
+    const body = await readJsonBody();
+    const rawSlug = String(body.slug || url.searchParams.get('slug') || '').trim();
+    if (!rawSlug) {
+      res.writeHead(400);
+      res.end(JSON.stringify({ error: "Verplicht veld 'slug' ontbreekt" }));
+      return;
+    }
+
+    let cleanSlug;
+    try {
+      cleanSlug = sanitizeVideoSlug(rawSlug);
+    } catch (err) {
+      res.writeHead(400);
+      res.end(JSON.stringify({ error: err.message }));
+      return;
+    }
+
+    const db = engine.loadDatabase();
+    const idx = (db.leads || []).findIndex(l => l.slug === cleanSlug || l.id === cleanSlug || l.name === cleanSlug);
+    if (idx === -1) {
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: `Lead '${cleanSlug}' niet gevonden in database` }));
+      return;
+    }
+
+    const lead = db.leads[idx];
+    addLog(`🎬 Genereren 15s WhatsApp Reel voor lead '${lead.name}'...`, 'action');
+
+    try {
+      const durationMs = body.durationMs ? Math.max(500, Math.min(30000, Number(body.durationMs))) : 15000;
+      const result = await renderLeadVideoPreview({
+        slug: cleanSlug,
+        lead,
+        durationMs,
+        dryRun: Boolean(body.dryRun)
+      });
+
+      lead.videoPreview = result.lead?.videoPreview || {
+        generated: true,
+        generatedAt: new Date().toISOString(),
+        fileName: 'video-preview.mp4',
+        relativeUrl: result.videoUrl,
+        absoluteUrl: result.absoluteUrl,
+        durationSeconds: result.durationSeconds || 15,
+        sizeBytes: result.sizeBytes
+      };
+      lead.updatedAt = new Date().toISOString();
+      engine.saveDatabase(db);
+
+      addLog(`✅ 15s WhatsApp Reel gereed voor '${lead.name}'! (${(result.sizeBytes / 1024 / 1024).toFixed(2)} MB)`, 'success');
+
+      res.writeHead(200);
+      res.end(JSON.stringify({
+        ok: true,
+        slug: cleanSlug,
+        videoUrl: result.videoUrl,
+        absoluteUrl: result.absoluteUrl,
+        durationSeconds: result.durationSeconds || 15,
+        sizeBytes: result.sizeBytes,
+        lead,
+        message: "15s WhatsApp Reel succesvol gegenereerd!"
+      }));
+    } catch (err) {
+      addLog(`❌ Fout bij renderen video voor '${lead.name}': ${err.message}`, 'error');
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: "Fout bij genereren video-preview: " + err.message }));
+    }
     return;
   }
 
@@ -467,6 +656,8 @@ const server = http.createServer(async (req, res) => {
         '.svg': 'image/svg+xml',
         '.ico': 'image/x-icon',
         '.webp': 'image/webp',
+        '.mp4': 'video/mp4',
+        '.webm': 'video/webm',
         '.woff2': 'font/woff2',
         '.woff': 'font/woff'
       };

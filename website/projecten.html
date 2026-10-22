@@ -45,19 +45,31 @@
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "Projecten & Portfolio - Creation+Alt+Fix",
-        "description": "Portfolio van websites, webshops, AI-tools en maatwerk software gebouwd door Creation+Alt+Fix.",
-        "url": "https://www.creationaltfix.nl/projecten.html",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Creation+Alt+Fix",
-          "url": "https://www.creationaltfix.nl/"
-        }
-      }
-    </script>
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Projecten & Portfolio - Creation+Alt+Fix",
+    "description": "Portfolio van websites, webshops, AI-tools en maatwerk software gebouwd door Creation+Alt+Fix.",
+    "url": "https://www.creationaltfix.nl/projecten.html",
+    "publisher": {
+      "@type": "ProfessionalService",
+      "@id": "https://www.creationaltfix.nl/#organization",
+      "name": "Creation+Alt+Fix",
+      "telephone": "+31619135453",
+      "email": "info@creationaltfix.nl",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Hoofdstraat 60B",
+        "postalCode": "9601 EK",
+        "addressLocality": "Hoogezand",
+        "addressRegion": "Groningen",
+        "addressCountry": "NL"
+      },
+      "openingHours": "Mo-Fr 09:00-18:00",
+      "url": "https://www.creationaltfix.nl/"
+    }
+  }
+  </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.webp" />
@@ -170,7 +182,7 @@
                   🏆 Flagship Project
                 </div>
                 <a href="/projects/crm-portal/"
-                  ><img
+                   aria-label="Bekijk Creation+Alt+Fix CRM Admin Dashboard"><img
                     src="/images/crm-dashboard-mockup.webp"
                     alt="Creation+Alt+Fix CRM Admin Dashboard"
                     loading="lazy"
@@ -340,7 +352,7 @@
           <div class="projects-grid" id="projects-grid">
             <!-- Project: Arnold Doornbos (Arnold Design) -->
             <div class="project-card fade-in" data-category="website">
-              <a href="/projects/arnold-design/" class="project-card-image">
+              <a href="/projects/arnold-design/" class="project-card-image" aria-label="Bekijk Arnold Doornbos - Arnold Design Portfolio">
                 <img
                   src="/images/arnolddesign.webp"
                   alt="Arnold Doornbos - Arnold Design Portfolio"
@@ -401,7 +413,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Angela Stenekes Website">
                 <img
                   src="/images/angelastenekes.webp"
                   alt="Angela Stenekes Website"
@@ -456,7 +468,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Bakkertje Sieg Webshop">
                 <img
                   src="/images/bakkertjesieg.webp"
                   alt="Bakkertje Sieg Webshop"
@@ -513,7 +525,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Scholte-Elektrotechniek Website">
                 <img
                   src="/images/scholte-elektrotechniek.webp"
                   alt="Scholte-Elektrotechniek Website"
@@ -568,7 +580,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Stenekes Rioolspecialist Website">
                 <img
                   src="/images/stenekes.webp"
                   alt="Stenekes Rioolspecialist Website"
@@ -623,7 +635,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Naaiatelier Willa Website">
                 <img
                   src="/images/willa.webp"
                   alt="Naaiatelier Willa Website"
@@ -678,7 +690,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Capybara Culture Website">
                 <img
                   src="/images/capybara.webp"
                   alt="Capybara Culture Website"
@@ -733,7 +745,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk PompPop Aanmeldpagina">
                 <img
                   src="/images/pomppop.webp"
                   alt="PompPop Aanmeldpagina"
@@ -788,7 +800,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Livian Design - Interieurportfolio">
                 <img
                   src="/images/liviandesign.webp"
                   alt="Livian Design - Interieurportfolio"
@@ -843,7 +855,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Besseling Installatietechniek Website">
                 <img
                   src="/images/besseling.webp"
                   alt="Besseling Installatietechniek Website"
@@ -898,7 +910,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Qolipa Webshop & Retail">
                 <img
                   src="/images/qolipa.webp"
                   alt="Qolipa Webshop & Retail"
@@ -953,7 +965,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="project-card-image"
-              >
+               aria-label="Bekijk F-Truck Store - Ford Trucks & Webshop Migratie">
                 <img
                   src="/images/ftruckstore.webp"
                   alt="F-Truck Store - Ford Trucks & Webshop Migratie"
@@ -1013,7 +1025,7 @@
               <a
                 href="/projects/home-buyer-intelligence/"
                 class="project-card-image"
-              >
+               aria-label="Bekijk Home Buyer Intelligence AI Dashboard">
                 <img
                   src="/images/hbi-hero.webp"
                   alt="Home Buyer Intelligence AI Dashboard"
@@ -1060,7 +1072,7 @@
 
             <!-- Project: Wind Cloud Sync -->
             <div class="project-card fade-in" data-category="ai-tool">
-              <a href="/projects/wind/" class="project-card-image">
+              <a href="/projects/wind/" class="project-card-image" aria-label="Bekijk Wind Cloud Sync Tools">
                 <img
                   src="/images/wind-hero.webp"
                   alt="Wind Cloud Sync Tools"

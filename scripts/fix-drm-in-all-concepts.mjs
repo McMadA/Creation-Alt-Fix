@@ -4,7 +4,8 @@ import path from 'path';
 const conceptDir = 'website/concept';
 const folders = fs.readdirSync(conceptDir).filter(f => fs.statSync(path.join(conceptDir, f)).isDirectory());
 
-const cleanDrmScript = `<script id="caf-security-guard">
+function buildCleanDrmScript(slug) {
+  return `<script id="caf-security-guard">
 /*
  * INTELLECTUEEL EIGENDOM VAN CREATION+ALT+FIX (KvK 99986191).
  * DIT WERK IS AUTEURSRECHTELIJK BESCHERMD CONFORM DE NEDERLANDSE AUTEURSWET 1912 EN HET BENELUX VERDRAG VOOR INTELLECTUELE EIGENDOM (BVIE).
@@ -79,15 +80,59 @@ const cleanDrmScript = `<script id="caf-security-guard">
     clearTimeout(t._timer);
     t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);
   }
+
+  // 4. ZERO-COOKIE VIEW-PING BEACON (100% AVG / GDPR-proof)
+  // Registreert een anonieme view-ping zodra een potentiële klant het concept opent
+  (function() {
+    try {
+      var isPreview = false;
+      var search = window.location.search || '';
+      if (search.indexOf('preview=admin') !== -1 || search.indexOf('admin=1') !== -1 || search.indexOf('caf_admin=1') !== -1) {
+        isPreview = true;
+      }
+      try {
+        if (localStorage.getItem('caf_bridge_token') || localStorage.getItem('caf_admin') || sessionStorage.getItem('caf_admin_preview')) {
+          isPreview = true;
+        }
+      } catch (e) {}
+
+      var conceptSlug = ${JSON.stringify(slug)};
+      var sessionKey = 'caf_viewed_' + conceptSlug;
+      if (!isPreview && conceptSlug && !sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, '1');
+        var payload = JSON.stringify({ action: 'ping', slug: conceptSlug });
+        var pingUrl = '/crm/api/leads.php?action=ping&slug=' + encodeURIComponent(conceptSlug);
+        var host = window.location.hostname;
+        if (window.location.port === '3847' || host === 'localhost' || host === '127.0.0.1') {
+          pingUrl = 'http://127.0.0.1:3847/api/leads/ping';
+        }
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(pingUrl, new Blob([payload], { type: 'application/json' }));
+        } else if (window.fetch) {
+          fetch(pingUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+            mode: 'no-cors'
+          }).catch(function() {});
+        }
+      }
+    } catch (err) {}
+  })();
 })();
 </script>`;
+}
 
 folders.forEach(dir => {
   const file = path.join(conceptDir, dir, 'index.html');
+  if (!fs.existsSync(file)) return;
   let html = fs.readFileSync(file, 'utf8');
 
   // Verwijder eventuele oude caf-security-guard scripts
   html = html.replace(/<script id="caf-security-guard">[\s\S]*?<\/script>\s*/gi, '');
+
+  const cleanDrmScript = buildCleanDrmScript(dir);
 
   // Injecteer schone guard voor </head>
   if (html.includes('</head>')) {
@@ -99,4 +144,4 @@ folders.forEach(dir => {
   fs.writeFileSync(file, html, 'utf8');
 });
 
-console.log('✅ Schone DRM guard succesvol geïnjecteerd in alle 21 concepten!');
+console.log('✅ Schone DRM guard + Zero-Cookie Ping succesvol geïnjecteerd in alle concepten!');

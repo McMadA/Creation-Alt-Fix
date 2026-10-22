@@ -7,6 +7,7 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 // Restrict CORS to authorized portal domains and loopback development
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

@@ -102,6 +102,46 @@ export function applyCodeProtection(html, business) {
     clearTimeout(t._timer);
     t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3500);
   }
+
+  // 4. ZERO-COOKIE VIEW-PING BEACON (100% AVG / GDPR-proof)
+  // Registreert een anonieme view-ping zodra een potentiële klant het concept opent
+  (function() {
+    try {
+      var isPreview = false;
+      var search = window.location.search || '';
+      if (search.indexOf('preview=admin') !== -1 || search.indexOf('admin=1') !== -1 || search.indexOf('caf_admin=1') !== -1) {
+        isPreview = true;
+      }
+      try {
+        if (localStorage.getItem('caf_bridge_token') || localStorage.getItem('caf_admin') || sessionStorage.getItem('caf_admin_preview')) {
+          isPreview = true;
+        }
+      } catch (e) {}
+
+      var conceptSlug = ${JSON.stringify(slug).replace(/</g, '\\u003c')};
+      var sessionKey = 'caf_viewed_' + conceptSlug;
+      if (!isPreview && conceptSlug && !sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, '1');
+        var payload = JSON.stringify({ action: 'ping', slug: conceptSlug });
+        var pingUrl = '/crm/api/leads.php?action=ping&slug=' + encodeURIComponent(conceptSlug);
+        var host = window.location.hostname;
+        if (window.location.port === '3847' || host === 'localhost' || host === '127.0.0.1') {
+          pingUrl = 'http://127.0.0.1:3847/api/leads/ping';
+        }
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(pingUrl, new Blob([payload], { type: 'application/json' }));
+        } else if (window.fetch) {
+          fetch(pingUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+            mode: 'no-cors'
+          }).catch(function() {});
+        }
+      }
+    } catch (err) {}
+  })();
 })();
 </script>
 `;

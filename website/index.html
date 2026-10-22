@@ -66,40 +66,51 @@
     />
 
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "@id": "https://www.creationaltfix.nl/#organization",
-        "name": "Creation+Alt+Fix",
-        "image": "https://www.creationaltfix.nl/images/logo.webp",
-        "url": "https://www.creationaltfix.nl/",
-        "telephone": "+31619135453",
-        "email": "info@creationaltfix.nl",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Groningen",
-          "addressCountry": "NL"
-        },
-        "description": "Software support, slimme automatisering, webdesign en data dashboards in Groningen. Snel, betaalbaar, toekomstgericht.",
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday"
-            ],
-            "opens": "09:00",
-            "closes": "17:00"
-          }
-        ],
-        "sameAs": [
-          "https://www.instagram.com/creationaltfix",
-          "https://www.linkedin.com/in/kingofholland"
-        ]
-      }
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://www.creationaltfix.nl/#organization",
+  "name": "Creation+Alt+Fix",
+  "image": "https://www.creationaltfix.nl/images/logo.webp",
+  "url": "https://www.creationaltfix.nl/",
+  "telephone": "+31619135453",
+  "email": "info@creationaltfix.nl",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Hoofdstraat 60B",
+    "postalCode": "9601 EK",
+    "addressLocality": "Hoogezand",
+    "addressRegion": "Groningen",
+    "addressCountry": "NL"
+  },
+  "description": "Software support, slimme automatisering, webdesign en data dashboards in Groningen. Snel, betaalbaar, toekomstgericht.",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "09:00",
+      "closes": "17:00"
+    }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/creationaltfix",
+    "https://www.linkedin.com/in/kingofholland"
+  ],
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 53.1636,
+    "longitude": 6.757
+  },
+  "priceRange": "€€",
+  "currenciesAccepted": "EUR",
+  "paymentAccepted": "iDEAL, Bankoverboeking, Factuur"
+}
     </script>
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -848,7 +859,7 @@
           <div class="showcase-grid">
             <!-- Project 1: Creation+Alt+Fix CRM & Klantenportaal -->
             <div class="showcase-item fade-in">
-              <a href="/projects/crm-portal/" class="showcase-image-link">
+              <a href="/projects/crm-portal/" class="showcase-image-link" aria-label="Bekijk Creation+Alt+Fix CRM Admin Dashboard">
                 <picture>
                   <img
                     src="/images/crm-dashboard-mockup.webp"
@@ -899,7 +910,7 @@
 
             <!-- Project 2: Arnold Design AI Scrape Shield & Showcase -->
             <div class="showcase-item fade-in">
-              <a href="/projects/arnold-design/" class="showcase-image-link">
+              <a href="/projects/arnold-design/" class="showcase-image-link" aria-label="Bekijk Arnold Design AI Scrape Shield & Portfolio Case Study">
                 <picture>
                   <img
                     src="/images/arnolddesign.webp"
@@ -953,7 +964,7 @@
               <a
                 href="/projects/home-buyer-intelligence/"
                 class="showcase-image-link"
-              >
+               aria-label="Bekijk Home Buyer Intelligence AI Dashboard">
                 <picture>
                   <img
                     src="/images/hbi-hero.webp"
@@ -994,7 +1005,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="showcase-image-link"
-              >
+               aria-label="Bekijk Angela Stenekes Website">
                 <picture>
                   <img
                     src="/images/angelastenekes.webp"
@@ -1083,7 +1094,7 @@
 
             <!-- Project 6: Wind Cloud Sync Tools -->
             <div class="showcase-item fade-in">
-              <a href="/projects/wind/" class="showcase-image-link">
+              <a href="/projects/wind/" class="showcase-image-link" aria-label="Bekijk Wind Cloud Sync Tools Interface">
                 <picture>
                   <img
                     src="/images/wind-hero.webp"
@@ -1122,7 +1133,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="showcase-image-link"
-              >
+               aria-label="Bekijk Scholte-Elektrotechniek Website">
                 <picture>
                   <img
                     src="/images/scholte-elektrotechniek.webp"
@@ -1166,7 +1177,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="showcase-image-link"
-              >
+               aria-label="Bekijk Stenekes Rioolspecialist Website">
                 <picture>
                   <img
                     src="/images/stenekes.webp"
